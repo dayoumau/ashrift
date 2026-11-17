@@ -219,6 +219,16 @@ function botCast(h, mode, tgt, nf) {
         let n = 0; for (const o of G.heroes) if (o.alive && o.team !== h.team && udist(h, o) < ai.r) { const b = o.buffs.find(q => q.id === 'cry' + h.id); if (b) n += b.stacks || 1; }
         if (n >= 3 || (n >= 1 && tgt && tHp < 0.25)) pt = { x: h.x, z: h.z }; break;
       }
+      case 'sunder': {    // trade health with an enemy hero: only when he himself is low and someone in reach is much healthier
+        if (hpP > 0.38) break; let best = null, bp = hpP + 0.28;
+        for (const o of G.heroes) if (o.alive && o.team !== h.team && !o.invuln && udist(h, o) < ab.range + o.radius) { const op = o.hp / o.maxHp; if (op > bp) { bp = op; best = o; } }
+        if (best) pt = { x: best.x, z: best.z, unit: best }; break;
+      }
+      case 'fly': {       // take wing: to run over the walls, or to catch an enemy hero who is getting away
+        if (mode === 'retreat' && nfd < 11) pt = { x: h.x, z: h.z };
+        else if (mode === 'fight' && tgt && tgt.kind === 'hero' && dT > h.range + 2.5 && dT < 13 && tHp < 0.55) pt = { x: h.x, z: h.z };
+        break;
+      }
       case 'sanct': {
         let n = 0, sx = 0, sz = 0; for (const o of G.heroes) if (o.alive && o.team === h.team && udist(h, o) < 10 && o.hp / o.maxHp < 0.6) { n++; sx += o.x; sz += o.z; }
         if ((n >= 2 && nfd < 16) || (hpP < 0.4 && nfd < 10)) pt = n ? { x: sx / n, z: sz / n } : { x: h.x, z: h.z }; break;

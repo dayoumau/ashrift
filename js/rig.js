@@ -491,6 +491,41 @@ const HEADS = {
       .b(0.25, 0.17, 0.07, bk, -0.16, 0.22, -0.27, 0, 0.25, 0.3).b(0.25, 0.17, 0.07, bk, 0.16, 0.22, -0.27, 0, -0.25, -0.3).b(0.09, 0.1, 0.09, bk, 0, 0.2, -0.28).b(0.07, 0.32, 0.03, bk, -0.06, 0.0, -0.31, 0, 0, 0.25).b(0.07, 0.32, 0.03, bk, 0.06, 0.0, -0.31, 0, 0, -0.25)
       .y(0.2, 0.22, 0.08, 7, C.skin, 0, -0.27, 0).y(0.205, 0.225, 0.035, 7, bk, 0, -0.27, 0).o(0.032, C.GL, 0, -0.285, 0.215, 1, 1.4, 0.6);
     for (const [x, h, rz] of [[-0.17, 0.18, 0.25], [-0.09, 0.15, 0.12], [-0.01, 0.13, 0], [0.07, 0.15, -0.12], [0.16, 0.18, -0.25]]) k.t(0.09, 0.05, 0.07, 0.03, h, hair, x, 0.25 - h / 2, 0.214, 0.08, 0, rz);
+  },
+  raul(k, C) { // no face at all: under a ragged black hood a smooth void where the face should be, edged by a thin burning seam; two horns swept back through the hood, torn strips hanging at the sides
+    const bk = 0x0b0a0e, hd = 0x16141b, vo = 0x020104, hn = 0x231f28;
+    k.b(0.42, 0.46, 0.4, bk, 0, -0.01, 0)
+      .t(0.5, 0.52, 0.58, 0.58, 0.54, hd, 0, 0.04, -0.03).c(0.25, 0.5, 4, hd, 0, 0.3, -0.22, -1.15)
+      .t(0.34, 0.06, 0.26, 0.06, 0.44, vo, 0, -0.04, 0.248)
+      .b(0.34, 0.016, 0.02, C.GL, 0, 0.18, 0.266).b(0.016, 0.4, 0.02, C.GL, -0.165, -0.03, 0.266, 0, 0, 0.08).b(0.016, 0.4, 0.02, C.GL, 0.165, -0.03, 0.266, 0, 0, -0.08)
+      .y(0.31, 0.4, 0.22, 7, hd, 0, -0.3, 0.0);
+    for (const s of [-1, 1]) k.c(0.075, 0.5, 5, hn, s * 0.22, 0.34, -0.12, -0.9, 0, -s * 0.55).c(0.045, 0.36, 5, hn, s * 0.33, 0.52, -0.38, -1.6, 0, -s * 0.4)
+      .c(0.1, 0.4, 4, hd, s * 0.28, -0.3, 0.02, Math.PI, 0, s * 0.2).c(0.08, 0.34, 4, hd, s * 0.2, -0.32, -0.24, Math.PI + 0.3, 0, s * 0.3);
+  },
+  tanya(k, C) { // a child officer: a short blond bob with a side-swept fringe and locks framing the cheeks, large cold blue eyes under level brows, a small flat mouth; the high field collar with red tabs
+    const hair = C.hair || 0xf0d27a, hs = 0xc8a650, iris = 0x3a7ad0, wh = 0xf6f4f2;
+    k.b(0.42, 0.46, 0.4, C.skin, 0, -0.01, 0)
+      .b(0.12, 0.07, 0.03, wh, -0.095, 0.02, 0.203).b(0.12, 0.07, 0.03, wh, 0.095, 0.02, 0.203).b(0.07, 0.07, 0.03, iris, -0.09, 0.018, 0.211).b(0.07, 0.07, 0.03, iris, 0.09, 0.018, 0.211)
+      .b(0.03, 0.042, 0.02, 0x0a1428, -0.09, 0.016, 0.219).b(0.03, 0.042, 0.02, 0x0a1428, 0.09, 0.016, 0.219).b(0.02, 0.02, 0.02, 0xffffff, -0.072, 0.042, 0.223).b(0.02, 0.02, 0.02, 0xffffff, 0.108, 0.042, 0.223)
+      .b(0.13, 0.022, 0.035, 0x5a4a30, -0.095, 0.06, 0.214, 0, 0, -0.08).b(0.13, 0.022, 0.035, 0x5a4a30, 0.095, 0.06, 0.214, 0, 0, 0.08)
+      .b(0.1, 0.014, 0.02, hs, -0.095, 0.105, 0.206, 0, 0, -0.12).b(0.1, 0.014, 0.02, hs, 0.095, 0.105, 0.206, 0, 0, 0.12)
+      .b(0.025, 0.04, 0.03, C.skin, 0, -0.06, 0.205).b(0.05, 0.012, 0.02, 0x9a5a52, 0, -0.14, 0.2)
+      .t(0.45, 0.43, 0.48, 0.46, 0.16, hair, 0, 0.215, -0.01).b(0.47, 0.42, 0.15, hair, 0, 0.0, -0.2).b(0.08, 0.38, 0.3, hair, -0.224, -0.04, -0.03).b(0.08, 0.38, 0.3, hair, 0.224, -0.04, -0.03)
+      .t(0.5, 0.18, 0.5, 0.2, 0.1, hs, 0, -0.22, -0.17).t(0.07, 0.07, 0.05, 0.05, 0.4, hair, -0.215, -0.14, 0.13).t(0.07, 0.07, 0.05, 0.05, 0.4, hair, 0.215, -0.14, 0.13)
+      .y(0.19, 0.21, 0.08, 7, C.skin, 0, -0.27, 0).y(0.23, 0.27, 0.13, 8, C.c1, 0, -0.33, -0.02).b(0.08, 0.06, 0.02, 0xb02030, -0.13, -0.31, 0.2, 0, 0.4).b(0.08, 0.06, 0.02, 0xb02030, 0.13, -0.31, 0.2, 0, -0.4);
+    for (const [x, h, rz] of [[-0.18, 0.16, 0.4], [-0.1, 0.2, 0.3], [-0.02, 0.22, 0.22], [0.06, 0.2, 0.15], [0.14, 0.17, 0.05], [0.19, 0.14, -0.1]]) k.t(0.09, 0.05, 0.06, 0.03, h, hair, x, 0.25 - h / 2, 0.214, 0.08, 0, rz);
+  },
+  setsuna(k, C) { // a swordsman of few words: long white hair parted to one side, one long lock over the eye, narrow lit violet eyes, a thin scar across the cheek; hair tied low at the nape into a long tail; a white collar under the dark one
+    const hair = C.hair || 0xeceaf2, hs = 0xb8b4c8, wh = 0xf2f0f4, iris = { g: 0xc0a0ff };
+    k.b(0.42, 0.46, 0.4, C.skin, 0, -0.01, 0)
+      .b(0.11, 0.035, 0.03, wh, -0.095, 0.03, 0.203).b(0.11, 0.035, 0.03, wh, 0.095, 0.03, 0.203).b(0.05, 0.035, 0.03, iris, -0.09, 0.03, 0.211).b(0.05, 0.035, 0.03, iris, 0.09, 0.03, 0.211)
+      .b(0.13, 0.02, 0.035, 0x2a2630, -0.095, 0.055, 0.214, 0, 0, 0.06).b(0.13, 0.02, 0.035, 0x2a2630, 0.095, 0.055, 0.214, 0, 0, -0.06)
+      .b(0.11, 0.013, 0.02, hs, -0.095, 0.1, 0.206, 0, 0, 0.1).b(0.11, 0.013, 0.02, hs, 0.095, 0.1, 0.206, 0, 0, -0.1)
+      .b(0.03, 0.06, 0.04, C.skin, 0, -0.045, 0.205).b(0.07, 0.012, 0.02, 0x7a5058, 0, -0.14, 0.2).b(0.014, 0.11, 0.012, 0xc89aa0, -0.14, -0.06, 0.206, 0, 0, 0.5)
+      .t(0.45, 0.43, 0.48, 0.46, 0.16, hair, 0, 0.215, -0.01).b(0.47, 0.46, 0.15, hair, 0, 0.0, -0.2).b(0.07, 0.42, 0.3, hair, -0.222, -0.02, -0.03).b(0.07, 0.42, 0.3, hair, 0.222, -0.02, -0.03)
+      .t(0.4, 0.12, 0.3, 0.1, 0.5, hair, 0, -0.42, -0.24).b(0.11, 0.07, 0.09, 0x4a3a8a, 0, -0.68, -0.25).t(0.12, 0.07, 0.04, 0.03, 0.62, hs, 0, -1.02, -0.27)
+      .y(0.2, 0.22, 0.08, 7, C.skin, 0, -0.27, 0).y(0.24, 0.28, 0.12, 8, wh, 0, -0.33, -0.01).y(0.25, 0.29, 0.06, 8, C.c1, 0, -0.38, -0.02);
+    for (const [x, h, rz] of [[-0.18, 0.2, 0.25], [-0.1, 0.16, 0.12], [-0.03, 0.13, 0.05], [0.05, 0.2, -0.1], [0.12, 0.32, -0.1], [0.18, 0.24, -0.25]]) k.t(0.09, 0.05, 0.06, 0.03, h, hair, x, 0.25 - h / 2, 0.214, 0.08, 0, rz);
   }
 };
 
@@ -696,6 +731,26 @@ function buildHero(L, teamColor) {
         .y(0.42 * b, 0.76 * b, 0.36, 12, wh, 0, -0.04, 0).y(0.76 * b, 0.8 * b, 0.045, 12, c1, 0, -0.21, 0).t(0.5 * b, 0.06, 0.82 * b, 0.06, 0.66, c1, 0, 0.18, -0.31 * b, 0.25);
       for (let i = 0; i < 12; i++) { const a = (i + 0.5) / 12 * TAU; kb.b(0.03, 0.3, 0.03, 0xe0dce6, Math.sin(a) * 0.6 * b, -0.05, Math.cos(a) * 0.6 * b, -Math.cos(a) * 0.62, 0, Math.sin(a) * 0.62); }
       break; }
+    // a faceless horror's torso: overlapping black plates like a carapace, ribs of dark metal with burning seams between them, a ragged black sash hanging in strips
+    case 'abyss': { const pl = 0x1c1a22, dk2 = 0x08070a;
+      kb.t(0.86 * b, 0.5 * b, 0.6 * b, 0.42 * b, 0.42, pl, 0, 0.84, 0.03).b(0.5 * b, 0.12, 0.08, pl, 0, 0.56, 0.22 * b).b(0.44 * b, 0.1, 0.08, pl, 0, 0.42, 0.21 * b)
+        .b(0.03, 0.62, 0.03, GL, 0, 0.66, 0.275 * b).o(0.07, GL, 0, 0.86, 0.29 * b, 1, 1.5, 0.5).b(0.78 * b, 0.1, 0.52 * b, dk2, 0, 0.2, 0);
+      for (let i = 0; i < 3; i++) for (const s of [-1, 1]) kb.b(0.24 * b, 0.05, 0.06, pl, s * 0.17 * b, 0.72 - i * 0.13, 0.245 * b, 0, 0, s * 0.35).b(0.2 * b, 0.015, 0.03, GL, s * 0.17 * b, 0.69 - i * 0.13, 0.26 * b, 0, 0, s * 0.35);
+      for (let i = 0; i < 9; i++) { const a = i / 9 * TAU; kb.t(0.14, 0.03, 0.08, 0.02, 0.7 + (i % 3) * 0.12, i % 2 ? dk2 : pl, Math.sin(a) * 0.38 * b, -0.18 - (i % 3) * 0.05, Math.cos(a) * 0.28 * b, Math.cos(a) * 0.18, 0, -Math.sin(a) * 0.18); }
+      break; }
+    // a field officer's tunic: a dark front seam, two breast pockets with flaps, a belt with a buckle and ammunition pouches, a cross strap; the computation orb on a chain at the chest (its glow is rig.orbG)
+    case 'field': { const dkc = 0x2a2c22, belt = 0x3a2a1c, gold = met;
+      kb.b(0.03, 0.8, 0.03, dkc, 0, 0.62, 0.262 * b).b(0.17 * b, 0.13, 0.03, c2, -0.17 * b, 0.82, 0.255 * b).b(0.17 * b, 0.13, 0.03, c2, 0.17 * b, 0.82, 0.255 * b).b(0.18 * b, 0.05, 0.04, dkc, -0.17 * b, 0.89, 0.262 * b).b(0.18 * b, 0.05, 0.04, dkc, 0.17 * b, 0.89, 0.262 * b)
+        .b(0.78 * b, 0.1, 0.52 * b, belt, 0, 0.22, 0).b(0.12, 0.1, 0.06, gold, 0, 0.22, 0.265 * b).b(0.14, 0.14, 0.1, belt, -0.25 * b, 0.18, 0.24 * b).b(0.14, 0.14, 0.1, belt, 0.25 * b, 0.18, 0.24 * b)
+        .b(0.06, 1.04, 0.04, belt, 0, 0.62, 0.27 * b, 0, 0, 0.62).b(0.06, 1.0, 0.04, belt, 0, 0.62, -0.262 * b, 0, 0, -0.62)
+        .t(0.66 * b, 0.46 * b, 0.72 * b, 0.5 * b, 0.26, c1, 0, 0.04, 0).b(0.73 * b, 0.03, 0.51 * b, dkc, 0, -0.09, 0)
+        .b(0.012, 0.22, 0.012, gold, -0.06, 1.0, 0.28 * b, 0, 0, -0.3).b(0.012, 0.22, 0.012, gold, 0.06, 1.0, 0.28 * b, 0, 0, 0.3).y(0.085, 0.085, 0.04, 10, gold, 0, 0.86, 0.3 * b, HPI).o(0.06, GL, 0, 0.86, 0.325 * b, 1, 1.25, 0.6); break; }
+    // a swordsman's kimono under a dark haori: a pale inner kimono with a white collar crossing in a V, the haori fronts with lit edges, a violet sash with a knotted cord (the long haori tails come from look.coat)
+    case 'haori': { const wh = 0xf2f0f4, inner = L.shirt || 0xcfccd8, sash = L.tie || 0x3a2a6a;
+      kb.b(0.3 * b, 0.9, 0.05, inner, 0, 0.62, 0.238 * b).b(0.06, 0.52, 0.03, wh, -0.09 * b, 0.84, 0.258 * b, 0, 0, 0.4).b(0.06, 0.52, 0.03, wh, 0.09 * b, 0.84, 0.258 * b, 0, 0, -0.4)
+        .b(0.12, 0.96, 0.06, c1, -0.21 * b, 0.6, 0.25 * b, 0, 0, -0.06).b(0.12, 0.96, 0.06, c1, 0.21 * b, 0.6, 0.25 * b, 0, 0, 0.06).b(0.025, 0.9, 0.03, GL, -0.152 * b, 0.6, 0.283 * b, 0, 0, -0.06).b(0.025, 0.9, 0.03, GL, 0.152 * b, 0.6, 0.283 * b, 0, 0, 0.06)
+        .b(0.8 * b, 0.14, 0.53 * b, sash, 0, 0.22, 0).b(0.1, 0.1, 0.06, met, 0.1 * b, 0.22, 0.275 * b).b(0.03, 0.3, 0.03, met, 0.12 * b, 0.08, 0.28 * b, 0, 0, 0.2)
+        .t(0.66 * b, 0.46 * b, 0.74 * b, 0.52 * b, 0.32, c1, 0, 0.02, 0); break; }
     case 'bare': kb.b(0.1, 1.02, 0.05, c3, 0, 0.62, 0.25 * b, 0, 0, 0.62).b(0.035, 0.34, 0.03, GL, -0.24 * b, 0.82, 0.255 * b, 0, 0, -0.3).b(0.035, 0.34, 0.03, GL, 0.24 * b, 0.82, 0.255 * b, 0, 0, 0.3).b(0.035, 0.2, 0.03, GL, 0, 0.44, 0.215 * b); break;
   }
   /* --- back --- */
@@ -745,6 +800,7 @@ function buildHero(L, teamColor) {
   }
   if (L.sh === 'fur') kb.y(0.5 * b, 0.6 * b, 0.2, 7, 0x5a4a3a, 0, 1.0, -0.02).y(0.42 * b, 0.5 * b, 0.12, 7, 0x6b5a48, 0, 1.1, -0.02);
   if (L.weapon === 'akisword') kb.b(0.075, 0.1, 1.15, 0x101014, -0.4 * b, 0.05, -0.15, -0.45).b(0.08, 0.11, 0.08, 0x8a7a5a, -0.4 * b, -0.21, -0.66, -0.45).b(0.085, 0.115, 0.05, 0x8a7a5a, -0.4 * b, 0.27, 0.32, -0.45).b(0.03, 0.03, 0.9, 0x5a0a12, -0.4 * b - 0.04, 0.06, -0.14, -0.45);   // a black scabbard at the left hip, slanting back
+  if (L.weapon === 'nodachi') kb.b(0.08, 0.11, 1.55, 0x1a1428, -0.4 * b, 0.0, -0.32, -0.42).b(0.088, 0.118, 0.06, met, -0.4 * b, 0.32, 0.33, -0.42).b(0.088, 0.118, 0.07, met, -0.4 * b, -0.31, -0.98, -0.42).b(0.03, 0.03, 1.3, GL, -0.4 * b - 0.045, 0.0, -0.3, -0.42);   // a long lacquered scabbard at the left hip
   if (L.weapon === 'katana') kb.b(0.08, 0.11, 1.35, 0x15172a, -0.4 * b, 0.1, -0.3, -0.45).b(0.09, 0.12, 0.1, met, -0.4 * b, 0.36, 0.26, -0.45).b(0.085, 0.115, 0.08, GL, -0.4 * b, -0.12, -0.76, -0.45);
   kb.into(body, mat, gmat);
   /* --- head --- */
@@ -824,6 +880,25 @@ function buildHero(L, teamColor) {
       aimArm(armL, foreL, new THREE.Vector3(gp.x, gp.y - 0.1, gp.z).addScaledVector(fw, rf ? 0.3 : 0.26), new THREE.Vector3(-0.5, -1, 0.1));
       break;
     }
+    // a bolt-action service rifle with a long bayonet: wooden stock and fore-end, a dark barrel, the bolt handle, a lit sight; braced on the body like the other rifles
+    case 'mrifle': {
+      const gk = kit(), wd = 0x5a3a22, bl = 0x2a2c30, gun = grp(body, 0.13 * b + 0.03, 0.74, 0.3 * b + 0.3); gun.rotation.y = -GUN_YAW;
+      gk.b(0.09, 0.2, 0.55, wd, 0, -0.05, -0.05, 0.12).b(0.08, 0.1, 0.9, wd, 0, 0.0, 0.62).y(0.03, 0.035, 1.5, 6, bl, 0, 0.06, 1.0, HPI).b(0.07, 0.08, 0.24, 0x3a3c42, 0, 0.07, 0.2)
+        .y(0.016, 0.016, 0.12, 5, met, 0.07, 0.08, 0.2, 0, 0, HPI).i(0.025, met, 0.13, 0.08, 0.2).b(0.03, 0.05, 0.03, GL, 0, 0.13, 1.6)
+        .b(0.02, 0.05, 0.6, 0xc8ccd4, 0, 0.0, 1.95).c(0.025, 0.12, 4, 0xc8ccd4, 0, 0.0, 2.3, HPI).b(0.05, 0.08, 0.05, 0x3a3c42, 0, 0.03, 1.66).b(0.06, 0.16, 0.08, bl, 0, -0.13, 0.04, 0.3)
+        .b(0.012, 0.012, 0.9, GL, 0.035, 0.06, 1.0);
+      gk.into(gun, mat, gmat); rig.gun = gun; rig.gunZ = gun.position.z; rig.hold = true;
+      const fw = new THREE.Vector3(Math.sin(-GUN_YAW), 0, Math.cos(-GUN_YAW)), gp = gun.position;
+      aimArm(armR, foreR, new THREE.Vector3(gp.x + 0.03, gp.y - 0.1, gp.z), new THREE.Vector3(0.9, -1, -0.4));
+      aimArm(armL, foreL, new THREE.Vector3(gp.x, gp.y - 0.1, gp.z).addScaledVector(fw, 0.4), new THREE.Vector3(-0.5, -1, 0.1));
+      break;
+    }
+    // a black greatsword: a long dark grip with a lit pommel, a guard of hooked spikes, a broad black blade with a burning crimson fuller and a toothed back edge, a hooked point
+    case 'abyssblade': { wiR = -0.45; const bk = 0x0c0b10, eg = 0x2a2830;
+      kwR.b(0.07, 0.07, 0.5, 0x1a1418, 0, HY, -0.02).o(0.07, GL, 0, HY, -0.3).b(0.5, 0.08, 0.1, bk, 0, HY, 0.25).c(0.05, 0.24, 4, bk, -0.28, HY, 0.32, HPI, 0, 0.6).c(0.05, 0.24, 4, bk, 0.28, HY, 0.32, HPI, 0, -0.6)
+        .b(0.06, 0.24, 1.9, bk, 0, HY, 1.27).b(0.04, 0.05, 1.8, GL, 0, HY + 0.02, 1.25).b(0.03, 0.06, 1.8, eg, 0, HY - 0.13, 1.27).c(0.12, 0.42, 4, bk, 0, HY, 2.38, HPI, 0, Math.PI / 4);
+      for (let i = 0; i < 5; i++) kwR.c(0.045, 0.16, 3, bk, 0, HY + 0.14, 0.55 + i * 0.32, -0.6);
+      break; }
     case 'bow': kwL.b(0.07, 0.08, 0.36, dk, 0, HY, 0).b(0.014, 0.014, 2.0, GL, 0, HY + 0.42, 0);
       for (const s of [-1, 1]) kwL.b(0.055, 0.055, 0.52, 0x5a4630, 0, HY + 0.08, s * 0.42, -s * 0.3).b(0.045, 0.045, 0.48, 0x5a4630, 0, HY + 0.27, s * 0.82, -s * 0.75).o(0.06, GL, 0, HY + 0.42, s * 1.0); break;
     case 'rapier': wiL = -0.3; kwR.b(0.05, 0.05, 0.26, dk, 0, HY, 0).c(0.17, 0.17, 6, met, 0, HY, 0.17, -HPI).b(0.04, 0.04, 1.8, met, 0, HY, 1.12).b(0.025, 0.05, 1.7, GL, 0, HY + 0.005, 1.14).i(0.05, GL, 0, HY, -0.16);
@@ -960,6 +1035,19 @@ function buildHero(L, teamColor) {
     for (let i = 0; i < 4; i++) kk.b(0.065, 0.075, 0.025, 0xd8d0c0, 0, 0, -0.26 + i * 0.08, 0, 0, i % 2 ? 0.6 : -0.6);
     kk.into(kt, mat, gmat); kt.visible = false; rig.katana = kt; rig.katTip = new THREE.Vector3(0, 0.12, 1.72);
   }
+  if (L.weapon === 'nodachi') {   // iaido: at rest only the hilt shows at the mouth of the scabbard (rig.hilt); the long drawn blade (rig.katana) is in the hand only for the instant of a cut
+    const st = 0xdfe4ee, dkh = 0x15121c, hd = 0.4 * b, hk = kit(), kk = kit(), wrap = 0x6a5aa0;
+    const hilt = grp(body, -hd, 0.34, 0.38); hilt.rotation.x = -0.42;
+    hk.y(0.1, 0.1, 0.03, 8, met, 0, 0, 0, HPI).b(0.06, 0.07, 0.46, dkh, 0, 0, 0.25).b(0.07, 0.08, 0.04, met, 0, 0, 0.49).b(0.02, 0.2, 0.02, GL, 0, -0.06, 0.52); for (let i = 0; i < 5; i++) hk.b(0.065, 0.075, 0.025, wrap, 0, 0, 0.06 + i * 0.08, 0, 0, i % 2 ? 0.6 : -0.6); hk.into(hilt, mat, gmat); rig.hilt = hilt;
+    const kt = grp(handR, 0, 0, 0);
+    kk.b(0.06, 0.07, 0.46, dkh, 0, 0, -0.16).b(0.07, 0.08, 0.04, met, 0, 0, -0.4).y(0.11, 0.11, 0.03, 8, met, 0, 0, 0.08, HPI)
+      .b(0.032, 0.09, 0.8, st, 0, 0, 0.5).b(0.03, 0.085, 0.7, st, 0, 0.03, 1.24, -0.06).b(0.028, 0.08, 0.55, st, 0, 0.075, 1.85, -0.1).c(0.04, 0.2, 4, st, 0, 0.11, 2.2, HPI - 0.12, 0, Math.PI / 4)
+      .b(0.036, 0.014, 1.95, { g: 0xc8a8ff }, 0, -0.04, 1.2, -0.05);
+    for (let i = 0; i < 5; i++) kk.b(0.065, 0.075, 0.025, wrap, 0, 0, -0.34 + i * 0.08, 0, 0, i % 2 ? 0.6 : -0.6);
+    kk.into(kt, mat, gmat); kt.visible = false; rig.katana = kt; rig.iai = true; rig.tipR = new THREE.Vector3(0, 0.13, 2.3);
+  }
+  if (L.head === 'tanya') { const e = []; for (const s of [-1, 1]) { const sp = glowSprite(0xffc84a, 0.01); sp.position.set(s * 0.09, 0.018, 0.24); head.add(sp); e.push(sp); } rig.tEyes = e; }
+  if (L.chest === 'field') { const s = glowSprite(L.glow, 0.4); s.position.set(0, 0.86, 0.36 * b); body.add(s); rig.orbG = s; }
   if (L.head === 'akito') {   // a cigarette for the smoke break (rig.cig, hidden until lit) and the future in his right eye (rig.eyeG)
     const cg = grp(head, -0.07, -0.135, 0.21), kc = kit(); cg.rotation.set(0.28, -0.35, 0); kc.y(0.016, 0.016, 0.24, 6, 0xf0ece4, 0, 0, 0.12, HPI).y(0.017, 0.017, 0.06, 6, 0xc98a3a, 0, 0, 0.02, HPI).y(0.017, 0.017, 0.03, 6, { g: 0xff7a2a }, 0, 0, 0.25, HPI); kc.into(cg, mat, gmat);
     const em = glowSprite(0xff7a2a, 0.12); em.position.z = 0.26; cg.add(em); cg.visible = false; rig.cig = cg;
@@ -1040,7 +1128,7 @@ function buildHero(L, teamColor) {
       const w = grp(body, s * 0.14 * b, 0.98, -0.25 * b), k = kit(), seg = (x0, y0, x1, y1, r) => k.y(r * 0.7, r, Math.hypot(x1 - x0, y1 - y0), 5, bone, s * (x0 + x1) / 2, (y0 + y1) / 2, -0.06, 0, 0, Math.atan2(-s * (x1 - x0), y1 - y0));
       seg(0, 0, 0.7, 0.85, 0.055); seg(0.7, 0.85, 1.75, 0.5, 0.045); k.c(0.05, 0.22, 4, bone, s * 0.7, 0.98, -0.06);
       for (let i = 0; i < 8; i++) { const f = i / 7, x = 0.2 + f * 1.5, top = f < 0.33 ? lerp(0.25, 0.82, f / 0.33) : lerp(0.82, 0.5, (f - 0.33) / 0.67), len = lerp(1.25, 0.6, f) * (i % 2 ? 0.86 : 1); k.t(0.26, 0.03, 0.05, 0.02, len, i % 2 ? 0x17161d : 0x0c0c12, s * x, top - len / 2 + 0.04, -0.09 - (i % 2) * 0.03, 0, 0, s * (0.08 + f * 0.5)); }
-      k.into(w, mat, gmat); rig.wings.push(w);
+      k.into(w, mat, gmat); if (L.wingS) w.scale.setScalar(L.wingS); rig.wings.push(w);
     }
   }
   if (L.exo) {   // cyberskeleton: an outer frame around the body with gravity emitters over the shoulders; built hidden, shown while u.exoT lasts
@@ -1132,6 +1220,7 @@ function animHero(u, dt) {
     if (wc === 'ghoul') { lL = lR = 0.35; kL = kR = 0.5; aL = aR = 0.5; eL = eR = -0.4; brx = 0.25; by = 0; }   // it does not walk, it glides
   } else { by = Math.sin(t * 2 + u.id) * 0.03; aL += Math.sin(t * 1.6 + u.id) * 0.05; aR -= Math.sin(t * 1.6 + u.id) * 0.05; hy = Math.sin(t * 0.7 + u.id * 1.3) * 0.14; brx = Math.sin(t * 2 + u.id) * 0.015; }
   if (u.spinning) { aL = -1.5; aR = -1.5; eL = eR = -0.1; brx = 0.1; }
+  if (u.flyT > t) { lL = lR = 0.5; kL = kR = 0.55; brx = 0.32; aL = aR = 0.45; eL = eR = -0.35; by = Math.sin(t * 5 + u.id) * 0.05; }   // on the wing: legs trailing, leaning into the flight
   if (wc === 'ghoul') brx += 0.2;
   if (r.hunch) { brx += r.hunch; hx -= r.hunch * 0.9; }   // an old back: bent forward, the head lifted to look ahead
   if (a.atkT > 0) {
@@ -1271,6 +1360,32 @@ function animHero(u, dt) {
       // the finale: the pistol raised before the face as the crystal gathers, then levelled and fired
       case 'finale': { const q = Math.min(1, p / 0.2), lv = p > 0.5 ? Math.min(1, (p - 0.5) / 0.08) : 0, kk = p > 0.6 ? Math.max(0, 1 - (p - 0.6) / 0.3) : 0, o = p > 0.9 ? (p - 0.9) / 0.1 : 0;
         aR = lerp(lerp(-0.25, -1.05, q), -1.55, lv) * (1 - o) + 0.45 * kk; eR = lerp(lerp(-2.0, -2.2, q), -0.05, lv); wR = lerp(lerp(0.68, 0.15, q), 1.5, lv) - 0.5 * kk; aL = lerp(0.12, -1.2, lv) * (1 - o); eL = lerp(-0.4, -0.3, lv); bry = 0.4 * lv * (1 - o); hx = -0.2 * q * (1 - lv); kick = kk; break; }
+      // the hands of the abyss: the right hand raised, then driven down to the ground, the body dropping after it
+      case 'grasp': { const up = p < 0.35 ? easeOut(p / 0.35) : 0, dn = p >= 0.35 ? (p < 0.5 ? (p - 0.35) / 0.15 : 1 - (p - 0.5) / 0.5) : 0; aR = -2.6 * up - 1.0 * dn; eR = -0.4 * up - 0.1 * dn; aL = 0.3 * up - 0.4 * dn; eL = -0.6; brx = -0.15 * up + 0.6 * dn; hx = -0.2 * up + 0.2 * dn; kL = kR = 0.06 + 0.7 * dn; lL = lR = -0.35 * dn; by -= 0.3 * dn; break; }
+      // the cross: a cut down from one shoulder, the blade whipped back up, a second cut down from the other
+      case 'cross': {
+        const first = p < 0.48, q = first ? p / 0.48 : (p - 0.48) / 0.52, sd = first ? 1 : -1;
+        aR = q < 0.42 ? -2.9 * easeOut(q / 0.42) : (q < 0.66 ? lerp(-2.9, -0.4, (q - 0.42) / 0.24) : lerp(-0.4, -0.6, (q - 0.66) / 0.34)); eR = q < 0.42 ? -1.4 * easeOut(q / 0.42) : -0.1;
+        bry = sd * (q < 0.42 ? -0.6 * easeOut(q / 0.42) : (q < 0.66 ? lerp(-0.6, 0.75, (q - 0.42) / 0.24) : 0.75 * (1 - (q - 0.66) / 0.34))); brx = q > 0.42 ? 0.25 : 0; wR = q < 0.42 ? -0.4 : 0.5; kL = kR = 0.06 + (q > 0.42 ? 0.25 : 0); aL = -0.4; eL = -0.8; break;
+      }
+      // taking wing: a crouch, then thrown up with the arms swept back
+      case 'soar': { const q = p < 0.4 ? easeOut(p / 0.4) : 1, c = p < 0.4 ? 1 - q : 0; kL = kR = 0.06 + 0.8 * c; lL = lR = -0.4 * c; by -= 0.25 * c; aL = aR = 0.7 * q; eL = eR = -0.3; brx = 0.4 * c - 0.2 * q; hx = -0.3 * q; break; }
+      // sunder: both hands thrust at the victim, then torn back to the chest with the soul in them
+      case 'sunder': { const q = Math.min(1, p / 0.2), rel = p > 0.55 ? Math.min(1, (p - 0.55) / 0.12) : 0, o = p > 0.85 ? (p - 0.85) / 0.15 : 0; aL = aR = lerp(lerp(0, -1.5, q), 0.3, rel) * (1 - o); eL = eR = lerp(-0.05, -1.9, rel) * (1 - o) - 0.28 * o; brx = lerp(0.15 * q, -0.3, rel) * (1 - o); hx = lerp(0.1 * q, -0.45, rel) * (1 - o); bry = Math.sin(t * 40) * 0.04 * q * (1 - rel); kL = kR = 0.06 + 0.3 * q; break; }
+      // a prayer: the head bowed over the orb, then lifted with burning eyes
+      case 'pray': { const q = Math.min(1, p / 0.2), up = p > 0.7 ? Math.min(1, (p - 0.7) / 0.15) : 0; hx = 0.45 * q * (1 - up) - 0.25 * up; brx = 0.22 * q * (1 - up) - 0.08 * up; by -= 0.05 * q * (1 - up); break; }
+      // the dive: folded forward, then flung out level
+      case 'dive': { const q = Math.sin(Math.PI * p); brx = 0.7 * q; hx = -0.3 * q; lL = lR = 0.5 * q; kL = kR = 0.3 * q; break; }
+      // deus vult: the head thrown back to the sky while the great rifle forms, then the whole body braced against the shot
+      case 'deus': { const q = Math.min(1, p / 0.15), sh = p > 0.76 && p < 0.95 ? 1 - (p - 0.76) / 0.19 : 0; hx = -0.4 * q * (1 - sh); brx = -0.15 * q + 0.3 * sh; by += 0.12 * q; kick = sh; bry = Math.sin(t * 30) * 0.02 * q; break; }
+      // iai: low with the hand at the hilt, then the draw and the cut in one flash, the blade held out for a breath
+      case 'iai': { const q = p < 0.3 ? easeOut(p / 0.3) : 1, cut = p > 0.3 ? Math.min(1, (p - 0.3) / 0.12) : 0, o = p > 0.75 ? (p - 0.75) / 0.25 : 0;
+        aR = lerp(lerp(0, 0.35, q), -1.5, cut) * (1 - o); eR = lerp(lerp(-0.28, -1.7, q), -0.05, cut) * (1 - o) - 0.28 * o; wR = lerp(0, 1.4, cut) * (1 - o); bry = lerp(-0.6 * q, 0.75, cut) * (1 - o); brx = (0.3 * q + 0.2 * cut) * (1 - o);
+        kL = kR = 0.06 + 0.55 * q * (1 - o); lL = -0.4 * q * (1 - o); lR = 0.25 * q * (1 - o); by -= 0.18 * q * (1 - o); aL = -0.3 * q; eL = -1.3 * q; break; }
+      // a flick of the blade: raised upright before the face, snapped down
+      case 'flick': { const q = p < 0.35 ? easeOut(p / 0.35) : 1, dn = p > 0.35 ? Math.min(1, (p - 0.35) / 0.12) : 0, o = p > 0.7 ? (p - 0.7) / 0.3 : 0; aR = lerp(-2.5 * q, -0.6, dn) * (1 - o); eR = -0.2; wR = lerp(-0.3, 0.6, dn); brx = 0.2 * dn * (1 - o); hx = -0.15 * q * (1 - dn); aL = -0.3 * q; eL = -1.2 * q; break; }
+      // the world cut: a long still crouch with the hand at the hilt, the blade never seen; the guard clicks home and he rises
+      case 'sheathe': { const q = Math.min(1, p / 0.15), o = p > 0.8 ? (p - 0.8) / 0.2 : 0, sh = p > 0.58 && p < 0.64 ? 1 : 0; aR = 0.35 * q * (1 - o); eR = -1.75 * q * (1 - o) - 0.28 * o; aL = 0.1 * q; eL = -1.4 * q * (1 - o) - 0.28 * o; bry = -0.55 * q * (1 - o) + 0.15 * sh; brx = 0.35 * q * (1 - o); hx = 0.25 * q * (1 - o); kL = kR = 0.06 + 0.75 * q * (1 - o); lL = -0.5 * q * (1 - o); lR = 0.3 * q * (1 - o); by -= 0.3 * q * (1 - o); break; }
       // two fingers raised before the face
       case 'sign': aR = -0.95; eR = -1.9; aL = 0.25; eL = -0.35; hx = 0.08; wR = -0.2; break;
       // hands drawn apart, brought together in front of the chest, then the right hand drives the sphere forward
@@ -1310,7 +1425,8 @@ function animHero(u, dt) {
   if (r.spin) { const hot = u.hot > t; r.spin.rotation.y += dt * (hot ? 16 : 2.4); r.core.scale.setScalar(hot ? 2.6 + Math.sin(t * 30) * 0.5 : 1.5 + Math.sin(t * 3 + u.id) * 0.15); }
   if (r.muzzle) r.muzzle.scale.setScalar(0.9 + kick * 2.6 + (u.hot > t ? 0.5 : 0));
   if (r.kag) animKagune(u, r, a, t, dt);
-  if (r.wings) { const f = (u.moving ? 0.55 : 0.2) + Math.sin(t * (u.moving ? 7 : 2.2) + u.id) * 0.16 + (a.castT > 0 ? -0.5 * Math.sin(Math.PI * (1 - a.castT / a.castDur)) : 0); r.wings[0].rotation.y = -f; r.wings[1].rotation.y = f; }
+  if (r.wings && u.flyT > t) { const f = 0.75 + Math.sin(t * 11 + u.id) * 0.55; r.wings[0].rotation.y = -f; r.wings[1].rotation.y = f; }
+  else if (r.wings) { const f = (u.moving ? 0.55 : 0.2) + Math.sin(t * (u.moving ? 7 : 2.2) + u.id) * 0.16 + (a.castT > 0 ? -0.5 * Math.sin(Math.PI * (1 - a.castT / a.castDur)) : 0); r.wings[0].rotation.y = -f; r.wings[1].rotation.y = f; }
   if (r.dial) { const fast = u.hasteT > t, sp = fast ? 10 : 0.5; r.dialM.rotation.z -= dt * sp; r.dialH.rotation.z -= dt * sp / (fast ? 2 : 12); const s = r.dial.scale.x + ((u.zafT > t ? 1.55 : 1) - r.dial.scale.x) * Math.min(1, dt * 6); r.dial.scale.setScalar(s); }
   if (r.mz) { const on = a.atkT > 0 || a.castT > 0 ? kick : 0; r.mz[0].scale.setScalar(a.tw ? 0.1 : 0.1 + on * 2.4); r.mz[1].scale.setScalar(a.tw ? 0.1 + on * 3 : 0.1); }
   if (r.spineG) r.spineG.scale.setScalar(u.sandyT > t ? 2.8 + Math.sin(t * 40) * 0.5 : 1.1 + Math.sin(t * 3 + u.id) * 0.1);
@@ -1338,6 +1454,9 @@ function animHero(u, dt) {
   if (r.pmz) r.pmz.scale.setScalar(0.1 + kick * 2.6);
   if (r.geassEye) r.geassEye.scale.setScalar(u.geassCast > t ? 0.9 + Math.sin(t * 30) * 0.25 : 0.16 + Math.sin(t * 2.6 + (u.id || 0)) * 0.03);
   if (r.hmask) r.hmask.visible = u.hollowT > t;
+  if (r.iai) { const cp = a.castT > 0 ? 1 - a.castT / a.castDur : -1, out = a.atkT > 0 || (cp >= 0 && (a.castType === 'iai' ? cp > 0.28 : a.castType !== 'sheathe')) || u.drawT > t; if (r.katana.visible !== out) { r.katana.visible = out; r.hilt.visible = !out; } }   // the blade is out only for the instant of a cut
+  if (r.tEyes) { const s = u.prayT > t ? 0.16 + Math.sin(t * 14) * 0.03 : 0.01; for (const e of r.tEyes) e.scale.setScalar(s); }
+  if (r.orbG) r.orbG.scale.setScalar(0.35 + Math.sin(t * 3 + (u.id || 0)) * 0.05 + (u.prayT > t ? 0.6 + Math.sin(t * 20) * 0.1 : 0) + (a.castT > 0 ? 0.7 : 0));
   if (r.orbit) r.orbit.rotation.y += dt * 1.6;
   if (r.orb) r.orb.position.y += (1.05 + Math.sin(t * 2.4) * 0.12 - r.orb.position.y) * 0.2;
 }

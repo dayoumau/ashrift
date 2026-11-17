@@ -614,15 +614,15 @@ HEROES.push(
         }
       },
       {
-        key: 'W', name: 'Деконструкция', icon: 'carshatter', cd: 10, cost: 50, range: 0, ind: { type: 'self', r: 11 }, anim: 'snap', animDur: 0.45, lock: 0.15, ai: { t: 'shatter', r: 11 },
-        desc: 'Щелчок пальцами — и кристаллы Карлотты во всех врагах в радиусе 11 взрываются изнутри ледяными шипами: физический урон за каждый кристалл и замедление на 30% на 1.5 сек. Если кристаллов ни в ком нет, умение не применяется.',
+        key: 'W', name: 'Деконструкция', icon: 'carshatter', cd: 10, cost: 50, range: 0, ind: { type: 'self', r: 3 }, anim: 'snap', animDur: 0.45, lock: 0.15, ai: { t: 'shatter', r: 400 },
+        desc: 'Щелчок пальцами — и кристаллы Карлотты во всех врагах, где бы те ни были, взрываются изнутри ледяными шипами: физический урон за каждый кристалл и замедление на 30% на 1.5 сек. Если кристаллов ни в ком нет, умение не применяется.',
         cast(h) {
-          const list = []; for (const u of G.units) if (u.alive && !u.struct) { const b = u.buffs.find(q => q.id === 'cry' + h.id); if (b && udist(h, u) < 11 + u.radius) list.push([u, b]); }
+          const list = []; for (const u of G.units) if (u.alive && !u.struct) { const b = u.buffs.find(q => q.id === 'cry' + h.id); if (b) list.push([u, b]); }
           if (!list.length) { if (h === G.player) UI.msg('Ни в ком нет кристаллов'); return false; }
           const per = D(h, 30, 7, 0.36); SFX.at('cast', h.x, h.z, 0.5);
           for (const [u, b] of list) {
             const n = b.stacks || 1; b.dead = true;
-            if (FX.near(u.x, u.z, 55)) FX.beam(h.x, h.z, u.x, u.z, { color: CAR.c, w: 0.08, life: 0.15, y: 1.4 });
+            if (FX.near(u.x, u.z, 55) && udist(h, u) < 30) FX.beam(h.x, h.z, u.x, u.z, { color: CAR.c, w: 0.08, life: 0.15, y: 1.4 });
             after(0.12, () => { if (!u.alive) return; damage(h, u, per * n, 0); slow(h, u, 0.3, 1.5, 'carslow'); carBurst(u.x, u.z, n); SFX.at('shatter', u.x, u.z, 0.5 + n * 0.08); });
           }
         }

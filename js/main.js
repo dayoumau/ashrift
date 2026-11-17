@@ -53,15 +53,18 @@ function buildPost() {
     }
     if (warp) { warpRT = new THREE.WebGLRenderTarget(4, 4, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, type: THREE.HalfFloatType, depthBuffer: false, stencilBuffer: false }); FX.warpOn = true; }
     finalPass = new THREE.ShaderPass({
-        uniforms: { tDiffuse: { value: null }, tWarp: { value: warpRT ? warpRT.texture : null }, uWarp: { value: 0 }, uTone: { value: hdr ? 1 : 0 }, uDim: { value: 0 }, uDmg: { value: 0 }, uDead: { value: 0 }, uAsp: { value: 1.6 }, uCA: { value: 0 }, uStop: { value: 0 }, uInv: { value: 0 }, uSand: { value: 0 } },
+        uniforms: { tDiffuse: { value: null }, tWarp: { value: warpRT ? warpRT.texture : null }, uWarp: { value: 0 }, uTone: { value: hdr ? 1 : 0 }, uDim: { value: 0 }, uDmg: { value: 0 }, uDead: { value: 0 }, uAsp: { value: 1.6 }, uCA: { value: 0 }, uStop: { value: 0 }, uInv: { value: 0 }, uSand: { value: 0 }, uCut: { value: [new THREE.Vector4(), new THREE.Vector4(), new THREE.Vector4()] } },
         vertexShader: 'varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }',
-        fragmentShader: `uniform sampler2D tDiffuse, tWarp; uniform float uDmg, uDead, uAsp, uCA, uStop, uInv, uSand, uWarp, uTone, uDim; varying vec2 vUv;
+        fragmentShader: `uniform sampler2D tDiffuse, tWarp; uniform float uDmg, uDead, uAsp, uCA, uStop, uInv, uSand, uWarp, uTone, uDim; uniform vec4 uCut[3]; varying vec2 vUv;
           vec3 tone(vec3 c){ float m=max(c.r,max(c.g,c.b)); if(m>.8){ float f=.8+.2*(1.-exp(-(m-.8)*5.)); c*=f/m; c=mix(c,vec3(f),smoothstep(2.5,14.,m)*.7); } return c; }
           void main(){ vec2 uv=vUv, wv=vec2(0.);
             if(uWarp>.5){ wv=texture2D(tWarp,vUv).rg*.02; wv.x/=uAsp; uv-=wv; }
+            float cv=0., ce=0.;
+            for(int i=0;i<3;i++){ vec4 q=uCut[i]; if(q.w>0.){ vec2 n=vec2(cos(q.z),sin(q.z)), d=vUv-q.xy; d.x*=uAsp; float s=dot(d,n), a=abs(s), sg=s<0.?-1.:1.; vec2 off=(vec2(-n.y,n.x)*.7+n*.5)*sg*q.w; off.x/=uAsp; uv-=off; cv=max(cv,1.-step(q.w*.5,a)); ce=max(ce,exp(-pow((a-q.w*.5)/(.0012+q.w*.07),2.))); } }
             vec2 p=vUv-.5; float r=length(p); vec2 ca=(uv-.5)*(uCA+uSand*1.3)*.007+wv*.3;
             vec4 c=vec4(texture2D(tDiffuse,uv+ca).r,texture2D(tDiffuse,uv).g,texture2D(tDiffuse,uv-ca).b,1.);
             if(uTone>.5) c.rgb=tone(max(c.rgb,0.));
+            c.rgb=mix(c.rgb,vec3(.025,.008,.06),cv); c.rgb+=vec3(.82,.72,1.)*ce*1.5;
             c.rgb*=1.-uDim*.34;
             c.rgb*=mix(.5,1.,smoothstep(.85,.3,r));
             float l=dot(c.rgb,vec3(.3,.59,.11)); c.rgb=mix(vec3(l),c.rgb,1.12-uDead*.85);
@@ -343,6 +346,7 @@ function frame(now) {
     const wn = warpRT && FX.warps.length > 0; U.uWarp.value = wn ? 1 : 0;
     if (wn) { renderer.setRenderTarget(warpRT); renderer.setClearColor(0x000000, 0); renderer.clear(); renderer.render(FX.wscene, camera); renderer.setRenderTarget(null); }
   }
+  if (typeof SCUT !== 'undefined') SCUT.apply(finalPass && finalPass.uniforms.uCut ? finalPass.uniforms.uCut.value : null, play);   // the world cut along lines (Setsuna's ultimate)
   if (G.tinv > 0) G.tinv = Math.max(0, G.tinv - dt * 4);
   // the camera's up vector decides how a sprite's lower half meets the ground (soft particles)
   FXU.uUp.value = camera.matrixWorld.elements[5];

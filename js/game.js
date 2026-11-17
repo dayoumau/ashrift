@@ -106,7 +106,7 @@ const DMG_K = {
   mora: 1.4, nox: 1.65, morg: 1.4, aisa: 1.65, zar: 1.85, fenris: 1.2, reiji: 1.4, yuki: 1.85, cassius: 1.45, ragna: 1.5,
   toplak: 1.45, groh: 1.55, grimm: 1.45, brand: 1.6, oriel: 1.1, nisa: 1.2, lira: 1.25, hald: 1.25, kolomba: 1.35, kostyan: 1.38,
   shiro: 1.15, kaisei: 1.65, umbra: 1.6, rampage: 1.0, jin: 1.6, hikaru: 1.6, dash: 1.2, tokiko: 1.1, riku: 1.2, ashen: 1.3, chess: 1.7, mei: 1.25,
-  kagari: 1.0, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1, frieren: 1.15, lelouch: 1.3, ichigo: 1.36, carlotta: 1.22
+  kagari: 1.0, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1, frieren: 1.15, lelouch: 1.3, ichigo: 1.36, carlotta: 1.22, raul: 1.2, tanya: 0.95, setsuna: 1.25
 };
 const HEAL_K = { oriel: 1.9, hald: 1.5, nisa: 2.3, lira: 2.8, kolomba: 2.0, ashen: 2.6, chess: 1.8, kagari: 1.5, lin: 3.0, kwame: 1.6, agafya: 2.2, frieren: 1.6, lelouch: 1.7 };
 function damage(src, tgt, amt, type, o) {
@@ -295,7 +295,10 @@ function revive(h, hpK) {
   addBuff(h, { id: 'spawn', dur: 1.5, invuln: true }); if (h.isPlayer) { SFX.play('heal'); G.camSnap = true; }
   return true;
 }
-function setMove(h, x, z) { const p = NAV.path(h.x, h.z, x, z); h.path = p; h.pathI = 0; }
+function setMove(h, x, z) {
+  if (h.flyT > G.time) { h.path = [{ x: clamp(x, -94, 94), z: clamp(z, -94, 94) }]; h.pathI = 0; return; }   // on the wing (Raul): straight over walls and cliffs
+  const p = NAV.path(h.x, h.z, x, z); h.path = p; h.pathI = 0;
+}
 function moveAlong(u, dt) {
   if (!u.path || u.pathI >= u.path.length) { u.moving = false; u.path = null; return false; }
   let rem = u.ms * dt;
