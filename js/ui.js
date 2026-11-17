@@ -12,7 +12,7 @@ const UI = {
     $('resume').onclick = () => togglePause(false); $('quit').onclick = () => { togglePause(false); toMenu(); }; $('again').onclick = () => toMenu();
     // one volume, two sliders: in the pause box and in the menu settings
     for (const id of ['vol', 'vol-m']) { $(id).value = Math.round(SFX.vol * 100); $(id).oninput = e => { SFX.setVol(e.target.value / 100); for (const o of ['vol', 'vol-m']) if (o !== id) $(o).value = e.target.value; saveGfx(); }; }
-    this.buildGfx($('gfx-menu'), 'gm-'); this.buildGfx($('gfx-pause'), 'gp-'); this.syncGfx();
+    this.buildGfx($('gfx-menu'), 'gm-'); this.buildGfx($('gfx-pause'), 'gp-'); this.buildGfx($('opt-menu'), 'om-', OPT_LIST); this.buildGfx($('opt-pause'), 'op-', OPT_LIST); this.syncGfx();
     for (const d of [0, 1, 2]) $('d' + d).onclick = () => { this.diff = d; for (const k of [0, 1, 2]) $('d' + k).classList.toggle('on', k === d); SFX.init(); SFX.play('ui'); };
     for (const l of LANE_NAMES) $('l-' + l).onclick = () => { this.lane = l; for (const k of LANE_NAMES) $('l-' + k).classList.toggle('on', k === l); SFX.init(); SFX.play('ui'); };
     $('play').onclick = () => {
@@ -32,6 +32,7 @@ const UI = {
     $('profline').addEventListener('click', e => { if (e.target && e.target.id === 'savebtn') { SFX.init(); SFX.play('ui'); this.openCode(); } });
     $('sc-x').onclick = () => { $('savecode').hidden = true; };
     $('sc-copy').onclick = () => this.copyCode(); $('sc-load').onclick = () => this.loadCode();
+    PROF.init();
     for (const r of ['dmg', 'sup']) $('r-' + r).onclick = () => { this.setRole(r); SFX.init(); SFX.play('ui'); };
     for (const l of LANE_NAMES) $('l-' + l).addEventListener('click', () => this.setRole(this.role));
     $('rnd').onclick = () => { SFX.init(); SFX.play('ui'); this.pick(pick(HEROES).id); };
@@ -86,8 +87,8 @@ const UI = {
     pv.ring.rotation.y += dt * 0.4; pv.r.render(pv.sc, pv.cam);
   },
   /* ----- graphics settings: the same list in the menu ('gm-') and in the pause box ('gp-') ----- */
-  buildGfx(box, pre) {
-    GFX_LIST.forEach(([k, label, opts, hint]) => {
+  buildGfx(box, pre, list) {
+    (list || GFX_LIST).forEach(([k, label, opts, hint]) => {
       const row = document.createElement('div'); row.className = 'grow' + (k === 'preset' ? ' wide' : ''); if (hint) row.title = hint; row.innerHTML = `<span>${label}${hint ? `<small>${hint}</small>` : ''}</span><div class="seg"></div>`;
       opts.forEach(([v, text], i) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = text; b.id = pre + k + i; b.onclick = () => { setGfx(k, v); applyGfx(); this.syncGfx(); SFX.init(); SFX.play('ui'); }; row.lastChild.appendChild(b); });
       box.appendChild(row);
@@ -95,6 +96,7 @@ const UI = {
   },
   syncGfx() {
     for (const pre of ['gm-', 'gp-']) for (const [k, , opts] of GFX_LIST) opts.forEach(([v], i) => { const b = $(pre + k + i); b.classList.toggle('on', GFX[k] === v); if ((k === 'hdr' || k === 'warp') && v === 1) b.disabled = !hdrOK || !postOK; });
+    for (const pre of ['om-', 'op-']) for (const [k, , opts] of OPT_LIST) opts.forEach(([v], i) => { const b = $(pre + k + i); if (b) b.classList.toggle('on', GFX[k] === v); });
     const note = !postOK ? 'Постобработка недоступна: не загрузились её модули, игра рисуется напрямую.' : (!hdrOK ? 'Эта видеокарта или браузер не дают буфер с плавающей точкой: HDR и искажение воздуха отключены.' : (GFX.preset === 'custom' ? 'Свой набор настроек.' : ''));
     $('gfxnote-m').textContent = $('gfxnote-p').textContent = note;
   },
@@ -180,15 +182,15 @@ const UI = {
     for (const pre of ['km-', 'kp-']) for (const [a] of BIND_LIST) { const b = $(pre + a); if (!b) continue; const cap = this.capture === a && this.capEl === b; b.textContent = cap ? 'нажмите клавишу…' : kl(a); b.classList.toggle('cap', cap); }
   },
   buildMenu() {
-    const ro = $('roster'), rf = $('rolef'), roles = [['all', 'Все'], ['front', 'Танки и бойцы'], ['assassin', 'Убийцы'], ['mage', 'Маги'], ['marks', 'Стрелки'], ['support', 'Поддержка']];
+    const ro = $('roster'), rf = $('rolef'), roles = [['all', 'Все'], ['fav', '★ Избранные'], ['front', 'Танки и бойцы'], ['assassin', 'Убийцы'], ['mage', 'Маги'], ['marks', 'Стрелки'], ['support', 'Поддержка']];
     roles.forEach(([id, name], i) => {
       const b = document.createElement('button'); b.type = 'button'; b.textContent = name; b.id = 'role-' + id; if (!i) b.className = 'on';
-      b.onclick = () => { for (const r of roles) $('role-' + r[0]).classList.toggle('on', r[0] === id); for (const h of HEROES) $('card-' + h.id).hidden = id !== 'all' && h.role !== id; SFX.init(); SFX.play('ui'); };
+      b.onclick = () => { for (const r of roles) $('role-' + r[0]).classList.toggle('on', r[0] === id); for (const h of HEROES) $('card-' + h.id).hidden = id === 'fav' ? !PROFILE.fav.includes(h.id) : (id !== 'all' && h.role !== id); SFX.init(); SFX.play('ui'); };
       rf.appendChild(b);
     });
     for (const def of HEROES) {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'card'; b.id = 'card-' + def.id; b.style.setProperty('--hc', css(def.look.glow));
-      b.innerHTML = `<img src="${this.portraits[def.id] || ''}" alt="${def.name}"><span class="nm"><b>${def.name}</b><i>${def.roleName}</i></span>`;
+      b.innerHTML = `<img src="${this.portraits[def.id] || ''}" alt="${def.name}"><i class="fstar">★</i><span class="nm"><b>${def.name}</b><i>${def.roleName}</i></span>`;
       b.onclick = () => { SFX.init(); SFX.play('ui'); this.pick(def.id); }; b.ondblclick = () => { SFX.init(); startMatch(def.id, this.diff, this.lane, this.role); };
       ro.appendChild(b);
     }
@@ -208,11 +210,12 @@ const UI = {
   },
   // menu screens: home, modes, play (pick a hero for the chosen mode), heroes, items, map, settings, news
   go(scr) {
-    const M = $('menu'), P = { modes: ['modes'], play: ['heroes'], heroes: ['heroes'], items: ['items'], map: ['map'], settings: ['gfx', 'keys'], news: ['news'] }[scr] || [];
-    const T = { modes: 'Выбор режима', play: this.mode === 'sbx' ? 'Полигон: выбор героя' : 'Бой с ботами: выбор героя', heroes: 'Герои', items: 'Предметы', map: 'Карта и цели', settings: 'Настройки', news: 'Что нового' };
+    const M = $('menu'), P = { modes: ['modes'], play: ['heroes'], heroes: ['heroes'], items: ['items'], map: ['map'], settings: ['gfx', 'keys'], news: ['news'], profile: ['profile'] }[scr] || [];
+    const T = { modes: 'Выбор режима', play: this.mode === 'sbx' ? 'Полигон: выбор героя' : 'Бой с ботами: выбор героя', heroes: 'Герои', items: 'Предметы', map: 'Карта и цели', settings: 'Настройки', news: 'Что нового', profile: 'Профиль' };
     this.scr = scr; M.dataset.scr = scr; M.scrollTop = 0;
     $('home').hidden = scr !== 'home'; $('sub').hidden = scr === 'home';
-    for (const p of ['modes', 'heroes', 'items', 'map', 'keys', 'gfx', 'news']) $('pane-' + p).hidden = !P.includes(p);
+    for (const p of ['modes', 'heroes', 'items', 'map', 'keys', 'gfx', 'news', 'profile']) $('pane-' + p).hidden = !P.includes(p);
+    if (scr === 'profile') PROF.render();
     $('gobar').hidden = scr !== 'play'; $('gobar').classList.toggle('sbx', this.mode === 'sbx'); $('play').textContent = this.mode === 'sbx' ? 'В ПОЛИГОН' : 'В БОЙ';
     $('pickplay').hidden = scr !== 'heroes'; $('subttl').textContent = T[scr] || '';
     if (scr === 'news') { $('tab-news').classList.remove('new'); try { localStorage.setItem('ashrift.seenver', GAME_VER); } catch (e) { } }
@@ -239,7 +242,7 @@ const UI = {
     this.setRole(p.role === 'sup' ? 'sup' : (p.hero ? 'dmg' : this.role)); this.showProfile();
   },
   showProfile() {
-    if (typeof RANKED !== 'undefined') RANKED.show(); const p = PROFILE, el = $('profline'); if (!el) return; const best = Object.keys(p.heroes).sort((a, b) => p.heroes[b].g - p.heroes[a].g)[0], bh = best && HEROES.find(h => h.id === best);
+    if (typeof RANKED !== 'undefined') RANKED.show(); if (typeof PROF !== 'undefined') { PROF.ensure(); PROF.homeCard(); PROF.syncFav(); } const p = PROFILE, el = $('profline'); if (!el) return; const best = Object.keys(p.heroes).sort((a, b) => p.heroes[b].g - p.heroes[a].g)[0], bh = best && HEROES.find(h => h.id === best);
     el.innerHTML = (p.games ? `Матчей: <b>${p.games}</b> · побед: <b>${p.wins}</b> (${Math.round(p.wins / p.games * 100)}%) · MVP: <b>${p.mvp}</b> · У / С / П: <b>${p.kills} / ${p.deaths} / ${p.assists}</b>${bh ? ` · чаще всего: <b>${bh.name}</b> (${p.heroes[best].g})` : ''}` : 'Сыграйте первый матч — здесь появится ваша статистика') +
       ` <span class="savest${SAVE.state !== 'cloud' && !SAVE.localOk && !SAVE.idbOk ? ' bad' : ''}">${SAVE.state !== 'cloud' && !SAVE.localOk && !SAVE.idbOk ? '⚠ прогресс не сохраняется' : ''}<button id="savebtn" type="button">код прогресса</button></span>`;
   },
@@ -266,7 +269,7 @@ const UI = {
     for (const h of HEROES) $('card-' + h.id).classList.toggle('sel', h.id === id);
     const bl = ['Урон', 'Живучесть', 'Контроль', 'Мобильность'], d = $('dossier'); d.style.setProperty('--hc', css(col));
     const build = BUILDS[def.build];
-    $('dinfo').innerHTML = `<h2>${def.name}</h2><div class="ttl">${def.title}</div>
+    $('dinfo').innerHTML = `<h2>${def.name}<button type="button" class="favb" data-fav="${def.id}">☆ В избранное</button></h2><div class="ttl">${def.title}</div>
       <div class="tags"><span class="tag">${def.roleName}</span><span class="tag">${def.stats.range > 5 ? 'Дальний бой' : 'Ближний бой'}</span><span class="dots">Сложность ${[1, 2, 3].map(i => `<s class="${i <= def.diffc ? 'on' : ''}"></s>`).join('')}</span></div>
       <p class="lore">${def.lore}</p>
       <div class="bars">${def.bars.map((v, i) => `<span>${bl[i]}</span><span class="t"><i style="width:${v * 20}%"></i></span>`).join('')}</div>
@@ -275,7 +278,7 @@ const UI = {
     $('dabl').innerHTML = inn + def.abilities.map((a, i) => a ? `<div class="ab"><img src="${iconURL(a.icon, col)}" alt=""><div><h4><kbd data-k="${keys[i]}">${kl(keys[i])}</kbd>${a.name}<small>${i === 3 ? 'ультимейт · с 6 ур. · ' : ''}${a.passive ? 'пассивная' : (a.toggle ? 'включается и выключается' : a.cd + ' сек · ' + (a.costText || a.cost + ' маны'))}</small></h4><p>${a.desc}</p></div></div>` : '').join('');
     $('gohero').innerHTML = `Герой: <b style="color:${css(col)}">${def.name}</b>`;
     for (const it of ITEMS) $('cat-' + it.id).classList.toggle('rec', build.includes(it.id));
-    this.renderRec('cat-', def, null); this.setPreview(def);
+    this.renderRec('cat-', def, null); this.setPreview(def); if (typeof PROF !== 'undefined') PROF.syncFav();
   },
   // world point under a screen position, if that position is over the minimap
   mmAt(cx, cy) { const r = $('mmc').getBoundingClientRect(); if (!r.width || cx < r.left || cx > r.right || cy < r.top || cy > r.bottom) return null; return { x: (cx - r.left) / r.width * 200 - 100, z: (cy - r.top) / r.height * 200 - 100 }; },
@@ -439,7 +442,7 @@ const UI = {
     $('score').hidden = !on || G.state !== 'play';
   },
   table() {
-    const row = h => `<tr class="${h.isPlayer ? 'me' : ''}"><td class="t${h.team}">${h.name}${h.isPlayer ? ' (вы)' : ''} <small style="color:#5d6676">${h.def.roleName}</small></td><td>${h.level}</td><td>${h.kills} / ${h.deaths} / ${h.assists}</td><td>${h.cs}</td><td>${Math.round(h.goldTotal)}</td><td>${Math.round(h.dmgDealt / 100) / 10}к</td><td>${h.items.length}</td></tr>`;
+    const row = h => `<tr class="${h.isPlayer ? 'me' : ''}"><td class="t${h.team}">${h.name}${h.isPlayer ? ' (' + esc(PROF.name()) + ')' : ''} <small style="color:#5d6676">${h.def.roleName}</small></td><td>${h.level}</td><td>${h.kills} / ${h.deaths} / ${h.assists}</td><td>${h.cs}</td><td>${Math.round(h.goldTotal)}</td><td>${Math.round(h.dmgDealt / 100) / 10}к</td><td>${h.items.length}</td></tr>`;
     const hs = G.heroes.slice().sort((a, b) => a.team - b.team || b.kills - a.kills);
     return `<table class="sb num"><tr><th>Герой</th><th>Ур.</th><th>У / С / П</th><th>Миньоны</th><th>Золото</th><th>Урон</th><th>Предм.</th></tr>${hs.map(row).join('')}</table>`;
   },
@@ -450,18 +453,18 @@ const UI = {
     $('endsub').textContent = `Длительность ${m}:${String(s).padStart(2, '0')} · счёт ${G.teams[0].kills} : ${G.teams[1].kills}${G.surrender ? ' · вы сдались' : ''}`;
     // rating of all ten: the best is the MVP, the last one is named too
     const R = matchRatings(), best = R[0], worst = R[R.length - 1], P = G.player, k1 = v => v >= 1000 ? (Math.round(v / 100) / 10) + 'к' : Math.round(v), top = k => G.heroes.slice().sort((a, b) => b[k] - a[k])[0];
-    this.record(); const res = G.ranked && G.ranked.res; $('endrk').innerHTML = res ? RANKED.endHTML(res) + (SAVE.state !== 'cloud' && !SAVE.localOk && !SAVE.idbOk ? '<p class="rolenote" style="color:#ff9a8e">Этот браузер не даёт игре сохранять данные — рейтинг пропадёт при закрытии вкладки. Сохраните «код прогресса» (в меню, под кнопкой «В бой»).</p>' : '') : '';
+    this.record(); const res = G.ranked && G.ranked.res; $('endrk').innerHTML = (PROF.fresh.length ? '<div class="achnew">' + PROF.fresh.map(a => '<span><b>Достижение:</b> ' + esc(a.name) + ' <small>титул «' + esc(a.title) + '»</small></span>').join('') + '</div>' : '') + (res ? RANKED.endHTML(res) + (SAVE.state !== 'cloud' && !SAVE.localOk && !SAVE.idbOk ? '<p class="rolenote" style="color:#ff9a8e">Этот браузер не даёт игре сохранять данные — рейтинг пропадёт при закрытии вкладки. Сохраните «код прогресса» (профиль на главном экране).</p>' : '') : '');
     const why = r => {   // what the rating mostly came from
       const h = r.h, c = [['dmg', 2.8, 'больше всех урона по героям'], ['heal', 1.7, 'лучшая поддержка: лечение, щиты, усиления'], ['tower', 1.1, 'главный разрушитель башен'], ['kda', 2.4, 'почти не умирал и много убивал'], ['part', 1.4, 'участвовал почти во всех убийствах команды'], ['tank', 0.6, 'принял на себя больше всех урона']].map(q => [r.p[q[0]] / q[1], q[2]]).sort((a, b) => b[0] - a[0]);
       return c[0][1] + (c[1][0] > 0.75 ? ' · ' + c[1][1] : '');
     };
     const whyBad = r => { const h = r.h, md = Math.max(...G.heroes.map(o => o.deaths)), lowD = G.heroes.every(o => o.dmgHero >= h.dmgHero); return h.deaths >= md && md >= 4 ? h.deaths + ' смертей — больше всех в матче' : (lowD ? 'меньше всех урона по героям' : (h.kills + h.assists <= 2 ? 'почти не участвовал в убийствах' : 'самый скромный вклад в бой')); };
-    const card = (r, cls, tag, text) => { const h = r.h; return `<div class="ecard ${cls}"><img src="${this.portraits[h.def.id] || ''}" alt=""><div class="ebody"><span class="etag">${tag}</span><b class="t${h.team}">${h.name}${h.isPlayer ? ' <i>(вы)</i>' : ''}</b><small>${h.def.roleName} · ${h.team === G.winner ? 'победители' : 'проигравшие'}</small><p>${text}</p>
+    const card = (r, cls, tag, text) => { const h = r.h; return `<div class="ecard ${cls}"><img src="${this.portraits[h.def.id] || ''}" alt=""><div class="ebody"><span class="etag">${tag}</span><b class="t${h.team}">${h.name}${h.isPlayer ? ' <i>(' + esc(PROF.name()) + ')</i>' : ''}</b><small>${h.def.roleName} · ${h.team === G.winner ? 'победители' : 'проигравшие'}</small><p>${text}</p>
       <div class="estats num"><span><b>${h.kills} / ${h.deaths} / ${h.assists}</b>У / С / П</span><span><b>${k1(h.dmgHero)}</b>урон по героям</span><span><b>${k1(h.healDone)}</b>поддержка</span><span><b>${k1(h.goldTotal)}</b>золото</span></div></div><div class="escore num">${r.score.toFixed(1)}<small>рейтинг</small></div></div>`; };
     $('endcards').innerHTML = card(best, 'mvp', '★ MVP МАТЧА · лучший игрок', why(best)) + card(worst, 'worst', '▼ ХУДШИЙ ИГРОК МАТЧА', whyBad(worst));
     const aw = [['dmgHero', 'Больше всех урона'], ['healDone', 'Лучшая поддержка'], ['dmgTower', 'Гроза башен'], ['dmgTaken', 'Живой щит'], ['kills', 'Больше всех убийств']].map(([k, t]) => { const h = top(k); return h[k] > 0 ? `<span class="eaw"><small>${t}</small><b class="t${h.team}">${h.name}</b><i class="num">${k === 'kills' ? h[k] : k1(h[k])}</i></span>` : ''; }).join('');
     $('endaw').innerHTML = aw;
-    const row = r => { const h = r.h; return `<tr class="${h.isPlayer ? 'me' : ''}"><td class="t${h.team}">${r === best ? '★ ' : (r === worst ? '▼ ' : '')}${h.name}${h.isPlayer ? ' (вы)' : ''} <small style="color:#5d6676">${h.def.roleName}</small></td><td><b>${r.score.toFixed(1)}</b></td><td>${h.level}</td><td>${h.kills} / ${h.deaths} / ${h.assists}</td><td>${k1(h.dmgHero)}</td><td>${k1(h.healDone)}</td><td>${k1(h.dmgTower)}</td><td>${k1(h.dmgTaken)}</td><td>${h.cs}</td><td>${k1(h.goldTotal)}</td></tr>`; };
+    const row = r => { const h = r.h; return `<tr class="${h.isPlayer ? 'me' : ''}"><td class="t${h.team}">${r === best ? '★ ' : (r === worst ? '▼ ' : '')}${h.name}${h.isPlayer ? ' (' + esc(PROF.name()) + ')' : ''} <small style="color:#5d6676">${h.def.roleName}</small></td><td><b>${r.score.toFixed(1)}</b></td><td>${h.level}</td><td>${h.kills} / ${h.deaths} / ${h.assists}</td><td>${k1(h.dmgHero)}</td><td>${k1(h.healDone)}</td><td>${k1(h.dmgTower)}</td><td>${k1(h.dmgTaken)}</td><td>${h.cs}</td><td>${k1(h.goldTotal)}</td></tr>`; };
     $('endb').innerHTML = `<table class="sb num"><tr><th>Герой</th><th>Рейтинг</th><th>Ур.</th><th>У / С / П</th><th>Урон по героям</th><th>Поддержка</th><th>По башням</th><th>Получено</th><th>Миньоны</th><th>Золото</th></tr>${R.slice().sort((a, b) => a.h.team - b.h.team || b.score - a.score).map(row).join('')}</table>`;
     SFX.play(win ? 'victory' : 'defeat'); if (best.h === P) setTimeout(() => SFX.play('mvp'), 1100);
   },
@@ -471,6 +474,7 @@ const UI = {
     const win = G.winner === P.team, R = matchRatings(), me = R.find(r => r.h === P), pr = PROFILE, hs = pr.heroes[P.def.id] || (pr.heroes[P.def.id] = { g: 0, w: 0 });
     pr.games++; hs.g++; if (win) { pr.wins++; hs.w++; } if (R[0].h === P) pr.mvp++; pr.kills += P.kills; pr.deaths += P.deaths; pr.assists += P.assists;
     if (G.ranked && typeof RANKED !== 'undefined') RANKED.settle(win, me ? me.score : 5, !!G.surrender);   // settle saves too
+    PROF.onMatch(P, win, me, R);
     SAVE.touch(); this.showProfile();
   },
   /* ----- per-frame ----- */

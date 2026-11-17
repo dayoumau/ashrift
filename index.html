@@ -316,6 +316,65 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
 .mode.rk .mgo{background:linear-gradient(#b99aff,#7f5ad8);color:#0e0a18}
 .mgo:hover{filter:brightness(1.1)}
 @media (max-width:860px){.modes{grid-template-columns:1fr}.mode{min-height:0}}
+/* ---------- profile ---------- */
+.ava{position:relative;display:inline-block;flex:none;border:2px solid var(--fc,var(--line2));box-shadow:0 0 0 1px rgba(0,0,0,.6),0 0 18px -4px var(--fc,transparent);background:#0c0e13;overflow:hidden}
+.ava img{width:100%;height:100%;object-fit:cover;display:block}
+.hm-prof{display:flex;gap:14px;align-items:center;background:transparent;border:0;padding:0;text-align:left;color:var(--fg)}
+.hm-prof .hp-id{display:flex;flex-direction:column;gap:2px;min-width:0}
+.hm-prof b{font-family:var(--display);font-weight:400;font-size:20px;letter-spacing:.05em;color:#f1e6d4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hm-prof i{font-style:normal;color:var(--ember);font-size:12.5px;letter-spacing:.04em}
+.hm-prof small{color:var(--mut);font-size:11.5px}
+.hm-prof:hover b{color:var(--ember)}
+.pf-top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:22px;align-items:center;background:linear-gradient(90deg,rgba(24,28,38,.95),rgba(14,17,23,.9));border:1px solid var(--line2);border-left:3px solid var(--fc);padding:18px 20px}
+.pf-id{display:flex;flex-direction:column;gap:6px;min-width:0}
+.pf-nick{display:flex;align-items:center;gap:8px}
+.pf-nick input{background:transparent;border:0;border-bottom:1px dashed var(--line2);color:#f1e6d4;font-family:var(--display);font-size:30px;letter-spacing:.05em;padding:2px 0;width:min(360px,100%);outline:0}
+.pf-nick input:focus{border-bottom-color:var(--ember)}
+.pf-nick span{color:var(--dim);font-size:16px}
+.pf-title{color:var(--fc);letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+.pf-rank{display:flex;gap:10px;align-items:center}.pf-rank small{color:var(--mut)}
+.pf-tiles{display:grid;grid-template-columns:repeat(5,auto);gap:6px}
+.pf-tiles span{display:flex;flex-direction:column;align-items:center;gap:2px;background:rgba(10,12,17,.6);border:1px solid var(--line);padding:9px 12px;color:var(--mut);font-size:11px;text-align:center}
+.pf-tiles b{color:var(--fg);font-size:17px;font-weight:600}
+.pf-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.pf-box{background:var(--panel);border:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pf-avas{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:5px;max-height:262px;overflow-y:auto}
+.pf-avas button{padding:0;border:1px solid var(--line);background:#0c0e13;aspect-ratio:5/6;overflow:hidden}
+.pf-avas img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.8) brightness(.85)}
+.pf-avas button:hover img,.pf-avas button.on img{filter:none}.pf-avas button.on{border-color:var(--ember);box-shadow:0 0 0 1px var(--ember)}
+.pf-frames{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:6px}
+.pf-frames button{position:relative;display:flex;align-items:center;gap:8px;background:#0c0e13;border:1px solid var(--line);padding:7px 9px;font-size:12px;color:var(--fg);text-align:left}
+.pf-frames i{width:16px;height:16px;border:2px solid var(--fc);box-shadow:0 0 8px -1px var(--fc);flex:none}
+.pf-frames button.on{border-color:var(--fc);background:rgba(255,255,255,.04)}
+.pf-frames button.lock{opacity:.45;cursor:not-allowed}.pf-frames em{font-style:normal;margin-left:auto;font-size:11px}
+.pf-titles{display:flex;flex-wrap:wrap;gap:6px}
+.pf-titles button{background:#0c0e13;border:1px solid var(--line);padding:6px 11px;font-size:12px;color:var(--mut)}
+.pf-titles button.on{border-color:var(--ember);color:var(--ember)}
+.pf-favs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+.pf-fav{display:flex;flex-direction:column;gap:2px;background:#0c0e13;border:1px solid var(--line);padding:0 0 8px;text-align:left;overflow:hidden}
+.pf-fav img{width:100%;aspect-ratio:5/4;object-fit:cover;object-position:top;display:block}
+.pf-fav b{padding:4px 8px 0;font-family:var(--display);font-weight:400;font-size:14px;color:var(--hc)}.pf-fav small{padding:0 8px;color:var(--mut);font-size:11px}
+.pf-fav:hover{border-color:var(--hc)}
+.pf-empty{margin:0;color:var(--mut);font-size:13px}
+.pf-ach{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.pf-a{display:flex;gap:10px;align-items:center;background:#0c0e13;border:1px solid var(--line);padding:8px 10px;opacity:.6}
+.pf-a.got{opacity:1;border-color:rgba(236,197,111,.45);background:linear-gradient(90deg,rgba(236,197,111,.08),transparent)}
+.pf-a img{width:40px;height:40px;flex:none}
+.pf-a div{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1}
+.pf-a b{font-size:13px;color:var(--fg)}.pf-a span{font-size:11.5px;color:var(--mut);line-height:1.35}.pf-a small{font-size:11px;color:var(--dim)}.pf-a.got small{color:#c9a85a}
+.pf-a i{display:block;height:3px;background:var(--line);margin-top:4px;position:relative}.pf-a i::after{content:'';position:absolute;left:0;top:0;bottom:0;width:var(--w);background:var(--ember)}
+.pf-t td,.pf-t th{padding:5px 8px}.pf-t .pw{color:#7dffa8}.pf-t .pl{color:#ff8a80}.pf-t .rkm{color:#b48cff;font-size:10.5px}
+@media (max-width:980px){.pf-top{grid-template-columns:auto minmax(0,1fr)}.pf-tiles{grid-column:1/-1;grid-template-columns:repeat(5,minmax(0,1fr))}.pf-cols{grid-template-columns:1fr}}
+.card .fstar{position:absolute;top:5px;right:6px;font-style:normal;font-size:15px;color:#ffd36a;text-shadow:0 0 6px rgba(0,0,0,.9);display:none}
+.card.fav .fstar{display:block}
+.favb{margin-left:12px;vertical-align:middle;background:transparent;border:1px solid var(--line2);color:var(--mut);font-family:var(--body);font-size:12px;letter-spacing:.02em;padding:4px 10px}
+.favb:hover{border-color:#ffd36a;color:#ffd36a}.favb.on{border-color:#ffd36a;color:#ffd36a;background:rgba(255,211,106,.08)}
+#achtoast{position:fixed;top:14px;left:50%;transform:translate(-50%,-30px);z-index:70;background:rgba(17,20,27,.96);border:1px solid #c9a85a;box-shadow:0 10px 30px -10px rgba(236,197,111,.6);padding:10px 18px;font-size:13px;color:var(--fg);opacity:0;pointer-events:none}
+#achtoast b{color:#ffd36a;font-weight:600}
+#achtoast.show{animation:achin 4.5s ease forwards}
+@keyframes achin{0%{opacity:0;transform:translate(-50%,-30px)}8%,85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-20px)}}
+.achnew{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px}
+.achnew span{background:rgba(236,197,111,.1);border:1px solid #c9a85a;padding:6px 12px;font-size:13px}.achnew b{color:#ffd36a}.achnew small{color:var(--mut)}
 #gobar.sbx .grp.lr,#gobar.sbx #rolenote{display:none}
 #menu:not([data-scr="home"]) #ver{display:none}
 #ver{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:10px;z-index:6;background:transparent;border:0;padding:2px 4px;font:600 11px/1 var(--mono,monospace);color:var(--mut);letter-spacing:.06em;cursor:pointer}
@@ -467,13 +526,14 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
         <button type="button" data-go="heroes">Герои<small>47 героев, их умения и сборки</small></button>
         <button type="button" data-go="items">Предметы<small>магазин и сборки</small></button>
         <button type="button" data-go="map">Карта и цели<small>башни, лес, Страж Разлома</small></button>
+        <button type="button" data-go="profile">Профиль<small>ник, аватар, избранные герои, достижения</small></button>
         <button type="button" data-go="settings">Настройки<small>графика, звук, клавиши</small></button>
         <button type="button" data-go="news" id="tab-news">Что нового<small>изменения в последних версиях</small></button>
         <button type="button" id="fs-m" hidden>Во весь экран</button>
       </nav>
     </div>
     <aside class="hm-card">
-      <h3>Профиль</h3>
+      <button type="button" id="hm-prof" class="hm-prof"></button>
       <div class="hm-rank"><span id="rkchip"></span></div>
       <p id="profline" class="rolenote"></p>
       <p class="hm-hint">Игра рассчитана на клавиатуру и мышь · Esc — назад</p>
@@ -481,6 +541,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
   </section>
   <div class="wrap" id="sub" hidden>
     <div class="subbar"><button type="button" id="back">← Назад</button><h2 id="subttl"></h2><span class="sublogo">ПЕПЕЛЬНЫЙ <b>РАЗЛОМ</b></span><button type="button" id="pickplay" class="btn" hidden>Играть этим героем →</button></div>
+    <section class="pane" id="pane-profile" hidden><div id="prof"></div></section>
     <section class="pane" id="pane-modes" hidden>
       <div class="modes">
         <div class="mode" id="m-bots"><i class="mic" data-ic="akikat" data-c="ecc56f"></i><b>Бой с ботами</b><span>Пять на пять против ботов. Выберите героя, линию, роль и сложность.</span><button type="button" class="mgo" id="m-bots-go">Выбрать героя →</button></div>
@@ -517,7 +578,9 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
     </section>
     <section class="pane" id="pane-gfx" hidden>
       <div class="catalog">
-        <h4 class="sech">Графика <small>то же самое доступно в паузе во время боя</small></h4>
+        <h4 class="sech">Игра <small>то же самое доступно в паузе во время боя</small></h4>
+        <div class="gfxgrid" id="opt-menu"></div>
+        <h4 class="sech">Графика</h4>
         <div class="gfxgrid" id="gfx-menu"></div>
         <p class="gfxnote" id="gfxnote-m"></p>
         <div class="volrow"><label for="vol-m">Громкость звука</label><input id="vol-m" type="range" min="0" max="100" value="55"></div>
@@ -555,6 +618,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
   </div>
 </div>
 
+<div id="achtoast"></div>
 <div id="draft" hidden><div class="dwrap" id="dwrap"></div></div>
 
 <div id="hud" hidden>
@@ -596,6 +660,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
 <div id="score" class="modal" hidden style="pointer-events:none"><div class="box"><h3>СЧЁТ</h3><div class="sbwrap" id="scoreb"></div></div></div>
 <div id="pause" class="modal" hidden><div class="box"><h3>ПАУЗА</h3>
   <div class="row"><label for="vol">Громкость</label><input id="vol" type="range" min="0" max="100" value="55"></div>
+  <div class="gfxgrid" id="opt-pause"></div>
   <h4 class="sech">Графика <small>если игра идёт рывками — снизьте качество или разрешение</small></h4>
   <div class="gfxgrid" id="gfx-pause"></div>
   <p class="gfxnote" id="gfxnote-p"></p>
@@ -634,6 +699,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
 <script src="js/icons.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/ranked.js"></script>
+<script src="js/profile.js"></script>
 <script src="js/main.js"></script>
 
 </body></html>

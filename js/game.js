@@ -425,7 +425,7 @@ function updateHero(h, dt) {
     if (h.rooted) h.moving = false; else if (!moveAlong(h, dt)) h.order = null;
   } else {
     h.moving = false;
-    if (h.atkCd <= 0 && !h.spinning && (h.isPlayer || h.ai)) { const t = autoAcquire(h); if (t) startAttack(h, t); }
+    if (h.atkCd <= 0 && !h.spinning && (h.ai || (h.isPlayer && GFX.autoatk))) { const t = autoAcquire(h); if (t) startAttack(h, t); }   // the player can switch auto-attack off in the settings
   }
 }
 

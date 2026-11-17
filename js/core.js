@@ -75,7 +75,7 @@ function mergeParts(parts) {
 }
 
 /* ===== graphics settings: saved per browser. A preset fills the quality fields; the comfort fields (shake, stop, flash, fps) are never touched by presets ===== */
-const GFX_DEF = { preset: 'high', scale: 0, shadow: 1, hdr: 1, bloom: 2, warp: 1, detail: 1, dens: 1, decals: 1, shake: 1, stop: 1, flash: 1, fps: 0, fcap: 120 };
+const GFX_DEF = { preset: 'high', scale: 0, shadow: 1, hdr: 1, bloom: 2, warp: 1, detail: 1, dens: 1, decals: 1, shake: 1, stop: 1, flash: 1, fps: 0, fcap: 120, autoatk: 1 };
 const GFX_PRESETS = {
   low: { scale: 0.75, shadow: 0, hdr: 0, bloom: 0, warp: 0, detail: 0, dens: 0.5, decals: 0 },
   med: { scale: 1, shadow: 1, hdr: 1, bloom: 1, warp: 0, detail: 1, dens: 1, decals: 1 },
@@ -99,6 +99,8 @@ const GFX_LIST = [
   ['fcap', 'Предел кадров', [[30, '30'], [60, '60'], [120, '120'], [0, 'Нет']], 'Видеокарта не рисует больше кадров, чем нужно: на мониторе 144–240 Гц предел 120 заметно снижает нагрузку, 60 — ещё вдвое'],
   ['fps', 'Счётчик кадров', [[0, 'Выкл'], [1, 'Вкл']], '']
 ];
+// game options shown in their own block of the settings (stored with the graphics settings)
+const OPT_LIST = [['autoatk', 'Автоатака', [[1, 'Вкл'], [0, 'Выкл']], 'Герой сам бьёт ближайшего врага в пределах досягаемости, пока стоит без приказа. Выключите — и он атакует только по вашей команде (ПКМ по врагу)']];
 const GFX = Object.assign({}, GFX_DEF);
 function loadGfx() { try { const s = JSON.parse(localStorage.getItem('ashrift.gfx') || 'null'); if (s) for (const k in GFX_DEF) if (typeof s[k] === typeof GFX_DEF[k]) GFX[k] = s[k]; const v = +localStorage.getItem('ashrift.vol'); if (v >= 0 && localStorage.getItem('ashrift.vol') !== null) SFX.vol = clamp(v, 0, 1); } catch (e) { } }
 function saveGfx() { try { localStorage.setItem('ashrift.gfx', JSON.stringify(GFX)); localStorage.setItem('ashrift.vol', String(SFX.vol)); } catch (e) { } if (typeof SAVE !== 'undefined') SAVE.touch(); }
@@ -213,7 +215,7 @@ loadGfx();
 /* ===== the player's profile: last choices in the menu and career figures. Everything that must survive a restart (profile, key bindings, graphics, volume)
    is kept twice: in this browser's storage, and, when the page is opened by a signed-in person who may write, in that person's private document
    of the artifact's database (data/users/<id>/profile) — so it follows the account to another browser or computer. The newer copy wins on load ===== */
-const PROFILE = { hero: '', lane: 'top', role: 'dmg', diff: 1, games: 0, wins: 0, mvp: 0, kills: 0, deaths: 0, assists: 0, heroes: {}, ts: 0, rk: { orp: 0, peak: 0, g: 0, w: 0, hist: [] } };   // rk: the ranked ladder (rating points, best ever, games, wins, the last changes)
+const PROFILE = { hero: '', lane: 'top', role: 'dmg', diff: 1, games: 0, wins: 0, mvp: 0, kills: 0, deaths: 0, assists: 0, heroes: {}, ts: 0, rk: { orp: 0, peak: 0, g: 0, w: 0, hist: [] }, nick: '', ava: '', frame: 'ember', title: '', fav: [], hist: [], ach: {} };   // rk: the ranked ladder (rating points, best ever, games, wins, the last changes)
 // a second copy of the save in IndexedDB: some browsers clear one kind of site storage and keep the other
 const IDB = {
   p: null,
