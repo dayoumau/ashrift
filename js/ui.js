@@ -102,8 +102,9 @@ const UI = {
   },
   buy(id) {
     const P = G.player, it = ITEM[id];
-    if (P && buyItem(P, id)) { SFX.play('buy'); this.refreshInv(); }
-    else { SFX.play('deny'); this.msg(!P || !canShop(P) ? 'Покупать можно на базе или пока вы мертвы' : (P.items.length >= 6 ? 'Инвентарь заполнен — продайте предмет' : (itemBlocked(P, it) ? 'Такой предмет уже есть' : 'Не хватает ' + Math.ceil(it.cost - P.gold) + ' золота'))); }
+    const r = P && buyItem(P, id);
+    if (r) { SFX.play('buy'); this.refreshInv(); if (r === 'stash') this.msg(it.name + ' — на складе: заберите на базе'); }
+    else { SFX.play('deny'); this.msg(!P ? '' : (itemBlocked(P, it) || stashBlocked(P, it) ? 'Такой предмет уже есть' : (P.gold < it.cost ? 'Не хватает ' + Math.ceil(it.cost - P.gold) + ' золота' : 'Склад заполнен — заберите предметы на базе'))); }
   },
   buildShop(grid, chips, live) {
     const pre = live ? 'buy-' : 'cat-', S = this.shops[pre] = { els: [], rec: [], grid, next: null };
@@ -129,7 +130,7 @@ const UI = {
   },
   // the build tab: the hero's six recommended items in buying order, then situational swaps
   renderRec(pre, def, P) {
-    const S = this.shops[pre], box = $(pre + 'rec'), live = pre === 'buy-', build = BUILDS[def.build], have = P ? P.items.slice() : [];
+    const S = this.shops[pre], box = $(pre + 'rec'), live = pre === 'buy-', build = BUILDS[def.build], have = P ? P.items.concat(P.stash || []) : [];
     const owned = build.map(id => { const i = have.indexOf(id); if (i < 0) return false; have.splice(i, 1); return true; }), next = owned.indexOf(false);
     const left = build.reduce((s, id, i) => s + (owned[i] ? 0 : ITEM[id].cost), 0);
     box.innerHTML = ''; S.rec = []; S.next = live && next >= 0 ? ITEM[build[next]] : null;
@@ -145,17 +146,17 @@ const UI = {
     for (const [id, why] of BUILD_ALT[def.build] || []) { const it = ITEM[id], el = this.itemEl(it, live); el.querySelector('em').innerHTML = `<u>${why}.</u> ${it.desc}`; box.appendChild(el); S.rec.push({ el, it }); }
   },
   refreshShop() {
-    const P = G.player, S = this.shops['buy-'], can = canShop(P), full = P.items.length >= 6, note = $('shopnote');
-    note.textContent = !can ? 'Покупки доступны на базе или пока вы мертвы' : (full ? 'Инвентарь заполнен: продайте предмет, чтобы купить новый' : 'Нажмите на предмет, чтобы купить');
-    note.classList.toggle('warn', !can || full); $('shopgold').textContent = Math.floor(P.gold) + ' з';
-    const cnt = {}; for (const id of P.items) cnt[id] = (cnt[id] || 0) + 1;
+    const P = G.player, S = this.shops['buy-'], can = canShop(P), sn = (P.stash || []).length, toInv = can && P.items.length < 6, full = !toInv && sn >= STASH_MAX, note = $('shopnote');
+    note.textContent = full ? 'Склад заполнен: заберите предметы на базе' : (toInv ? 'Нажмите на предмет, чтобы купить' : (!can ? `Вы не на базе: покупка ляжет на склад (${sn}/${STASH_MAX}) и придёт в инвентарь у фонтана` : `Инвентарь заполнен: покупка ляжет на склад (${sn}/${STASH_MAX})`));
+    note.classList.toggle('warn', !toInv); $('shopgold').textContent = Math.floor(P.gold) + ' з';
+    const cnt = {}; for (const id of P.items.concat(P.stash || [])) cnt[id] = (cnt[id] || 0) + 1;
     const st = e => {
-      const it = e.it, lack = Math.ceil(it.cost - P.gold), blocked = itemBlocked(P, it), sm = e.el.lastChild.lastChild;
-      e.el.classList.toggle('no', !can || full || lack > 0 || blocked); e.el.classList.toggle('poor', lack > 0 && !e.own);
+      const it = e.it, lack = Math.ceil(it.cost - P.gold), blocked = itemBlocked(P, it) || stashBlocked(P, it), sm = e.el.lastChild.lastChild;
+      e.el.classList.toggle('no', full || lack > 0 || blocked); e.el.classList.toggle('poor', lack > 0 && !e.own);
       const s = e.own ? 'куплено' : (blocked ? 'уже есть' : (lack > 0 ? 'ещё ' + lack : (cnt[it.id] ? 'есть ×' + cnt[it.id] : ''))); if (sm.textContent !== s) sm.textContent = s;
     };
     S.els.forEach(st); S.rec.forEach(st);
-    const nb = $('nextb'); if (nb && S.next) nb.disabled = !can || full || P.gold < S.next.cost;
+    const nb = $('nextb'); if (nb && S.next) nb.disabled = full || P.gold < S.next.cost;
     const inv = $('shopinv').children; for (let i = 0; i < inv.length; i++) { const sm = inv[i].lastChild; if (P.items[i] && sm && sm.tagName === 'SMALL') { const s = '+' + sellPrice(P, i); if (sm.textContent !== s) sm.textContent = s; } }
   },
   /* ----- key bindings ----- */
@@ -186,7 +187,17 @@ const UI = {
       b.onclick = () => { SFX.init(); SFX.play('ui'); this.pick(def.id); }; b.ondblclick = () => { SFX.init(); startMatch(def.id, this.diff, this.lane, this.role); };
       ro.appendChild(b);
     }
-    for (const t of ['heroes', 'items', 'map', 'keys', 'gfx']) $('tab-' + t).onclick = () => { for (const k of ['heroes', 'items', 'map', 'keys', 'gfx']) { $('tab-' + k).classList.toggle('on', k === t); $('pane-' + k).hidden = k !== t; } SFX.init(); SFX.play('ui'); };
+    const TABS = ['heroes', 'items', 'map', 'keys', 'gfx', 'news'];
+    for (const t of TABS) $('tab-' + t).onclick = () => {
+      for (const k of TABS) { $('tab-' + k).classList.toggle('on', k === t); $('pane-' + k).hidden = k !== t; }
+      if (t === 'news') { $('tab-news').classList.remove('new'); try { localStorage.setItem('ashrift.seenver', GAME_VER); } catch (e) { } }
+      SFX.init(); SFX.play('ui');
+    };
+    // patch notes; the tab gets a dot until this version's notes have been opened
+    $('ver').textContent = 'v' + GAME_VER; $('ver').onclick = () => $('tab-news').onclick();
+    $('news').innerHTML = PATCH_NOTES.map((p, i) => `<article${i ? '' : ' class="cur"'}><h5>Версия ${p.v}${p.date ? `<small>${p.date}</small>` : ''}${i ? '' : '<small>текущая</small>'}</h5><ul>${p.items.map(t => `<li>${t}</li>`).join('')}</ul></article>`).join('');
+    let seen = null; try { seen = localStorage.getItem('ashrift.seenver'); } catch (e) { }
+    $('tab-news').classList.toggle('new', seen !== GAME_VER);
     this.buildShop($('mitems'), $('mcats'), false); this.drawBigMap(); this.pick(this.sel);
   },
   drawBigMap() {
@@ -212,7 +223,7 @@ const UI = {
   showProfile() {
     if (typeof RANKED !== 'undefined') RANKED.show(); const p = PROFILE, el = $('profline'); if (!el) return; const best = Object.keys(p.heroes).sort((a, b) => p.heroes[b].g - p.heroes[a].g)[0], bh = best && HEROES.find(h => h.id === best);
     el.innerHTML = (p.games ? `Матчей: <b>${p.games}</b> · побед: <b>${p.wins}</b> (${Math.round(p.wins / p.games * 100)}%) · MVP: <b>${p.mvp}</b> · У / С / П: <b>${p.kills} / ${p.deaths} / ${p.assists}</b>${bh ? ` · чаще всего: <b>${bh.name}</b> (${p.heroes[best].g})` : ''}` : 'Сыграйте первый матч — здесь появится ваша статистика') +
-      ` <span class="savest${SAVE.state !== 'cloud' && !SAVE.localOk && !SAVE.idbOk ? ' bad' : ''}">${SAVE.state === 'cloud' ? '● сохраняется в вашем аккаунте' : (SAVE.localOk || SAVE.idbOk ? '○ сохраняется в этом браузере' : '⚠ браузер не даёт сохранять')}<button id="savebtn" type="button">код прогресса</button></span>`;
+      ` <span class="savest${SAVE.state !== 'cloud' && !SAVE.localOk && !SAVE.idbOk ? ' bad' : ''}">${SAVE.state !== 'cloud' && !SAVE.localOk && !SAVE.idbOk ? '⚠ прогресс не сохраняется' : ''}<button id="savebtn" type="button">код прогресса</button></span>`;
   },
   openCode() { $('sc-txt').value = SAVECODE.make(); $('sc-msg').textContent = ''; $('savecode').hidden = false; },
   copyCode() {
@@ -305,23 +316,58 @@ const UI = {
         if (id) {
           const it = ITEM[id]; d.style.setProperty('--cc', css(CAT_COL[it.cat]));
           d.innerHTML = `<img src="${iconURL(it.icon, CAT_COL[it.cat])}" alt="${it.name}">` + (big ? `<small class="num">+${sellPrice(P, i)}</small>` : (it.active ? `<div class="cdo"></div><div class="cdt num"></div><kbd>${i + 1}</kbd>` : ''));
-          if (!big && it.active) { d.classList.add('act'); d.onclick = () => this.useItem(i); }
-          d.onmouseenter = e => this.tip(e, `<b>${it.name}</b><small>${it.cost} з · продажа за ${sellPrice(P, i)} з${it.active && !big ? ' · применить: клавиша ' + (i + 1) + ' или щелчок' : ''}</small>${it.desc}`); d.onmouseleave = () => this.tip();
-          const sell = e => { e.preventDefault(); if (sellItem(G.player, i)) { SFX.play('coin'); this.tip(); this.refreshInv(); } else this.msg('Продавать можно на базе или пока вы мертвы'); };
+          if (!big && it.active) { d.classList.add('act'); d.onclick = () => { if (!this.ateClick()) this.useItem(i); }; }
+          d.onmouseenter = e => { if (!this.dragging) this.tip(e, `<b>${it.name}</b><small>${it.cost} з · продажа за ${sellPrice(P, i)} з${it.active && !big ? ' · применить: клавиша ' + (i + 1) + ' или щелчок' : ''}</small>${it.desc}`); }; d.onmouseleave = () => this.tip();
+          const sell = e => { e.preventDefault(); if (this.ateClick()) return; if (sellItem(G.player, i)) { SFX.play('coin'); this.tip(); this.refreshInv(); } else this.msg('Продавать можно на базе или пока вы мертвы'); };
           d.oncontextmenu = sell; if (big) d.onclick = sell;
-          d.draggable = true; d.firstChild.draggable = false;
-          d.ondragstart = e => { this.dragI = i; e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', 'slot' + i); } catch (er) { } d.classList.add('drag'); this.tip(); };
-          d.ondragend = () => { this.dragI = -1; d.classList.remove('drag'); for (const o of box.children) o.classList.remove('over'); };
+          d.classList.add('dg'); d.firstChild.draggable = false;
+          d.onmousedown = e => { if (e.button === 0) this.dragStart(e, box, i); };
         } else if (big) d.disabled = true;
-        // any slot takes a dragged item: onto another item they swap, onto an empty slot it moves to the end
-        d.ondragover = e => { if (this.dragI >= 0 && this.dragI !== i) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; d.classList.add('over'); } };
-        d.ondragleave = () => d.classList.remove('over');
-        d.ondrop = e => { e.preventDefault(); const a = this.dragI; this.dragI = -1; d.classList.remove('over'); if (a >= 0 && moveItem(G.player, a, i)) { SFX.play('ui'); this.refreshInv(); } };
         box.appendChild(d);
       }
     }
+    // the stash: bought away from the base, delivered at the fountain; a click returns an item for its full price
+    const sn = (P.stash || []).length, sb = $('stashb'), sbox = $('shopstash');
+    sb.hidden = !sn; sb.textContent = '+' + sn;
+    sb.onmouseenter = e => this.tip(e, `<b>Склад: ${sn} из ${STASH_MAX}</b><small>придёт в инвентарь у фонтана · вернуть покупку можно в магазине</small>${(P.stash || []).map(id => ITEM[id].name).join(', ')}`); sb.onmouseleave = () => this.tip();
+    sbox.hidden = !sn; sbox.lastElementChild.innerHTML = '';
+    (P.stash || []).forEach((id, i) => {
+      const it = ITEM[id], d = document.createElement('button'); d.type = 'button'; d.className = 'it'; d.style.setProperty('--cc', css(CAT_COL[it.cat]));
+      d.innerHTML = `<img src="${iconURL(it.icon, CAT_COL[it.cat])}" alt="${it.name}"><small class="num">+${it.cost}</small>`;
+      d.onmouseenter = e => this.tip(e, `<b>${it.name}</b><small>на складе · нажмите, чтобы вернуть за ${it.cost} з</small>${it.desc}`); d.onmouseleave = () => this.tip();
+      d.onclick = () => { if (unstashItem(G.player, i)) { SFX.play('coin'); this.tip(); this.refreshInv(); } };
+      sbox.lastElementChild.appendChild(d);
+    });
     this.renderRec('buy-', P.def, P); this.shopT = 0;
   },
+  onStash(n) { this.refreshInv(); SFX.play('buy'); this.msg(n === 1 ? 'Предмет со склада получен' : 'Предметы со склада получены: ' + n); },
+  // Dragging an item to another slot, done with mouse events: the launcher's WebView2 swallows the browser's own drag and drop.
+  // Onto another item the two swap, onto an empty slot it moves to the end.
+  dragStart(e, box, i) {
+    e.preventDefault();
+    const sx = e.clientX, sy = e.clientY, src = box.children[i]; let ghost = null;
+    const slotAt = (x, y) => { const el = document.elementFromPoint(x, y), s = el && el.closest && el.closest('.it'); return s && s.parentElement === box ? [...box.children].indexOf(s) : -1; };
+    const move = ev => {
+      if (!ghost) {
+        if (Math.hypot(ev.clientX - sx, ev.clientY - sy) < 5) return;
+        this.dragging = true; this.tip(); src.classList.add('drag');
+        ghost = src.querySelector('img').cloneNode(); ghost.className = 'dragghost'; document.body.appendChild(ghost);
+      }
+      ghost.style.left = ev.clientX + 'px'; ghost.style.top = ev.clientY + 'px';
+      const j = slotAt(ev.clientX, ev.clientY); [...box.children].forEach((o, k) => o.classList.toggle('over', k === j && j !== i));
+    };
+    const up = ev => {
+      removeEventListener('mousemove', move, true); removeEventListener('mouseup', up, true);
+      if (!ghost) return;
+      ghost.remove(); this.dragging = false; this.dragEnd = performance.now();
+      for (const o of box.children) o.classList.remove('over', 'drag');
+      const j = slotAt(ev.clientX, ev.clientY);
+      if (j >= 0 && j !== i && moveItem(G.player, i, j)) { SFX.play('ui'); this.refreshInv(); }
+    };
+    addEventListener('mousemove', move, true); addEventListener('mouseup', up, true);
+  },
+  // the click that ends a drag must not also use or sell the item
+  ateClick() { return performance.now() - (this.dragEnd || 0) < 250; },
   // the recall key or its HUD slot
   recall() {
     const P = G.player; if (!P || P.dead || G.paused || G.over) return;

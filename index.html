@@ -22,7 +22,7 @@ button:focus-visible,.card:focus-visible{outline:2px solid var(--ember);outline-
 
 /* ---------- menu ---------- */
 #menu{position:fixed;inset:0;overflow-y:auto;background:radial-gradient(120% 90% at 50% 0%,rgba(10,12,17,.5),rgba(10,12,17,.93) 70%),linear-gradient(rgba(10,12,17,.55),rgba(10,12,17,.9));
-  padding-block:22px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  padding-top:22px;padding-bottom:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 .brand{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
 .brand h1{font-family:var(--display);font-size:clamp(26px,4.4vw,46px);letter-spacing:.06em;margin:0;font-weight:400;color:#f1e6d4;text-shadow:0 0 28px rgba(232,160,76,.35)}
@@ -264,7 +264,26 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
 .eaw .t0{color:var(--blue)}.eaw .t1{color:var(--red)}
 @media (max-width:760px){#endcards{grid-template-columns:1fr}}
 /* dragging items between slots */
-#inv .it[draggable=true],#shopinv .it[draggable=true]{cursor:grab}
+#inv .it.dg,#shopinv .it.dg{cursor:grab}
+.dragghost{position:fixed;width:38px;height:38px;transform:translate(-50%,-50%);pointer-events:none;z-index:60;opacity:.9;box-shadow:0 4px 14px rgba(0,0,0,.6);outline:1px solid var(--gold)}
+#stashb{font:600 11px/1 var(--mono,monospace);color:#9fdcff;border:1px dashed rgba(159,220,255,.6);padding:3px 5px;cursor:default;white-space:nowrap;margin-right:auto}
+#goldt{white-space:nowrap}
+#shopstash>span{display:block;margin-bottom:5px;color:#9fdcff}
+#shopstash>div{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+#shopstash .it{position:relative;aspect-ratio:1;border:1px dashed rgba(159,220,255,.55);border-bottom:3px solid var(--cc,var(--line));background:#0c0e13;padding:0;overflow:hidden;opacity:.85}
+#shopstash .it img{width:100%;height:100%;display:block}
+#shopstash .it small{position:absolute;left:0;right:0;bottom:0;background:rgba(8,10,14,.86);font-size:10.5px;color:#9fdcff;text-align:center;line-height:1.5}
+#shopstash .it:hover{border-color:#9fdcff;opacity:1}
+#menu>.wrap{min-height:100%}
+#ver{position:fixed;top:4px;right:max(12px,env(safe-area-inset-right,0px));z-index:6;background:transparent;border:0;padding:2px 4px;font:600 11px/1 var(--mono,monospace);color:var(--mut);letter-spacing:.06em;cursor:pointer}
+#ver:hover{color:var(--ember)}
+.tabs button.new::after{content:'';display:inline-block;width:6px;height:6px;margin-left:6px;vertical-align:2px;border-radius:50%;background:var(--ember);box-shadow:0 0 6px var(--ember)}
+.news{display:flex;flex-direction:column;gap:10px}
+.news article{background:var(--panel);border:1px solid var(--line);padding:12px 16px}
+.news article.cur{border-color:var(--line2);box-shadow:inset 3px 0 0 var(--ember)}
+.news h5{margin:0 0 6px;font-family:var(--display);font-weight:400;font-size:15px;letter-spacing:.06em;color:var(--fg)}
+.news h5 small{margin-left:10px;font-family:var(--body);font-size:12px;color:var(--mut);letter-spacing:0}
+.news ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px;color:#c5cbd6;font-size:13.5px;line-height:1.5}
 #inv .it.drag,#shopinv .it.drag{opacity:.35}
 #inv .it.over,#shopinv .it.over{outline:2px solid var(--gold);outline-offset:1px}
 /* usable items in the HUD inventory */
@@ -296,7 +315,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
 .keysgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px}
 .keysgrid div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--line);padding:8px 12px;color:#b8bfcb;font-size:13px}
 .keysgrid kbd{font-family:var(--display);font-size:12px;color:var(--ember);letter-spacing:.04em}
-.go{position:sticky;bottom:0;z-index:5;background:#11141b;border-color:var(--line2);box-shadow:0 -14px 24px -8px rgba(6,8,12,.9)}
+.go{position:sticky;bottom:0;margin-top:auto;z-index:5;background:#11141b;border-color:var(--line2);box-shadow:0 -14px 24px -8px rgba(6,8,12,.9)}
 .go .grp{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 #gohero{font-size:14px;color:var(--mut)}#gohero b{font-family:var(--display);font-weight:400;font-size:17px;letter-spacing:.04em}
 .slot.off{opacity:.35;border-style:dashed}
@@ -395,10 +414,11 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
 <div id="load">ЗАГРУЗКА…</div>
 
 <div id="menu" hidden>
+  <button id="ver" type="button" title="Что нового в этой версии"></button>
   <div class="wrap">
     <div class="brand">
       <div><h1>ПЕПЕЛЬНЫЙ <span>РАЗЛОМ</span></h1><p>MOBA 5 на 5 · три линии · лес · 43 героя</p></div>
-      <nav class="tabs"><button id="tab-heroes" type="button" class="on">Герои</button><button id="tab-items" type="button">Предметы</button><button id="tab-map" type="button">Карта и цели</button><button id="tab-keys" type="button">Управление</button><button id="tab-gfx" type="button">Графика</button><button id="fs-m" type="button" hidden>Во весь экран</button></nav>
+      <nav class="tabs"><button id="tab-heroes" type="button" class="on">Герои</button><button id="tab-items" type="button">Предметы</button><button id="tab-map" type="button">Карта и цели</button><button id="tab-keys" type="button">Управление</button><button id="tab-gfx" type="button">Графика</button><button id="tab-news" type="button">Что нового</button><button id="fs-m" type="button" hidden>Во весь экран</button></nav>
     </div>
     <section class="pane" id="pane-heroes">
       <div class="cols">
@@ -410,7 +430,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
       </div>
     </section>
     <section class="pane" id="pane-items" hidden>
-      <div class="catalog"><div class="chips" id="mcats"></div><div class="shopgrid" id="mitems"></div><small style="color:var(--mut)">Цвет показывает назначение предмета: красный — атака, фиолетовый — магия, зелёный — защита, жёлтый — поддержка, голубой — разное. У части предметов поддержки есть применение: в бою его включает клавиша с номером ячейки (1–6) или щелчок по ячейке. Вкладка «Сборка» — рекомендуемый порядок покупок для выбранного героя. В бою магазин открывается на базе или пока вы мертвы; у героя шесть ячеек.</small></div>
+      <div class="catalog"><div class="chips" id="mcats"></div><div class="shopgrid" id="mitems"></div><small style="color:var(--mut)">Цвет показывает назначение предмета: красный — атака, фиолетовый — магия, зелёный — защита, жёлтый — поддержка, голубой — разное. У части предметов поддержки есть применение: в бою его включает клавиша с номером ячейки (1–6) или щелчок по ячейке. Вкладка «Сборка» — рекомендуемый порядок покупок для выбранного героя. В бою покупать можно где угодно: вдали от базы предмет ждёт на складе и приходит в инвентарь у фонтана; у героя шесть ячеек.</small></div>
     </section>
     <section class="pane" id="pane-map" hidden>
       <div class="mapcols">
@@ -422,7 +442,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
           <div><h4>Лес</h4>Четыре лагеря зверей дают золото и опыт и возрождаются через 75 сек. Удобно зачищать, когда на линии затишье.</div>
           <div><h4>Страж Разлома</h4>Появляется на 2-й минуте в своём логове — каменной яме в конце реки справа внизу, куда ведёт один узкий вход. Из ямы он не выходит: отступите — и он вернётся и залечит раны. Команда, добившая его, получает золото, +18% урона и восстановление на 100 сек, а нанёсший последний удар — Эгиду Разлома: 4 минуты она один раз спасёт его от смертельного удара (3 сек неуязвимости, затем полное здоровье).</div>
           <div><h4>Руна ветра</h4>Появляется в реке слева вверху: +22% скорости и восстановление здоровья и маны на 30 сек.</div>
-          <div><h4>База и магазин</h4>Фонтан быстро лечит. Возврат на базу — клавиша B (4.5 сек). Урон или оглушение срывают его и отправляют на перезарядку на 15 сек. Покупки — на базе или пока вы мертвы.</div>
+          <div><h4>База и магазин</h4>Фонтан быстро лечит. Возврат на базу — клавиша B (4.5 сек). Урон или оглушение срывают его и отправляют на перезарядку на 15 сек. Покупать можно где угодно: вдали от базы покупка ждёт на складе и приходит в инвентарь у фонтана. Продавать — на базе или пока вы мертвы.</div>
           <div><h4>Рост героя</h4>До 15 уровня. За каждый уровень — очко умений: вложите его в Q, W, E или R кнопкой «+» над иконкой или Shift + клавиша. У обычных умений 4 уровня, у ультимейта 3 — на 6, 10 и 14 уровне героя.</div>
         </div>
       </div>
@@ -438,7 +458,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
         <div><kbd>ЛКМ / ПКМ</kbd><span>во время прицеливания: ЛКМ — применить, ПКМ — отменить</span></div>
         <div><kbd>Тащить камеру</kbd><span>зажмите «<span data-k="grab">Колёсико</span>» и ведите мышь: земля движется за курсором, как в Dota 2. Камера остаётся свободной, пока не нажмёте «Камера к герою»</span></div>
         <div><kbd>Свободная камера</kbd><span>сдвиг у краёв экрана и стрелками</span></div>
-        <div><kbd>Магазин</kbd><span>открывается на базе или пока вы мертвы. Клик по предмету — купить, клик по своей ячейке в магазине — продать</span></div>
+        <div><kbd>Магазин</kbd><span>открывается где угодно. Клик по предмету — купить (вдали от базы — на склад, заберёте у фонтана), клик по своей ячейке в магазине — продать (на базе)</span></div>
         <div><kbd>1 – 6</kbd><span>применить предмет из ячейки с этим номером (у предметов поддержки: лечение, щит, рывок, очищение)</span></div>
         <div><kbd>Esc</kbd><span>пауза: громкость, графика и клавиши</span></div>
         <div><kbd>Мини-карта</kbd><span>ПКМ — идти в точку, ЛКМ — посмотреть туда</span></div>
@@ -446,10 +466,13 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
     </section>
     <section class="pane" id="pane-gfx" hidden>
       <div class="catalog">
-        <h4 class="sech">Графика <small>сохраняется в этом браузере · то же самое доступно в паузе во время боя</small></h4>
+        <h4 class="sech">Графика <small>то же самое доступно в паузе во время боя</small></h4>
         <div class="gfxgrid" id="gfx-menu"></div>
         <p class="gfxnote" id="gfxnote-m"></p>
       </div>
+    </section>
+    <section class="pane" id="pane-news" hidden>
+      <div class="catalog"><h4 class="sech">Что нового <small>изменения, которые влияют на игру</small></h4><div class="news" id="news"></div></div>
     </section>
     <p class="touch">Игра рассчитана на компьютер: нужны клавиатура и мышь.</p>
     <div class="go">
@@ -490,7 +513,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
       </div>
     </div>
     <div id="side">
-      <div id="gold"><span id="goldt" class="num">0</span><button id="shopb" type="button">МАГАЗИН · <span data-k="shop">P</span></button></div>
+      <div id="gold"><span id="goldt" class="num">0</span><span id="stashb" hidden></span><button id="shopb" type="button">МАГАЗИН · <span data-k="shop">P</span></button></div>
       <div id="inv"></div>
       <div id="st"></div>
     </div>
@@ -503,7 +526,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
   <div id="shopnote"></div>
   <nav class="chips" id="shopcats"></nav>
   <div class="shopgrid" id="shopgrid"></div>
-  <footer><div id="shopinv"></div><span>Ваши предметы: нажмите, чтобы продать; перетащите один на другой, чтобы поменять их местами (так же и в нижней панели). Первые 10 сек после покупки — за полную цену, потом за 60%.</span></footer>
+  <footer><div id="shopstash" hidden><span>Склад — придёт в инвентарь у фонтана; нажмите, чтобы вернуть за полную цену:</span><div></div></div><div id="shopinv"></div><span>Ваши предметы: нажмите, чтобы продать (на базе или пока вы мертвы); перетащите один на другой, чтобы поменять их местами (так же и в нижней панели). Первые 10 сек после покупки — за полную цену, потом за 60%. Купить можно где угодно: вдали от базы покупка ждёт на складе.</span></footer>
 </aside>
 <div id="score" class="modal" hidden style="pointer-events:none"><div class="box"><h3>СЧЁТ</h3><div class="sbwrap" id="scoreb"></div></div></div>
 <div id="pause" class="modal" hidden><div class="box"><h3>ПАУЗА</h3>
@@ -533,6 +556,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
 <script src="js/core.js"></script>
+<script src="js/patch.js"></script>
 <script src="js/map.js"></script>
 <script src="js/vfx.js"></script>
 <script src="js/models.js"></script>

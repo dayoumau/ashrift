@@ -382,7 +382,7 @@ function updateHero(h, dt) {
   const ooc = G.time - h.lastDamageT > 5 ? 2.6 : 1;
   h.hp = Math.min(h.maxHp, h.hp + (h.maxHp * 0.0035 * ooc + (h.hpRegen || 0)) * (1 - (h.healCut || 0)) * dt); h.mana = Math.min(h.maxMana, h.mana + (h.maxMana * 0.009 * ooc + 1.2 + (h.manaRegen || 0)) * dt);
   const f = BASES[h.team].fountain; h.inBase = dist(h.x, h.z, f.x, f.z) < 11;
-  if (h.inBase) { h.hp = Math.min(h.maxHp, h.hp + h.maxHp * 0.22 * dt); h.mana = Math.min(h.maxMana, h.mana + h.maxMana * 0.22 * dt); }
+  if (h.inBase) { h.hp = Math.min(h.maxHp, h.hp + h.maxHp * 0.22 * dt); h.mana = Math.min(h.maxMana, h.mana + h.maxMana * 0.22 * dt); if (h.stash && h.stash.length && h.items.length < 6) takeStash(h); }
   for (let i = 0; i < 4; i++) if (h.cd[i] > 0) h.cd[i] -= dt;
   if (h.atkCd > 0) h.atkCd -= dt;
   if (h.stunned) { h.moving = false; h.windup = 0; return; }
@@ -953,10 +953,24 @@ function setupSandbox() {
   return S;
 }
 function itemBlocked(h, it) { return !!it.unique && h.items.some(id => ITEM[id].unique === it.unique); }
+// Away from the base the player can still buy: the item waits in the stash (up to 6) and comes into the inventory at the fountain.
+// Returns false, 'inv' (straight into the inventory) or 'stash'.
+const STASH_MAX = 6;
+function stashBlocked(h, it) { return !!it.unique && (h.stash || []).some(id => ITEM[id].unique === it.unique); }
 function buyItem(h, id) {
   const it = ITEM[id];
-  if (!canShop(h) || h.items.length >= 6 || h.gold < it.cost || itemBlocked(h, it)) return false;
-  h.gold -= it.cost; h.items.push(id); (h.itemAt || (h.itemAt = [])).push(G.time); recalcHero(h); return true;
+  if (h.gold < it.cost || itemBlocked(h, it) || stashBlocked(h, it)) return false;
+  if (canShop(h) && h.items.length < 6) { h.gold -= it.cost; h.items.push(id); (h.itemAt || (h.itemAt = [])).push(G.time); recalcHero(h); return 'inv'; }
+  if (!h.isPlayer || (h.stash || []).length >= STASH_MAX) return false;
+  h.gold -= it.cost; (h.stash || (h.stash = [])).push(id); return 'stash';
+}
+// an item still in the stash can be returned for its full price anywhere
+function unstashItem(h, i) { if (!h.stash || !h.stash[i]) return false; h.gold += ITEM[h.stash[i]].cost; h.stash.splice(i, 1); return true; }
+// at the fountain the stash moves into free inventory slots
+function takeStash(h) {
+  let n = 0;
+  while (h.stash.length && h.items.length < 6) { h.items.push(h.stash.shift()); (h.itemAt || (h.itemAt = [])).push(G.time); n++; }
+  if (n) { recalcHero(h); if (h === G.player) UI.onStash(n); }
 }
 // a purchase can be undone for its full price within 10 seconds; after that an item sells for 60%
 function sellPrice(h, i) { const c = ITEM[h.items[i]].cost; return h.itemAt && G.time - h.itemAt[i] < 10 ? c : Math.round(c * 0.6); }

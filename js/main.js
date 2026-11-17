@@ -204,14 +204,30 @@ function actUp(act) {
   else if (AB[act] !== undefined && G.state === 'play' && !G.paused) releaseAim(AB[act]);
 }
 // full screen: a button in the menu and in the pause box; hidden where the browser does not allow it
-function syncFs() { const fs = !!document.fullscreenElement; for (const id of ['fs-m', 'fs-p']) { const b = $(id); if (!b) continue; b.hidden = !document.fullscreenEnabled; b.textContent = fs ? 'Выйти из полного экрана' : 'Во весь экран'; } }
-function toggleFull() {
-  SFX.init();
-  try { if (document.fullscreenElement) document.exitFullscreen(); else { const p = document.documentElement.requestFullscreen(); if (p && p.catch) p.catch(() => UI.msg('Браузер не разрешил полноэкранный режим')); } } catch (e) { UI.msg('Браузер не разрешил полноэкранный режим'); }
+// In the launcher (window.__TAURI__) it is the window's own full screen: Esc stays a game key and the choice is remembered.
+// In a browser it is page full screen with the Escape key locked to the game, so Esc opens the pause; holding Esc leaves full screen.
+const tauriWin = () => { try { return window.__TAURI__ && window.__TAURI__.window.getCurrentWindow(); } catch (e) { return null; } };
+let nativeFs = false;
+const isFull = () => tauriWin() ? nativeFs : !!document.fullscreenElement;
+function syncFs() { const fs = isFull(); for (const id of ['fs-m', 'fs-p']) { const b = $(id); if (!b) continue; b.hidden = !tauriWin() && !document.fullscreenEnabled; b.textContent = fs ? 'Выйти из полного экрана' : 'Во весь экран'; } }
+async function setFull(on) {
+  const w = tauriWin();
+  if (w) {
+    try { await w.setFullscreen(on); nativeFs = on; try { localStorage.setItem('ashrift.fs', on ? '1' : '0'); } catch (e) { } } catch (e) { UI.msg('Не получилось переключить полный экран'); }
+    syncFs(); return;
+  }
+  try {
+    if (on) { await document.documentElement.requestFullscreen(); try { if (navigator.keyboard && navigator.keyboard.lock) await navigator.keyboard.lock(['Escape']); } catch (e) { } }
+    else { if (navigator.keyboard && navigator.keyboard.unlock) navigator.keyboard.unlock(); await document.exitFullscreen(); }
+  } catch (e) { UI.msg('Браузер не разрешил полноэкранный режим'); }
 }
+function toggleFull() { SFX.init(); setFull(!isFull()); }
 function bindInput(cv) {
   for (const id of ['fs-m', 'fs-p']) if ($(id)) $(id).onclick = toggleFull;
-  document.addEventListener('fullscreenchange', syncFs); syncFs();
+  document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && navigator.keyboard && navigator.keyboard.unlock) navigator.keyboard.unlock(); syncFs(); }); syncFs();
+  // the launcher starts in full screen if it was left that way
+  if (tauriWin()) { let fs = '1'; try { fs = localStorage.getItem('ashrift.fs') || '1'; } catch (e) { } if (fs === '1') setFull(true); }
+  addEventListener('keydown', e => { if (e.code === 'F11' && tauriWin()) { e.preventDefault(); toggleFull(); } });
   addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
   cv.addEventListener('mousedown', e => {
     SFX.init(); if (G.state !== 'play' || UI.capture) return; mouse.x = e.clientX; mouse.y = e.clientY; const g = groundAt(mouse.x, mouse.y); G.mx = g.x; G.mz = g.z;
