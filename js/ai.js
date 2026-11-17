@@ -211,6 +211,14 @@ function botCast(h, mode, tgt, nf) {
         if (mode !== 'fight' || !tgt || tgt.kind !== 'hero' || dT > 12) break; let n = 0; for (const o of G.heroes) if (o.alive && o.team === h.team && udist(h, o) < ai.r) n++;
         if (n >= 2 && (n >= 3 || foesNear(h, h.x, h.z, 12) >= 2 || tHp < 0.6)) pt = { x: h.x, z: h.z }; break;
       }
+      case 'swap': {      // castling: trade places with an ally in trouble who stands near enemies, if he himself is not the one in danger
+        if (hpP < 0.45 || nfd < 4) break; let a = null; for (const o of G.heroes) if (o.alive && o.team === h.team && o !== h && udist(h, o) < ab.range && o.hp / o.maxHp < 0.35 && G.time - o.lastDamageT < 1.5 && foesNear(h, o.x, o.z, 6) > 0 && (!a || o.hp < a.hp)) a = o;
+        if (a) pt = { x: a.x, z: a.z, unit: a }; break;
+      }
+      case 'shatter': {   // set off the crystals once enough of them sit on enemy heroes in reach
+        let n = 0; for (const o of G.heroes) if (o.alive && o.team !== h.team && udist(h, o) < ai.r) { const b = o.buffs.find(q => q.id === 'cry' + h.id); if (b) n += b.stacks || 1; }
+        if (n >= 3 || (n >= 1 && tgt && tHp < 0.25)) pt = { x: h.x, z: h.z }; break;
+      }
       case 'sanct': {
         let n = 0, sx = 0, sz = 0; for (const o of G.heroes) if (o.alive && o.team === h.team && udist(h, o) < 10 && o.hp / o.maxHp < 0.6) { n++; sx += o.x; sz += o.z; }
         if ((n >= 2 && nfd < 16) || (hpP < 0.4 && nfd < 10)) pt = n ? { x: sx / n, z: sz / n } : { x: h.x, z: h.z }; break;
@@ -259,6 +267,7 @@ function botThink(h, dt) {
   const A = h.ai;
   if (h.dead) { if (!A.shopped) { botShop(h); A.shopped = true; } A.state = 'lane'; A.shopTrip = false; A.task = null; return; }
   A.shopped = false;
+  if (h.geass && G.time < h.geass.until) { A.task = null; return; }   // under the geass the bot does not think for itself
   A.think -= dt; if (A.think > 0) return; A.think = A.d.think * (0.8 + rand(0.4));
   if (h.inBase) botShop(h);
   if (h.dash || h.stunned) return;

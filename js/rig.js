@@ -421,6 +421,76 @@ const HEADS = {
       .b(0.47, 0.1, 0.43, 0x241a16, 0, 0.2, -0.005).b(0.4, 0.13, 0.38, hair, 0, 0.3, -0.01).b(0.48, 0.07, 0.44, band, 0, 0.155, 0).b(0.06, 0.07, 0.03, C.GL, 0, 0.155, 0.222)
       .b(0.06, 0.12, 0.08, C.skin, -0.25, 0.0, 0).b(0.06, 0.12, 0.08, C.skin, 0.25, 0.0, 0)
       .y(0.24, 0.3, 0.2, 8, C.skin, 0, -0.3, 0);
+  },
+  frieren(k, C) { // an elf mage a thousand years old: silver hair parted over the brow into long side locks and two long twin tails, calm half-lidded green eyes, long pointed ears with red drop earrings; a white collar with a gold edge
+    const hair = C.hair || 0xe6e8ee, hs = 0xb8bcc8, iris = 0x3a9a6a, wh = 0xf6f6f2, gold = C.met, lid = 0x70747e;
+    k.b(0.42, 0.46, 0.4, C.skin, 0, -0.01, 0)
+      .b(0.11, 0.055, 0.03, wh, -0.095, 0.028, 0.203).b(0.11, 0.055, 0.03, wh, 0.095, 0.028, 0.203).b(0.062, 0.05, 0.03, iris, -0.09, 0.025, 0.211).b(0.062, 0.05, 0.03, iris, 0.09, 0.025, 0.211)
+      .b(0.026, 0.034, 0.02, 0x0e2018, -0.09, 0.024, 0.219).b(0.026, 0.034, 0.02, 0x0e2018, 0.09, 0.024, 0.219).b(0.016, 0.016, 0.02, 0xffffff, -0.078, 0.038, 0.223).b(0.016, 0.016, 0.02, 0xffffff, 0.102, 0.038, 0.223)
+      .b(0.128, 0.026, 0.035, lid, -0.095, 0.055, 0.214).b(0.128, 0.026, 0.035, lid, 0.095, 0.055, 0.214)
+      .b(0.1, 0.013, 0.02, hs, -0.095, 0.112, 0.206, 0, 0, -0.04).b(0.1, 0.013, 0.02, hs, 0.095, 0.112, 0.206, 0, 0, 0.04)
+      .b(0.03, 0.05, 0.035, C.skin, 0, -0.05, 0.205).b(0.06, 0.014, 0.02, 0x9a5a5e, 0, -0.14, 0.2)
+      .t(0.45, 0.43, 0.48, 0.46, 0.16, hair, 0, 0.215, -0.01).b(0.47, 0.46, 0.15, hair, 0, 0.02, -0.2).b(0.07, 0.38, 0.3, hair, -0.222, 0.0, -0.04).b(0.07, 0.38, 0.3, hair, 0.222, 0.0, -0.04)
+      .t(0.075, 0.06, 0.05, 0.04, 0.44, hair, -0.2, -0.09, 0.17).t(0.075, 0.06, 0.05, 0.04, 0.44, hair, 0.2, -0.09, 0.17)
+      .y(0.2, 0.22, 0.07, 7, C.skin, 0, -0.27, 0).y(0.25, 0.29, 0.1, 10, wh, 0, -0.31, 0).y(0.255, 0.295, 0.025, 10, gold, 0, -0.36, 0);
+    // a fringe parted in the middle, the locks longer toward the sides
+    for (const [x, h, rz] of [[-0.18, 0.2, 0.28], [-0.1, 0.16, 0.16], [-0.035, 0.1, 0.06], [0.035, 0.1, -0.06], [0.1, 0.16, -0.16], [0.18, 0.2, -0.28]]) k.t(0.085, 0.05, 0.06, 0.03, h, hair, x, 0.25 - h / 2, 0.214, 0.08, 0, rz);
+    for (const s of [-1, 1]) {
+      // twin tails tied high behind the ears with a gold band, falling to the waist
+      k.b(0.12, 0.06, 0.12, gold, s * 0.255, 0.15, -0.19);
+      for (let i = 0; i < 7; i++) k.t(0.13 - i * 0.009, 0.12 - i * 0.008, 0.12 - i * 0.009, 0.11 - i * 0.008, 0.23, i % 2 ? hair : hs, s * (0.31 + Math.sin(i * 0.5) * 0.05 + i * 0.012), 0.04 - i * 0.205, -0.22 - i * 0.02, 0, 0, s * 0.07);
+      k.c(0.05, 0.16, 4, hair, s * 0.4, -1.42, -0.36, Math.PI);
+      // long elf ears pointing out and a little up, a red drop at each lobe
+      k.c(0.058, 0.36, 4, C.skin, s * 0.36, 0.07, -0.02, 0.1, 0, -s * 1.22).c(0.03, 0.26, 4, 0xe2a8a2, s * 0.355, 0.07, 0.006, 0.1, 0, -s * 1.22).o(0.032, { g: 0xff3048 }, s * 0.235, -0.12, 0.0, 1, 1.7, 1);
+    }
+  },
+  lelouch(k, C) { // the exiled prince: black hair falling in sharp locks over the brow and the nape, violet eyes under level brows, a thin knowing smile; the left eye burns red with the geass; a tall stiff collar edged in gold
+    const hair = C.hair || 0x15141c, iris = 0x7a3ac8, wh = 0xf4f2f6, gold = C.met;
+    k.b(0.42, 0.46, 0.4, C.skin, 0, -0.01, 0)
+      .b(0.11, 0.05, 0.03, wh, -0.095, 0.035, 0.203).b(0.11, 0.05, 0.03, wh, 0.095, 0.035, 0.203).b(0.056, 0.05, 0.03, iris, -0.09, 0.033, 0.211).b(0.056, 0.05, 0.03, { g: 0xff2a3a }, 0.09, 0.033, 0.211)
+      .b(0.024, 0.03, 0.02, 0x0c0a12, -0.09, 0.033, 0.219).b(0.03, 0.03, 0.02, { g: 0xffd0d8 }, 0.09, 0.033, 0.222)
+      .b(0.13, 0.022, 0.035, hair, -0.095, 0.085, 0.214, 0, 0, -0.12).b(0.13, 0.022, 0.035, hair, 0.095, 0.085, 0.214, 0, 0, 0.12)
+      .b(0.03, 0.06, 0.04, C.skin, 0, -0.045, 0.205).b(0.08, 0.014, 0.02, 0x7a4a50, 0.01, -0.14, 0.2, 0, 0, 0.12).b(0.03, 0.014, 0.02, 0x7a4a50, 0.055, -0.132, 0.2, 0, 0, 0.5)
+      .t(0.45, 0.43, 0.48, 0.46, 0.16, hair, 0, 0.215, -0.01).b(0.47, 0.42, 0.15, hair, 0, 0.04, -0.2).b(0.08, 0.36, 0.3, hair, -0.222, 0.02, -0.03).b(0.08, 0.36, 0.3, hair, 0.222, 0.02, -0.03)
+      .y(0.2, 0.22, 0.08, 7, C.skin, 0, -0.27, 0).y(0.25, 0.3, 0.16, 8, C.c2, 0, -0.335, -0.05).y(0.255, 0.26, 0.03, 8, gold, 0, -0.26, -0.05).b(0.42, 0.22, 0.06, C.c2, 0, -0.18, -0.2).b(0.43, 0.03, 0.07, gold, 0, -0.07, -0.2).b(0.07, 0.07, 0.04, C.GL, 0, -0.36, 0.25);
+    // a fringe of sharp locks, the longest falling between the eyes
+    for (const [x, h, rz] of [[-0.19, 0.26, 0.3], [-0.12, 0.23, 0.18], [-0.055, 0.2, 0.08], [0.0, 0.29, 0], [0.06, 0.2, -0.1], [0.13, 0.23, -0.2], [0.19, 0.26, -0.3]]) k.c(0.055, h, 4, hair, x, 0.27 - h / 2, 0.218, Math.PI - 0.12, 0, rz);
+    // locks over the ears and down the nape, volume on the crown
+    for (const [x, y, z, rx, rz, h] of [[-0.25, -0.1, -0.02, 0.2, 0.25, 0.26], [0.25, -0.1, -0.02, 0.2, -0.25, 0.26], [-0.14, -0.17, -0.24, -0.45, 0.25, 0.27], [0, -0.2, -0.26, -0.55, 0, 0.3], [0.14, -0.17, -0.24, -0.45, -0.25, 0.27]]) k.c(0.07, h, 4, hair, x, y, z, Math.PI + rx, 0, rz);
+    for (const [x, z, rx, rz] of [[-0.12, 0.08, 0.45, 0.5], [0.12, 0.08, 0.45, -0.5], [0, -0.05, -0.3, 0], [-0.15, -0.12, -0.75, 0.45], [0.15, -0.12, -0.75, -0.45]]) k.c(0.1, 0.18, 4, hair, x, 0.3, z, rx, 0, rz);
+  },
+  ichigo(k, C) { // a substitute soul reaper: bright orange hair in wild spikes, brown eyes under a permanent scowl; a white undercollar inside the black kimono collar
+    const hair = C.hair || 0xff7a1e, hd = 0xd0560e, iris = 0x6a3a14, wh = 0xf4f0e8;
+    k.b(0.42, 0.46, 0.4, C.skin, 0, -0.01, 0)
+      .b(0.11, 0.048, 0.03, wh, -0.095, 0.03, 0.203).b(0.11, 0.048, 0.03, wh, 0.095, 0.03, 0.203).b(0.055, 0.048, 0.03, iris, -0.09, 0.028, 0.211).b(0.055, 0.048, 0.03, iris, 0.09, 0.028, 0.211)
+      .b(0.024, 0.03, 0.02, 0x140a04, -0.09, 0.028, 0.219).b(0.024, 0.03, 0.02, 0x140a04, 0.09, 0.028, 0.219)
+      .b(0.15, 0.036, 0.04, hd, -0.095, 0.085, 0.216, 0, 0, -0.3).b(0.15, 0.036, 0.04, hd, 0.095, 0.085, 0.216, 0, 0, 0.3)
+      .b(0.035, 0.07, 0.045, C.skin, 0, -0.045, 0.205).b(0.1, 0.016, 0.02, 0x6a3a30, 0, -0.14, 0.2)
+      .t(0.45, 0.43, 0.48, 0.46, 0.14, hair, 0, 0.21, -0.01).b(0.47, 0.36, 0.15, hair, 0, 0.08, -0.2).b(0.07, 0.26, 0.3, hair, -0.222, 0.07, -0.03).b(0.07, 0.26, 0.3, hair, 0.222, 0.07, -0.03)
+      .y(0.2, 0.22, 0.08, 7, C.skin, 0, -0.27, 0).b(0.06, 0.2, 0.04, wh, -0.075, -0.33, 0.2, 0, 0, 0.6).b(0.06, 0.2, 0.04, wh, 0.075, -0.33, 0.2, 0, 0, -0.6).b(0.08, 0.22, 0.04, C.c1, -0.13, -0.34, 0.19, 0, 0, 0.6).b(0.08, 0.22, 0.04, C.c1, 0.13, -0.34, 0.19, 0, 0, -0.6);
+    // a fringe of spikes falling over the brow, spikes thrown up and back over the whole crown, and out over the ears
+    for (const [x, h, rz] of [[-0.18, 0.22, 0.38], [-0.1, 0.21, 0.14], [-0.02, 0.25, -0.04], [0.07, 0.22, -0.16], [0.16, 0.2, -0.36]]) k.c(0.065, h, 4, hair, x, 0.25 - h / 2 + 0.03, 0.22, Math.PI - 0.25, 0, rz);
+    for (let i = 0; i < 11; i++) { const a = i / 11 * TAU, r = 0.16; k.c(0.085, 0.3 + (i % 3) * 0.06, 4, i % 2 ? hair : hd, Math.sin(a) * r, 0.33, Math.cos(a) * r - 0.04, Math.cos(a) * 0.95, 0, -Math.sin(a) * 0.95); }
+    k.c(0.1, 0.34, 4, hair, 0, 0.42, -0.04, -0.3).c(0.09, 0.3, 4, hd, 0, 0.3, -0.24, -1.2);
+    for (const s of [-1, 1]) k.c(0.07, 0.24, 4, hair, s * 0.26, 0.08, -0.06, 0, 0, -s * 1.5).c(0.06, 0.2, 4, hd, s * 0.24, -0.06, -0.12, -0.2, 0, -s * 1.85);
+  },
+  carlotta(k, C) { // a noble gunslinger: long platinum hair with curled ends and long side locks, a big black bow at the back of the head, cool blue eyes; a black choker with an ice gem
+    const hair = C.hair || 0xe8e4ea, hs = 0xcfc8d6, iris = 0x5aa8e0, wh = 0xf6f4f8, bk = 0x111016;
+    k.b(0.42, 0.46, 0.4, C.skin, 0, -0.01, 0)
+      .b(0.11, 0.06, 0.03, wh, -0.095, 0.03, 0.203).b(0.11, 0.06, 0.03, wh, 0.095, 0.03, 0.203).b(0.064, 0.06, 0.03, iris, -0.09, 0.028, 0.211).b(0.064, 0.06, 0.03, iris, 0.09, 0.028, 0.211)
+      .b(0.026, 0.036, 0.02, 0x0c1a2a, -0.09, 0.026, 0.219).b(0.026, 0.036, 0.02, 0x0c1a2a, 0.09, 0.026, 0.219).b(0.02, 0.02, 0.02, 0xffffff, -0.074, 0.05, 0.223).b(0.02, 0.02, 0.02, 0xffffff, 0.106, 0.05, 0.223)
+      .b(0.128, 0.022, 0.035, 0x2a2430, -0.095, 0.064, 0.214, 0, 0, 0.08).b(0.128, 0.022, 0.035, 0x2a2430, 0.095, 0.064, 0.214, 0, 0, -0.08).b(0.03, 0.018, 0.03, 0x2a2430, -0.16, 0.058, 0.212, 0, 0, 0.5).b(0.03, 0.018, 0.03, 0x2a2430, 0.16, 0.058, 0.212, 0, 0, -0.5)
+      .b(0.1, 0.012, 0.02, hs, -0.095, 0.118, 0.206, 0, 0, 0.12).b(0.1, 0.012, 0.02, hs, 0.095, 0.118, 0.206, 0, 0, -0.12)
+      .b(0.03, 0.05, 0.035, C.skin, 0, -0.05, 0.205).b(0.07, 0.018, 0.02, 0xc04a5e, 0, -0.14, 0.2)
+      .t(0.45, 0.43, 0.48, 0.46, 0.16, hair, 0, 0.215, -0.01).b(0.48, 0.5, 0.15, hair, 0, 0.0, -0.2).b(0.08, 0.44, 0.3, hair, -0.224, -0.02, -0.03).b(0.08, 0.44, 0.3, hair, 0.224, -0.02, -0.03)
+      // long hair down the back, curling under at the ends
+      .t(0.48, 0.14, 0.44, 0.12, 0.5, hair, 0, -0.42, -0.24).t(0.44, 0.12, 0.36, 0.1, 0.36, hs, 0, -0.82, -0.26).i(0.09, hair, -0.14, -1.0, -0.25, 1).i(0.09, hs, 0.0, -1.03, -0.26, 1).i(0.09, hair, 0.14, -1.0, -0.25, 1)
+      // side locks to the chest, each ending in a curl
+      .t(0.08, 0.08, 0.06, 0.06, 0.56, hair, -0.215, -0.38, 0.12).t(0.08, 0.08, 0.06, 0.06, 0.56, hair, 0.215, -0.38, 0.12).i(0.062, hs, -0.21, -0.68, 0.13, 1).i(0.062, hs, 0.21, -0.68, 0.13, 1)
+      // the bow: two loops, a knot and two tails behind the crown
+      .b(0.25, 0.17, 0.07, bk, -0.16, 0.22, -0.27, 0, 0.25, 0.3).b(0.25, 0.17, 0.07, bk, 0.16, 0.22, -0.27, 0, -0.25, -0.3).b(0.09, 0.1, 0.09, bk, 0, 0.2, -0.28).b(0.07, 0.32, 0.03, bk, -0.06, 0.0, -0.31, 0, 0, 0.25).b(0.07, 0.32, 0.03, bk, 0.06, 0.0, -0.31, 0, 0, -0.25)
+      .y(0.2, 0.22, 0.08, 7, C.skin, 0, -0.27, 0).y(0.205, 0.225, 0.035, 7, bk, 0, -0.27, 0).o(0.032, C.GL, 0, -0.285, 0.215, 1, 1.4, 0.6);
+    for (const [x, h, rz] of [[-0.17, 0.18, 0.25], [-0.09, 0.15, 0.12], [-0.01, 0.13, 0], [0.07, 0.15, -0.12], [0.16, 0.18, -0.25]]) k.t(0.09, 0.05, 0.07, 0.03, h, hair, x, 0.25 - h / 2, 0.214, 0.08, 0, rz);
   }
 };
 
@@ -469,6 +539,11 @@ function buildHero(L, teamColor) {
       if (thi) {   // bare thighs with a dark garter band and a bright clasp, over-knee stockings with a pale cuff, low shoes
         kt.t(0.27 * b, 0.3 * b, 0.23 * b, 0.25 * b, 0.52 * H, skin, 0, -0.25 * H, 0).b(0.285 * b, 0.05, 0.3 * b, dk, 0, -0.22 * H, 0).b(0.05, 0.06, 0.04, GL, sd * 0.1 * b, -0.22 * H, 0.15 * b); kt.into(leg, mat, gmat);
         const ks = kit(); ks.t(0.24 * b, 0.26 * b, 0.19 * b, 0.21 * b, 0.5 * H, dk, 0, -0.25 * H, 0).b(0.255 * b, 0.04, 0.275 * b, 0xe8e4de, 0, -0.03 * H, 0).b(0.25 * b, 0.13, 0.44 * b, 0x0c0b10, 0, -0.5 * H + 0.03, 0.07).b(0.26 * b, 0.03, 0.46 * b, L.tie || c3, 0, -0.5 * H - 0.03, 0.07); ks.into(shin, mat, gmat);
+        continue;
+      }
+      if (L.legs === 'hakama') {   // wide black trousers pleated to the ankle, white tabi socks and straw sandals
+        kt.t(0.32 * b, 0.34 * b, 0.4 * b, 0.42 * b, 0.54 * H, c2, 0, -0.25 * H, 0).b(0.03, 0.5 * H, 0.03, 0x2a2a32, 0, -0.25 * H, 0.2 * b); kt.into(leg, mat, gmat);
+        const ks = kit(); ks.t(0.4 * b, 0.42 * b, 0.47 * b, 0.49 * b, 0.42 * H, c2, 0, -0.19 * H, 0).b(0.2 * b, 0.11, 0.34 * b, 0xf4f0e8, 0, -0.46 * H, 0.05).b(0.24 * b, 0.04, 0.46 * b, 0xc8a868, 0, -0.5 * H - 0.02, 0.07).b(0.03, 0.06, 0.18, 0x6a1418, 0, -0.46 * H, 0.16); ks.into(shin, mat, gmat);
         continue;
       }
       if (sho) {   // shorts over bare knees, short boots with a bright cuff
@@ -594,6 +669,33 @@ function buildHero(L, teamColor) {
         .b(0.54 * b, hip * 0.62, 0.03, ap, 0, -hip * 0.42, 0.5 * b, -0.33);
       for (let i = 0; i < 5; i++) kb.b(0.055, 0.012, 0.03, tk, -0.12 * b, 0.6 + i * 0.09, 0.282 * b).b(0.055, 0.012, 0.03, tk, 0.12 * b, 0.68 + i * 0.08, 0.282 * b);
       break; }
+    // an elf mage's white dress: a capelet over the shoulders edged in gold with a red gem clasp, two gold lines down the front, a brown belt, a white skirt with a gold hem
+    case 'elf': { const gold = met;
+      kb.t(1.0 * b, 0.62 * b, 0.8 * b, 0.55 * b, 0.34, c1, 0, 0.93, 0).b(0.82 * b, 0.04, 0.57 * b, gold, 0, 0.76, 0).b(0.84 * b, 0.03, 0.59 * b, gold, 0, 1.08, 0)
+        .b(0.03, 0.56, 0.03, gold, -0.08 * b, 0.48, 0.262 * b).b(0.03, 0.56, 0.03, gold, 0.08 * b, 0.48, 0.262 * b).b(0.12, 0.1, 0.05, gold, 0, 0.98, 0.31 * b).o(0.045, { g: 0xff3048 }, 0, 0.98, 0.34 * b, 1, 1.3, 0.5)
+        .b(0.76 * b, 0.08, 0.52 * b, 0x4a3426, 0, 0.2, 0).b(0.1, 0.09, 0.06, gold, 0, 0.2, 0.27 * b)
+        .y(0.4 * b, 0.55 * b, 0.52, 10, c1, 0, -0.11, 0).y(0.555 * b, 0.575 * b, 0.04, 10, gold, 0, -0.36, 0); break; }
+    // Zero's suit: a dark violet chest plate between gold pipings, a belt with a red gem, short coat tails with gold edges
+    case 'zero': { const gold = met;
+      kb.b(0.5 * b, 0.5, 0.05, c2, 0, 0.74, 0.245 * b).b(0.035, 0.8, 0.03, gold, -0.2 * b, 0.62, 0.27 * b, 0, 0, 0.12).b(0.035, 0.8, 0.03, gold, 0.2 * b, 0.62, 0.27 * b, 0, 0, -0.12)
+        .b(0.42 * b, 0.035, 0.03, gold, 0, 0.98, 0.27 * b).b(0.3 * b, 0.035, 0.03, gold, 0, 0.5, 0.27 * b).b(0.03, 0.4, 0.03, gold, 0, 0.74, 0.272 * b)
+        .b(0.78 * b, 0.1, 0.52 * b, c3, 0, 0.22, 0).b(0.13, 0.12, 0.06, gold, 0, 0.22, 0.27 * b).o(0.05, GL, 0, 0.22, 0.3 * b, 1, 1.2, 0.5)
+        .t(0.66 * b, 0.46 * b, 0.76 * b, 0.54 * b, 0.4, c1, 0, -0.02, 0).b(0.05, 0.4, 0.04, gold, -0.34 * b, -0.02, 0.24 * b).b(0.05, 0.4, 0.04, gold, 0.34 * b, -0.02, 0.24 * b); break; }
+    // a soul reaper's black kimono: a white undercollar crossing in a V, the overlapping front flap, a dark sash with a white edge, and the red strap that carries the great sword, crossing chest and back
+    case 'shihaku': { const wh = 0xf4f0e8, strap = c3;
+      kb.b(0.06, 0.5, 0.03, wh, -0.1 * b, 0.84, 0.258 * b, 0, 0, 0.42).b(0.06, 0.5, 0.03, wh, 0.1 * b, 0.84, 0.258 * b, 0, 0, -0.42).b(0.1, 0.62, 0.04, c1, -0.04 * b, 0.56, 0.262 * b, 0, 0, -0.3)
+        .b(0.8 * b, 0.12, 0.54 * b, 0x2a2a30, 0, 0.18, 0).b(0.81 * b, 0.03, 0.55 * b, wh, 0, 0.24, 0)
+        .b(0.08, 1.1, 0.05, strap, 0, 0.62, 0.275 * b, 0, 0, 0.62).b(0.08, 1.1, 0.05, strap, 0, 0.62, -0.262 * b, 0, 0, -0.62).b(0.1, 0.1, 0.06, 0x8a6a3a, 0.22 * b, 0.92, 0.285 * b)
+        .t(0.66 * b, 0.46 * b, 0.74 * b, 0.52 * b, 0.32, c1, 0, 0.02, 0); break; }
+    // a cropped pink jacket worn open over a white dress, gold-edged fronts, a black ribbon at the throat, a black waist band, a short flared white skirt with a pink hem and a jacket tail behind
+    case 'carlo': { const wh = L.shirt || 0xf4f2f6, gold = met, bk = 0x111016;
+      kb.b(0.3 * b, 0.86, 0.05, wh, 0, 0.62, 0.238 * b).b(0.12, 0.62, 0.06, c1, -0.2 * b, 0.78, 0.25 * b, 0, 0, -0.12).b(0.12, 0.62, 0.06, c1, 0.2 * b, 0.78, 0.25 * b, 0, 0, 0.12)
+        .b(0.035, 0.62, 0.03, gold, -0.145 * b, 0.78, 0.282 * b, 0, 0, -0.12).b(0.035, 0.62, 0.03, gold, 0.145 * b, 0.78, 0.282 * b, 0, 0, 0.12)
+        .b(0.15, 0.1, 0.05, bk, 0, 1.0, 0.27 * b).b(0.05, 0.16, 0.03, bk, -0.04, 0.9, 0.275 * b, 0, 0, 0.3).b(0.05, 0.16, 0.03, bk, 0.04, 0.9, 0.275 * b, 0, 0, -0.3).o(0.042, GL, 0, 1.0, 0.3 * b, 1, 1.3, 0.5)
+        .b(0.76 * b, 0.08, 0.52 * b, bk, 0, 0.3, 0).b(0.08, 0.08, 0.06, gold, 0, 0.3, 0.27 * b)
+        .y(0.42 * b, 0.76 * b, 0.36, 12, wh, 0, -0.04, 0).y(0.76 * b, 0.8 * b, 0.045, 12, c1, 0, -0.21, 0).t(0.5 * b, 0.06, 0.82 * b, 0.06, 0.66, c1, 0, 0.18, -0.31 * b, 0.25);
+      for (let i = 0; i < 12; i++) { const a = (i + 0.5) / 12 * TAU; kb.b(0.03, 0.3, 0.03, 0xe0dce6, Math.sin(a) * 0.6 * b, -0.05, Math.cos(a) * 0.6 * b, -Math.cos(a) * 0.62, 0, Math.sin(a) * 0.62); }
+      break; }
     case 'bare': kb.b(0.1, 1.02, 0.05, c3, 0, 0.62, 0.25 * b, 0, 0, 0.62).b(0.035, 0.34, 0.03, GL, -0.24 * b, 0.82, 0.255 * b, 0, 0, -0.3).b(0.035, 0.34, 0.03, GL, 0.24 * b, 0.82, 0.255 * b, 0, 0, 0.3).b(0.035, 0.2, 0.03, GL, 0, 0.44, 0.215 * b); break;
   }
   /* --- back --- */
@@ -676,7 +778,7 @@ function buildHero(L, teamColor) {
     ka.into(arm, mat, gmat);
     const kf = s < 0 ? kfL : kfR;
     if (L.bones) kf.b(0.065, 0.42, 0.065, c1, 0.035, -0.22, 0).b(0.05, 0.42, 0.05, c1, -0.04, -0.22, 0).b(0.14, 0.14, 0.12, c1, 0, HY, 0).b(0.17, 0.07, 0.15, c3, 0, -0.38, 0); else
-    kf.t(0.22 * ab, 0.24 * ab, 0.18 * ab, 0.2 * ab, 0.44, armC, 0, -0.2, 0).b(0.25 * ab, 0.22, 0.27 * ab, bareC ? c3 : (L.sh === 'plate' || L.sh === 'spike' ? met : c3), 0, -0.24, 0).b(0.18 * ab, 0.16, 0.2 * ab, L.weapon === 'fists' ? c2 : (L.hands || (bareC ? skin : c3)), 0, HY, 0);
+    kf.t(0.22 * ab, 0.24 * ab, 0.18 * ab, 0.2 * ab, 0.44, armC, 0, -0.2, 0).b(0.25 * ab, 0.22, 0.27 * ab, bareC ? c3 : (L.sh === 'plate' || L.sh === 'spike' ? met : (L.cuff || c3)), 0, -0.24, 0).b(0.18 * ab, 0.16, 0.2 * ab, L.weapon === 'fists' ? c2 : (L.hands || (bareC ? skin : c3)), 0, HY, 0);
     if (L.sh === 'plate' || L.sh === 'spike') kf.b(0.03, 0.2, 0.03, GL, s * 0.13 * ab, -0.24, 0);
   }
   /* --- weapons: the blade runs along +z from the hand. Hand-held ones go into wrist groups (kwR / kwL) so the grip can turn;
@@ -794,6 +896,27 @@ function buildHero(L, teamColor) {
       kwR.b(0.07, 0.16, 0.1, wd, 0, HY - 0.03, -0.02, 0.4).b(0.07, 0.08, 0.4, wd, 0, HY + 0.02, 0.2).y(0.032, 0.036, 0.5, 6, 0x3a3c46, 0, HY + 0.07, 0.36, HPI).y(0.04, 0.04, 0.06, 6, met, 0, HY + 0.07, 0.5, HPI).y(0.04, 0.04, 0.05, 6, GL, 0, HY + 0.07, 0.62, HPI).b(0.03, 0.08, 0.06, met, 0, HY + 0.13, 0.12).o(0.03, GL, 0, HY + 0.12, 0.06);
       kwL.b(0.07, 0.14, 0.5, wd, 0, HY - 0.02, -0.2, 0.12).b(0.075, 0.09, 0.8, wd, 0, HY + 0.02, 0.3).y(0.03, 0.036, 1.5, 6, 0x3a3c46, 0, HY + 0.075, 0.75, HPI).y(0.04, 0.04, 0.07, 6, met, 0, HY + 0.075, 1.2, HPI).y(0.04, 0.04, 0.07, 6, met, 0, HY + 0.075, 0.85, HPI).y(0.045, 0.045, 0.06, 6, GL, 0, HY + 0.075, 1.5, HPI).b(0.03, 0.09, 0.07, met, 0, HY + 0.14, 0.1).o(0.03, GL, 0, HY + 0.13, 0.03)
         .b(0.085, 0.03, 0.06, met, 0, HY + 0.02, 0.55).b(0.085, 0.03, 0.06, met, 0, HY + 0.02, 0.2); break; }
+    // the elf's staff: a long pale shaft with gold bands, at the head an open gold crescent cradling a red gem (the gem's glow is added below as rig.gem)
+    case 'elfstaff': { const sh = 0xe6dcc4, gold = 0xd8b04a;
+      wpn().y(0.038, 0.048, 2.5, 6, sh, 0, 0.5, 0.14).y(0.058, 0.058, 0.08, 6, gold, 0, 1.62, 0.14).y(0.055, 0.055, 0.06, 6, gold, 0, 1.18, 0.14).y(0.052, 0.04, 0.12, 6, gold, 0, -0.78, 0.14).y(0.07, 0.05, 0.1, 6, gold, 0, 1.72, 0.14);
+      for (let i = 0; i < 11; i++) { const a = 0.75 + i / 10 * (TAU - 1.5); wk.b(0.05, 0.1, 0.06, gold, Math.sin(a) * 0.25, 1.98 + Math.cos(a) * 0.25, 0.14, 0, 0, -a); }
+      for (const s of [-1, 1]) wk.c(0.035, 0.18, 4, gold, s * 0.2, 2.27, 0.14, 0, 0, -s * 0.5).o(0.03, { g: 0xffe8a0 }, s * 0.27, 2.36, 0.14);
+      wk.i(0.11, { g: 0xff3048 }, 0, 1.98, 0.14, 1).y(0.02, 0.02, 0.18, 4, gold, 0, 1.81, 0.14); break; }
+    // a black chess king held up between the fingers: a gold rim at the base and the collar, a gold cross on top
+    case 'king': { wiR = -0.4; const bk = 0x101016, gold = met;
+      kwR.y(0.075, 0.085, 0.04, 10, bk, 0, HY, 0.07, HPI).y(0.088, 0.088, 0.015, 10, gold, 0, HY, 0.05, HPI).y(0.042, 0.068, 0.2, 10, bk, 0, HY, 0.19, HPI).y(0.072, 0.06, 0.035, 10, gold, 0, HY, 0.3, HPI)
+        .y(0.052, 0.07, 0.08, 10, bk, 0, HY, 0.36, HPI).b(0.025, 0.025, 0.13, gold, 0, HY, 0.46).b(0.025, 0.09, 0.025, gold, 0, HY, 0.48).o(0.025, GL, 0, HY, 0.4); break; }
+    // Zangetsu: a cleaver nearly as long as he is tall, no guard, a black hilt wound with white cloth whose end trails loose; a glowing edge of spiritual pressure
+    case 'zangetsu': { wiR = -0.45; const st = 0xd8dee6, sp = 0x3a3e48, cl = 0xf0ece0;
+      kwR.b(0.07, 0.07, 0.52, 0x15151a, 0, HY, 0.0).b(0.078, 0.078, 0.04, cl, 0, HY, -0.16).b(0.078, 0.078, 0.04, cl, 0, HY, -0.04).b(0.078, 0.078, 0.04, cl, 0, HY, 0.08).b(0.078, 0.078, 0.04, cl, 0, HY, 0.2)
+        .b(0.04, 0.42, 0.07, cl, 0, HY - 0.22, -0.28, 0.45).b(0.04, 0.34, 0.06, cl, 0, HY - 0.5, -0.42, 0.25).b(0.04, 0.26, 0.05, cl, 0, HY - 0.76, -0.47, 0.1)
+        .b(0.05, 0.4, 1.6, st, 0, HY + 0.06, 1.08).b(0.058, 0.08, 1.62, sp, 0, HY + 0.24, 1.08).b(0.03, 0.035, 1.5, 0xffffff, 0, HY - 0.13, 1.05).b(0.035, 0.03, 1.4, GL, 0.02, HY - 0.15, 1.05)
+        .b(0.05, 0.3, 0.38, st, 0, HY + 0.12, 1.94, 0.7).b(0.058, 0.07, 0.4, sp, 0, HY + 0.27, 1.86, 0.0); break; }
+    // an ornate white pistol: a gold rib along the top, a long barrel with a gold muzzle ring, crystal seams lit along both sides, a crystal over the hammer
+    case 'crystalgun': { wiR = 0.68; const wh = 0xf2f0f4, gold = met, ice = { g: 0x8fe0ff };
+      kwR.b(0.07, 0.16, 0.1, 0x2a2830, 0, HY - 0.03, -0.02, 0.35).b(0.08, 0.11, 0.42, wh, 0, HY + 0.05, 0.19).b(0.085, 0.035, 0.44, gold, 0, HY + 0.115, 0.19)
+        .y(0.035, 0.042, 0.32, 6, 0xc8ccd8, 0, HY + 0.06, 0.53, HPI).y(0.046, 0.046, 0.045, 6, gold, 0, HY + 0.06, 0.68, HPI).b(0.02, 0.05, 0.36, ice, 0.046, HY + 0.05, 0.22).b(0.02, 0.05, 0.36, ice, -0.046, HY + 0.05, 0.22)
+        .o(0.05, ice, 0, HY + 0.16, 0.05, 1, 1.6, 0.8).b(0.03, 0.06, 0.08, gold, 0, HY - 0.06, 0.1); break; }
     // cyber arms: chrome forearms under coloured plates, lit seams, a piston at the elbow, heavy knuckle plates
     case 'gorilla': for (const k of [kfL, kfR]) k.b(0.3 * ab, 0.34, 0.32 * ab, met, 0, -0.22, 0).b(0.34 * ab, 0.07, 0.36 * ab, c1, 0, -0.08, 0).b(0.33 * ab, 0.28, 0.35 * ab, 0x2a2d33, 0, HY + 0.02, 0.01).b(0.3 * ab, 0.08, 0.07, c1, 0, HY - 0.02, 0.19 * ab)
       .b(0.035, 0.26, 0.035, GL, -0.16 * ab, -0.24, 0.02).b(0.035, 0.26, 0.035, GL, 0.16 * ab, -0.24, 0.02).y(0.05, 0.05, 0.3, 6, 0x8a8f98, 0, -0.2, -0.17 * ab).o(0.05, GL, 0, HY + 0.06, 0.19 * ab, 1.6, 0.7, 0.6); break;
@@ -841,6 +964,20 @@ function buildHero(L, teamColor) {
     const cg = grp(head, -0.07, -0.135, 0.21), kc = kit(); cg.rotation.set(0.28, -0.35, 0); kc.y(0.016, 0.016, 0.24, 6, 0xf0ece4, 0, 0, 0.12, HPI).y(0.017, 0.017, 0.06, 6, 0xc98a3a, 0, 0, 0.02, HPI).y(0.017, 0.017, 0.03, 6, { g: 0xff7a2a }, 0, 0, 0.25, HPI); kc.into(cg, mat, gmat);
     const em = glowSprite(0xff7a2a, 0.12); em.position.z = 0.26; cg.add(em); cg.visible = false; rig.cig = cg;
     const eg = glowSprite(0x9ad8ff, 0.2); eg.position.set(-0.09, 0.035, 0.24); head.add(eg); rig.eyeG = eg;
+  }
+  if (L.weapon === 'elfstaff') { const s = glowSprite(0xff4058, 0.8); s.position.set(0, 1.98, 0.14); rig.wpn.add(s); rig.gem = s; }
+  if (L.weapon === 'crystalgun') { const s = glowSprite(L.glow, 0.1); s.position.set(0, 0.06, 0.72); handR.add(s); rig.pmz = s; }
+  if (L.weapon === 'zangetsu') rig.tipR = new THREE.Vector3(0, 0.1, 2.05);
+  if (L.head === 'lelouch') { const s = glowSprite(0xff2a3a, 0.16); s.position.set(0.09, 0.033, 0.24); head.add(s); rig.geassEye = s; }
+  if (L.head === 'ichigo') {   // the hollow's mask, hidden until the hollow form: a bone-white face with black eye holes and yellow irises, red stripes down its left side, a grin of teeth, two horns curving forward from the brow
+    const hm = grp(head, 0, 0, 0), k = kit(), bone = 0xf2efe6, red = 0xb8101e, ink = 0x08080a, yel = { g: 0xffd23a };
+    k.b(0.47, 0.5, 0.07, bone, 0, 0.0, 0.215).t(0.44, 0.08, 0.46, 0.12, 0.16, bone, 0, -0.26, 0.19).b(0.47, 0.12, 0.3, bone, 0, 0.2, 0.1)
+      .b(0.13, 0.08, 0.03, ink, -0.095, 0.03, 0.255).b(0.13, 0.08, 0.03, ink, 0.095, 0.03, 0.255).b(0.04, 0.04, 0.02, yel, -0.095, 0.03, 0.27).b(0.04, 0.04, 0.02, yel, 0.095, 0.03, 0.27)
+      .b(0.04, 0.48, 0.02, red, 0.05, -0.01, 0.255).b(0.04, 0.44, 0.02, red, 0.155, -0.02, 0.255).b(0.03, 0.22, 0.02, red, 0.205, 0.1, 0.248)
+      .b(0.32, 0.06, 0.02, ink, 0, -0.16, 0.255);
+    for (let i = -4; i <= 4; i++) k.b(0.014, 0.065, 0.025, bone, i * 0.034, -0.16, 0.262);
+    for (const s of [-1, 1]) k.c(0.065, 0.42, 5, bone, s * 0.21, 0.36, 0.08, 0.5, 0, -s * 0.45).c(0.045, 0.3, 5, bone, s * 0.29, 0.62, 0.22, 1.15, 0, -s * 0.3).c(0.02, 0.2, 4, red, s * 0.31, 0.68, 0.32, 1.4, 0, -s * 0.3);
+    k.into(hm, mat, gmat); hm.visible = false; rig.hmask = hm;
   }
   if (L.weapon === 'aurafist') { const s = glowSprite(L.glow, 1); s.position.set(0, -0.04, 0.04); handR.add(s); rig.fistG = s; }
   if (L.weapon === 'sign') { const s = glowSprite(L.glow, 0.8); s.position.set(0, 0, 0.34); handR.add(s); rig.spark = s; }
@@ -980,6 +1117,7 @@ function animHero(u, dt) {
   else if (wc === 'kagune') { aL = aR = 0.16; eL = eR = -0.5; }                                // hands loose and a little behind: the tentacles are the weapon
   else if (wc === 'twin') { aR = -0.25; eR = -2.0; aL = 0.1; eL = -0.25; if (!(a.atkT > 0)) a.tw = undefined; }   // pistol held muzzle-up at the shoulder, musket carried low
   else if (wc === 'scribe') { aL = -0.5; eL = -1.5; aR = 0.06; eR = -0.5; }                    // the open notebook is carried at the chest, the pen hand hangs ready
+  else if (wc === 'pistol') { aR = -0.25; eR = -2.0; aL = 0.12; eL = -0.4; }                    // the pistol carried muzzle-up at the shoulder, the other hand loose
   else if (wc === 'ghoul') { aL = aR = 0.1; eL = eR = -0.75; hx = 0.12; }           // a death god hangs in the air hunched, long arms dangling
   if (u.moving) {
     a.walk += dt * (u.ms || 8) * 1.25; const w = a.walk, s = Math.sin(w), c = Math.cos(w);
@@ -990,6 +1128,7 @@ function animHero(u, dt) {
     if (wc === 'stand') { aL = 0.24 - s * 0.1; aR = 0.24 + s * 0.1; eL = eR = -0.66; }
     if (wc === 'scribe') { aL = -0.5 + s * 0.05; eL = -1.5; }
     if (wc === 'twin') { aR = -0.25; eR = -2.0; aL = 0.1 - s * 0.08; eL = -0.25; }
+    if (wc === 'pistol') { aR = -0.25; eR = -2.0; }
     if (wc === 'ghoul') { lL = lR = 0.35; kL = kR = 0.5; aL = aR = 0.5; eL = eR = -0.4; brx = 0.25; by = 0; }   // it does not walk, it glides
   } else { by = Math.sin(t * 2 + u.id) * 0.03; aL += Math.sin(t * 1.6 + u.id) * 0.05; aR -= Math.sin(t * 1.6 + u.id) * 0.05; hy = Math.sin(t * 0.7 + u.id * 1.3) * 0.14; brx = Math.sin(t * 2 + u.id) * 0.015; }
   if (u.spinning) { aL = -1.5; aR = -1.5; eL = eR = -0.1; brx = 0.1; }
@@ -1024,6 +1163,8 @@ function animHero(u, dt) {
       case 'twin': { if (a.tw === undefined) a.tw = a.alt; const s = Math.sin(Math.PI * Math.min(1, p * 1.25)), kk = p > 0.42 ? 1 - q3 : 0;
         if (a.tw) { aL = lerp(aL, -1.5, s) + 0.25 * kk; eL = lerp(eL, -0.05, s); wL = lerp(wL, 1.5, s) - 0.3 * kk; bry = -0.32 * s; } else { aR = lerp(aR, -1.5, s) + 0.3 * kk; eR = lerp(eR, -0.05, s); wR = lerp(wR, 1.5, s) - 0.35 * kk; bry = 0.3 * s; }
         kick = kk; break; }
+      // one pistol: the arm snaps level, the shot kicks it up, it comes back to the shoulder
+      case 'pistol': { const s = Math.sin(Math.PI * Math.min(1, p * 1.25)), kk = p > 0.42 ? 1 - q3 : 0; aR = lerp(aR, -1.5, s) + 0.3 * kk; eR = lerp(eR, -0.05, s); wR = lerp(wR, 1.5, s) - 0.35 * kk; bry = 0.32 * s; kick = kk; break; }
       // a stroke of the pen: the hand whips up across the body and snaps out toward the target
       case 'scribe': { const up = p < 0.42 ? easeOut(q1) : 1 - q3, out = p < 0.42 ? 0 : (p < 0.62 ? q2 : 1 - q3); aR = -1.0 * up - 0.7 * out; eR = lerp(-0.5, -1.9, up) + 1.75 * out; bry = -0.3 * up + 0.65 * out; wR = lerp(-0.3, 0.9, out); hx = 0.08 * up; break; }
       case 'ghoul': { const s = Math.sin(Math.PI * p); aL = aR = -1.9 * s; eL = eR = -0.75 + 0.6 * s; brx = 0.22 + 0.3 * s; break; }
@@ -1105,6 +1246,31 @@ function animHero(u, dt) {
       // a roar: arms flung back and wide, chest and chin thrown forward
       case 'roar': { const q = Math.min(1, p / 0.18) * (p > 0.75 ? 1 - (p - 0.75) / 0.25 : 1), sh = Math.sin(t * 46) * 0.03 * q; aL = aR = 0.75 * q + sh; eL = eR = -0.28 - 0.9 * q; brx = -0.22 * q; hx = -0.42 * q; kL = kR = 0.06 + 0.35 * q; lL = lR = -0.16 * q; by -= 0.06 * q; break; }
       case 'cut': { const q = p < 0.3 ? easeOut(p / 0.3) : 1 - (p - 0.3) / 0.7; aR = -2.6 * q; eR = -0.15 - 1.1 * q; bry = lerp(-0.55, 0.7, p); brx = 0.22; wR = lerp(-0.4, 0.5, p); break; }
+      // Zoltraak: the staff levelled at the enemy like a lance, the free hand steadying the shaft
+      case 'zolt': { const q = Math.min(1, p / 0.2), o = p > 0.8 ? (p - 0.8) / 0.2 : 0, kk = p > 0.3 && p < 0.55 ? Math.sin(Math.PI * (p - 0.3) / 0.25) : 0; aR = lerp(-0.3, -1.45, q * (1 - o)) + 0.12 * kk; eR = lerp(-0.55, -0.15, q * (1 - o)); aL = lerp(0, -1.2, q * (1 - o)); eL = lerp(-0.28, -0.9, q * (1 - o)); wx = 1.5 * q * (1 - o); bry = 0.18 * q * (1 - o); brx = 0.1 * q - 0.08 * kk; break; }
+      // the flower field: the staff planted before her, a slight bow
+      case 'bloom': { const q = Math.sin(Math.PI * Math.min(1, p * 1.1)); aR = lerp(-0.3, -0.95, q); eR = lerp(-0.55, -0.5, q); aL = -0.5 * q; eL = -1.2 * q - 0.2; brx = 0.22 * q; hx = 0.25 * q; kL = kR = 0.06 + 0.2 * q; wx = 0.32 * q; break; }
+      // defensive magic: the staff held upright before the chest in both hands
+      case 'barrier': { const q = Math.min(1, p / 0.15) * (p > 0.8 ? 1 - (p - 0.8) / 0.2 : 1); aR = lerp(-0.3, -1.05, q); eR = lerp(-0.55, -1.25, q); aL = -0.95 * q; eL = -1.45 * q - 0.2; wx = 0.45 * q; brx = -0.08 * q; break; }
+      // the barrage: the staff raised high overhead and held there while the circles fire, the other hand flung out
+      case 'volley': { const q = Math.min(1, p / 0.2), o = p > 0.88 ? (p - 0.88) / 0.12 : 0; aR = lerp(-0.3, -2.8, q * (1 - o)); eR = -0.2; aL = lerp(0, -1.1, q * (1 - o)); eL = -0.3; wx = 0.7 * q; brx = -0.12 * q; hx = -0.35 * q * (1 - o); by += 0.08 * q * (1 - o); break; }
+      // an order: the arm swept out level at the target, the body turned behind it, the cape flaring
+      case 'command': { const q = Math.min(1, p / 0.18), o = p > 0.75 ? (p - 0.75) / 0.25 : 0; aR = lerp(-0.35, -1.55, q * (1 - o)); eR = lerp(-0.8, -0.05, q * (1 - o)); wR = 1.2 * q * (1 - o); aL = 0.3 * q; eL = -0.5; bry = 0.42 * q * (1 - o); brx = -0.06 * q; hx = -0.1 * q; break; }
+      // castling: both arms opened wide and swept across
+      case 'castle': { const q = Math.sin(Math.PI * Math.min(1, p * 1.1)); aL = -1.2 * q; aR = -1.2 * q; eL = eR = -0.3 - 0.9 * (1 - q); bry = Math.sin(p * TAU) * 0.35; brx = -0.12 * q; break; }
+      // the geass: the left hand spread over the face, the eye between the fingers; then the right arm thrown out at the victim
+      case 'geass': { const q = Math.min(1, p / 0.18), rel = p > 0.55 ? Math.min(1, (p - 0.55) / 0.1) : 0, o = p > 0.88 ? (p - 0.88) / 0.12 : 0; aL = lerp(0.1, -1.0, q) * (1 - o); eL = lerp(-0.3, -2.45, q) * (1 - o) - 0.3 * o; wL = -0.4 * q; aR = lerp(-0.35, -1.55, rel) * (1 - o); eR = lerp(-0.8, -0.05, rel); wR = 1.2 * rel; hx = 0.12 * q - 0.2 * rel; bry = 0.35 * rel * (1 - o); brx = -0.1 * rel; break; }
+      // Getsuga Tensho: the great blade wound up high behind the shoulder, then driven down across the body
+      case 'getsuga': { const w = p < 0.35 ? easeOut(p / 0.35) : 1, st = p < 0.35 ? 0 : (p < 0.55 ? (p - 0.35) / 0.2 : 1), o = p > 0.7 ? (p - 0.7) / 0.3 : 0;
+        aR = lerp(lerp(-0.35, -3.0, w), -0.4, st) * (1 - o); eR = lerp(-0.4, -0.08, st); bry = lerp(-0.7 * w, 0.85, st) * (1 - o); brx = lerp(-0.1 * w, 0.42, st) * (1 - o); aL = -0.6 * w * (1 - o); eL = -0.9; kL = kR = 0.06 + 0.4 * st * (1 - o); lL = -0.35 * st * (1 - o); lR = 0.3 * st * (1 - o); by -= 0.12 * st * (1 - o); wR = lerp(-0.4, 0.4, st); break; }
+      // the hollow comes out: the hand clawed down over the face as the mask forms, then the head thrown back in a roar
+      case 'hollow': if (p < 0.5) { const q = Math.min(1, p / 0.2); aL = -0.95 * q; eL = -2.5 * q; wL = -0.5 * q; hx = 0.3 * q; brx = 0.3 * q; kL = kR = 0.06 + 0.3 * q; bry = Math.sin(t * 40) * 0.03 * q; }
+        else { const q = Math.min(1, (p - 0.5) / 0.12), o = p > 0.85 ? (p - 0.85) / 0.15 : 0, sh = Math.sin(t * 46) * 0.03 * (1 - o); aL = lerp(-0.95, 0.75, q) * (1 - o) + sh; eL = lerp(-2.5, -1.2, q) * (1 - o); aR = 0.6 * q * (1 - o); eR = -1.0; brx = lerp(0.3, -0.25, q) * (1 - o); hx = lerp(0.3, -0.5, q) * (1 - o); kL = kR = 0.06 + 0.35 * q * (1 - o); by -= 0.06 * q; } break;
+      // a snap of the fingers raised beside the face
+      case 'snap': { const q = Math.min(1, p / 0.2) * (p > 0.75 ? 1 - (p - 0.75) / 0.25 : 1); aL = -1.35 * q; eL = -1.35 * q - 0.3; wL = 0.4 * q; hx = -0.08 * q; hy = 0.2 * q; bry = -0.15 * q; break; }
+      // the finale: the pistol raised before the face as the crystal gathers, then levelled and fired
+      case 'finale': { const q = Math.min(1, p / 0.2), lv = p > 0.5 ? Math.min(1, (p - 0.5) / 0.08) : 0, kk = p > 0.6 ? Math.max(0, 1 - (p - 0.6) / 0.3) : 0, o = p > 0.9 ? (p - 0.9) / 0.1 : 0;
+        aR = lerp(lerp(-0.25, -1.05, q), -1.55, lv) * (1 - o) + 0.45 * kk; eR = lerp(lerp(-2.0, -2.2, q), -0.05, lv); wR = lerp(lerp(0.68, 0.15, q), 1.5, lv) - 0.5 * kk; aL = lerp(0.12, -1.2, lv) * (1 - o); eL = lerp(-0.4, -0.3, lv); bry = 0.4 * lv * (1 - o); hx = -0.2 * q * (1 - lv); kick = kk; break; }
       // two fingers raised before the face
       case 'sign': aR = -0.95; eR = -1.9; aL = 0.25; eL = -0.35; hx = 0.08; wR = -0.2; break;
       // hands drawn apart, brought together in front of the chest, then the right hand drives the sphere forward
@@ -1168,6 +1334,10 @@ function animHero(u, dt) {
   // a coach's "champion hour": whoever carries it stands a head taller for as long as it lasts
   if (u.pumpT !== undefined && !r.exo && !r.hairG) r.root.scale.setScalar(r.root.scale.x + ((u.pumpT > t ? r.sc0 * 1.14 : r.sc0) - r.root.scale.x) * Math.min(1, dt * 6));
   if (r.spark) r.spark.scale.setScalar(0.8 + Math.sin(t * 5 + (u.id || 0)) * 0.12 + (a.castT > 0 ? 1 : 0));
+  if (r.gem) r.gem.scale.setScalar(0.75 + Math.sin(t * 3 + (u.id || 0)) * 0.08 + (a.castT > 0 ? 0.9 : 0));
+  if (r.pmz) r.pmz.scale.setScalar(0.1 + kick * 2.6);
+  if (r.geassEye) r.geassEye.scale.setScalar(u.geassCast > t ? 0.9 + Math.sin(t * 30) * 0.25 : 0.16 + Math.sin(t * 2.6 + (u.id || 0)) * 0.03);
+  if (r.hmask) r.hmask.visible = u.hollowT > t;
   if (r.orbit) r.orbit.rotation.y += dt * 1.6;
   if (r.orb) r.orb.position.y += (1.05 + Math.sin(t * 2.4) * 0.12 - r.orb.position.y) * 0.2;
 }

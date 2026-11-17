@@ -106,9 +106,9 @@ const DMG_K = {
   mora: 1.4, nox: 1.65, morg: 1.4, aisa: 1.65, zar: 1.85, fenris: 1.2, reiji: 1.4, yuki: 1.85, cassius: 1.45, ragna: 1.5,
   toplak: 1.45, groh: 1.55, grimm: 1.45, brand: 1.6, oriel: 1.1, nisa: 1.2, lira: 1.25, hald: 1.25, kolomba: 1.35, kostyan: 1.38,
   shiro: 1.15, kaisei: 1.65, umbra: 1.6, rampage: 1.0, jin: 1.6, hikaru: 1.6, dash: 1.2, tokiko: 1.1, riku: 1.2, ashen: 1.3, chess: 1.7, mei: 1.25,
-  kagari: 1.0, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1
+  kagari: 1.0, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1, frieren: 1.15, lelouch: 1.3, ichigo: 1.36, carlotta: 1.22
 };
-const HEAL_K = { oriel: 1.9, hald: 1.5, nisa: 2.3, lira: 2.8, kolomba: 2.0, ashen: 2.6, chess: 1.8, kagari: 1.5, lin: 3.0, kwame: 1.6, agafya: 2.2 };
+const HEAL_K = { oriel: 1.9, hald: 1.5, nisa: 2.3, lira: 2.8, kolomba: 2.0, ashen: 2.6, chess: 1.8, kagari: 1.5, lin: 3.0, kwame: 1.6, agafya: 2.2, frieren: 1.6, lelouch: 1.7 };
 function damage(src, tgt, amt, type, o) {
   if (!tgt.alive || tgt.invuln || !(amt > 0)) return 0;
   o = o || {};
@@ -186,6 +186,7 @@ function kill(u, src) {
   u.alive = false; u.dead = true; u.hp = 0; u.deathT = 0; u.anim.deathT = 0;
   for (const b of u.buffs) if (b.fx) b.fx.dead = true;
   u.buffs.length = 0; u.target = null; u.windup = 0; u.dash = null; u.forced = null; u.stunned = false; u.moving = false; u.spinning = false; u.shield = 0; u.yOff = 0; u.sewG = null;
+  if (u.geass) geassEnd(u);
   if (u.kind === 'minion' || u.kind === 'monster') {
     const killer = src && src.kind === 'hero' ? src : null;
     const near = G.heroes.filter(h => h.alive && h.team !== u.team && (u.team !== 2 || (killer && h.team === killer.team)) && udist(h, u) < 17);
@@ -200,6 +201,8 @@ function kill(u, src) {
 }
 function heroDeath(u, src) {
   let killer = src && src.kind === 'hero' ? src : null;
+  // a hero under the geass kills for the one who gave the order
+  if (killer && killer.geass && G.time < killer.geass.until && killer.geass.by.team !== u.team) killer = killer.geass.by;
   if (!killer) { let bt = 0; for (const id in u.dmgBy) if (G.time - u.dmgBy[id] < 10 && u.dmgBy[id] > bt) { const hh = G.heroes.find(h => h.id === +id); if (hh) { killer = hh; bt = u.dmgBy[id]; } } }
   const own = !!killer && killer.team === u.team;   // killed by his own side (someone was in a cyberpsychosis): nobody is paid for it
   u.deaths++; if (!own) G.teams[1 - u.team].kills++;
@@ -322,6 +325,7 @@ function startAttack(u, t) {
 }
 function performHit(u, t) {
   u.windup = 0; const hero = u.kind === 'hero';
+  if (hero && u.range >= 5 && u.def.shootAtk) { u.def.shootAtk(u, t); u.anim.alt = !u.anim.alt; return; }   // a hero with his own kind of shot (a flying crescent, a crystal bullet)
   if (u.range < 5) {
     basicHit(u, t);
     if ((hero && !u.def.noSlash) || u.boss) { FX.slash(u.x + Math.sin(u.facing) * 1.3, u.z + Math.cos(u.facing) * 1.3, u.facing, { r: u.boss ? 4 : 2.4, color: u.pcol, flip: u.anim.alt, life: 0.2 }); SFX.at('slash', u.x, u.z, 0.6); if (u.boss) { FX.shock(t.x, t.z, 4, 0.8, 0.4); FX.debris(t.x, 0.3, t.z, { n: 5, color: 0x45423c, speed: [3, 8], up: 9, size: [0.2, 0.5] }); } }
@@ -406,6 +410,7 @@ function updateHero(h, dt) {
     if (!t || !t.alive) { h.windup = 0; h.atkCd = 0.15; } else { h.facing = angTo(h.x, h.z, t.x, t.z); if (h.windup <= 0) performHit(h, t); }
     return;
   }
+  if (h.geass) { if (G.time >= h.geass.until) geassEnd(h); else geassDrive(h, dt); }   // under Lelouch's geass: the orders come from him
   const o = h.order;
   if (o && o.type === 'attack') {
     const t = o.tgt;
