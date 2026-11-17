@@ -275,7 +275,50 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
 #shopstash .it small{position:absolute;left:0;right:0;bottom:0;background:rgba(8,10,14,.86);font-size:10.5px;color:#9fdcff;text-align:center;line-height:1.5}
 #shopstash .it:hover{border-color:#9fdcff;opacity:1}
 #menu>.wrap{min-height:100%}
-#ver{position:fixed;top:4px;right:max(12px,env(safe-area-inset-right,0px));z-index:6;background:transparent;border:0;padding:2px 4px;font:600 11px/1 var(--mono,monospace);color:var(--mut);letter-spacing:.06em;cursor:pointer}
+/* scrolling stays, the browser's scroll bars do not */
+*{scrollbar-width:none}*::-webkit-scrollbar{display:none;width:0;height:0}
+/* ---------- the main menu: a home screen, then one screen per section ---------- */
+#menu[data-scr="home"]{background:radial-gradient(90% 120% at 0% 50%,rgba(8,10,14,.95) 0%,rgba(8,10,14,.82) 38%,rgba(8,10,14,.35) 75%,rgba(8,10,14,.25) 100%)}
+#home{min-height:100%;max-width:1240px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:48px;align-items:center;padding:min(4vh,30px) 8px 44px}
+.hm-brand h1{font-family:var(--display);font-weight:400;font-size:clamp(36px,min(6.2vw,8.6vh),86px);line-height:.98;letter-spacing:.05em;margin:0;color:#f1e6d4;text-shadow:0 0 44px rgba(232,160,76,.35)}
+.hm-brand h1 span{display:block;color:var(--ember)}
+.hm-brand p{margin:min(1.6vh,14px) 0 0;color:var(--mut);letter-spacing:.2em;text-transform:uppercase;font-size:12px}
+.hm-nav{display:flex;flex-direction:column;gap:1px;margin-top:min(4vh,36px);max-width:400px}
+.hm-nav button{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:3px;background:transparent;border:0;border-left:2px solid rgba(255,255,255,.08);padding:min(.9vh,8px) 14px min(.9vh,8px) 18px;font-family:var(--display);font-size:clamp(16px,2.5vh,21px);letter-spacing:.09em;text-transform:uppercase;color:#d7dbe3;text-align:left;transition:color .15s,padding .18s,border-color .15s,background .18s}
+.hm-nav button small{font-family:var(--body);font-size:clamp(10.5px,1.55vh,12px);letter-spacing:.03em;text-transform:none;color:var(--mut);transition:color .15s}
+.hm-nav button:hover,.hm-nav button:focus-visible{color:var(--ember);border-left-color:var(--ember);padding-left:26px;background:linear-gradient(90deg,rgba(232,160,76,.14),transparent 80%);outline:0}
+.hm-nav button:hover small{color:#c9b89c}
+.hm-nav .hm-play{font-size:clamp(24px,4.4vh,36px);color:#f6d9a8;margin-bottom:min(1vh,8px);border-left-color:var(--ember);text-shadow:0 0 22px rgba(232,160,76,.4)}
+#fs-m{font-size:clamp(13px,1.9vh,15px)!important;color:var(--mut)!important;margin-top:6px}
+.hm-nav button.new::after{content:'';position:absolute;left:-5px;top:16px;width:8px;height:8px;border-radius:50%;background:var(--ember);box-shadow:0 0 8px var(--ember)}
+.hm-card{background:rgba(15,18,25,.82);border:1px solid var(--line2);padding:18px 18px 14px;display:flex;flex-direction:column;gap:12px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.hm-card h3{margin:0;font-family:var(--display);font-weight:400;font-size:13px;letter-spacing:.2em;color:var(--mut);text-transform:uppercase}
+.hm-card #profline{margin:0;line-height:1.7}
+.hm-card #profline .savest{float:none;display:block;margin-top:6px}
+.hm-hint{margin:0;color:var(--dim);font-size:11.5px;border-top:1px solid var(--line);padding-top:10px}
+@media (max-width:860px){#home{grid-template-columns:1fr;gap:26px}}
+.subbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:12px}
+#back{background:transparent;border:1px solid var(--line2);padding:8px 14px;font-size:13px;letter-spacing:.08em;color:var(--fg)}
+#back:hover{border-color:var(--ember);color:var(--ember)}
+#subttl{margin:0;font-family:var(--display);font-weight:400;font-size:26px;letter-spacing:.08em;color:#f1e6d4;text-transform:uppercase}
+.sublogo{margin-left:auto;font-family:var(--display);font-size:13px;letter-spacing:.14em;color:var(--dim)}.sublogo b{font-weight:400;color:var(--ember)}
+#pickplay{margin-left:0}
+.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.mode{position:relative;display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,rgba(24,28,38,.92),rgba(14,17,23,.92));border:1px solid var(--line2);padding:26px 22px 20px;min-height:300px;transition:border-color .15s,transform .15s,box-shadow .2s}
+.mode:hover{border-color:var(--ember);transform:translateY(-3px);box-shadow:0 14px 40px -18px rgba(232,160,76,.6)}
+.mode.rk:hover{border-color:#b48cff;box-shadow:0 14px 40px -18px rgba(180,140,255,.6)}
+.mode .mic{display:block;width:64px;height:64px;background-size:cover}
+.mode b{font-family:var(--display);font-weight:400;font-size:24px;letter-spacing:.08em;color:#f1e6d4;text-transform:uppercase}
+.mode span{color:var(--mut);line-height:1.5;font-size:13.5px}
+.mode #rknote{margin:0;color:#ffb3a8;font-size:12.5px}.mode #rknote:empty{display:none}
+.mode{cursor:pointer}.mode .rkc{color:var(--fg)}
+.mgo{margin-top:auto;align-self:flex-start;background:linear-gradient(#f0b25e,#d98a36);color:#1a1208;border:0;font-family:var(--display);font-size:15px;letter-spacing:.1em;padding:11px 22px}
+.mode.rk .mgo{background:linear-gradient(#b99aff,#7f5ad8);color:#0e0a18}
+.mgo:hover{filter:brightness(1.1)}
+@media (max-width:860px){.modes{grid-template-columns:1fr}.mode{min-height:0}}
+#gobar.sbx .grp.lr,#gobar.sbx #rolenote{display:none}
+#menu:not([data-scr="home"]) #ver{display:none}
+#ver{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:10px;z-index:6;background:transparent;border:0;padding:2px 4px;font:600 11px/1 var(--mono,monospace);color:var(--mut);letter-spacing:.06em;cursor:pointer}
 #ver:hover{color:var(--ember)}
 .tabs button.new::after{content:'';display:inline-block;width:6px;height:6px;margin-left:6px;vertical-align:2px;border-radius:50%;background:var(--ember);box-shadow:0 0 6px var(--ember)}
 .news{display:flex;flex-direction:column;gap:10px}
@@ -312,8 +355,9 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
 .guide{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
 .guide div{background:var(--panel2);border:1px solid var(--line);padding:10px 12px;color:#b8bfcb;font-size:13px;line-height:1.45}
 .guide h4{margin:0 0 4px;font-family:var(--display);font-weight:400;letter-spacing:.06em;font-size:13px;color:var(--ember)}
-.keysgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px}
-.keysgrid div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--line);padding:8px 12px;color:#b8bfcb;font-size:13px}
+.keysgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:8px}
+.volrow{display:flex;align-items:center;gap:14px;margin-top:6px;color:var(--fg);font-size:13px}.volrow input{flex:0 1 320px;accent-color:var(--ember)}
+.keysgrid div{display:grid;grid-template-columns:130px minmax(0,1fr);gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--line);padding:8px 12px;color:#b8bfcb;font-size:13px}
 .keysgrid kbd{font-family:var(--display);font-size:12px;color:var(--ember);letter-spacing:.04em}
 .go{position:sticky;bottom:0;margin-top:auto;z-index:5;background:#11141b;border-color:var(--line2);box-shadow:0 -14px 24px -8px rgba(6,8,12,.9)}
 .go .grp{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -413,13 +457,37 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
 <canvas id="ov"></canvas>
 <div id="load">ЗАГРУЗКА…</div>
 
-<div id="menu" hidden>
+<div id="menu" hidden data-scr="home">
   <button id="ver" type="button" title="Что нового в этой версии"></button>
-  <div class="wrap">
-    <div class="brand">
-      <div><h1>ПЕПЕЛЬНЫЙ <span>РАЗЛОМ</span></h1><p>MOBA 5 на 5 · три линии · лес · 47 героев</p></div>
-      <nav class="tabs"><button id="tab-heroes" type="button" class="on">Герои</button><button id="tab-items" type="button">Предметы</button><button id="tab-map" type="button">Карта и цели</button><button id="tab-keys" type="button">Управление</button><button id="tab-gfx" type="button">Графика</button><button id="tab-news" type="button">Что нового</button><button id="fs-m" type="button" hidden>Во весь экран</button></nav>
+  <section id="home">
+    <div class="hm-main">
+      <div class="hm-brand"><h1>ПЕПЕЛЬНЫЙ <span>РАЗЛОМ</span></h1><p>MOBA 5 на 5 · три линии · лес · 47 героев</p></div>
+      <nav class="hm-nav">
+        <button type="button" class="hm-play" data-go="modes">Играть<small>бой с ботами · рейтинг · полигон</small></button>
+        <button type="button" data-go="heroes">Герои<small>47 героев, их умения и сборки</small></button>
+        <button type="button" data-go="items">Предметы<small>магазин и сборки</small></button>
+        <button type="button" data-go="map">Карта и цели<small>башни, лес, Страж Разлома</small></button>
+        <button type="button" data-go="settings">Настройки<small>графика, звук, клавиши</small></button>
+        <button type="button" data-go="news" id="tab-news">Что нового<small>изменения в последних версиях</small></button>
+        <button type="button" id="fs-m" hidden>Во весь экран</button>
+      </nav>
     </div>
+    <aside class="hm-card">
+      <h3>Профиль</h3>
+      <div class="hm-rank"><span id="rkchip"></span></div>
+      <p id="profline" class="rolenote"></p>
+      <p class="hm-hint">Игра рассчитана на клавиатуру и мышь · Esc — назад</p>
+    </aside>
+  </section>
+  <div class="wrap" id="sub" hidden>
+    <div class="subbar"><button type="button" id="back">← Назад</button><h2 id="subttl"></h2><span class="sublogo">ПЕПЕЛЬНЫЙ <b>РАЗЛОМ</b></span><button type="button" id="pickplay" class="btn" hidden>Играть этим героем →</button></div>
+    <section class="pane" id="pane-modes" hidden>
+      <div class="modes">
+        <div class="mode" id="m-bots"><i class="mic" data-ic="akikat" data-c="ecc56f"></i><b>Бой с ботами</b><span>Пять на пять против ботов. Выберите героя, линию, роль и сложность.</span><button type="button" class="mgo" id="m-bots-go">Выбрать героя →</button></div>
+        <div class="mode rk"><i class="mic" data-ic="rkusurp" data-c="b48cff"></i><b>Рейтинг</b><span>Баны и выбор героев по очереди, очки рейтингового пепла и звания от Глиста до Узурпатора.</span><span class="rkc" id="rkchip2"></span><p id="rknote"></p><button type="button" class="mgo" id="ranked">Найти матч →</button></div>
+        <div class="mode"><i class="mic" data-ic="frzolt" data-c="8fd8ff"></i><b>Полигон</b><span>Тренировка без ботов: мишени с огромным здоровьем, 15 уровень, бесконечное золото.</span><button type="button" class="mgo" id="poly">Выбрать героя →</button></div>
+      </div>
+    </section>
     <section class="pane" id="pane-heroes">
       <div class="cols">
         <div class="rcol"><div class="chips" id="rolef"></div><div class="roster" id="roster"></div></div>
@@ -447,6 +515,14 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
         </div>
       </div>
     </section>
+    <section class="pane" id="pane-gfx" hidden>
+      <div class="catalog">
+        <h4 class="sech">Графика <small>то же самое доступно в паузе во время боя</small></h4>
+        <div class="gfxgrid" id="gfx-menu"></div>
+        <p class="gfxnote" id="gfxnote-m"></p>
+        <div class="volrow"><label for="vol-m">Громкость звука</label><input id="vol-m" type="range" min="0" max="100" value="55"></div>
+      </div>
+    </section>
     <section class="pane" id="pane-keys" hidden>
       <div class="catalog">
         <h4 class="sech">Клавиши <small>нажмите на клавишу, затем на новую — подойдёт клавиша, колёсико или боковая кнопка мыши · Esc — отмена · то же самое доступно в паузе во время боя</small></h4>
@@ -464,28 +540,17 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
         <div><kbd>Мини-карта</kbd><span>ПКМ — идти в точку, ЛКМ — посмотреть туда</span></div>
       </div>
     </section>
-    <section class="pane" id="pane-gfx" hidden>
-      <div class="catalog">
-        <h4 class="sech">Графика <small>то же самое доступно в паузе во время боя</small></h4>
-        <div class="gfxgrid" id="gfx-menu"></div>
-        <p class="gfxnote" id="gfxnote-m"></p>
-      </div>
-    </section>
+
     <section class="pane" id="pane-news" hidden>
       <div class="catalog"><h4 class="sech">Что нового <small>изменения, которые влияют на игру</small></h4><div class="news" id="news"></div></div>
     </section>
-    <p class="touch">Игра рассчитана на компьютер: нужны клавиатура и мышь.</p>
-    <div class="go">
+    <div class="go" id="gobar">
       <div class="grp"><span id="gohero"></span><button class="btn" id="rnd" type="button">Случайный</button></div>
-      <div class="grp"><label for="l-top">Линия</label><div class="seg" id="lane"><button id="l-top" type="button" class="on">Верх</button><button id="l-mid" type="button">Центр</button><button id="l-bot" type="button">Низ</button></div></div>
-      <div class="grp"><label for="r-dmg">Роль</label><div class="seg" id="role"><button id="r-dmg" type="button" class="on">Урон</button><button id="r-sup" type="button">Поддержка</button></div></div>
-      <div class="grp"><label for="d1">Боты</label><div class="seg" id="diff"><button id="d0" type="button">Лёгкие</button><button id="d1" type="button" class="on">Средние</button><button id="d2" type="button">Сложные</button></div></div>
+      <div class="grp lr"><label for="l-top">Линия</label><div class="seg" id="lane"><button id="l-top" type="button" class="on">Верх</button><button id="l-mid" type="button">Центр</button><button id="l-bot" type="button">Низ</button></div></div>
+      <div class="grp lr"><label for="r-dmg">Роль</label><div class="seg" id="role"><button id="r-dmg" type="button" class="on">Урон</button><button id="r-sup" type="button">Поддержка</button></div></div>
+      <div class="grp lr"><label for="d1">Боты</label><div class="seg" id="diff"><button id="d0" type="button">Лёгкие</button><button id="d1" type="button" class="on">Средние</button><button id="d2" type="button">Сложные</button></div></div>
       <button id="play" type="button">В БОЙ</button>
-      <button class="btn" id="poly" type="button" title="Тренировка без ботов: три мишени с огромным здоровьем, 15 уровень, бесконечное золото">ПОЛИГОН</button>
-      <button id="ranked" type="button" title="Соревновательный режим: бан и выбор героев, очки рейтингового пепла и звания">РЕЙТИНГ</button><span id="rkchip"></span>
       <p id="rolenote" class="rolenote"></p>
-      <p id="rknote"></p>
-      <p id="profline" class="rolenote"></p>
     </div>
   </div>
 </div>

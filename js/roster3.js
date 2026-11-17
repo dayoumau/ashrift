@@ -417,28 +417,41 @@ HEROES.push(
     look: { bulk: 0.9, h: 1.04, scale: 1.05, c1: 0x1e1a30, c2: 0x3a2660, c3: 0x121018, cuff: 0xd8b04a, skin: 0xf2dcd0, hands: 0x1a1622, metal: 0xd8b04a, glow: 0xff2a48, head: 'lelouch', hair: 0x15141c, chest: 'zero', sh: 'cloth', cape: 0x14101c, weapon: 'king', wc: 'wand' },
     stats: ST(560, 80, 450, 48, 46, 2.4, 20, 2.4, 0.72, 8.9, 9.2),
     innate: { name: 'Всё по плану', icon: 'lelinn', desc: 'Враги, задетые умениями Лелуша, обречены на 4 сек: они получают на 8% больше урона от всех. Под ногами обречённого горит знак Гиаса.' },
+    // the second of his attacks on a checked target: mate
+    onDeal(h, t, d, o) {
+      if (!o.basic || !t.alive) return; const b = t.buffs.find(q => q.id === 'lelcheck' + h.id && !q.dead); if (!b) return;
+      if (++b.n < 2) { if (FX.near(t.x, t.z, 45)) FX.text(t.x, t.height + 1, t.z, 'шах', '#ffd0d8', 13); return; }
+      b.dead = true; stun(h, t, 1); damage(h, t, b.mate, 1, { dot: true }); lelDoom(h, t);
+      SFX.at('crit', t.x, t.z, 0.9); SFX.at('heavy', t.x, t.z, 0.6); FX.shake(0.3); if (h === G.player || t === G.player) FX.hitstop(0.06);
+      if (FX.near(t.x, t.z, 50)) {
+        FX.text(t.x, t.height + 1.4, t.z, 'МАТ', '#ff5a6a', 24); FX.ring(t.x, t.z, { r0: 3.4, r1: 0.4, color: 0xffffff, life: 0.4, tex: 'checker', op: 0.8 }); FX.ring(t.x, t.z, { r0: 0.4, r1: 3.6, color: LEL.c, life: 0.45, tex: 'shock' });
+        FX.glow(t.x, 1.6, t.z, 4, LEL.c, 0.25, 'star'); FX.sparks(t.x, 1.4, t.z, { n: 14, color: 0xffd0d8, color2: LEL.c, speed: [4, 10], life: [0.2, 0.45], w: 0.1 });
+        const m = chessMesh('queen', 0x1a1622, 0.9); m.position.set(t.x, 0, t.z); m.scale.setScalar(1.6); FX.add(m, 0.7, (k, me) => { me.rotation.z = Math.min(1, k * 3) * 1.3; me.material.opacity = 0.9 * (1 - k); });
+      }
+    },
     abilities: [
       {
         key: 'Q', name: 'Шах', icon: 'lelcheck', cd: 9, cost: 65, range: 9.5, ind: { type: 'target' }, anim: 'command', animDur: 0.5, lock: 0.25, ai: { t: 'target' },
-        desc: 'Лелуш указывает на врага — и на него с неба падает огромный чёрный король: магический урон и замедление на 35% на 1.5 сек. Если цель уже обречена, это мат: вместо замедления она оглушена на 0.9 сек.',
+        desc: 'Лелуш указывает на врага — и на него с неба падает огромный чёрный король: магический урон и замедление на 35% на 1.5 сек. Цели объявлен шах на 4 сек: если за это время Лелуш дважды ударит её атакой, это мат — оглушение на 1 сек и ещё магический урон.',
         cast(h, p) {
-          const t = p.unit; if (!t || !t.alive) return false; const dmg = D(h, 72, 14, 0, 0.6), mate = lelDoomed(t);
+          const t = p.unit; if (!t || !t.alive) return false; const dmg = D(h, 72, 14, 0, 0.6), mate = D(h, 60, 14, 0, 0.5);
           SFX.at('whoosh', t.x, t.z, 0.8); lelFeathers(h.x, 2, h.z, 3);
           lelKingDrop(t, () => {
             if (!t.alive) return; damage(h, t, dmg, 1);
             if (!t.alive) return;
-            if (mate) { stun(h, t, 0.9); if (FX.near(t.x, t.z, 45)) FX.text(t.x, t.height + 1.2, t.z, 'МАТ', '#ff6a7a', 20); SFX.at('crit', t.x, t.z, 0.7); }
-            else { slow(h, t, 0.35, 1.5, 'lelslow'); if (FX.near(t.x, t.z, 45)) FX.text(t.x, t.height + 1.2, t.z, 'ШАХ', '#ffc0cc', 16); }
-            lelDoom(h, t);
+            slow(h, t, 0.35, 1.5, 'lelslow'); lelDoom(h, t); r3Tex();
+            if (FX.near(t.x, t.z, 45)) FX.text(t.x, t.height + 1.2, t.z, 'ШАХ', '#ffc0cc', 17);
+            // the check: two of his attacks on this target before it runs out, and it is mate
+            const b = addBuff(t, { id: 'lelcheck' + h.id, dur: 4, src: h, n: 0, mate });
+            if (b) b.fx = FX.aura(t, 0xffffff, 4, t.radius + 0.9, 'checker', 0.8);
           });
         }
       },
-      {
-        key: 'W', name: 'Щит Зеро', icon: 'lelknight', cd: 12, cost: 70, range: 10, ind: { type: 'ally' }, anim: 'command', animDur: 0.4, lock: 0.15, ai: { t: 'shieldAlly' }, noCue: true,
-        desc: 'Лелуш прикрывает союзного героя (или себя) плащом Зеро: щит на 3.5 сек и +20% к скорости бега на 2 сек. Вокруг спасённого кружат чёрные перья.',
+      {        key: 'W', name: 'Щит Зеро', icon: 'lelknight', cd: 12, cost: 70, range: 10, ind: { type: 'ally' }, anim: 'command', animDur: 0.4, lock: 0.15, ai: { t: 'shieldAlly' }, noCue: true,
+        desc: 'Лелуш прикрывает союзного героя (или себя) плащом Зеро: сразу лечит его, даёт щит на 3.5 сек и +20% к скорости бега на 2 сек. Вокруг спасённого кружат чёрные перья.',
         cast(h, p) {
-          const a = p.unit && p.unit.alive ? p.unit : h, sh = D(h, 82, 18, 0, 0.5) + a.maxHp * 0.05;
-          shield(h, a, sh, 3.5, LEL.vio); addBuff(a, { id: 'lelrun', dur: 2, ms: 0.2, src: h });
+          const a = p.unit && p.unit.alive ? p.unit : h, sh = D(h, 70, 15, 0, 0.42) + a.maxHp * 0.04, hl = D(h, 55, 13, 0, 0.4);
+          shield(h, a, sh, 3.5, LEL.vio); heal(h, a, hl); FX.heal(a, LEL.pale); addBuff(a, { id: 'lelrun', dur: 2, ms: 0.2, src: h });
           SFX.at('shield', a.x, a.z, 0.8); SFX.at('whoosh', a.x, a.z, 0.5); lelFeathers(a.x, 2.4, a.z, 10); r3Tex();
           if (a !== h) FX.beam(h.x, h.z, a.x, a.z, { color: LEL.vio, w: 0.2, life: 0.4, y: 1.4 });
           if (FX.near(a.x, a.z, 50)) { FX.zone(a.x, a.z, 2.2, LEL.c, 1.2, { tex: 'geass', spin: 2, op: 0.7, follow: a }); FX.ring(a.x, a.z, { r0: 0.4, r1: 2.8, color: LEL.vio, life: 0.4, tex: 'shock' }); FX.glow(a.x, 1.5, a.z, 3, LEL.vio, 0.25, 'star'); }

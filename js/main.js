@@ -254,6 +254,8 @@ function bindInput(cv) {
     // rebinding: the next key pressed becomes the new binding (Esc cancels)
     if (UI.capture) { e.preventDefault(); e.stopPropagation(); if (c !== 'Escape') { setBind(UI.capture, c); SFX.play('ui'); } UI.endCapture(); return; }
     keys[c] = true;
+    // in the menu Esc steps back toward the home screen
+    if (G.state === 'menu' && c === 'Escape' && !$('menu').hidden && $('savecode').hidden && UI.scr && UI.scr !== 'home') { SFX.init(); SFX.play('ui'); UI.back(); return; }
     if (G.state !== 'play') return;
     const act = KEYMAP[c]; if (act && !(e.target && e.target.tagName === 'INPUT')) e.preventDefault();
     if (UI.noteOpen) { if (c === 'Escape') { UI.closeNote(); return; } const n = /^(Digit|Numpad)([1-5])$/.exec(c); if (n) { if (!e.repeat) UI.pickNote(+n[2] - 1); return; } }

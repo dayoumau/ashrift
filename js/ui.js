@@ -10,17 +10,22 @@ const UI = {
     this.buildKeys($('keys-menu'), 'km-'); this.buildKeys($('keys-pause'), 'kp-'); this.applyBinds();
     $('shopx').onclick = () => this.toggleShop(false); $('shopb').onclick = () => this.toggleShop();
     $('resume').onclick = () => togglePause(false); $('quit').onclick = () => { togglePause(false); toMenu(); }; $('again').onclick = () => toMenu();
-    $('vol').value = Math.round(SFX.vol * 100); $('vol').oninput = e => { SFX.setVol(e.target.value / 100); saveGfx(); };
+    // one volume, two sliders: in the pause box and in the menu settings
+    for (const id of ['vol', 'vol-m']) { $(id).value = Math.round(SFX.vol * 100); $(id).oninput = e => { SFX.setVol(e.target.value / 100); for (const o of ['vol', 'vol-m']) if (o !== id) $(o).value = e.target.value; saveGfx(); }; }
     this.buildGfx($('gfx-menu'), 'gm-'); this.buildGfx($('gfx-pause'), 'gp-'); this.syncGfx();
     for (const d of [0, 1, 2]) $('d' + d).onclick = () => { this.diff = d; for (const k of [0, 1, 2]) $('d' + k).classList.toggle('on', k === d); SFX.init(); SFX.play('ui'); };
     for (const l of LANE_NAMES) $('l-' + l).onclick = () => { this.lane = l; for (const k of LANE_NAMES) $('l-' + k).classList.toggle('on', k === l); SFX.init(); SFX.play('ui'); };
-    $('play').onclick = () => { SFX.init(); SFX.play('buy'); Object.assign(PROFILE, { hero: this.sel, lane: this.lane, role: this.role, diff: this.diff }); SAVE.touch(); startMatch(this.sel, this.diff, this.lane, this.role); };
-    // saved state: whatever the account (or this browser) remembers is put back into the menu and the settings
-    $('poly').onclick = () => { SFX.init(); SFX.play('buy'); Object.assign(PROFILE, { hero: this.sel }); SAVE.touch(); startMatch(this.sel, 1, 'mid', 'dmg', true); this.announce('Полигон: 15 уровень, золото не кончается, магазин открыт везде', '#ecc56f'); };
+    $('play').onclick = () => {
+      SFX.init(); SFX.play('buy');
+      if (this.mode === 'sbx') { Object.assign(PROFILE, { hero: this.sel }); SAVE.touch(); startMatch(this.sel, 1, 'mid', 'dmg', true); this.announce('Полигон: 15 уровень, золото не кончается, магазин открыт везде', '#ecc56f'); return; }
+      Object.assign(PROFILE, { hero: this.sel, lane: this.lane, role: this.role, diff: this.diff }); SAVE.touch(); startMatch(this.sel, this.diff, this.lane, this.role);
+    };
+    // the training ground: first the hero, then in
+    $('poly').onclick = () => { SFX.init(); SFX.play('ui'); this.mode = 'sbx'; this.go('play'); };
     $('sbx-cd').onclick = () => { const S = G.sandbox; if (!S) return; S.nocd = !S.nocd; $('sbx-cd').classList.toggle('on', S.nocd); if (S.nocd) for (let i = 0; i < 4; i++) G.player.cd[i] = 0; };
     $('sbx-full').onclick = () => { const P = G.player; if (!P || P.dead) return; P.hp = P.maxHp; P.mana = P.maxMana; for (let i = 0; i < 4; i++) P.cd[i] = 0; P.icd = {}; P.recallCd = 0; };
     $('sbx-out').onclick = () => toMenu();
-    SAVE.onApply = () => { applyGfx(); this.syncGfx(); this.applyBinds(); $('vol').value = Math.round(SFX.vol * 100); this.applyProfile(); };
+    SAVE.onApply = () => { applyGfx(); this.syncGfx(); this.applyBinds(); $('vol').value = $('vol-m').value = Math.round(SFX.vol * 100); this.applyProfile(); };
     SAVE.onState = () => this.showProfile();
     if (typeof RANKED !== 'undefined') RANKED.init(); this.applyProfile(); SAVE.init().then(() => { if (typeof RANKED !== 'undefined') RANKED.checkAbandon(); this.showProfile(); });
     // the progress code: the whole save as one line of text, to carry it past a browser that forgets
@@ -187,19 +192,32 @@ const UI = {
       b.onclick = () => { SFX.init(); SFX.play('ui'); this.pick(def.id); }; b.ondblclick = () => { SFX.init(); startMatch(def.id, this.diff, this.lane, this.role); };
       ro.appendChild(b);
     }
-    const TABS = ['heroes', 'items', 'map', 'keys', 'gfx', 'news'];
-    for (const t of TABS) $('tab-' + t).onclick = () => {
-      for (const k of TABS) { $('tab-' + k).classList.toggle('on', k === t); $('pane-' + k).hidden = k !== t; }
-      if (t === 'news') { $('tab-news').classList.remove('new'); try { localStorage.setItem('ashrift.seenver', GAME_VER); } catch (e) { } }
-      SFX.init(); SFX.play('ui');
-    };
-    // patch notes; the tab gets a dot until this version's notes have been opened
-    $('ver').textContent = 'v' + GAME_VER; $('ver').onclick = () => $('tab-news').onclick();
+    // the home screen leads to every section; each section has a back button (and Esc)
+    for (const b of document.querySelectorAll('.hm-nav [data-go]')) b.onclick = () => { SFX.init(); SFX.play('ui'); this.go(b.dataset.go); };
+    $('back').onclick = () => { SFX.init(); SFX.play('ui'); this.back(); };
+    $('m-bots-go').onclick = () => { SFX.init(); SFX.play('ui'); this.mode = 'bots'; this.go('play'); };
+    $('pickplay').onclick = () => { SFX.init(); SFX.play('ui'); this.mode = 'bots'; this.go('play'); };
+    for (const m of document.querySelectorAll('.mode')) m.addEventListener('click', e => { if (!e.target.closest('.mgo')) m.querySelector('.mgo').click(); });
+    for (const i of document.querySelectorAll('.mode .mic')) i.style.backgroundImage = `url(${iconURL(i.dataset.ic, parseInt(i.dataset.c, 16))})`;
+    // patch notes; the menu item gets a dot until this version's notes have been opened
+    $('ver').textContent = 'v' + GAME_VER; $('ver').onclick = () => this.go('news');
     $('news').innerHTML = PATCH_NOTES.map((p, i) => `<article${i ? '' : ' class="cur"'}><h5>Версия ${p.v}${p.date ? `<small>${p.date}</small>` : ''}${i ? '' : '<small>текущая</small>'}</h5><ul>${p.items.map(t => `<li>${t}</li>`).join('')}</ul></article>`).join('');
     let seen = null; try { seen = localStorage.getItem('ashrift.seenver'); } catch (e) { }
     $('tab-news').classList.toggle('new', seen !== GAME_VER);
-    this.buildShop($('mitems'), $('mcats'), false); this.drawBigMap(); this.pick(this.sel);
+    this.buildShop($('mitems'), $('mcats'), false); this.drawBigMap(); this.pick(this.sel); this.mode = 'bots'; this.go('home');
   },
+  // menu screens: home, modes, play (pick a hero for the chosen mode), heroes, items, map, settings, news
+  go(scr) {
+    const M = $('menu'), P = { modes: ['modes'], play: ['heroes'], heroes: ['heroes'], items: ['items'], map: ['map'], settings: ['gfx', 'keys'], news: ['news'] }[scr] || [];
+    const T = { modes: 'Выбор режима', play: this.mode === 'sbx' ? 'Полигон: выбор героя' : 'Бой с ботами: выбор героя', heroes: 'Герои', items: 'Предметы', map: 'Карта и цели', settings: 'Настройки', news: 'Что нового' };
+    this.scr = scr; M.dataset.scr = scr; M.scrollTop = 0;
+    $('home').hidden = scr !== 'home'; $('sub').hidden = scr === 'home';
+    for (const p of ['modes', 'heroes', 'items', 'map', 'keys', 'gfx', 'news']) $('pane-' + p).hidden = !P.includes(p);
+    $('gobar').hidden = scr !== 'play'; $('gobar').classList.toggle('sbx', this.mode === 'sbx'); $('play').textContent = this.mode === 'sbx' ? 'В ПОЛИГОН' : 'В БОЙ';
+    $('pickplay').hidden = scr !== 'heroes'; $('subttl').textContent = T[scr] || '';
+    if (scr === 'news') { $('tab-news').classList.remove('new'); try { localStorage.setItem('ashrift.seenver', GAME_VER); } catch (e) { } }
+  },
+  back() { this.go(this.scr === 'play' ? 'modes' : 'home'); },
   drawBigMap() {
     const c = $('bigmap'), g = c.getContext('2d'), S = c.width, m = v => (v + 100) / 200 * S;
     g.imageSmoothingEnabled = true; g.drawImage(this.mmBg, 0, 0, S, S);

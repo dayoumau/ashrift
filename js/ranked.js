@@ -32,7 +32,7 @@ const RANKED = {
     $('giveup').onclick = () => this.pauseAct('giveup'); $('quit').onclick = () => this.pauseAct('quit');
     this.show();
   },
-  show() { const r = this.rk(), c = $('rkchip'); if (c) c.innerHTML = rankChip(r.orp); const n = $('rknote'); if (n) n.textContent = this.note; },
+  show() { const r = this.rk(), c = $('rkchip'), c2 = $('rkchip2'); if (c) c.innerHTML = rankChip(r.orp); if (c2) c2.innerHTML = 'Ваше звание: ' + rankChip(r.orp); const n = $('rknote'); if (n) n.textContent = this.note; },
   checkAbandon() {
     if (!this.live() || G.state === 'play') return; this.live(false);
     const r = this.rk(), before = r.orp; r.orp = Math.max(0, before - 10); r.g++; r.hist.push(r.orp - before); if (r.hist.length > 10) r.hist.shift(); SAVE.touch();

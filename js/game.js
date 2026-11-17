@@ -273,7 +273,7 @@ function recalcHero(h) {
   for (const id of h.items) { const s = ITEM[id].stats; for (const k in s) it[k] = (it[k] || 0) + s[k]; }
   h.def.abilities.forEach((ab, i) => { if (ab && ab.passive && h.al[i] > 0) { const s = ab.stats(h.al[i], h); for (const k in s) it[k] = (it[k] || 0) + s[k]; } });
   const I = k => it[k] || 0, om = h.maxHp, omm = h.maxMana;
-  h.maxHp = S.hp + S.hpL * L + I('hp'); h.maxMana = S.mana + S.manaL * L + I('mana'); h.bAd = S.ad + S.adL * L + I('ad'); h.bAp = I('ap'); h.bDef = S.def + S.defL * L + I('def');
+  h.maxHp = S.hp + S.hpL * L + I('hp'); h.maxMana = (S.mana + S.manaL * L) * 0.88 + I('mana'); h.bAd = S.ad + S.adL * L + I('ad'); h.bAp = I('ap'); h.bDef = S.def + S.defL * L + I('def');
   h.bAs = S.as * (1 + (S.asL || 0.02) * L + I('as')); h.bMs = S.ms + I('ms'); h.haste = I('haste'); h.bLs = I('ls'); h.thorns = I('thorns');
   h.crit = Math.min(1, I('crit')); h.apen = Math.min(0.6, I('apen')); h.mpen = Math.min(0.6, I('mpen')); h.onhit = I('onhit'); h.slowHit = I('slowHit'); h.structDmg = I('structDmg');
   h.burn = I('burn'); h.omni = I('omni'); h.hpRegen = I('hpRegen'); h.manaRegen = I('manaRegen'); h.ten = Math.min(0.5, I('ten')); h.goldRate = I('gold'); h.lowShield = I('lowShield') > 0; h.castRange = I('castRange'); h.scrit = Math.min(1, I('scrit')); h.healPow = I('healPow'); h.tithe = Math.min(0.4, I('tithe')); h.chill = Math.min(0.6, I('chill')); h.grace = I('grace') > 0; h.auras = h.items.map(id => ITEM[id]).filter(it => it.aura);
@@ -378,13 +378,13 @@ function autoAcquire(h) {
   return best;
 }
 function updateHero(h, dt) {
-  if (h.dead) { h.respawnT -= dt; if (h.respawnT <= 0) respawn(h); return; }
+  if (h.dead) { for (let i = 0; i < 4; i++) if (h.cd[i] > 0) h.cd[i] -= dt; h.respawnT -= dt; if (h.respawnT <= 0) respawn(h); return; }   // cooldowns keep running while he waits to respawn
   if (h.dummy) { h.maxHp = 200000; if (G.time - h.lastDamageT > 3) h.hp = h.maxHp; h.moving = false; return; }
   if (G.sandbox && h.isPlayer) { h.gold = 99999; if (G.sandbox.nocd) for (let i = 0; i < 4; i++) if (h.cd[i] > 0.4) h.cd[i] = 0.4; }
   if (h.def.tick) h.def.tick(h, dt);
   if (h.auras && h.auras.length) updateAuras(h, dt);
   const ooc = G.time - h.lastDamageT > 5 ? 2.6 : 1;
-  h.hp = Math.min(h.maxHp, h.hp + (h.maxHp * 0.0035 * ooc + (h.hpRegen || 0)) * (1 - (h.healCut || 0)) * dt); h.mana = Math.min(h.maxMana, h.mana + (h.maxMana * 0.009 * ooc + 1.2 + (h.manaRegen || 0)) * dt);
+  h.hp = Math.min(h.maxHp, h.hp + (h.maxHp * 0.0035 * ooc + (h.hpRegen || 0)) * (1 - (h.healCut || 0)) * dt); h.mana = Math.min(h.maxMana, h.mana + (h.maxMana * 0.0062 * (ooc > 1 ? 2.2 : 1) + 0.8 + (h.manaRegen || 0)) * dt);
   const f = BASES[h.team].fountain; h.inBase = dist(h.x, h.z, f.x, f.z) < 11;
   if (h.inBase) { h.hp = Math.min(h.maxHp, h.hp + h.maxHp * 0.22 * dt); h.mana = Math.min(h.maxMana, h.mana + h.maxMana * 0.22 * dt); if (h.stash && h.stash.length && h.items.length < 6) takeStash(h); }
   for (let i = 0; i < 4; i++) if (h.cd[i] > 0) h.cd[i] -= dt;
