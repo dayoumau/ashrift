@@ -1,8 +1,11 @@
 /* Game version and patch notes (menu tab «Что нового», the label in the menu corner).
    Only changes that affect play go here: heroes, balance, items, rules, modes. Interface changes are not listed.
    A new release: raise GAME_VER and put its entry first. */
-const GAME_VER = '0.38';
+const GAME_VER = '0.39';
 const PATCH_NOTES = [
+  { v: '0.39', date: '18.11.2026', items: [
+    'Таня, «Так хочет Бог»: радиус взрыва снова 7 (усиленный центр — 3), зато дальность выстрела выросла вчетверо — с 22 до 88, почти через полкарты. Целиться можно и по мини-карте; место попадания отмечается на мини-карте.',
+  ] },
   { v: '0.38', date: '18.11.2026', items: [
     'Таня, «Так хочет Бог»: радиус взрыва вырос вчетверо — с 7 до 28 (усиленный центр — с 3 до 12). Взрыв катится от центра тремя волнами.',
   ] },

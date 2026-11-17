@@ -136,7 +136,7 @@ function beginAim(i) {
   const ab = G.player.def.abilities[i];
   if (ab.ind.type === 'self') { castAbility(G.player, i, { x: G.player.x, z: G.player.z }); return; }
   if (ab.ind.type === 'note') { UI.toggleNote(); return; }   // a name is picked from a list, not aimed
-  if (ab.global && G.aim !== i) UI.msg('Глобальное умение: укажите ' + (ab.ind.type === 'line' ? 'направление' : 'точку') + ' на поле или на мини-карте');
+  if (ab.global && G.aim !== i) UI.msg((ab.range ? 'Дальний выстрел' : 'Глобальное умение') + ': укажите ' + (ab.ind.type === 'line' ? 'направление' : 'точку') + ' на поле или на мини-карте');
   G.aim = i;
 }
 // where an ability is being aimed: the ground under the cursor, or, for a global ability with the cursor over the minimap, that spot on the map

@@ -134,15 +134,13 @@ function tanImpact(x, z, R) {
   if (!FX.near(x, z, 60)) return;
   if (FX.near(x, z, 36)) FX.hitstop(0.1);
   FX.pillar(x, z, { r: 3.4, h: 30, color: TAN.fire, life: 0.9, op: 0.45 }); FX.pillar(x, z, { r: 1.3, h: 36, color: TAN.c, life: 0.5, op: 0.6 });
-  for (let i = 0; i < 4; i++) after(i * 0.1, () => FX.ring(x, z, { r0: 0.5 + i, r1: R + 1 + i * 2, color: i % 2 ? TAN.pale : TAN.c, life: 0.75, tex: i ? 'ringThin' : 'shock' }));
-  // a wide area: the blast rolls outward in three waves of smaller explosions, each wave further out than the last
-  for (let w = 1; w <= 3; w++) { const rr = R * w / 3.4, n = 4 + w * 3; for (let i = 0; i < n; i++) { const a = i / n * TAU + rand(0.5), d = rr * rand(0.75, 1.05), ex = x + Math.sin(a) * d, ez = z + Math.cos(a) * d; after(0.07 * w + rand(0.06), () => { if (!FX.near(ex, ez, 60)) return; FX.explosion(ex, ez, 1.9, TAN.fire, { el: 'fire', color2: TAN.deep, mark: false }); FX.pillar(ex, ez, { r: 0.8, h: 10 + rand(6), color: TAN.c, life: 0.45, op: 0.4 }); if (i % 2 === 0) FX.scorch(ex, ez, 1.6, TAN.fire, 7); }); } after(0.07 * w, () => SFX.at('boom', x, z, 0.7)); }
+  for (let i = 0; i < 4; i++) after(i * 0.08, () => FX.ring(x, z, { r0: 0.5 + i, r1: R + 1 + i * 1.3, color: i % 2 ? TAN.pale : TAN.c, life: 0.55, tex: i ? 'ringThin' : 'shock' }));
   FX.explosion(x, z, 2.5, TAN.fire, { el: 'fire', color2: TAN.deep });
-  FX.flame(x, 0.8, z, { n: 20, color: 0xffe0a0, color2: 0x8a2a00, speed: [1, 6], life: [0.5, 1.2], size: [1.6, 3.6], rad: Math.min(R * 0.6, 6), up: 3, a: 0.4 });
+  FX.flame(x, 0.8, z, { n: 20, color: 0xffe0a0, color2: 0x8a2a00, speed: [1, 6], life: [0.5, 1.2], size: [1.6, 3.6], rad: R * 0.6, up: 3, a: 0.4 });
   FX.sparks(x, 1, z, { n: 46, color: 0xffffff, color2: TAN.c, speed: [8, 22], life: [0.3, 0.8], up: 6, w: 0.14, rad: 2 });
-  FX.debris(x, 0.4, z, { n: 26, color: 0x4a4038, speed: [4, 14], up: 12, size: [0.2, 0.6], rad: Math.min(R * 0.4, 6) });
-  FX.scorch(x, z, Math.min(R * 0.75, 6), TAN.fire, 9); FX.zone(x, z, R, TAN.c, 1.5, { tex: 'rune2', spin: 0.4, op: 0.6 }); FX.smoke(x, z, Math.min(R * 0.7, 7), 14);
-  FX.warp('ring', x, 0.3, z, { r0: 1, r1: Math.min(R * 1.4, 40), str: 1.6, life: 0.8 }); FX.light(x, 4, z, TAN.c, 3, Math.max(40, R * 2), 0.9); FX.glow(x, 2, z, 12, TAN.c, 0.3, 'star'); FX.punch(1.2);
+  FX.debris(x, 0.4, z, { n: 20, color: 0x4a4038, speed: [4, 12], up: 12, size: [0.2, 0.6], rad: R * 0.4 });
+  FX.scorch(x, z, R * 0.75, TAN.fire, 9); FX.zone(x, z, R, TAN.c, 1.3, { tex: 'rune2', spin: 1.2, op: 0.7 }); FX.smoke(x, z, R * 0.7, 12);
+  FX.warp('ring', x, 0.3, z, { r0: 1, r1: R * 1.8, str: 1.6, life: 0.6 }); FX.light(x, 4, z, TAN.c, 3, 40, 0.8); FX.glow(x, 2, z, 12, TAN.c, 0.3, 'star'); FX.punch(1.2);
 }
 
 /* ================= Setsuna ================= */
@@ -366,13 +364,13 @@ HEROES.push(
         }
       },
       {
-        key: 'R', name: 'Так хочет Бог', icon: 'tandeus', cd: 95, cost: 150, range: 22, ind: { type: 'circle', r: 28 }, anim: 'deus', animDur: 2.0, lock: 1.85, ai: { t: 'point', rad: 28, delay: 1.65, ult: true, hp: 0.55 },
-        desc: 'Перед Таней из света собирается огромная винтовка, и вдоль ствола один за другим раскрываются девять магических кругов. Через 1.6 сек — выстрел: в точке попадания (до 22) столб света и взрыв радиусом 28, катящийся волнами, — огромный магический урон (в центре радиусом 12 на 25% больше), отбрасывание от центра и замедление на 40% на 2 сек. Пока винтовка собирается, Таня неподвижна.',
+        key: 'R', name: 'Так хочет Бог', icon: 'tandeus', cd: 95, cost: 150, range: 88, global: true, ind: { type: 'circle', r: 7 }, anim: 'deus', animDur: 2.0, lock: 1.85, ai: { t: 'point', rad: 7, delay: 1.65, ult: true, hp: 0.55 },
+        desc: 'Перед Таней из света собирается огромная винтовка, и вдоль ствола один за другим раскрываются девять магических кругов. Через 1.6 сек — выстрел: в точке попадания (до 88 — почти через полкарты, целиться можно и по мини-карте) столб света и взрыв радиусом 7 — огромный магический урон (в центре радиусом 3 на 25% больше), отбрасывание от центра и замедление на 40% на 2 сек. Пока винтовка собирается, Таня неподвижна.',
         cast(h, p) {
-          const x = p.x, z = p.z, R = 28, dmg = D(h, 260, 55, 1.0, 0.9); telegraph(h, x, z, R, 1.63, TAN.c); G.dim = Math.max(G.dim || 0, FX.near(h.x, h.z, 40) ? 0.6 : 0);
+          const x = p.x, z = p.z, R = 7, dmg = D(h, 260, 55, 1.0, 0.9); mmMark({ x, z, r: R, color: '#ffc84a', until: G.time + 1.7 }); telegraph(h, x, z, R, 1.63, TAN.c); G.dim = Math.max(G.dim || 0, FX.near(h.x, h.z, 40) ? 0.6 : 0);
           if (FX.near(x, z, 60)) FX.zone(x, z, R, TAN.c, 1.65, { tex: 'rune2', spin: -0.8, op: 0.4 });
           tanDeus(h, x, z, () => {
-            for (const e of enemiesIn(h, x, z, R)) { const d = dist(e.x, e.z, x, z); damage(h, e, dmg * (d < 12 ? 1.25 : 1), 1); FX.hit(e.x, 1.3, e.z, TAN.c, true); if (!e.alive) continue; slow(h, e, 0.4, 2, 'tanslow'); if (d > 0.8) knock(e, x, z, 3, 0.3); }
+            for (const e of enemiesIn(h, x, z, R)) { const d = dist(e.x, e.z, x, z); damage(h, e, dmg * (d < 3 ? 1.25 : 1), 1); FX.hit(e.x, 1.3, e.z, TAN.c, true); if (!e.alive) continue; slow(h, e, 0.4, 2, 'tanslow'); if (d > 0.8) knock(e, x, z, 3, 0.3); }
             tanImpact(x, z, R);
           });
         }
