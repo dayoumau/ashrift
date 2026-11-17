@@ -275,7 +275,7 @@ const UI = {
       <div class="bars">${def.bars.map((v, i) => `<span>${bl[i]}</span><span class="t"><i style="width:${v * 20}%"></i></span>`).join('')}</div>
       <div class="recb"><span>Рекомендуемая сборка (подробно — во вкладке «Предметы»)</span><div>${build.map(b => `<img src="${iconURL(ITEM[b].icon, CAT_COL[ITEM[b].cat])}" alt="${ITEM[b].name}" title="${ITEM[b].name}" style="border-bottom-color:${css(CAT_COL[ITEM[b].cat])}">`).join('')}</div></div>`;
     const inn = def.innate ? `<div class="ab"><img src="${iconURL(def.innate.icon, col)}" alt=""><div><h4><kbd>★</kbd>${def.innate.name}<small>врождённая · действует всегда</small></h4><p>${def.innate.desc}</p></div></div>` : '';
-    $('dabl').innerHTML = inn + def.abilities.map((a, i) => a ? `<div class="ab"><img src="${iconURL(a.icon, col)}" alt=""><div><h4><kbd data-k="${keys[i]}">${kl(keys[i])}</kbd>${a.name}<small>${i === 3 ? 'ультимейт · с 6 ур. · ' : ''}${a.passive ? 'пассивная' : (a.toggle ? 'включается и выключается' : a.cd + ' сек · ' + (a.costText || a.cost + ' маны'))}</small></h4><p>${a.desc}</p></div></div>` : '').join('');
+    $('dabl').innerHTML = inn + def.abilities.map((a, i) => a ? `<div class="ab"><img src="${iconURL(a.icon, a.iconCol || col)}" alt=""><div><h4><kbd data-k="${keys[i]}">${kl(keys[i])}</kbd>${a.name}<small>${i === 3 ? 'ультимейт · с 6 ур. · ' : ''}${a.passive ? 'пассивная' : (a.toggle ? 'включается и выключается' : a.cd + ' сек · ' + (a.costText || a.cost + ' маны'))}</small></h4><p>${a.desc}</p></div></div>` : '').join('');
     $('gohero').innerHTML = `Герой: <b style="color:${css(col)}">${def.name}</b>`;
     for (const it of ITEMS) $('cat-' + it.id).classList.toggle('rec', build.includes(it.id));
     this.renderRec('cat-', def, null); this.setPreview(def); if (typeof PROF !== 'undefined') PROF.syncFav();
@@ -306,7 +306,7 @@ const UI = {
     for (let i = 0; i < 4; i++) {
       const a = P.def.abilities[i], s = document.createElement('div'); s.className = 'slot' + (a ? (a.passive ? ' pas' : '') : ' off'); s.id = 'ab' + i;
       if (a) {
-        s.innerHTML = `<img src="${iconURL(a.icon, P.def.look.glow)}" alt=""><div class="cdo"></div><div class="cdt num"></div><kbd data-k="${keys[i]}">${kl(keys[i])}</kbd><span class="cost num">${a.cost || ''}</span><span class="pips">${'<i></i>'.repeat(abMax(i))}</span><button type="button" class="lvlup" aria-label="Повысить уровень умения">+</button>`;
+        s.innerHTML = `<img src="${iconURL(a.icon, a.iconCol || P.def.look.glow)}" alt=""><div class="cdo"></div><div class="cdt num"></div><kbd data-k="${keys[i]}">${kl(keys[i])}</kbd><span class="cost num">${a.cost || ''}</span><span class="pips">${'<i></i>'.repeat(abMax(i))}</span><button type="button" class="lvlup" aria-label="Повысить уровень умения">+</button>`;
         s.querySelector('.lvlup').onclick = e => { e.stopPropagation(); learnAbility(i); };
         s.onmouseenter = e => this.tip(e, this.abTip(G.player, i)); s.onmouseleave = () => this.tip();
       } else s.innerHTML = `<div class="cdo"></div><div class="cdt num"></div><kbd data-k="${keys[i]}">${kl(keys[i])}</kbd>`;

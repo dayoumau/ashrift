@@ -1140,7 +1140,7 @@ HEROES.push(
     stats: ST(550, 78, 460, 48, 46, 2.4, 20, 2.4, 0.72, 8.9, 9.5), projMesh: 'orb', atkSfx: 'cast',
     abilities: [
       {
-        key: 'Q', name: 'Лазурь', icon: 'attract', cd: 9, cost: 50, range: 10, ind: { type: 'circle', r: 3.8 }, lock: 0.2, ai: { t: 'point', rad: 3.8, delay: 0.15 },
+        key: 'Q', name: 'Лазурь', icon: 'attract', iconCol: KAI.blue, cd: 9, cost: 50, range: 10, ind: { type: 'circle', r: 3.8 }, lock: 0.2, ai: { t: 'point', rad: 3.8, delay: 0.15 },
         desc: 'Точка притяжения на 1.2 сек: стягивает врагов к центру и четыре раза наносит магический урон. Если внутри неё взорвётся «Багрянец», они сольются в пурпурную вспышку.',
         cast(h, p) {
           const x = p.x, z = p.z, R = 3.8, dur = 1.2, tick = D(h, 19, 3, 0, 0.14), orb = kaiOrb(KAI.blue, 0x061a44, 1.05); let el = 0, nx = 0.3, n = 0;
@@ -1161,7 +1161,7 @@ HEROES.push(
         }
       },
       {
-        key: 'W', name: 'Багрянец', icon: 'repel', cd: 9, cost: 55, range: 12, ind: { type: 'line', w: 1.8, fixed: true }, anim: 'thrust', animDur: 0.35, lock: 0.15, ai: { t: 'shot', sp: 30, farm: true },
+        key: 'W', name: 'Багрянец', icon: 'repel', iconCol: KAI.red, cd: 9, cost: 55, range: 12, ind: { type: 'line', w: 1.8, fixed: true }, anim: 'thrust', animDur: 0.35, lock: 0.15, ai: { t: 'shot', sp: 30, farm: true },
         desc: 'Сфера отталкивания летит по прямой и взрывается у первого врага или в конце пути: магический урон и отбрасывание от центра взрыва. Взорвавшись внутри «Лазури», сливается с ней: пурпурная вспышка бьёт на 60% сильнее по большей области и оглушает на 0.6 сек.',
         cast(h, p) {
           const dmg = D(h, 75, 12, 0, 0.6), orb = kaiOrb(KAI.red, 0x3a0208, 0.55), oe = FX.add(orb, 3, (k, me, dt) => kaiSpin(me, dt, -1)); orb.position.set(h.x, 1.5, h.z); SFX.at('cast', h.x, h.z, 1);
@@ -1183,7 +1183,7 @@ HEROES.push(
         }
       },
       {
-        key: 'E', name: 'Бесконечность', icon: 'infinity', cd: 16, cost: 60, range: 0, ind: { type: 'self', r: 4 }, anim: 'sign', animDur: 0.5, lock: 0.1, ai: { t: 'shield' },
+        key: 'E', name: 'Бесконечность', icon: 'infinity', iconCol: KAI.pale, cd: 16, cost: 60, range: 0, ind: { type: 'self', r: 4 }, anim: 'sign', animDur: 0.5, lock: 0.1, ai: { t: 'shield' },
         desc: 'На 2.5 / 2.8 / 3.1 / 3.4 сек пространство вокруг Кайсэя растягивается: он получает на 55% меньше урона, а враги ближе 4 метров замедляются на 35%.',
         cast(h) {
           const dur = 2.2 + 0.3 * Math.max(1, h.al[2]); let last = h.lastDamageT; SFX.at('shield', h.x, h.z, 1);
@@ -1198,7 +1198,7 @@ HEROES.push(
         }
       },
       {
-        key: 'R', name: 'Пурпур', icon: 'purple', global: true, cd: 100, cost: 120, range: 0, ind: { type: 'line', w: 4.6, fixed: true, len: 70 }, anim: 'purple', animDur: 1.35, lock: 1.15, ai: { t: 'gline', ult: true, hp: 0.45, sp: 46, delay: 1.0 },
+        key: 'R', name: 'Пурпур', icon: 'purple', iconCol: KAI.pur, global: true, cd: 100, cost: 120, range: 0, ind: { type: 'line', w: 4.6, fixed: true, len: 70 }, anim: 'purple', animDur: 1.35, lock: 1.15, ai: { t: 'gline', ult: true, hp: 0.45, sp: 46, delay: 1.0 },
         desc: 'Глобальное умение. Секунду сводит синеву и багрянец в одну сферу и выпускает её по прямой через всю карту. Сфера проходит сквозь стены и наносит большой магический урон каждому врагу на пути (лесным чудовищам — половину). Направление задаётся на поле или щелчком по мини-карте.',
         cast(h, p) {
           const dir = p.dir, sx = Math.sin(dir), cz = Math.cos(dir), dmg = D(h, 120, 20, 0, 0.75), T = 1.0, SP = 46;
