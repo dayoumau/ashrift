@@ -1138,6 +1138,9 @@ HEROES.push(
     lore: 'Чародей с повязкой на глазах, который и так видит всё. Синева стягивает врагов в точку, багрянец расшвыривает их, а вместе они дают пурпур — сферу, которая летит через всю карту и не замечает стен.',
     look: { bulk: 0.86, h: 1.08, c1: 0x1b1e30, c2: 0x12141f, c3: 0x0b0c13, skin: 0xdcc3b0, metal: 0xb8a468, glow: 0x3fa9ff, head: 'blind', hair: 0xc3c5d0, hands: 0xdcc3b0, chest: 'uniform', sh: 'none', legs: 'boots', weapon: 'sign', wc: 'wand' },
     stats: ST(550, 78, 460, 48, 46, 2.4, 20, 2.4, 0.72, 8.9, 9.5), projMesh: 'orb', atkSfx: 'cast',
+    innate: { name: 'Бесконечность', icon: 'infinity', desc: 'Между Кайсэем и всем остальным лежит бесконечность: он всегда получает на 12% меньше урона. Раз в 8 сек она сгущается вокруг него, и следующий удар по Кайсэю (атака или умение) теряет 70% силы, а вражеский герой, нанёсший его, если стоит ближе 6, замедляется на 30% на 1 сек.' },
+    tick(h) { kaiInf(h); },
+    onHurt(h, src, d) { kaiInfHit(h, src, d); },
     abilities: [
       {
         key: 'Q', name: 'Лазурь', icon: 'attract', iconCol: KAI.blue, cd: 9, cost: 50, range: 10, ind: { type: 'circle', r: 3.8 }, lock: 0.2, ai: { t: 'point', rad: 3.8, delay: 0.15 },
@@ -1183,25 +1186,10 @@ HEROES.push(
         }
       },
       {
-        key: 'E', name: 'Бесконечность', icon: 'infinity', iconCol: KAI.pale, cd: 16, cost: 60, range: 0, ind: { type: 'self', r: 4 }, anim: 'sign', animDur: 0.5, lock: 0.1, ai: { t: 'shield' },
-        desc: 'На 2.5 / 2.8 / 3.1 / 3.4 сек пространство вокруг Кайсэя растягивается: он получает на 55% меньше урона, а враги ближе 4 метров замедляются на 35%.',
-        cast(h) {
-          const dur = 2.2 + 0.3 * Math.max(1, h.al[2]); let last = h.lastDamageT; SFX.at('shield', h.x, h.z, 1);
-          const b = addBuff(h, {
-            id: 'infinity', dur, dmgIn: 0.45, every: 0.2, onTick: u => {
-              for (const e of enemiesIn(u, u.x, u.z, 4)) slow(u, e, 0.35, 0.45, 'inf');
-              if (u.lastDamageT > last) { last = u.lastDamageT; const a = rand(TAU); FX.ring(u.x, u.z, { r0: 1.4, r1: 2.6, color: 0xffffff, life: 0.25, tex: 'ringThin', y: 1.4 }); FX.glow(u.x + Math.sin(a) * 1.7, rand(1, 2.4), u.z + Math.cos(a) * 1.7, 2, KAI.blue, 0.2, 'star'); }
-            }
-          });
-          if (b) { b.fx = FX.bubble(h, KAI.blue, dur, 2.1); FX.zone(h.x, h.z, 4, KAI.blue, dur, { follow: h, tex: 'ringThin', spin: 2, op: 0.55 }); FX.zone(h.x, h.z, 2.3, 0x9fd4ff, dur, { follow: h, tex: 'rune2', spin: -1.2, op: 0.5 }); }
-          FX.ring(h.x, h.z, { r1: 4.2, color: KAI.blue, life: 0.4, tex: 'shock', op: 0.7 }); FX.glow(h.x, 1.7, h.z, 4, 0x9fd4ff, 0.3, 'star');
-        }
-      },
-      {
-        key: 'R', name: 'Пурпур', icon: 'purple', iconCol: KAI.pur, global: true, cd: 100, cost: 120, range: 0, ind: { type: 'line', w: 4.6, fixed: true, len: 70 }, anim: 'purple', animDur: 1.35, lock: 1.15, ai: { t: 'gline', ult: true, hp: 0.45, sp: 46, delay: 1.0 },
-        desc: 'Глобальное умение. Секунду сводит синеву и багрянец в одну сферу и выпускает её по прямой через всю карту. Сфера проходит сквозь стены и наносит большой магический урон каждому врагу на пути (лесным чудовищам — половину). Направление задаётся на поле или щелчком по мини-карте.',
+        key: 'E', name: 'Пурпур', icon: 'purple', iconCol: KAI.pur, global: true, cd: 26, cost: 100, range: 0, ind: { type: 'line', w: 4.6, fixed: true, len: 70 }, anim: 'purple', animDur: 1.35, lock: 1.15, ai: { t: 'gline', hp: 0.5, sp: 46, delay: 1.0 },
+        desc: 'Глобальное умение. Секунду сводит синеву и багрянец в одну сферу и выпускает её по прямой через всю карту. Сфера проходит сквозь стены и наносит магический урон каждому врагу на пути (лесным чудовищам — половину). Направление задаётся на поле или щелчком по мини-карте.',
         cast(h, p) {
-          const dir = p.dir, sx = Math.sin(dir), cz = Math.cos(dir), dmg = D(h, 120, 20, 0, 0.75), T = 1.0, SP = 46;
+          const dir = p.dir, sx = Math.sin(dir), cz = Math.cos(dir), dmg = D(h, 90, 16, 0, 0.6), T = 1.0, SP = 46;
           const bx = sx > 0 ? (104 - h.x) / sx : (sx < 0 ? (-104 - h.x) / sx : 1e9), bz = cz > 0 ? (104 - h.z) / cz : (cz < 0 ? (-104 - h.z) / cz : 1e9), len = Math.max(12, Math.min(bx, bz, 300));
           const fx0 = () => h.x + Math.sin(h.facing) * 1.6, fz0 = () => h.z + Math.cos(h.facing) * 1.6; h.order = null; h.path = null;
           { const lm = new THREE.Mesh(FX.geo.line, FX.mat('line', 0x7a2ad8, 0.2)); lm.position.set(h.x, 0.1, h.z); lm.rotation.y = dir; lm.scale.set(4.6, 1, len); FX.add(lm, T + 0.25, (k, me) => { me.material.opacity = k < 0.8 ? 0.14 + k * 0.3 : 0.38 * (1 - k) / 0.2; }); }
@@ -1239,6 +1227,11 @@ HEROES.push(
             }
           });
         }
+      },
+      {
+        key: 'R', name: 'Расширение территории', icon: 'kaidomain', iconCol: 0x7ad0ff, cd: 110, cost: 150, range: 0, ind: { type: 'self', r: 9 }, anim: 'domain', animDur: 0.9, lock: 0.45, ai: { t: 'nova', r: 7, ult: true, hp: 0.6, rad: 8 }, noCue: true,
+        desc: 'Кайсэй складывает пальцы — и раскрывает Необъятную бездну: купол радиусом 9, внутри которого земля уходит в бесконечный космос. Каждый враг внутри — и всякий, кто зайдёт, — стоит неподвижно, пока в его голову льётся бесконечная информация: 2.5 / 3 / 3.5 сек. Сам Кайсэй и его союзники действуют свободно. Когда бездна закрывается, все пойманные получают огромный магический урон. Если Кайсэй погибнет, бездна рушится без урона.',
+        cast(h) { kaiDomain(h); }
       }
     ]
   },
