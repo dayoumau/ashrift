@@ -150,7 +150,7 @@ const UI = {
     }
     build.forEach((id, i) => { const it = ITEM[id], el = this.itemEl(it, live, i + 1); el.classList.toggle('own', owned[i]); el.classList.toggle('nxt', live && i === next); box.appendChild(el); S.rec.push({ el, it, own: owned[i] }); });
     const h = document.createElement('h5'); h.className = 'cathd'; h.textContent = 'По ситуации'; box.appendChild(h);
-    for (const [id, why] of BUILD_ALT[def.build] || []) { const it = ITEM[id], el = this.itemEl(it, live); el.querySelector('em').innerHTML = `<u>${why}.</u> ${it.desc}`; box.appendChild(el); S.rec.push({ el, it }); }
+    for (const [id, why] of buildAlt(def)) { const it = ITEM[id], el = this.itemEl(it, live); el.querySelector('em').innerHTML = `<u>${why}.</u> ${it.desc}`; box.appendChild(el); S.rec.push({ el, it }); }
   },
   refreshShop() {
     const P = G.player, S = this.shops['buy-'], can = canShop(P), sn = (P.stash || []).length, toInv = can && P.items.length < 6, full = !toInv && sn >= STASH_MAX, note = $('shopnote');
@@ -549,7 +549,7 @@ const UI = {
     const g = this.mctx, S = 206, P = G.player, mx = x => (x + 100) / 200 * S; g.drawImage(this.mmBg, 0, 0);
     for (const u of G.units) {
       if (!u.alive) continue; const x = mx(u.x), y = mx(u.z);
-      if (u.kind === 'minion') { g.fillStyle = TEAM_CSS[u.team]; g.fillRect(x - 1, y - 1, 2.5, 2.5); }
+      if (u.kind === 'minion' || u.kind === 'summon') { g.fillStyle = u.kind === 'summon' ? '#a060ff' : TEAM_CSS[u.team]; g.fillRect(x - 1, y - 1, 2.5, 2.5); }
       else if (u.kind === 'monster') { g.fillStyle = u.boss ? '#b07bff' : '#c9b36b'; const s = u.boss ? 4 : (u.mtype === 'big' ? 2.5 : 0); if (s) { g.beginPath(); g.arc(x, y, s, 0, TAU); g.fill(); } }
       else if (u.struct) { g.fillStyle = TEAM_CSS[u.team]; g.strokeStyle = '#0a0c11'; g.lineWidth = 1; const s = u.kind === 'core' ? 6 : 4; g.save(); g.translate(x, y); g.rotate(Math.PI / 4); g.fillRect(-s, -s, s * 2, s * 2); g.strokeRect(-s, -s, s * 2, s * 2); g.restore(); }
     }

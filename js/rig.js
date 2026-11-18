@@ -526,6 +526,54 @@ const HEADS = {
       .t(0.4, 0.12, 0.3, 0.1, 0.5, hair, 0, -0.42, -0.24).b(0.11, 0.07, 0.09, 0x4a3a8a, 0, -0.68, -0.25).t(0.12, 0.07, 0.04, 0.03, 0.62, hs, 0, -1.02, -0.27)
       .y(0.2, 0.22, 0.08, 7, C.skin, 0, -0.27, 0).y(0.24, 0.28, 0.12, 8, wh, 0, -0.33, -0.01).y(0.25, 0.29, 0.06, 8, C.c1, 0, -0.38, -0.02);
     for (const [x, h, rz] of [[-0.18, 0.2, 0.25], [-0.1, 0.16, 0.12], [-0.03, 0.13, 0.05], [0.05, 0.2, -0.1], [0.12, 0.32, -0.1], [0.18, 0.24, -0.25]]) k.t(0.09, 0.05, 0.06, 0.03, h, hair, x, 0.25 - h / 2, 0.214, 0.08, 0, rz);
+  },
+  reiner(k, C) { // a soldier with a heavy jaw: short blond hair swept back, thick level brows over amber eyes, a straight nose, stubble along a broad jaw; the white shirt collar
+    const hair = C.hair || 0xe0c070, hd = 0xb89a50, iris = 0x9a7a3a, wh = 0xf2eee6, stub = 0xc8a080;
+    k.b(0.44, 0.47, 0.41, C.skin, 0, -0.01, 0).b(0.46, 0.14, 0.39, C.skin, 0, -0.17, 0.01)
+      .b(0.11, 0.045, 0.03, wh, -0.095, 0.03, 0.205).b(0.11, 0.045, 0.03, wh, 0.095, 0.03, 0.205).b(0.05, 0.045, 0.03, iris, -0.09, 0.028, 0.213).b(0.05, 0.045, 0.03, iris, 0.09, 0.028, 0.213)
+      .b(0.024, 0.03, 0.02, 0x1a1208, -0.09, 0.028, 0.221).b(0.024, 0.03, 0.02, 0x1a1208, 0.09, 0.028, 0.221)
+      .b(0.14, 0.035, 0.04, hd, -0.095, 0.083, 0.217, 0, 0, -0.05).b(0.14, 0.035, 0.04, hd, 0.095, 0.083, 0.217, 0, 0, 0.05)
+      .b(0.045, 0.085, 0.05, C.skin, 0, -0.035, 0.215).b(0.1, 0.016, 0.02, 0x7a4a40, 0, -0.145, 0.207)
+      .b(0.36, 0.1, 0.02, stub, 0, -0.205, 0.198).b(0.02, 0.16, 0.3, stub, -0.231, -0.15, 0.02).b(0.02, 0.16, 0.3, stub, 0.231, -0.15, 0.02)
+      .t(0.46, 0.43, 0.49, 0.46, 0.13, hair, 0, 0.22, -0.01).b(0.47, 0.3, 0.15, hair, 0, 0.1, -0.2).b(0.05, 0.16, 0.3, hd, -0.226, 0.13, -0.03).b(0.05, 0.16, 0.3, hd, 0.226, 0.13, -0.03)
+      .y(0.21, 0.24, 0.08, 7, C.skin, 0, -0.28, 0).y(0.25, 0.28, 0.07, 8, 0xe8e4da, 0, -0.335, -0.01);
+    for (const x of [-0.16, -0.06, 0.04, 0.14]) k.c(0.07, 0.13, 4, hair, x, 0.27, 0.12, -1.25);
+  },
+  armored(k, C) { // the armoured titan's face: bone-white plates (a heavy brow ridge, a nose bridge, plated cheeks and crown) over red muscle, a bare jaw of teeth, deep-set burning eyes, a tuft of blond hair
+    const pl = C.c1, mu = C.skin, dk = 0x2a0e0c, hair = C.hair || 0xe8d090, sm = 0xa8483c;
+    k.b(0.44, 0.48, 0.42, mu, 0, -0.01, 0).b(0.48, 0.1, 0.14, pl, 0, 0.1, 0.17).b(0.08, 0.2, 0.1, pl, 0, -0.03, 0.215)
+      .b(0.13, 0.06, 0.04, dk, -0.105, 0.035, 0.22).b(0.13, 0.06, 0.04, dk, 0.105, 0.035, 0.22).b(0.07, 0.04, 0.03, C.GL, -0.105, 0.035, 0.235).b(0.07, 0.04, 0.03, C.GL, 0.105, 0.035, 0.235)
+      .b(0.14, 0.16, 0.08, pl, -0.16, -0.06, 0.17, 0, 0.25, 0).b(0.14, 0.16, 0.08, pl, 0.16, -0.06, 0.17, 0, -0.25, 0)
+      .b(0.42, 0.13, 0.3, mu, 0, -0.2, 0.06).b(0.03, 0.15, 0.02, sm, -0.13, -0.17, 0.215).b(0.03, 0.15, 0.02, sm, 0.13, -0.17, 0.215)
+      .b(0.48, 0.17, 0.46, pl, 0, 0.23, -0.02).b(0.05, 0.36, 0.42, pl, -0.235, 0.02, -0.04).b(0.05, 0.36, 0.42, pl, 0.235, 0.02, -0.04)
+      .y(0.24, 0.29, 0.13, 7, mu, 0, -0.29, 0).b(0.38, 0.1, 0.07, pl, 0, -0.31, 0.15);
+    for (let i = -4; i <= 4; i++) k.b(0.028, 0.055, 0.02, 0xf2ece0, i * 0.034, -0.155, 0.218);
+    for (const [x, z, rx] of [[-0.12, 0.05, -0.5], [0, 0.0, -0.7], [0.12, 0.05, -0.5], [-0.06, -0.12, -1.0], [0.06, -0.12, -1.0]]) k.c(0.08, 0.2, 4, hair, x, 0.36, z, rx);
+  },
+  jinwoo(k, C) { // the shadow monarch: short black hair falling in sharp locks over the brow, narrow eyes burning violet, a calm hard face; the high collar of a black coat
+    const hair = C.hair || 0x111018, wh = 0xe8e6f0, iris = { g: 0xb06aff };
+    k.b(0.42, 0.46, 0.4, C.skin, 0, -0.01, 0)
+      .b(0.11, 0.035, 0.03, wh, -0.095, 0.03, 0.203).b(0.11, 0.035, 0.03, wh, 0.095, 0.03, 0.203).b(0.055, 0.035, 0.03, iris, -0.09, 0.03, 0.211).b(0.055, 0.035, 0.03, iris, 0.09, 0.03, 0.211)
+      .b(0.13, 0.02, 0.035, 0x14121a, -0.095, 0.052, 0.214, 0, 0, 0.1).b(0.13, 0.02, 0.035, 0x14121a, 0.095, 0.052, 0.214, 0, 0, -0.1)
+      .b(0.12, 0.02, 0.02, hair, -0.095, 0.095, 0.208, 0, 0, -0.16).b(0.12, 0.02, 0.02, hair, 0.095, 0.095, 0.208, 0, 0, 0.16)
+      .b(0.03, 0.06, 0.04, C.skin, 0, -0.045, 0.205).b(0.07, 0.012, 0.02, 0x6a4a48, 0, -0.14, 0.2)
+      .t(0.45, 0.43, 0.48, 0.46, 0.16, hair, 0, 0.215, -0.01).b(0.47, 0.42, 0.15, hair, 0, 0.04, -0.2).b(0.07, 0.32, 0.3, hair, -0.222, 0.04, -0.03).b(0.07, 0.32, 0.3, hair, 0.222, 0.04, -0.03)
+      .y(0.2, 0.22, 0.08, 7, C.skin, 0, -0.27, 0).y(0.25, 0.3, 0.18, 8, C.c1, 0, -0.33, -0.04);
+    for (const [x, h, rz] of [[-0.18, 0.22, 0.3], [-0.1, 0.2, 0.15], [-0.03, 0.25, 0.05], [0.05, 0.21, -0.08], [0.12, 0.22, -0.2], [0.19, 0.2, -0.3]]) k.c(0.055, h, 4, hair, x, 0.27 - h / 2, 0.218, Math.PI - 0.12, 0, rz);
+    for (const [x, z, rx, rz] of [[-0.13, 0.06, 0.4, 0.5], [0.13, 0.06, 0.4, -0.5], [0, -0.06, -0.3, 0], [-0.15, -0.14, -0.8, 0.45], [0.15, -0.14, -0.8, -0.45]]) k.c(0.1, 0.2, 4, hair, x, 0.3, z, rx, 0, rz);
+  },
+  misaka(k, C) { // the walking railgun: a light-brown bob with a side-swept fringe, big brown eyes, a small white flower pin over one ear, a confident half-grin; the white shirt collar
+    const hair = C.hair || 0x9a6a3a, hs = 0x7a5028, iris = 0x7a4a24, wh = 0xf6f4f2;
+    k.b(0.42, 0.46, 0.4, C.skin, 0, -0.01, 0)
+      .b(0.12, 0.07, 0.03, wh, -0.095, 0.02, 0.203).b(0.12, 0.07, 0.03, wh, 0.095, 0.02, 0.203).b(0.07, 0.07, 0.03, iris, -0.09, 0.018, 0.211).b(0.07, 0.07, 0.03, iris, 0.09, 0.018, 0.211)
+      .b(0.03, 0.042, 0.02, 0x24140a, -0.09, 0.016, 0.219).b(0.03, 0.042, 0.02, 0x24140a, 0.09, 0.016, 0.219).b(0.02, 0.02, 0.02, 0xffffff, -0.072, 0.042, 0.223).b(0.02, 0.02, 0.02, 0xffffff, 0.108, 0.042, 0.223)
+      .b(0.13, 0.022, 0.035, 0x3a2618, -0.095, 0.06, 0.214, 0, 0, 0.06).b(0.13, 0.022, 0.035, 0x3a2618, 0.095, 0.06, 0.214, 0, 0, -0.06)
+      .b(0.1, 0.014, 0.02, hs, -0.095, 0.105, 0.206, 0, 0, 0.08).b(0.1, 0.014, 0.02, hs, 0.095, 0.105, 0.206, 0, 0, -0.08)
+      .b(0.025, 0.04, 0.03, C.skin, 0, -0.06, 0.205).b(0.08, 0.016, 0.02, 0x9a4a48, 0.012, -0.14, 0.2, 0, 0, 0.14)
+      .t(0.45, 0.43, 0.48, 0.46, 0.16, hair, 0, 0.215, -0.01).b(0.47, 0.4, 0.15, hair, 0, 0.02, -0.2).b(0.08, 0.34, 0.3, hair, -0.224, -0.02, -0.03).b(0.08, 0.34, 0.3, hair, 0.224, -0.02, -0.03).t(0.5, 0.18, 0.5, 0.2, 0.08, hs, 0, -0.18, -0.17)
+      .o(0.05, 0xf4f2f6, 0.225, 0.13, 0.08, 1, 1, 0.5).i(0.025, 0xffd84a, 0.24, 0.13, 0.095)
+      .y(0.19, 0.21, 0.08, 7, C.skin, 0, -0.27, 0).y(0.23, 0.27, 0.08, 8, 0xf4f2f0, 0, -0.32, -0.01);
+    for (const [x, h, rz] of [[-0.18, 0.16, 0.35], [-0.1, 0.19, 0.25], [-0.02, 0.2, 0.15], [0.06, 0.17, 0.08], [0.14, 0.14, 0], [0.19, 0.12, -0.1]]) k.t(0.09, 0.05, 0.06, 0.03, h, hair, x, 0.25 - h / 2, 0.214, 0.08, 0, rz);
   }
 };
 
@@ -553,7 +601,7 @@ function buildHero(L, teamColor) {
   const body = grp(tilt, 0, hip, 0); rig.body = body;
   const legL = grp(tilt, -0.2 * b, hip, 0), legR = grp(tilt, 0.2 * b, hip, 0), shinL = grp(legL, 0, -0.5 * H, 0), shinR = grp(legR, 0, -0.5 * H, 0);
   Object.assign(rig, { legL, legR, shinL, shinR });
-  const bareC = L.chest === 'bare' || L.chest === 'champ', kb = kit(), torsoC = bareC ? skin : c1;
+  const bareC = L.chest === 'bare' || L.chest === 'champ' || L.chest === 'titan', kb = kit(), torsoC = bareC ? skin : c1;
   /* --- legs / robe --- */
   if (L.robe) {
     kb.y(0.34 * b, 0.68 * b, hip * 0.96, 8, c1, 0, -hip * 0.48, 0, 0, 0.3927).y(0.69 * b, 0.72 * b, 0.09, 8, c2, 0, -hip * 0.93, 0, 0, 0.3927)
@@ -579,6 +627,16 @@ function buildHero(L, teamColor) {
       if (L.legs === 'hakama') {   // wide black trousers pleated to the ankle, white tabi socks and straw sandals
         kt.t(0.32 * b, 0.34 * b, 0.4 * b, 0.42 * b, 0.54 * H, c2, 0, -0.25 * H, 0).b(0.03, 0.5 * H, 0.03, 0x2a2a32, 0, -0.25 * H, 0.2 * b); kt.into(leg, mat, gmat);
         const ks = kit(); ks.t(0.4 * b, 0.42 * b, 0.47 * b, 0.49 * b, 0.42 * H, c2, 0, -0.19 * H, 0).b(0.2 * b, 0.11, 0.34 * b, 0xf4f0e8, 0, -0.46 * H, 0.05).b(0.24 * b, 0.04, 0.46 * b, 0xc8a868, 0, -0.5 * H - 0.02, 0.07).b(0.03, 0.06, 0.18, 0x6a1418, 0, -0.46 * H, 0.16); ks.into(shin, mat, gmat);
+        continue;
+      }
+      if (L.legs === 'titan') {   // a titan's legs: red muscle under bone-white plates on the thighs and shins, plated feet
+        kt.t(0.34 * b, 0.36 * b, 0.28 * b, 0.3 * b, 0.54 * H, skin, 0, -0.25 * H, 0).b(0.3 * b, 0.4 * H, 0.1, c1, 0, -0.22 * H, 0.16 * b).b(0.36 * b, 0.12, 0.36 * b, c1, 0, -0.52 * H, 0); kt.into(leg, mat, gmat);
+        const ks = kit(); ks.t(0.27 * b, 0.29 * b, 0.22 * b, 0.24 * b, 0.5 * H, skin, 0, -0.25 * H, 0).b(0.28 * b, 0.44 * H, 0.12, c1, 0, -0.24 * H, 0.12 * b).b(0.3 * b, 0.16, 0.5 * b, c1, 0, -0.5 * H + 0.035, 0.08); ks.into(shin, mat, gmat);
+        continue;
+      }
+      if (L.legs === 'socks') {   // bare legs, loose white socks, brown loafers
+        kt.t(0.25 * b, 0.28 * b, 0.21 * b, 0.23 * b, 0.52 * H, skin, 0, -0.25 * H, 0); kt.into(leg, mat, gmat);
+        const ks = kit(); ks.t(0.22 * b, 0.24 * b, 0.18 * b, 0.2 * b, 0.5 * H, skin, 0, -0.25 * H, 0).t(0.235 * b, 0.255 * b, 0.22 * b, 0.24 * b, 0.2 * H, 0xf2f0ec, 0, -0.41 * H, 0).b(0.25 * b, 0.12, 0.42 * b, 0x4a2a1a, 0, -0.5 * H + 0.03, 0.07); ks.into(shin, mat, gmat);
         continue;
       }
       if (sho) {   // shorts over bare knees, short boots with a bright cuff
@@ -751,6 +809,29 @@ function buildHero(L, teamColor) {
         .b(0.12, 0.96, 0.06, c1, -0.21 * b, 0.6, 0.25 * b, 0, 0, -0.06).b(0.12, 0.96, 0.06, c1, 0.21 * b, 0.6, 0.25 * b, 0, 0, 0.06).b(0.025, 0.9, 0.03, GL, -0.152 * b, 0.6, 0.283 * b, 0, 0, -0.06).b(0.025, 0.9, 0.03, GL, 0.152 * b, 0.6, 0.283 * b, 0, 0, 0.06)
         .b(0.8 * b, 0.14, 0.53 * b, sash, 0, 0.22, 0).b(0.1, 0.1, 0.06, met, 0.1 * b, 0.22, 0.275 * b).b(0.03, 0.3, 0.03, met, 0.12 * b, 0.08, 0.28 * b, 0, 0, 0.2)
         .t(0.66 * b, 0.46 * b, 0.74 * b, 0.52 * b, 0.32, c1, 0, 0.02, 0); break; }
+    // a scout's cropped tan jacket over a white shirt, the leather harness of the manoeuvre gear across chest and hips, a buckled belt
+    case 'scout': { const wh = L.shirt || 0xece8de, lt = 0x4a2e1c;
+      kb.b(0.3 * b, 0.9, 0.05, wh, 0, 0.62, 0.238 * b).t(0.96 * b, 0.52 * b, 0.78 * b, 0.5 * b, 0.32, c1, 0, 0.92, 0).b(0.8 * b, 0.07, 0.53 * b, c1, 0, 0.75, 0)
+        .b(0.13, 0.5, 0.06, c1, -0.22 * b, 0.84, 0.25 * b, 0, 0, -0.1).b(0.13, 0.5, 0.06, c1, 0.22 * b, 0.84, 0.25 * b, 0, 0, 0.1)
+        .b(0.05, 0.56, 0.04, lt, -0.15 * b, 0.48, 0.262 * b).b(0.05, 0.56, 0.04, lt, 0.15 * b, 0.48, 0.262 * b).b(0.72 * b, 0.05, 0.53 * b, lt, 0, 0.44, 0)
+        .b(0.78 * b, 0.09, 0.53 * b, lt, 0, 0.2, 0).b(0.1, 0.08, 0.05, met, 0, 0.2, 0.27 * b).b(0.05, 0.42, 0.04, lt, -0.11 * b, 0.0, 0.26 * b, 0, 0, 0.3).b(0.05, 0.42, 0.04, lt, 0.11 * b, 0.0, 0.26 * b, 0, 0, -0.3); break; }
+    // a titan's torso: plates of bone-white armour over red muscle — the chest, a ladder of plates down the belly, the hips, the back — with the muscle showing in the seams
+    case 'titan': { const pl = c1, sm = 0xa8483c;
+      kb.b(0.4 * b, 0.3, 0.1, pl, -0.21 * b, 0.9, 0.22 * b, 0.12).b(0.4 * b, 0.3, 0.1, pl, 0.21 * b, 0.9, 0.22 * b, 0.12)
+        .b(0.52 * b, 0.12, 0.08, pl, 0, 0.62, 0.21 * b).b(0.48 * b, 0.11, 0.08, pl, 0, 0.48, 0.2 * b).b(0.44 * b, 0.1, 0.08, pl, 0, 0.35, 0.19 * b).b(0.03, 0.42, 0.03, sm, 0, 0.5, 0.25 * b)
+        .b(0.86 * b, 0.16, 0.56 * b, pl, 0, 0.16, 0).b(0.8 * b, 0.5, 0.08, pl, 0, 0.8, -0.24 * b).b(0.3 * b, 0.12, 0.3 * b, pl, -0.28 * b, 1.06, 0).b(0.3 * b, 0.12, 0.3 * b, pl, 0.28 * b, 1.06, 0); break; }
+    // the monarch's black hunting coat worn open over a dark shirt, violet light along the edges, a belt; a hood folded behind the neck (the coat tails come from look.coat)
+    case 'monarch': { const sh = L.shirt || 0x1a1822;
+      kb.b(0.3 * b, 0.9, 0.05, sh, 0, 0.62, 0.238 * b).b(0.07, 0.96, 0.06, c2, -0.17 * b, 0.62, 0.25 * b, 0, 0, -0.05).b(0.07, 0.96, 0.06, c2, 0.17 * b, 0.62, 0.25 * b, 0, 0, 0.05)
+        .b(0.025, 0.9, 0.03, GL, -0.13 * b, 0.62, 0.282 * b, 0, 0, -0.05).b(0.025, 0.9, 0.03, GL, 0.13 * b, 0.62, 0.282 * b, 0, 0, 0.05)
+        .b(0.78 * b, 0.08, 0.52 * b, c3, 0, 0.2, 0).b(0.1, 0.08, 0.05, met, 0, 0.2, 0.27 * b).t(0.5 * b, 0.3 * b, 0.6 * b, 0.4 * b, 0.28, c1, 0, 1.08, -0.22 * b, -0.4); break; }
+    // a middle-school uniform: a beige sweater vest over a white shirt (the sleeves), the school emblem, a grey pleated skirt
+    case 'tokiwa': { const vest = L.lin || 0xd8c8a0, sk = L.skirt || 0x6e7078;
+      kb.b(0.56 * b, 0.62, 0.05, vest, 0, 0.6, 0.24 * b).b(0.56 * b, 0.62, 0.05, vest, 0, 0.6, -0.24 * b).b(0.05, 0.62, 0.44 * b, vest, -0.3 * b, 0.6, 0).b(0.05, 0.62, 0.44 * b, vest, 0.3 * b, 0.6, 0)
+        .c(0.11, 0.22, 3, c1, 0, 0.9, 0.27 * b, Math.PI).o(0.035, met, 0.15 * b, 0.76, 0.27 * b, 1, 1, 0.4).b(0.58 * b, 0.04, 0.06, 0xb8a880, 0, 0.3, 0.24 * b)
+        .y(0.4 * b, 0.74 * b, 0.38, 12, sk, 0, -0.06, 0).b(0.76 * b, 0.07, 0.5 * b, sk, 0, 0.15, 0);
+      for (let i = 0; i < 12; i++) { const a = (i + 0.5) / 12 * TAU; kb.b(0.03, 0.34, 0.03, 0x55575e, Math.sin(a) * 0.58 * b, -0.07, Math.cos(a) * 0.58 * b, -Math.cos(a) * 0.7, 0, Math.sin(a) * 0.7); }
+      break; }
     case 'bare': kb.b(0.1, 1.02, 0.05, c3, 0, 0.62, 0.25 * b, 0, 0, 0.62).b(0.035, 0.34, 0.03, GL, -0.24 * b, 0.82, 0.255 * b, 0, 0, -0.3).b(0.035, 0.34, 0.03, GL, 0.24 * b, 0.82, 0.255 * b, 0, 0, 0.3).b(0.035, 0.2, 0.03, GL, 0, 0.44, 0.215 * b); break;
   }
   /* --- back --- */
@@ -829,8 +910,10 @@ function buildHero(L, teamColor) {
       case 'frill': ka.i(0.2 * b, c1, s * 0.03, 0.04, 0, 1).y(0.2 * b, 0.25 * b, 0.06, 8, 0xe8e2da, 0, -0.1, 0).y(0.17 * b, 0.21 * b, 0.05, 8, L.tie || 0xb0141e, 0, -0.16, 0); break;
       case 'delts': ka.i(0.2 * ab, skin, s * 0.02, 0.03, 0, 1).i(0.145 * ab, L.skin2 || skin, 0, -0.22, 0.05 * ab, 1); break;
       case 'fur': ka.b(0.36 * b, 0.22, 0.42 * b, 0x5a4a3a, s * 0.04, 0.08, 0).b(0.3 * b, 0.1, 0.36 * b, 0x6b5a48, s * 0.08, 0.2, 0); break;
+      case 'titan': ka.b(0.34 * b, 0.16, 0.4 * b, c1, s * 0.05, 0.1, 0).t(0.26 * b, 0.32 * b, 0.34 * b, 0.42 * b, 0.14, c1, s * 0.07, -0.04, 0).b(0.35 * b, 0.03, 0.41 * b, 0x8a3a30, s * 0.05, 0.02, 0).b(0.22 * ab, 0.26, 0.24 * ab, c1, 0, -0.3, 0.06); break;
       case 'crystal': ka.b(0.44 * b, 0.26, 0.5 * b, c2, s * 0.06, 0.1, 0).o(0.16, GL, s * 0.12, 0.38, 0, 0.6, 2, 0.6, 0, 0, -s * 0.4).o(0.1, GL, s * 0.02, 0.3, 0.14 * b, 0.6, 1.6, 0.6); break;
     }
+    if (L.band && s < 0) ka.y(0.155 * ab, 0.155 * ab, 0.1, 8, L.band, 0, -0.17, 0);   // an armband on the left upper arm
     ka.into(arm, mat, gmat);
     const kf = s < 0 ? kfL : kfR;
     if (L.bones) kf.b(0.065, 0.42, 0.065, c1, 0.035, -0.22, 0).b(0.05, 0.42, 0.05, c1, -0.04, -0.22, 0).b(0.14, 0.14, 0.12, c1, 0, HY, 0).b(0.17, 0.07, 0.15, c3, 0, -0.38, 0); else
@@ -899,6 +982,12 @@ function buildHero(L, teamColor) {
         .b(0.06, 0.24, 1.9, bk, 0, HY, 1.27).b(0.04, 0.05, 1.8, GL, 0, HY + 0.02, 1.25).b(0.03, 0.06, 1.8, eg, 0, HY - 0.13, 1.27).c(0.12, 0.42, 4, bk, 0, HY, 2.38, HPI, 0, Math.PI / 4);
       for (let i = 0; i < 5; i++) kwR.c(0.045, 0.16, 3, bk, 0, HY + 0.14, 0.55 + i * 0.32, -0.6);
       break; }
+    // a titan's armoured forearms and knuckles
+    case 'titanfists': for (const k of [kfL, kfR]) k.b(0.28 * ab, 0.4, 0.3 * ab, c1, 0, -0.26, 0.02).b(0.24 * ab, 0.12, 0.26 * ab, c1, 0, HY - 0.02, 0.06).b(0.2 * ab, 0.05, 0.05, met, 0, HY - 0.06, 0.2 * ab); break;
+    // twin daggers of a king: short black blades with a violet edge, curved guards
+    case 'kamish': wiR = wiL = -0.3; for (const k of [kwL, kwR]) k.b(0.05, 0.05, 0.24, 0x1a1822, 0, HY, -0.02).b(0.2, 0.04, 0.06, 0x3a3048, 0, HY, 0.12).b(0.03, 0.09, 0.55, 0x15121c, 0, HY, 0.42).b(0.035, 0.025, 0.5, GL, 0, HY - 0.05, 0.42).c(0.045, 0.16, 4, 0x15121c, 0, HY, 0.76, HPI, 0, Math.PI / 4); break;
+    // a game-centre coin between the fingers (its spark is rig.pmz)
+    case 'coin': wiR = 0.5; kwR.y(0.065, 0.065, 0.014, 10, 0xd8a050, 0, HY + 0.06, 0.1, 0, 0, HPI).y(0.045, 0.045, 0.016, 10, 0xf0c070, 0, HY + 0.06, 0.1, 0, 0, HPI); break;
     case 'bow': kwL.b(0.07, 0.08, 0.36, dk, 0, HY, 0).b(0.014, 0.014, 2.0, GL, 0, HY + 0.42, 0);
       for (const s of [-1, 1]) kwL.b(0.055, 0.055, 0.52, 0x5a4630, 0, HY + 0.08, s * 0.42, -s * 0.3).b(0.045, 0.045, 0.48, 0x5a4630, 0, HY + 0.27, s * 0.82, -s * 0.75).o(0.06, GL, 0, HY + 0.42, s * 1.0); break;
     case 'rapier': wiL = -0.3; kwR.b(0.05, 0.05, 0.26, dk, 0, HY, 0).c(0.17, 0.17, 6, met, 0, HY, 0.17, -HPI).b(0.04, 0.04, 1.8, met, 0, HY, 1.12).b(0.025, 0.05, 1.7, GL, 0, HY + 0.005, 1.14).i(0.05, GL, 0, HY, -0.16);
@@ -1046,6 +1135,7 @@ function buildHero(L, teamColor) {
     for (let i = 0; i < 5; i++) kk.b(0.065, 0.075, 0.025, wrap, 0, 0, -0.34 + i * 0.08, 0, 0, i % 2 ? 0.6 : -0.6);
     kk.into(kt, mat, gmat); kt.visible = false; rig.katana = kt; rig.iai = true; rig.tipR = new THREE.Vector3(0, 0.13, 2.3);
   }
+  if (L.weapon === 'coin') { const s = glowSprite(L.glow, 0.25); s.position.set(0, 0.06, 0.1); handR.add(s); rig.pmz = s; const z = glowSprite(L.glow, 0.01); z.position.set(0.12, 0.22, 0.05); head.add(z); rig.zap = z; }
   if (L.head === 'tanya') { const e = []; for (const s of [-1, 1]) { const sp = glowSprite(0xffc84a, 0.01); sp.position.set(s * 0.09, 0.018, 0.24); head.add(sp); e.push(sp); } rig.tEyes = e; }
   if (L.chest === 'field') { const s = glowSprite(L.glow, 0.4); s.position.set(0, 0.86, 0.36 * b); body.add(s); rig.orbG = s; }
   if (L.head === 'akito') {   // a cigarette for the smoke break (rig.cig, hidden until lit) and the future in his right eye (rig.eyeG)
@@ -1386,6 +1476,19 @@ function animHero(u, dt) {
       case 'flick': { const q = p < 0.35 ? easeOut(p / 0.35) : 1, dn = p > 0.35 ? Math.min(1, (p - 0.35) / 0.12) : 0, o = p > 0.7 ? (p - 0.7) / 0.3 : 0; aR = lerp(-2.5 * q, -0.6, dn) * (1 - o); eR = -0.2; wR = lerp(-0.3, 0.6, dn); brx = 0.2 * dn * (1 - o); hx = -0.15 * q * (1 - dn); aL = -0.3 * q; eL = -1.2 * q; break; }
       // the world cut: a long still crouch with the hand at the hilt, the blade never seen; the guard clicks home and he rises
       case 'sheathe': { const q = Math.min(1, p / 0.15), o = p > 0.8 ? (p - 0.8) / 0.2 : 0, sh = p > 0.58 && p < 0.64 ? 1 : 0; aR = 0.35 * q * (1 - o); eR = -1.75 * q * (1 - o) - 0.28 * o; aL = 0.1 * q; eL = -1.4 * q * (1 - o) - 0.28 * o; bry = -0.55 * q * (1 - o) + 0.15 * sh; brx = 0.35 * q * (1 - o); hx = 0.25 * q * (1 - o); kL = kR = 0.06 + 0.75 * q * (1 - o); lL = -0.5 * q * (1 - o); lR = 0.3 * q * (1 - o); by -= 0.3 * q * (1 - o); break; }
+      // a shoulder charge: low, the lead shoulder forward, fists tucked
+      case 'charge': { const q = Math.min(1, p / 0.15) * (p > 0.85 ? 1 - (p - 0.85) / 0.15 : 1); brx = 0.55 * q; bry = -0.5 * q; aL = -0.9 * q; eL = -1.9 * q; aR = 0.3 * q; eR = -1.6 * q; kL = kR = 0.06 + 0.45 * q; lL = -0.5 * q; lR = 0.3 * q; hx = -0.35 * q; by -= 0.15 * q; break; }
+      // the ruler's authority: an open hand raised, closed into a fist and dragged down
+      case 'grip': { const up = Math.min(1, p / 0.25), dn = p > 0.45 ? Math.min(1, (p - 0.45) / 0.15) : 0, o = p > 0.85 ? (p - 0.85) / 0.15 : 0; aR = lerp(-2.4 * up, -1.0, dn) * (1 - o); eR = lerp(-0.2, -0.9, dn); wR = 0.3 * up; aL = 0.2; eL = -0.5; bry = 0.25 * up; brx = lerp(-0.1 * up, 0.35, dn) * (1 - o); hx = -0.2 * up + 0.2 * dn; kL = kR = 0.06 + 0.35 * dn * (1 - o); break; }
+      // arise: one hand lifted slowly with the palm up, the shadows answer, then the hand closes
+      case 'arise': { const q = Math.min(1, p / 0.5), o = p > 0.85 ? (p - 0.85) / 0.15 : 0; aR = lerp(-0.2, -1.6, easeOut(q)) * (1 - o); eR = lerp(-0.3, -0.5, q); wR = -0.6 * q; aL = 0.3 * q; eL = -0.4; hx = -0.15 * q; brx = -0.08 * q; by += 0.05 * q; break; }
+      // the railgun: the coin flicked up, caught on the thumb, the arm locked level, the shot slams the body back
+      case 'railgun': { const toss = p < 0.45 ? Math.sin(Math.PI * p / 0.45) : 0, lv = p > 0.4 ? Math.min(1, (p - 0.4) / 0.08) : 0, kk = p > 0.56 ? Math.max(0, 1 - (p - 0.56) / 0.3) : 0, o = p > 0.88 ? (p - 0.88) / 0.12 : 0;
+        aR = lerp(lerp(-0.25, -0.9, toss), -1.55, lv) * (1 - o) + 0.35 * kk; eR = lerp(lerp(-2.0, -1.0, toss), -0.03, lv); wR = lerp(0.5, 1.5, lv) - 0.4 * kk; aL = lerp(0.12, -0.6, lv) * (1 - o); eL = -1.4 * lv; bry = 0.45 * lv * (1 - o); brx = -0.2 * kk; hx = -0.25 * toss; kick = kk; kL = kR = 0.06 + 0.3 * lv * (1 - o); lL = -0.3 * lv * (1 - o); lR = 0.25 * lv * (1 - o); break; }
+      // the iron-sand whip: the arm flung across the body and swept wide
+      case 'whip': { const q = p < 0.25 ? easeOut(p / 0.25) : 1, sw = p < 0.25 ? 0 : Math.min(1, (p - 0.25) / 0.3), o = p > 0.75 ? (p - 0.75) / 0.25 : 0; aR = lerp(-0.4, -1.4, q) * (1 - o); eR = lerp(-1.6, -0.1, sw); bry = lerp(-0.7 * q, 0.8, sw) * (1 - o); wR = 1.0 * sw; brx = 0.15 * sw * (1 - o); break; }
+      // a billion volts: both hands thrown up to the clouds, the body arched, sparks shaking it
+      case 'storm': { const q = Math.min(1, p / 0.2) * (p > 0.85 ? 1 - (p - 0.85) / 0.15 : 1), sh = Math.sin(t * 46) * 0.04 * q; aL = aR = -2.7 * q + sh; eL = eR = -0.2; wR = 0; brx = -0.18 * q; hx = -0.45 * q; by += 0.1 * q; kick = 0; break; }
       // two fingers raised before the face
       case 'sign': aR = -0.95; eR = -1.9; aL = 0.25; eL = -0.35; hx = 0.08; wR = -0.2; break;
       // hands drawn apart, brought together in front of the chest, then the right hand drives the sphere forward
@@ -1455,6 +1558,7 @@ function animHero(u, dt) {
   if (r.geassEye) r.geassEye.scale.setScalar(u.geassCast > t ? 0.9 + Math.sin(t * 30) * 0.25 : 0.16 + Math.sin(t * 2.6 + (u.id || 0)) * 0.03);
   if (r.hmask) r.hmask.visible = u.hollowT > t;
   if (r.iai) { const cp = a.castT > 0 ? 1 - a.castT / a.castDur : -1, out = a.atkT > 0 || (cp >= 0 && (a.castType === 'iai' ? cp > 0.28 : a.castType !== 'sheathe')) || u.drawT > t; if (r.katana.visible !== out) { r.katana.visible = out; r.hilt.visible = !out; } }   // the blade is out only for the instant of a cut
+  if (r.zap) r.zap.scale.setScalar(Math.random() < (a.castT > 0 ? 0.5 : 0.06) ? rand(0.3, 0.8) : 0.01);   // stray sparks crackling in her hair
   if (r.tEyes) { const s = u.prayT > t ? 0.16 + Math.sin(t * 14) * 0.03 : 0.01; for (const e of r.tEyes) e.scale.setScalar(s); }
   if (r.orbG) r.orbG.scale.setScalar(0.35 + Math.sin(t * 3 + (u.id || 0)) * 0.05 + (u.prayT > t ? 0.6 + Math.sin(t * 20) * 0.1 : 0) + (a.castT > 0 ? 0.7 : 0));
   if (r.orbit) r.orbit.rotation.y += dt * 1.6;

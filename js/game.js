@@ -106,7 +106,7 @@ const DMG_K = {
   mora: 1.4, nox: 1.65, morg: 1.4, aisa: 1.65, zar: 1.85, fenris: 1.2, reiji: 1.4, yuki: 1.85, cassius: 1.45, ragna: 1.5,
   toplak: 1.45, groh: 1.55, grimm: 1.45, brand: 1.6, oriel: 1.1, nisa: 1.2, lira: 1.25, hald: 1.25, kolomba: 1.35, kostyan: 1.38,
   shiro: 1.15, kaisei: 1.65, umbra: 1.6, rampage: 1.0, jin: 1.6, hikaru: 1.6, dash: 1.2, tokiko: 1.1, riku: 1.2, ashen: 1.3, chess: 1.7, mei: 1.25,
-  kagari: 1.0, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1, frieren: 1.15, lelouch: 1.3, ichigo: 1.36, carlotta: 1.22, raul: 1.2, tanya: 0.95, setsuna: 1.25
+  kagari: 1.0, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1, frieren: 1.15, lelouch: 1.3, ichigo: 1.36, carlotta: 1.22, raul: 1.2, tanya: 0.95, setsuna: 1.25, reiner: 1.0, jinwoo: 1.4, misaka: 1.15
 };
 const HEAL_K = { oriel: 1.9, hald: 1.5, nisa: 2.3, lira: 2.8, kolomba: 2.0, ashen: 2.6, chess: 1.8, kagari: 1.5, lin: 3.0, kwame: 1.6, agafya: 2.2, frieren: 1.6, lelouch: 1.7 };
 function damage(src, tgt, amt, type, o) {
@@ -115,9 +115,10 @@ function damage(src, tgt, amt, type, o) {
   // o.raw: an amount already worked out elsewhere (a share of damage passed along a seam) — no attacker multipliers, no armour, only the target's own reduction
   let d = amt * (src && !o.raw ? src.dmgOut : 1);
   if (src && src.kind === 'hero' && !tgt.struct && !o.raw) d *= DMG_K[src.def.id] || 1;
+  if (src && src.owner && tgt.kind === 'hero' && src.owner.kind === 'hero') { const ow = src.owner; ow.heroAggroT = G.time; tgt.dmgBy[ow.id] = G.time; if (ow.team !== tgt.team) ow.dmgHero += Math.min(d, tgt.hp); }   // a summoned shadow fights for its master
   if (src && src.scrit && !o.basic && !o.dot && !o.raw && !tgt.struct && Math.random() < src.scrit) { d *= 1.6; o.crit = true; }   // spell crit from items
   if (type !== 2 && !o.raw) { let ar = Math.max(0, tgt.arm); if (src) { if (type === 0 && src.apen) ar *= 1 - src.apen; else if (type === 1 && src.mpen) ar *= 1 - src.mpen; } d *= 100 / (100 + ar); }
-  d *= tgt.dmgIn;
+  d *= tgt.dmgIn; if (type === 0 && tgt.physIn && !o.raw) d *= tgt.physIn;   // physical damage only (armour plates)
   if (tgt.struct) {
     if (tgt.protected) return 0;
     if (src && src.kind === 'hero' && !G.units.some(m => m.alive && m.kind === 'minion' && m.team === src.team && udist(m, tgt) < 16)) d *= 0.4;
@@ -187,8 +188,10 @@ function kill(u, src) {
   for (const b of u.buffs) if (b.fx) b.fx.dead = true;
   u.buffs.length = 0; u.target = null; u.windup = 0; u.dash = null; u.forced = null; u.stunned = false; u.moving = false; u.spinning = false; u.shield = 0; u.yOff = 0; u.sewG = null;
   if (u.geass) geassEnd(u);
+  if (u.def && u.def.onDeath) u.def.onDeath(u);
+  if (!u.struct && u.kind !== 'summon') for (const h of G.heroes) if (h.alive && h.def.onNearDeath && h.team !== u.team && udist(h, u) < 14) h.def.onNearDeath(h, u);
   if (u.kind === 'minion' || u.kind === 'monster') {
-    const killer = src && src.kind === 'hero' ? src : null;
+    const killer = src && src.kind === 'hero' ? src : (src && src.owner && src.owner.alive ? src.owner : null);
     const near = G.heroes.filter(h => h.alive && h.team !== u.team && (u.team !== 2 || (killer && h.team === killer.team)) && udist(h, u) < 17);
     if (killer) { addGold(killer, u.gold, true); killer.cs++; if (!near.includes(killer)) near.push(killer); for (const h of near) if (h !== killer && h.tithe && h.team === killer.team) addGold(h, u.gold * h.tithe, true); }
     else for (const h of near) addGold(h, u.gold * 0.35);
@@ -200,7 +203,7 @@ function kill(u, src) {
   else if (u.kind === 'core') endGame(1 - u.team, u);
 }
 function heroDeath(u, src) {
-  let killer = src && src.kind === 'hero' ? src : null;
+  let killer = src && src.kind === 'hero' ? src : (src && src.owner && src.owner.kind === 'hero' ? src.owner : null);
   // a hero under the geass kills for the one who gave the order
   if (killer && killer.geass && G.time < killer.geass.until && killer.geass.by.team !== u.team) killer = killer.geass.by;
   if (!killer) { let bt = 0; for (const id in u.dmgBy) if (G.time - u.dmgBy[id] < 10 && u.dmgBy[id] > bt) { const hh = G.heroes.find(h => h.id === +id); if (hh) { killer = hh; bt = u.dmgBy[id]; } } }
@@ -414,6 +417,7 @@ function updateHero(h, dt) {
     return;
   }
   if (h.geass) { if (G.time >= h.geass.until) geassEnd(h); else geassDrive(h, dt); }   // under Lelouch's geass: the orders come from him
+  if (h.tauntT > G.time && h.tauntBy && h.tauntBy.alive) { if (!(h.order && h.order.type === 'attack' && h.order.tgt === h.tauntBy)) h.order = { type: 'attack', tgt: h.tauntBy, rp: 0 }; }   // taunted: he can do nothing but attack the one who called him
   const o = h.order;
   if (o && o.type === 'attack') {
     const t = o.tgt;
@@ -545,6 +549,7 @@ function spawnMinion(team, lane, type) {
   u.rig = buildMinion(type, team, 1); placeRig(u); return u;
 }
 function acquire(m) {
+  if (m.tauntT > G.time && m.tauntBy && m.tauntBy.alive) { m.target = m.tauntBy; return; }
   let best = null, bs = 1e9; const R = Math.max(10, m.range + 2), L = LANES[m.lane];
   for (const u of G.units) {
     if (!u.alive || (u.team === m.team && !(u.madT > G.time)) || u.team === 2 || !targetable(m, u)) continue;
@@ -836,7 +841,7 @@ function updateGame(dt) {
       updateBuffs(u, dt);
       if (u.forced && u.alive) { const f = u.forced, nx = u.x + f.vx * dt, nz = u.z + f.vz * dt; if (NAV.ok(nx, nz)) { u.x = nx; u.z = nz; } f.t -= dt; if (f.t <= 0) u.forced = null; }
     }
-    switch (u.kind) { case 'hero': updateHero(u, dt); break; case 'minion': updateMinion(u, dt); break; case 'monster': updateMonster(u, dt); break; default: updateStructure(u, dt); }
+    switch (u.kind) { case 'hero': updateHero(u, dt); break; case 'minion': updateMinion(u, dt); break; case 'monster': updateMonster(u, dt); break; case 'summon': updateSummon(u, dt); break; default: updateStructure(u, dt); }
   }
   updateProjectiles(dt);
   for (let i = G.actors.length - 1; i >= 0; i--) if (G.actors[i].update(dt) === false) G.actors.splice(i, 1);
@@ -947,6 +952,9 @@ const BUILD_ALT = {
   guard: [['spike', 'Против стрелков'], ['lastword', 'Если вас убивают первым'], ['tithe', 'Доход на линии без добивания миньонов'], ['reliquary', 'Если в команде нет лекаря'], ['aegis', 'Больше защиты и ускорения умений']],
   duel: [['titan', 'Чистый урон вместо Ока стужи'], ['hammer', 'Больше урона с каждой атаки'], ['lastword', 'Если не хватает живучести'], ['swift', 'Против оглушений и замедлений']]
 };
+// items that suit almost any hero; they are added to every build's situational list unless the build already has them
+const ALT_ALL = [['prism', 'Дальность умений +2.5 — пригодится почти любому'], ['lastword', 'Если вас убивают первым'], ['swift', 'Против оглушений и замедлений'], ['skadi', 'Против лечения и вампиризма'], ['warden', 'Больше здоровья и короче контроль'], ['aegis', 'Защита и ускорение умений']];
+function buildAlt(def) { const own = BUILD_ALT[def.build] || [], core = BUILDS[def.build] || [], seen = new Set(own.map(a => a[0]).concat(core)); return own.concat(ALT_ALL.filter(a => !seen.has(a[0]))); }
 function canShop(h) { return h.dead || h.inBase || (!!G.sandbox && h.isPlayer); }
 /* ---------- the proving ground: no waves and no bots; the player is level 15 with every ability maxed and endless gold, the shop works anywhere,
    and three enemy heroes stand as targets with 200 000 health that never die and heal back when left alone. Damage dealt to them is counted ---------- */

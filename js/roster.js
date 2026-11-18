@@ -593,7 +593,7 @@ const HEROES = [
   },
   /* ================= 11. Cassius ================= */
   {
-    id: 'cassius', name: 'Кассий', title: 'Клинок зари', role: 'front', roleName: 'Дуэлянт', build: 'bruiser', bars: [4, 3, 2, 4], diffc: 3,
+    id: 'cassius', name: 'Кассий', title: 'Клинок зари', role: 'assassin', roleName: 'Дуэлянт', build: 'duel', bars: [4, 3, 2, 4], diffc: 3,
     lore: 'Мастер поединков. Выпад сквозь строй, рипост в нужный момент — и вихрь клинков в гуще боя.',
     look: { bulk: 1.0, c1: 0x5c2732, c2: 0x2a2a30, c3: 0x3a2a22, metal: 0xb89a55, glow: 0xff7aa8, head: 'duel', chest: 'vest', sh: 'cloth', legs: 'boots', weapon: 'rapier', wc: 'thrust', cape: 0x471c26 },
     stats: ST(630, 86, 270, 32, 61, 3.6, 28, 3.0, 0.86, 9.0, 2.7),

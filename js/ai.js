@@ -219,6 +219,10 @@ function botCast(h, mode, tgt, nf) {
         let n = 0; for (const o of G.heroes) if (o.alive && o.team !== h.team && udist(h, o) < ai.r) { const b = o.buffs.find(q => q.id === 'cry' + h.id); if (b) n += b.stacks || 1; }
         if (n >= 3 || (n >= 1 && tgt && tHp < 0.25)) pt = { x: h.x, z: h.z }; break;
       }
+      case 'arise': {     // raise the shadows: when enough fallen lie near, or a real fight is on
+        const n = (h.corpses || []).filter(c => c.until > G.time && dist(c.x, c.z, h.x, h.z) < 15).length;
+        if (n >= 3 || (n >= 1 && mode === 'fight' && tgt && dT < 10) || (mode === 'fight' && tgt && tgt.kind === 'hero' && dT < 8 && tHp < 0.6)) pt = { x: h.x, z: h.z }; break;
+      }
       case 'sunder': {    // trade health with an enemy hero: only when he himself is low and someone in reach is much healthier
         if (hpP > 0.38) break; let best = null, bp = hpP + 0.28;
         for (const o of G.heroes) if (o.alive && o.team !== h.team && !o.invuln && udist(h, o) < ab.range + o.radius) { const op = o.hp / o.maxHp; if (op > bp) { bp = op; best = o; } }
@@ -278,6 +282,7 @@ function botThink(h, dt) {
   if (h.dead) { if (!A.shopped) { botShop(h); A.shopped = true; } A.state = 'lane'; A.shopTrip = false; A.task = null; return; }
   A.shopped = false;
   if (h.geass && G.time < h.geass.until) { A.task = null; return; }   // under the geass the bot does not think for itself
+  if (h.tauntT > G.time) { A.task = null; return; }   // taunted: he can only go for the one who called him
   A.think -= dt; if (A.think > 0) return; A.think = A.d.think * (0.8 + rand(0.4));
   if (h.inBase) botShop(h);
   if (h.dash || h.stunned) return;

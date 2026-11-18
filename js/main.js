@@ -115,6 +115,7 @@ function playerMove(x, z) {
 function command(marker) {
   const P = G.player; if (!P || P.dead || G.over || G.paused) return;
   if (P.geass && G.time < P.geass.until) { UI.msg('Вами управляет Гиас'); return; }
+  if (P.tauntT > G.time) { UI.msg('Вас спровоцировали'); return; }
   const t = pickUnit(u => hostile(P, u));
   if (t) {
     if (!targetable(P, t)) { UI.msg('Цель защищена: сначала разрушьте внешние башни'); SFX.play('deny'); return; }
@@ -127,7 +128,7 @@ function command(marker) {
 function canCast(i, quiet) {
   const P = G.player, ab = P.def.abilities[i]; if (!ab) return false; let why = null;
   if (ab.passive) why = 'Пассивная способность: действует сама'; else if (P.dead) why = 'Вы мертвы'; else if (!P.al[i]) why = i === 3 && P.level < 6 ? 'Ультимейт изучается с 6 уровня' : (P.sp > 0 ? 'Способность не изучена: Shift+' + kl('qwer'[i]) + ' или кнопка «+»' : 'Способность не изучена'); else if (P.cd[i] > 0) why = 'Способность перезаряжается';
-  else if (!(ab.free && ab.free(P)) && P.mana < ab.cost) why = 'Недостаточно маны'; else if (P.silenced) why = 'Безмолвие'; else if (P.stunned) why = 'Вы оглушены'; else if (P.geass && G.time < P.geass.until) why = 'Вами управляет Гиас';
+  else if (!(ab.free && ab.free(P)) && P.mana < ab.cost) why = 'Недостаточно маны'; else if (P.silenced) why = 'Безмолвие'; else if (P.stunned) why = 'Вы оглушены'; else if (P.geass && G.time < P.geass.until) why = 'Вами управляет Гиас'; else if (P.tauntT > G.time) why = 'Вас спровоцировали';
   if (why && !quiet) { UI.msg(why); SFX.play('deny'); }
   return !why;
 }
@@ -136,7 +137,7 @@ function beginAim(i) {
   const ab = G.player.def.abilities[i];
   if (ab.ind.type === 'self') { castAbility(G.player, i, { x: G.player.x, z: G.player.z }); return; }
   if (ab.ind.type === 'note') { UI.toggleNote(); return; }   // a name is picked from a list, not aimed
-  if (ab.global && G.aim !== i) UI.msg((ab.range ? 'Дальний выстрел' : 'Глобальное умение') + ': укажите ' + (ab.ind.type === 'line' ? 'направление' : 'точку') + ' на поле или на мини-карте');
+  if (ab.global && G.aim !== i) UI.msg((ab.range ? 'Дальнее умение' : 'Глобальное умение') + ': укажите ' + (ab.ind.type === 'line' ? 'направление' : 'точку') + ' на поле или на мини-карте');
   G.aim = i;
 }
 // where an ability is being aimed: the ground under the cursor, or, for a global ability with the cursor over the minimap, that spot on the map

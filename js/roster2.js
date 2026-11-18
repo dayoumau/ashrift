@@ -1355,7 +1355,7 @@ function rmpBleed(h, e, tick, n) { if (!e.alive || e.struct) return; addBuff(e, 
 HEROES.push(
   /* ================= 30. Rampage ================= */
   {
-    id: 'rampage', name: 'Рэмпэйдж', title: 'Кровавый жнец', role: 'front', roleName: 'Жнец', build: 'bruiser', bars: [5, 3, 3, 3], diffc: 2,
+    id: 'rampage', name: 'Рэмпэйдж', title: 'Кровавый жнец', role: 'assassin', roleName: 'Жнец', build: 'assassin', bars: [5, 3, 3, 3], diffc: 2,
     lore: 'Алый жнец в ведьминской шляпе с косой выше собственного роста. Платит кровью и берёт кровью: лечится о каждого задетого, а каждая смерть врага рядом мгновенно возвращает ему умения. Один удачный удар — и он уже не останавливается.',
     look: { bulk: 1.0, h: 1.04, c1: 0x8f121c, c2: 0x4a0a10, c3: 0x1c0d0f, skin: 0x8a7462, metal: 0xa8905a, glow: 0xff2a3a, head: 'reaper', hair: 0x3a0a10, chest: 'reaper', sh: 'tatter', legs: 'boots', weapon: 'reapscythe', wc: 'reap', coat: 0x7a0f18 },
     stats: ST(650, 92, 270, 30, 62, 3.6, 27, 3.0, 0.74, 9.0, 3.3),
@@ -3099,7 +3099,7 @@ function akiSmoke(x, y, z, n, s) { if (FX.near(x, z, 50)) FX.burst(x, y, z, { sm
 HEROES.push(
   /* ================= 43. Akito ================= */
   {
-    id: 'akito', name: 'Акито', title: 'Охотник на демонов', role: 'front', roleName: 'Боец', build: 'bruiser', bars: [4, 3, 2, 3], diffc: 3,
+    id: 'akito', name: 'Акито', title: 'Охотник на демонов', role: 'assassin', roleName: 'Убийца', build: 'assassin', bars: [4, 3, 2, 3], diffc: 3,
     lore: 'Он подписал три договора с демонами и знает, сколько ему за это осталось. Демон будущего живёт в его правом глазу и шепчет, куда ударят через секунду; проклятый клинок берёт за каждое убийство кусок его жизни; а лиса приходит на один короткий слог — «Кон». Между боями он молча курит и не строит планов дальше конца недели.',
     look: { bulk: 0.95, h: 1.02, scale: 1.04, c1: 0x15161c, c2: 0x1c1e26, c3: 0x101014, skin: 0xead2c0, hands: 0xead2c0, metal: 0x9aa0aa, glow: 0xff8a3a, head: 'akito', hair: 0x111218, shirt: 0xf2f0ea, tie: 0x15151a, chest: 'blazer', sh: 'none', weapon: 'akisword', wc: 'fist' },
     stats: ST(620, 92, 300, 32, 62, 3.6, 27, 2.9, 0.85, 9.1, 2.4),
