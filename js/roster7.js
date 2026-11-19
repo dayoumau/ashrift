@@ -13,7 +13,7 @@ const silWaist = u => () => u.alive || u.dead ? { x: u.x, y: (u.height || 2) * 0
 /* ---------- the revolver ---------- */
 // one shot: a flash at the muzzle, a hot tracer to the target, a puff of powder smoke, sparks where it lands
 function silShot(h, t, k) {
-  const m = silMuzzle(h), ty = (t.height || 2) * 0.55 + (t.yOff || 0); SFX.at('shoot', h.x, h.z, 0.55 * k); if (k > 1) SFX.at('boom', h.x, h.z, 0.3);
+  const m = silMuzzle(h), ty = (t.height || 2) * 0.55 + (t.yOff || 0); SFX.at('gunshot', h.x, h.z, 0.55 * k); if (k > 1) SFX.at('rifle', h.x, h.z, 0.3);
   if (!FX.near(h.x, h.z, 55)) return;
   r3Ray(m.x, m.y, m.z, t.x, ty, t.z, { color: SIL.flash, w: 0.1 * k, life: 0.09, core: 0.6 });
   FX.glow(m.x, m.y, m.z, 1.5 * k, SIL.c, 0.08, 'flare'); FX.glow(m.x, m.y, m.z, 0.9 * k, 0xffffff, 0.06, 'star');
@@ -25,7 +25,7 @@ function silShot(h, t, k) {
 function silReload(h, dur) {
   h.ammo = 0; h.reloadT = G.time + dur; h.atkCd = Math.max(h.atkCd, dur);
   if (FX.near(h.x, h.z, 45)) { const m = silMuzzle(h); FX.debris(m.x, m.y - 0.3, m.z, { glow: true, n: 6, color: 0xd8a84a, speed: [1, 2.5], up: 3, size: [0.06, 0.1], life: 0.6 }); if (h === G.player) FX.text(h.x, h.height + 0.7, h.z, 'перезарядка', '#ffd8a0', 12); }
-  after(dur * 0.8, () => SFX.at('hit', h.x, h.z, 0.25));
+  after(dur * 0.8, () => SFX.at('tick', h.x, h.z, 0.3));
 }
 function silFull(h) { h.ammo = 6; h.reloadT = 0; h.atkCd = Math.min(h.atkCd, 0.12); }
 
@@ -66,10 +66,10 @@ function silFree(h, yanked) {
 function silYank(h, S, dmg) {
   silFree(h, true); const e = S.t; if (!e.alive) return; if (S.b) S.b.dead = true;
   const t = pullTo(e, h.x, h.z, 26, 2.2), A = silHand(h);
-  SFX.at('whoosh', h.x, h.z, 1); SFX.at('heavy', e.x, e.z, 0.4);
+  SFX.at('whip', h.x, h.z, 0.9); SFX.at('string', e.x, e.z, 0.45);
   if (FX.near(h.x, h.z, 55)) { r3Ray(A.x, A.y, A.z, e.x, 1, e.z, { color: 0xffe0b0, w: 0.25, life: 0.15 }); FX.burst(e.x, 0.3, e.z, { smoke: true, n: 5, color: 0x9a8a70, color2: 0x4a4030, speed: [1, 3], life: [0.4, 0.8], size: [0.6, 1.3], a: 0.45 }); silRope(() => silHand(h), silWaist(e), t + 0.15, 0.1); }
   after(t + 0.02, () => {
-    if (!e.alive) return; damage(h, e, dmg, 0); stun(h, e, 0.8); SFX.at('heavy', e.x, e.z, 0.8); FX.shake(0.25);
+    if (!e.alive) return; damage(h, e, dmg, 0); stun(h, e, 0.8); SFX.at('heavy', e.x, e.z, 0.8); SFX.at('punch', e.x, e.z, 0.4); FX.shake(0.25);
     if (FX.near(e.x, e.z, 50)) { FX.ring(e.x, e.z, { r0: 0.4, r1: 2.4, color: 0xc8a878, life: 0.35, tex: 'shock' }); FX.burst(e.x, 0.3, e.z, { smoke: true, n: 8, color: 0x9a8a70, color2: 0x4a4030, speed: [1.5, 4], life: [0.5, 1], size: [0.8, 1.6], ring: true, a: 0.5 }); FX.debris(e.x, 0.3, e.z, { n: 5, color: 0x5a4a38, speed: [2, 5], up: 5, size: [0.12, 0.3] }); }
   });
 }
@@ -88,7 +88,7 @@ function silDynMesh() {
 // tossed back where he stood: it lands, the fuse fizzes for the rest of the second, then it goes up
 function silDynamite(h, x0, z0, dmg) {
   const R = 3.3, FUSE = 1.0, from = silHand(h); G.dangers.push({ x: x0, z: z0, r: R, team: h.team, until: G.time + FUSE });
-  const m = silDynMesh(), sp = m.getObjectByName('spark'); SFX.at('fire', x0, z0, 0.3);
+  const m = silDynMesh(), sp = m.getObjectByName('spark'); SFX.at('sizzle', x0, z0, 0.35);
   FX.add(m, FUSE, (k, me, dt, en) => {
     const t = en.t, f = Math.min(1, t / 0.3); me.position.set(lerp(from.x, x0, f), lerp(from.y, 0.25, f) + Math.sin(Math.PI * f) * 1.4, lerp(from.z, z0, f)); me.rotation.set(f < 1 ? t * 12 : 0, 0.6, f < 1 ? t * 7 : HPI * 0.9);
     if (sp) sp.scale.setScalar(0.35 + Math.random() * 0.35 + (t > FUSE - 0.25 ? 0.4 : 0));
@@ -97,7 +97,7 @@ function silDynamite(h, x0, z0, dmg) {
   if (FX.near(x0, z0, 50)) FX.decal(x0, z0, R, SIL.fire, FUSE);
   after(FUSE, () => {
     for (const e of enemiesIn(h, x0, z0, R)) { damage(h, e, dmg, 0); if (e.alive) knock(e, x0, z0, 3, 0.25); FX.hit(e.x, 1.2, e.z, SIL.fire, true); }
-    SFX.at('boom', x0, z0, 1); SFX.at('rubble', x0, z0, 0.6); FX.shake(0.45);
+    SFX.at('boom', x0, z0, 1); SFX.at('rubble', x0, z0, 0.6); SFX.at('fire', x0, z0, 0.5); FX.shake(0.45);
     if (!FX.near(x0, z0, 60)) return;
     FX.explosion(x0, z0, 2.3, SIL.fire, { el: 'fire', color2: 0x5a1400 }); FX.pillar(x0, z0, { r: 1.1, h: 9, color: 0xff6a1a, life: 0.4, op: 0.5 });
     FX.debris(x0, 0.4, z0, { n: 12, color: 0x5a4a38, speed: [3, 9], up: 11, size: [0.15, 0.45], rad: 1 }); FX.debris(x0, 0.5, z0, { glow: true, n: 8, color: 0xffa040, speed: [4, 10], up: 9, size: [0.1, 0.25] });
@@ -151,16 +151,16 @@ HEROES.push(
           const S = h.lasso, dmg = D(h, 70, 14, 0.6);
           if (S) { silYank(h, S, dmg); return; }
           const dir = p.dir, lv = Math.max(1, h.al[1]), dur = 1.4 + 0.2 * lv, full = this.cd * 100 / (100 + h.haste);
-          SFX.at('whoosh', h.x, h.z, 0.6);
+          SFX.at('whoosh', h.x, h.z, 0.6); SFX.at('string', h.x, h.z, 0.3);
           after(0.24, () => {
             if (!h.alive) { h.cd[1] = Math.max(h.cd[1], full); return; }
-            const A = silHand(h), L = silLoopFx(A), rope = silRope(() => silHand(h), () => L.P, 1.2, 0.4); let caught = false; SFX.at('whoosh', h.x, h.z, 0.9);
+            const A = silHand(h), L = silLoopFx(A), rope = silRope(() => silHand(h), () => L.P, 1.2, 0.4); let caught = false; SFX.at('whip', h.x, h.z, 0.8);
             shot(h, { dir, speed: 28, range: 11, w: 0.9, mesh: false, ribbon: false, color: SIL.rope,
               trail: q => { L.P.x = q.x; L.P.y = 1.6; L.P.z = q.z; },
               onHit: e => {
                 if (caught) return; caught = true; const b = addBuff(e, { id: 'lasso', dur, root: true, blind: true, src: h }); if (!b) return;
                 damage(h, e, dmg * 0.4, 0); h.lasso = { t: e, until: G.time + dur, t0: G.time, b, fx: [silCoils(e, dur + 0.1), silRope(() => silHand(h), silWaist(e), dur + 0.1, 0.6)] }; h.cd[1] = 0.2;
-                SFX.at('hit', e.x, e.z, 0.6); if (FX.near(e.x, e.z, 50)) { FX.burst(e.x, 1.2, e.z, { n: 8, color: 0xe8d0a0, color2: SIL.rope, speed: [1, 3], life: [0.2, 0.4], size: [0.2, 0.04] }); if (h === G.player || e === G.player) FX.text(e.x, e.height + 0.8, e.z, 'связан!', '#ffd8a0', 15); }
+                SFX.at('string', e.x, e.z, 0.6); SFX.at('punch', e.x, e.z, 0.35); if (FX.near(e.x, e.z, 50)) { FX.burst(e.x, 1.2, e.z, { n: 8, color: 0xe8d0a0, color2: SIL.rope, speed: [1, 3], life: [0.2, 0.4], size: [0.2, 0.04] }); if (h === G.player || e === G.player) FX.text(e.x, e.height + 0.8, e.z, 'связан!', '#ffd8a0', 15); }
               },
               onEnd: () => { L.e.dead = true; rope.dead = true; if (!caught || !h.lasso) h.cd[1] = Math.max(h.cd[1], full); } });
           });
@@ -171,7 +171,7 @@ HEROES.push(
         key: 'E', name: 'Прощальный подарок', icon: 'sildyn', cd: 11, cost: 50, range: 5.5, ind: { type: 'line', w: 1.2 }, anim: 'roll', animDur: 0.38, lock: 0, ai: { t: 'escape', kite: true },
         desc: 'Сайлас поджигает от сигары связку динамита, бросает её себе под ноги и кувырком уходит на 5.5 в сторону. Через секунду динамит взрывается: физический урон в радиусе 3.3 и отбрасывание. Барабан револьвера за время кувырка перезаряжается.',
         cast(h, p) {
-          const dmg = D(h, 85, 17, 0.55); h.cigT = G.time + 0.6; silDynamite(h, h.x, h.z, dmg); silFull(h); SFX.at('dash', h.x, h.z, 0.7);
+          const dmg = D(h, 85, 17, 0.55); h.cigT = G.time + 0.6; silDynamite(h, h.x, h.z, dmg); silFull(h); SFX.at('dash', h.x, h.z, 0.6); SFX.at('ember', h.x, h.z, 0.4);
           dashTo(h, p.x, p.z, 22, { ribbon: false, trail: u => { if (FX.near(u.x, u.z, 40) && Math.random() < 0.6) FX.burst(u.x, 0.2, u.z, { smoke: true, n: 1, color: 0x9a8a70, color2: 0x4a4030, speed: [0.3, 1], life: [0.3, 0.6], size: [0.5, 1], a: 0.4 }); } });
         }
       },
@@ -181,7 +181,7 @@ HEROES.push(
         cast(h, p) {
           const t = p.unit; if (!t || t.kind !== 'hero' || !hostile(h, t)) return false;
           const dmg = D(h, 180, 40, 1.0), side = D(h, 60, 12, 0.3), T1 = 0.25, T2 = 0.6, T3 = 1.6, R = 3.6, hit = new Set(); let el = 0, ph = 0, a = 0, x0 = 0, z0 = 0, acc = 0, coils = null;
-          h.cigT = G.time + 2; h.order = null; h.path = null; SFX.at('ultcue', h.x, h.z, 0.4); SFX.at('whoosh', h.x, h.z, 0.9);
+          h.cigT = G.time + 2; h.order = null; h.path = null; SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('whip', h.x, h.z, 0.8); SFX.at('whistle', h.x, h.z, 0.4);
           const A = silHand(h), L = silLoopFx(A), rope = silRope(() => silHand(h), () => ph ? silWaist(t)() : L.P, T3 + 0.15, 0.5);
           const release = () => { L.e.dead = true; rope.dead = true; if (coils) coils.dead = true; t.phase = false; if (t.alive) { t.yOff = 0; for (const b of t.buffs) if (b.id === 'rodeo') b.dead = true; const q = NAV.nearest(t.x, t.z); t.x = q.x; t.z = q.z; } h.castLock = 0; h.anim.castT = 0; };
           G.actors.push({
@@ -192,13 +192,13 @@ HEROES.push(
               if (!ph) {
                 ph = 1; L.e.dead = true; if (!t.alive) { release(); return false; }
                 addBuff(t, { id: 'rodeo', dur: T3 - T1 + 0.2, stun: true, src: h }); t.forced = null; t.dash = null; t.phase = true; coils = silCoils(t, T3 - T1 + 0.2); x0 = t.x; z0 = t.z; a = angTo(h.x, h.z, t.x, t.z);
-                SFX.at('hit', t.x, t.z, 0.7); if (FX.near(t.x, t.z, 50) && (h === G.player || t === G.player)) FX.text(t.x, t.height + 1, t.z, 'ЙИ-ХА!', '#ffd8a0', 20);
+                SFX.at('string', t.x, t.z, 0.7); SFX.at('gust', h.x, h.z, 0.5); if (FX.near(t.x, t.z, 50) && (h === G.player || t === G.player)) FX.text(t.x, t.height + 1, t.z, 'ЙИ-ХА!', '#ffd8a0', 20);
               }
               if (!t.alive) { release(); return false; }
               if (el < T2) { const k = easeOut((el - T1) / (T2 - T1)); t.x = lerp(x0, h.x + Math.sin(a) * R, k); t.z = lerp(z0, h.z + Math.cos(a) * R, k); t.yOff = 2.2 * k; return true; }
               if (el < T3) {
                 a += dt * 9.4; t.x = h.x + Math.sin(a) * R; t.z = h.z + Math.cos(a) * R; t.yOff = 2.2 + Math.sin(el * 12) * 0.25; h.facing = a;
-                for (const e of enemiesIn(h, t.x, t.z, 1.7)) { if (e === t || hit.has(e.id) || e.struct) continue; hit.add(e.id); damage(h, e, side, 0); if (e.alive) knock(e, h.x, h.z, 3.5, 0.25); FX.hit(e.x, 1.3, e.z, SIL.c, true); SFX.at('heavy', e.x, e.z, 0.5); }
+                for (const e of enemiesIn(h, t.x, t.z, 1.7)) { if (e === t || hit.has(e.id) || e.struct) continue; hit.add(e.id); damage(h, e, side, 0); if (e.alive) knock(e, h.x, h.z, 3.5, 0.25); FX.hit(e.x, 1.3, e.z, SIL.c, true); SFX.at('punch', e.x, e.z, 0.6); }
                 if (acc > 0.05 && FX.near(h.x, h.z, 50)) { acc = 0; FX.burst(t.x, 0.3, t.z, { smoke: true, n: 1, color: 0x9a8a70, color2: 0x4a4030, speed: [0.5, 1.5], life: [0.4, 0.8], size: [0.7, 1.4], a: 0.4 }); FX.burst(h.x, 0.2, h.z, { smoke: true, n: 1, color: 0x9a8a70, color2: 0x4a4030, speed: [1, 3], life: [0.4, 0.7], size: [0.6, 1.2], ring: true, a: 0.35 }); }
                 return true;
               }
@@ -207,7 +207,7 @@ HEROES.push(
               for (const b of t.buffs) if (b.id === 'rodeo') b.dead = true;
               damage(h, t, dmg, 0); if (t.alive) stun(h, t, 1.0);
               for (const e of enemiesIn(h, q.x, q.z, 3)) if (e !== t) { damage(h, e, dmg * 0.5, 0); if (e.alive) knock(e, q.x, q.z, 3, 0.25); }
-              SFX.at('heavy', q.x, q.z, 1); SFX.at('rubble', q.x, q.z, 0.8); SFX.at('boom', q.x, q.z, 0.4); FX.shake(0.7); if (FX.near(q.x, q.z, 36)) { FX.hitstop(0.08); FX.punch(0.8); }
+              SFX.at('heavy', q.x, q.z, 1); SFX.at('quake', q.x, q.z, 0.6); SFX.at('rubble', q.x, q.z, 0.8); FX.shake(0.7); if (FX.near(q.x, q.z, 36)) { FX.hitstop(0.08); FX.punch(0.8); }
               if (FX.near(q.x, q.z, 55)) {
                 FX.ring(q.x, q.z, { r0: 0.5, r1: 3.6, color: 0xd8b888, life: 0.45, tex: 'shock' }); FX.ring(q.x, q.z, { r0: 2.4, r1: 2.8, color: 0x8a7050, life: 1.8, tex: 'crack' }); FX.shock(q.x, q.z, 4.5, 1, 0.4);
                 FX.burst(q.x, 0.4, q.z, { smoke: true, n: 16, color: 0xa8987a, color2: 0x4a4030, speed: [2, 6], life: [0.6, 1.3], size: [1, 2.4], ring: true, a: 0.55, drag: 1.4 }); FX.debris(q.x, 0.3, q.z, { n: 14, color: 0x5a4a38, speed: [3, 8], up: 9, size: [0.15, 0.45], rad: 1 }); FX.scorch(q.x, q.z, 1.8, 0x6a5038, 6); FX.hit(q.x, 1, q.z, SIL.c, true);

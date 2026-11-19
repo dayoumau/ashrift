@@ -35,7 +35,7 @@ function lumZap(a, b, col, w, life) {
   m.position.set(a.x, a.y, a.z); m.lookAt(b.x, b.y, b.z); m.scale.set(w, w, len); FX.add(m, life, (k, me) => { me.material.uniforms.uA.value = 1 - k * k; });
 }
 // focus (innate): every enemy hero his abilities hit adds a lens of focus (up to three); with three the next cutting beam is overcharged
-function lumFocusHit(h, e) { if (e.kind !== 'hero' || G.time - (h.focusT || 0) < 0.25) return; h.focusT = G.time; const was = h.focus || 0; h.focus = Math.min(3, was + 1); if (h.focus === 3 && was < 3 && FX.near(h.x, h.z, 45)) { FX.ring(h.x, h.z, { r0: 2, r1: 0.5, color: LUM.c, life: 0.35, tex: 'ringThin' }); SFX.at('cue', h.x, h.z, 0.4); } }
+function lumFocusHit(h, e) { if (e.kind !== 'hero' || G.time - (h.focusT || 0) < 0.25) return; h.focusT = G.time; const was = h.focus || 0; h.focus = Math.min(3, was + 1); if (h.focus === 3 && was < 3 && FX.near(h.x, h.z, 45)) { FX.ring(h.x, h.z, { r0: 2, r1: 0.5, color: LUM.c, life: 0.35, tex: 'ringThin' }); SFX.at('charge', h.x, h.z, 0.4); SFX.at('blip', h.x, h.z, 0.3); } }
 // a burning groove left on the ground by a beam; it cools from orange to dark
 function lumGroove(x, z, dir, len, w, life) {
   if (!FX.near(x, z, 60)) return; const m = new THREE.Mesh(FX.geo.line, new THREE.MeshBasicMaterial({ color: LUM.burn, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
@@ -47,7 +47,7 @@ function lumGroove(x, z, dir, len, w, life) {
 function lumLaser(h, x0, z0, dir, len, hw, dmg, o) {
   o = o || {}; const sx = Math.sin(dir), cz = Math.cos(dir), near = FX.near(x0, z0, 70), sw = o.sweep || 0.3, hit = new Set(), col = o.col || LUM.c;
   const A = lumHand(h); if (near) lumZap(A, { x: x0, y: 1.2, z: z0 }, col, 0.22, 0.25);
-  SFX.at('laser', x0, z0, 0.8);
+  SFX.at('laser', x0, z0, 0.8); SFX.at('sizzle', x0, z0, 0.4);
   let mesh = null, core = null; if (near) { mesh = lumBeamMesh(col, len); core = lumBeamMesh(0xffffff, len); mesh.position.set(x0, 1.2, z0); core.position.set(x0, 1.2, z0); mesh.rotation.y = core.rotation.y = dir; }
   const LIFE = sw + 0.35;
   if (mesh) { FX.add(mesh, LIFE, (k, me, dt, en) => { const t = en.t, g = Math.min(1, t / sw); me.scale.set(hw * 2.2 * (1 + 0.1 * Math.sin(t * 60)), hw * 2.2, Math.max(0.01, len * easeOut(g))); me.material.uniforms.uA.value = t < sw ? 1 : Math.max(0, 1 - (t - sw) / 0.35); });
@@ -67,7 +67,7 @@ function lumLaser(h, x0, z0, dir, len, hw, dmg, o) {
 function lumAftershock(h, x0, z0, dir, len, hw, dmg, col, big) {
   const sx = Math.sin(dir), cz = Math.cos(dir), w = hw + (big ? 0.5 : 0.2);
   for (const e of stripHits(h, x0, z0, dir, len, w)) { damage(h, e, dmg, 1); if (big && e.alive) slow(h, e, 0.4, 1.2, 'lumshock'); }
-  SFX.at('boom', x0 + sx * len / 2, z0 + cz * len / 2, 0.5); if (!FX.near(x0, z0, 70)) return; const n = Math.round(len / 1.3);
+  SFX.at('boom', x0 + sx * len / 2, z0 + cz * len / 2, 0.55); SFX.at('fire', x0 + sx * len / 2, z0 + cz * len / 2, 0.35); if (!FX.near(x0, z0, 70)) return; const n = Math.round(len / 1.3);
   for (let i = 0; i <= n; i++) after(i * 0.025, () => { const x = x0 + sx * len * i / n, z = z0 + cz * len * i / n;
     FX.pillar(x, z, { r: big ? 0.7 : 0.5, h: big ? 4 : 2.8, color: col, life: 0.28, op: 0.4 }); FX.sparks(x, 0.3, z, { n: 3, color: 0xffffff, color2: LUM.burn, speed: [2, 6], life: [0.2, 0.4], w: 0.07, up: 6 });
     if (i % 2 === 0) FX.debris(x, 0.3, z, { n: 2, color: 0x3a3632, speed: [1, 3], up: 6, size: [0.08, 0.2] }); });
@@ -92,7 +92,7 @@ function lumDroneMesh() {
   return _lumDG.clone(true);
 }
 function lumDrones(h, x, z, dur, zdmg) {
-  const A = lumHand(h), set = []; h.drones = set; SFX.at('drone', h.x, h.z, 0.6);
+  const A = lumHand(h), set = []; h.drones = set; SFX.at('drone', h.x, h.z, 0.6); SFX.at('servo', h.x, h.z, 0.4);
   for (let i = 0; i < 3; i++) {
     const d = { i, x: A.x, z: A.z, until: G.time + dur, zap: G.time + 0.7 + i * 0.3, rf: 0, t0: G.time }; set.push(d);
     if (FX.near(x, z, 70)) { const m = lumDroneMesh(); FX.add(m, dur + 0.3, (k, me, dt, en) => { if (h.drones !== set && en.t < dur) en.t = dur; const s = en.t > dur ? Math.max(0.01, 1 - (en.t - dur) / 0.3) : 1; me.position.set(d.x, 1.6 + Math.sin(en.t * 3 + i) * 0.15, d.z); me.rotation.y += dt * 4; me.scale.setScalar(s); if (Math.random() < dt * 6) FX.trail(d.x, 1.6, d.z, LUM.c, 0.25, 1); }); }
@@ -102,7 +102,7 @@ function lumDrones(h, x, z, dur, zdmg) {
     for (const d of set) {
       const fly = Math.min(1, (t - d.t0) / 0.35), a = t * 1.3 + d.i / 3 * TAU, ox = x + Math.sin(a) * 2, oz = z + Math.cos(a) * 2; d.x = lerp(d.x, ox, fly < 1 ? fly : 1); d.z = lerp(d.z, oz, fly < 1 ? fly : 1);
       if (t >= d.zap && h.alive) { d.zap = t + 0.9; let tg = null, bd = 6; for (const u of G.units) { if (!u.alive || u.struct || !hostile(h, u)) continue; const dd = dist(d.x, d.z, u.x, u.z) - (u.kind === 'hero' ? 1.5 : 0); if (dd < bd) { bd = dd; tg = u; } }
-        if (tg) { damage(h, tg, zdmg, 1); lumZap({ x: d.x, y: 1.6, z: d.z }, { x: tg.x, y: tg.height * 0.55, z: tg.z }, LUM.c, 0.14, 0.14); SFX.at('zap', d.x, d.z, 0.2); } }
+        if (tg) { damage(h, tg, zdmg, 1); lumZap({ x: d.x, y: 1.6, z: d.z }, { x: tg.x, y: tg.height * 0.55, z: tg.z }, LUM.c, 0.14, 0.14); SFX.at('blaster', d.x, d.z, 0.25); } }
     }
     if (t > set[0].until) { h.drones = null; return false; } return true;
   } });
@@ -110,19 +110,19 @@ function lumDrones(h, x, z, dur, zdmg) {
 // the phase jump: he comes apart into glowing cubes and is somewhere else; half a second later an EMP goes off where he stood
 function lumPhase(h, x, z, dmg) {
   const ox = h.x, oz = h.z; if (FX.near(ox, oz, 55)) { twGhost(h.rig, LUM.c, 0.35, 0.5, ox, oz); FX.debris(ox, 1.2, oz, { n: 12, color: LUM.c, speed: [2, 5], up: 3, size: [0.08, 0.2], glow: true }); }
-  blink(h, x, z); SFX.at('whoosh', h.x, h.z, 0.7);
+  blink(h, x, z); SFX.at('blink', h.x, h.z, 0.7); SFX.at('servo', h.x, h.z, 0.35);
   if (FX.near(h.x, h.z, 55)) { FX.implode(h.x, 1.2, h.z, 2, { color: LUM.c, color2: 0xffffff, n: 16, life: 0.25, streak: true }); FX.glow(h.x, 1.4, h.z, 3, LUM.c, 0.2, 'star'); FX.beam(ox, oz, h.x, h.z, { color: LUM.c, w: 0.3, life: 0.25, y: 1.2 }); }
   if (FX.near(ox, oz, 55)) { FX.decal(ox, oz, 3.2, LUM.c, 0.5); G.dangers.push({ x: ox, z: oz, r: 3.2, team: h.team, until: G.time + 0.5 }); }
   after(0.5, () => {
     for (const e of enemiesIn(h, ox, oz, 3.2)) { damage(h, e, dmg, 1); lumFocusHit(h, e); if (e.alive) { slow(h, e, 0.4, 1.5, 'lumemp'); addBuff(e, { id: 'silence', dur: 0.8, silence: true, src: h }); } }
-    SFX.at('zap', ox, oz, 0.9); SFX.at('boom', ox, oz, 0.4); if (!FX.near(ox, oz, 55)) return;
+    SFX.at('zap', ox, oz, 0.9); SFX.at('warp', ox, oz, 0.5); if (!FX.near(ox, oz, 55)) return;
     FX.ring(ox, oz, { r0: 0.4, r1: 3.6, color: LUM.c, life: 0.4, tex: 'shock' }); FX.sphere(ox, 1, oz, { r0: 0.5, r1: 3, color: LUM.c, life: 0.3, op: 0.5 }); FX.arcs(ox, 1, oz, 3, 7, LUM.c); FX.shock(ox, oz, 3.5, 0.8, 0.35);
   });
 }
 // the supernova: rooted, the core pours a great beam out of his chest for three seconds; he can swing it (toward the cursor; a bot — toward its target)
 function lumNova(h, dir, dur, tick, last) {
   const L = 16, W = 1.25; h.beamT = G.time + dur; h.castLock = Math.max(h.castLock, 0.3);
-  h.anim.castT = h.anim.castDur = dur; h.anim.castType = 'supernova'; SFX.at('ultcue', h.x, h.z, 0.7); SFX.at('overload', h.x, h.z, 0.6);
+  h.anim.castT = h.anim.castDur = dur; h.anim.castType = 'supernova'; SFX.at('ultcue', h.x, h.z, 0.7); SFX.at('overload', h.x, h.z, 0.6); SFX.at('servo', h.x, h.z, 0.45); SFX.at('laser', h.x, h.z, 0.9);
   let m = null, c = null; const near = () => FX.near(h.x, h.z, 70);
   if (near()) { m = lumBeamMesh(LUM.c, L); c = lumBeamMesh(0xffffff, L); FX.add(m, dur + 0.4, () => { }); FX.add(c, dur + 0.4, () => { }); }
   let t = 0, acc = 0, d = dir, done = false;
@@ -130,7 +130,7 @@ function lumNova(h, dir, dur, tick, last) {
     if (done) return; done = true; h.beamT = 0; h.anim.castT = 0;
     const sx = Math.sin(d), cz = Math.cos(d), x0 = h.x + sx * 0.8, z0 = h.z + cz * 0.8;
     for (const e of stripHits(h, x0, z0, d, L, W + 0.4)) damage(h, e, last, 1);
-    SFX.at('boom', h.x + sx * 8, h.z + cz * 8, 0.9); SFX.at('heavy', h.x, h.z, 0.6);
+    SFX.at('bigboom', h.x + sx * 8, h.z + cz * 8, 0.9); SFX.at('sizzle', h.x + sx * 8, h.z + cz * 8, 0.5); SFX.at('servo', h.x, h.z, 0.4);
     if (FX.near(x0, z0, 70)) { for (let i = 0; i <= 8; i++) after(i * 0.035, () => { const x = x0 + sx * L * i / 8, z = z0 + cz * L * i / 8; FX.pillar(x, z, { r: 1.0, h: 6, color: LUM.c, life: 0.35, op: 0.35 }); FX.burst(x, 0.5, z, { smoke: true, n: 3, color: 0x6a6a74, color2: 0x15141a, speed: [1, 3], life: [0.6, 1.1], size: [0.9, 1.8], up: 2, a: 0.4 }); FX.sparks(x, 0.5, z, { n: 4, color: 0xffffff, color2: LUM.burn, speed: [3, 9], life: [0.2, 0.45], w: 0.08, up: 6 }); });
       FX.shake(0.45); FX.shock(x0 + sx * L / 2, z0 + cz * L / 2, 6, 1, 0.45); lumGroove(x0, z0, d, L, W * 1.6, 1.6); }
   };
@@ -168,16 +168,16 @@ function azKnight(h, x, z) {
   if (h.knight && h.knight.alive) kill(h.knight, null);
   const lv = h.level, hp = 620 + lv * 72 + h.ap * 1.5, ad = 30 + lv * 4.2 + h.ap * 0.22, q = NAV.nearest(x, z);
   const u = makeUnit({ kind: 'summon', owner: h, team: h.team, x: q.x, z: q.z, radius: 1.05, maxHp: hp, bAd: ad, bDef: 30 + lv * 2, bAs: 0.78, bMs: 8.8, range: 2.9, pcol: 0xff2a2a, name: 'Рыцарь смерти', facing: h.facing, until: G.time + 15, riseT: G.time, wdT: G.time, wdX: q.x, wdZ: q.z, path: null, think: 0.6, undying: true });
-  u.onUndying = k => { FX.text(k.x, k.height + 1, k.z, 'Не падёт!', '#ff6a5e', 16); SFX.at('heavy', k.x, k.z, 0.6); addBuff(k, { id: 'dkrage', dur: 4, as: 0.5, ms: 0.15 }); if (FX.near(k.x, k.z, 50)) { FX.ring(k.x, k.z, { r0: 0.5, r1: 3, color: 0xff2a2a, life: 0.4, tex: 'shock' }); FX.flame(k.x, 1.5, k.z, { n: 10, color: 0xff3a2a, color2: 0x3a0505, rad: 0.6 }); } };
+  u.onUndying = k => { FX.text(k.x, k.height + 1, k.z, 'Не падёт!', '#ff6a5e', 16); SFX.at('necro', k.x, k.z, 0.6); SFX.at('mace', k.x, k.z, 0.5); addBuff(k, { id: 'dkrage', dur: 4, as: 0.5, ms: 0.15 }); if (FX.near(k.x, k.z, 50)) { FX.ring(k.x, k.z, { r0: 0.5, r1: 3, color: 0xff2a2a, life: 0.4, tex: 'shock' }); FX.flame(k.x, 1.5, k.z, { n: 10, color: 0xff3a2a, color2: 0x3a0505, rad: 0.6 }); } };
   u.rig = buildHero(AZZ_DK, TEAM_COL[h.team]); placeRig(u); u.height = u.rig.height || 3; u.yOff = -2.4; h.knight = u;
-  SFX.at('dark', x, z, 0.8); SFX.at('rubble', x, z, 0.6);
+  SFX.at('necro', x, z, 0.8); SFX.at('rubble', x, z, 0.6); SFX.at('bone', x, z, 0.4);
   if (FX.near(x, z, 60)) {
     FX.zone(q.x, q.z, 2.6, AZZ.c, 1.2, { tex: 'rune', spin: 1.5, op: 0.8 }); FX.pillar(q.x, q.z, { r: 1.2, h: 10, color: 0xff2a2a, life: 0.7, op: 0.45 });
     FX.burst(q.x, 0.4, q.z, { smoke: true, n: 12, color: 0x1a0a14, color2: 0x050205, speed: [0.5, 2.5], life: [0.7, 1.3], size: [1, 2.2], up: 2, rad: 1, a: 0.65 }); FX.debris(q.x, 0.3, q.z, { n: 10, color: 0x3a3430, speed: [2, 6], up: 8, size: [0.15, 0.4] }); FX.scorch(q.x, q.z, 1.6, 0xff2a2a, 6);
   }
   after(0.65, () => {   // risen: it roars and every enemy close by has to fight it
     if (!u.alive) return; for (const e of enemiesIn(u, u.x, u.z, 3.5)) { if (e.boss || e.struct) continue; e.tauntBy = u; e.tauntT = G.time + 1.1; if (e.kind !== 'hero') e.target = u; else { e.order = { type: 'attack', tgt: u, rp: 0 }; e.windup = 0; } }
-    SFX.at('horn', u.x, u.z, 0.5); if (FX.near(u.x, u.z, 50)) { FX.ring(u.x, u.z, { r0: 0.5, r1: 3.8, color: 0xff2a2a, life: 0.45, tex: 'shock' }); FX.text(u.x, u.height + 0.8, u.z, 'РРААА!', '#ff5a4a', 16); }
+    SFX.at('roar', u.x, u.z, 0.7); SFX.at('mace', u.x, u.z, 0.4); if (FX.near(u.x, u.z, 50)) { FX.ring(u.x, u.z, { r0: 0.5, r1: 3.8, color: 0xff2a2a, life: 0.45, tex: 'shock' }); FX.text(u.x, u.height + 0.8, u.z, 'РРААА!', '#ff5a4a', 16); }
   });
   return u;
 }
@@ -189,7 +189,7 @@ function azHeartMesh() {
 }
 // grasp heart: a heart beats in his hand and in the enemy's chest — the hand closes, both are crushed
 function azGrasp(h, t, dmg) {
-  const T = 0.55, near = FX.near(t.x, t.z, 60); SFX.at('dark', t.x, t.z, 0.6);
+  const T = 0.55, near = FX.near(t.x, t.z, 60); SFX.at('heartbeat', t.x, t.z, 0.75); SFX.at('dark', t.x, t.z, 0.4);
   if (near) {
     const ht = azHeartMesh(), hh = azHeartMesh(); const H = () => { if (h.rig && h.rig.handR) { h.rig.handR.getWorldPosition(_lmv); return _lmv; } return { x: h.x, y: 1.6, z: h.z }; };
     FX.add(ht, T + 0.1, (k, me, dt, en) => { const q = en.t / T, beat = 1 + 0.15 * Math.abs(Math.sin(en.t * (8 + q * 16))), s = (q < 1 ? 1 : Math.max(0.01, 1 - (en.t - T) * 10)) * beat * (q > 0.85 ? 1 - (q - 0.85) * 3 : 1); me.position.set(t.x, (t.height || 2) * 0.62 + (t.yOff || 0), t.z); me.scale.setScalar(s * 0.9); me.material.opacity = 0.85 * Math.min(1, en.t / 0.1); });
@@ -200,7 +200,7 @@ function azGrasp(h, t, dmg) {
     if (!t.alive) return; damage(h, t, dmg, 1);
     if (t.alive && t.hp < t.maxHp * 0.15) { damage(h, t, t.hp + 5, 2, { raw: true }); FX.text(t.x, (t.height || 2) + 1.4, t.z, 'Смерть', '#ff4a4a', 22); }
     else if (t.alive) stun(h, t, 1.0);
-    SFX.at('heavy', t.x, t.z, 0.8); SFX.at('crit', t.x, t.z, 0.5); if (!FX.near(t.x, t.z, 55)) return; const y = (t.height || 2) * 0.62;
+    SFX.at('flesh', t.x, t.z, 0.75); SFX.at('blood', t.x, t.z, 0.6); SFX.at('heavy', t.x, t.z, 0.5); if (!FX.near(t.x, t.z, 55)) return; const y = (t.height || 2) * 0.62;
     FX.burst(t.x, y, t.z, { n: 18, color: AZZ.red, color2: 0x3a0005, speed: [2, 6], life: [0.3, 0.6], size: [0.35, 0.05] }); FX.sparks(t.x, y, t.z, { n: 14, color: 0xff8a8a, color2: AZZ.red, speed: [3, 9], life: [0.2, 0.45], w: 0.08 });
     FX.burst(t.x, y, t.z, { smoke: true, n: 5, color: 0x5a0a14, color2: 0x140205, speed: [0.5, 2], life: [0.5, 0.9], size: [0.6, 1.2], a: 0.5 }); FX.ring(t.x, t.z, { r0: 0.3, r1: 2.2, color: AZZ.red, life: 0.3, tex: 'ringThin', y }); FX.hitstop(0.05); FX.shake(0.2);
   });
@@ -223,7 +223,7 @@ function azBlackHole(h, x, z, tick, last) {
     if (acc >= 0.25) { acc -= 0.25; for (const e of enemiesIn(h, x, z, R)) { if (e.struct || e.boss) continue; damage(h, e, tick, 1, { dot: true }); if (dist(e.x, e.z, x, z) > 0.7) pullTo(e, x, z, 3.6, 0.5); } }
     if (t >= DUR) {
       for (const e of enemiesIn(h, x, z, 3)) { damage(h, e, last, 1); if (e.alive) slow(h, e, 0.4, 1.2, 'azhole'); }
-      SFX.at('boom', x, z, 0.8); if (FX.near(x, z, 60)) { FX.ring(x, z, { r0: 4, r1: 0.4, color: AZZ.c, life: 0.3, tex: 'shock' }); after(0.25, () => { FX.ring(x, z, { r0: 0.4, r1: 4.5, color: 0xff6ad8, life: 0.4, tex: 'shock' }); FX.shock(x, z, 5, 1, 0.4); FX.sparks(x, 1.6, z, { n: 20, color: 0xffffff, color2: AZZ.c, speed: [5, 13], life: [0.2, 0.5], w: 0.09 }); FX.shake(0.3); }); }
+      SFX.at('boom', x, z, 0.7); SFX.at('warp', x, z, 0.6); if (FX.near(x, z, 60)) { FX.ring(x, z, { r0: 4, r1: 0.4, color: AZZ.c, life: 0.3, tex: 'shock' }); after(0.25, () => { FX.ring(x, z, { r0: 0.4, r1: 4.5, color: 0xff6ad8, life: 0.4, tex: 'shock' }); FX.shock(x, z, 5, 1, 0.4); FX.sparks(x, 1.6, z, { n: 20, color: 0xffffff, color2: AZZ.c, speed: [5, 13], life: [0.2, 0.5], w: 0.09 }); FX.shake(0.3); }); }
       return false;
     }
     return true;
@@ -240,7 +240,7 @@ function azTentacles(x, z, n) {
 // whoever it leaves below a fifth of his health dies, and the dark mother's tentacles take him
 function azSuper(h, dmg) {
   const R = 10, T = 1.5, x = h.x, z = h.z; h.superT = G.time + T; G.actors.push({ update() { if (!h.alive || G.time > h.superT) return false; h.forced = { vx: 0, vz: 0, t: 0.1 }; h.path = null; h.moving = false; return true; } });   // planted in the circle; nothing can break the casting
-  h.anim.castT = h.anim.castDur = T + 0.2; h.anim.castType = 'overload'; SFX.at('ultcue', x, z, 0.8); SFX.at('dark', x, z, 1); if (G.player && (h.team !== G.player.team) && udist(h, G.player) < 30) UI.announce('Сверхмагия!', '#c08aff');
+  h.anim.castT = h.anim.castDur = T + 0.2; h.anim.castType = 'overload'; SFX.at('ultcue', x, z, 0.8); SFX.at('necro', x, z, 0.9); SFX.at('charge', x, z, 0.5); if (G.player && (h.team !== G.player.team) && udist(h, G.player) < 30) UI.announce('Сверхмагия!', '#c08aff');
   G.dangers.push({ x, z, r: R, team: h.team, until: G.time + T });
   if (FX.near(x, z, 80)) {
     FX.zone(x, z, R, AZZ.c, T + 0.4, { tex: 'rune', spin: 0.6, op: 0.9 }); FX.zone(x, z, R * 0.72, AZZ.gold, T + 0.4, { tex: 'rune', spin: -1.0, op: 0.75 }); FX.zone(x, z, R * 0.42, AZZ.red, T + 0.4, { tex: 'rune', spin: 1.8, op: 0.7 });
@@ -252,7 +252,7 @@ function azSuper(h, dmg) {
   after(T, () => {
     h.superT = 0; const hit = enemiesIn(h, x, z, R).filter(e => !e.struct);
     for (const e of hit) { damage(h, e, dmg * (e.kind === 'hero' ? 1 : 0.6), 1); if (!e.alive) continue; if (e.kind === 'hero' && e.hp < e.maxHp * 0.2) { damage(h, e, e.hp + 5, 2, { raw: true }); azTentacles(e.x, e.z, 6); FX.text(e.x, (e.height || 2) + 1.4, e.z, 'Смерть', '#c08aff', 20); } else { slow(h, e, 0.4, 2, 'azsuper'); if (e.kind === 'hero') azTentacles(e.x, e.z, 3); } }
-    SFX.at('boom', x, z, 1); SFX.at('void', x, z, 0.9); SFX.at('heavy', x, z, 0.8); if (!FX.near(x, z, 80)) return;
+    SFX.at('bigboom', x, z, 1); SFX.at('necro', x, z, 0.8); SFX.at('void', x, z, 0.7); if (!FX.near(x, z, 80)) return;
     FX.shake(0.7); FX.punch(0.5); FX.hitstop(0.06); FX.shock(x, z, R, 1.3, 0.7);
     for (let i = 0; i < 2; i++) after(i * 0.1, () => FX.ring(x, z, { r0: 1, r1: R + 1, color: i ? 0x8a6a20 : 0x5a1a9a, life: 0.6, tex: 'shock', op: 0.7 }));
     for (let i = 0; i < 24; i++) { const a = i / 24 * TAU; after(i % 4 * 0.05, () => FX.burst(x + Math.sin(a) * R * 0.6, 0.6, z + Math.cos(a) * R * 0.6, { smoke: true, n: 3, color: 0x14081c, color2: 0x020104, speed: [2, 6], life: [0.8, 1.4], size: [1.4, 3], dir: a, spread: 0.3, up: 1, a: 0.7 })); }

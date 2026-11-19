@@ -87,7 +87,7 @@ function frDomeBreak(u) {
   if (!FX.near(u.x, u.z, 50)) return;
   FX.debris(u.x, 1.6, u.z, { glow: true, n: 18, color: 0xcff6ff, speed: [3, 9], up: 7, size: [0.12, 0.32], rad: 1.6, life: 0.7 });
   FX.sparks(u.x, 1.6, u.z, { n: 18, color: 0xffffff, color2: FRI.c, speed: [5, 12], life: [0.2, 0.45], w: 0.09 }); FX.ring(u.x, u.z, { r0: 2.2, r1: 3.4, color: FRI.c, life: 0.35, tex: 'ringThin' });
-  FX.glow(u.x, 1.6, u.z, 4, FRI.c, 0.22, 'star'); SFX.at('shatter', u.x, u.z, 0.8);
+  FX.glow(u.x, 1.6, u.z, 4, FRI.c, 0.22, 'star'); SFX.at('shatter', u.x, u.z, 0.8); SFX.at('arcane', u.x, u.z, 0.45);
 }
 // Zoltraak: a straight beam of killing magic with a white core, the air rippling along it, a burst where it ends
 function frZolt(x0, y0, z0, x1, y1, z1, s) {
@@ -109,7 +109,7 @@ function frSup(h) {
     FX.pillar(h.x, h.z, { r: 1.2, h: 10, color: FRI.c, life: 0.5, op: 0.4 }); FX.sparks(h.x, 1, h.z, { n: 16, color: 0xffffff, color2: FRI.c, speed: [3, 8], life: [0.3, 0.6], up: 6, ring: true, w: 0.08 });
     FX.text(h.x, h.height + 1, h.z, 'МАНА', '#c8f4ff', 15);
   }
-  SFX.at('warp', h.x, h.z, 0.5); return 1.25;
+  SFX.at('arcane', h.x, h.z, 0.55); SFX.at('spirit', h.x, h.z, 0.35); return 1.25;
 }
 // the flower field: small lit flowers of four colours (petals round a bright middle, a stem and a leaf), built once and shared
 let _frFl = null;
@@ -172,7 +172,7 @@ function lelKingDrop(t, hit) {
       FX.debris(x, 0.3, z, { n: 8, color: 0x2a2630, speed: [2, 6], up: 7, size: [0.14, 0.34] }); FX.sparks(x, 0.6, z, { n: 12, color: 0xffd0d8, color2: LEL.c, speed: [3, 9], life: [0.2, 0.45], w: 0.1, ring: true });
       FX.glow(x, 1.2, z, 3, LEL.c, 0.2, 'star');
     }
-    SFX.at('heavy', x, z, 0.8); SFX.at('hit', x, z, 0.6); FX.shake(0.25); hit();
+    SFX.at('clack', x, z, 0.9); SFX.at('heavy', x, z, 0.6); FX.shake(0.25); hit();
   });
 }
 // black feathers falling around a unit (Zero's cape)
@@ -197,7 +197,7 @@ function geassStart(by, t, dur) {
     FX.warp('lens', t.x, 1.6, t.z, { r: 4, str: 1, life: 0.35 }); FX.glow(t.x, 2, t.z, 4, LEL.c, 0.3, 'star'); FX.text(t.x, t.height + 1.4, t.z, 'ПОВИНУЙСЯ', '#ff6a7a', 20);
     FX.bolt(t.x, 4.5, t.z, t.x + 1.2, 0.3, t.z - 0.8, { color: LEL.c, w: 0.5, life: 0.2 }); FX.bolt(t.x, 4.5, t.z, t.x - 1.1, 0.3, t.z + 0.9, { color: LEL.c, w: 0.4, life: 0.2 });
   }
-  SFX.at('dark', t.x, t.z, 0.9); SFX.at('warp', t.x, t.z, 0.6); if (t === G.player || by === G.player) { FX.punch(0.8); FX.hitstop(0.06); }
+  SFX.at('hex', t.x, t.z, 0.9); SFX.at('dark', t.x, t.z, 0.6); if (t === G.player || by === G.player) { FX.punch(0.8); FX.hitstop(0.06); }
   if (t === G.player) { UI.announce('Вами управляет Гиас: ' + dur.toFixed(1) + ' сек', '#ff3a4a'); SFX.play('warn'); }
   else if (by === G.player) UI.announce(t.name + ' подчиняется вашему Гиасу', '#ff6a7a');
 }
@@ -234,7 +234,7 @@ function ichCres(col, core, s, dark) {
 // a basic attack: a small crescent that homes in on the target
 function ichShoot(h, t) {
   const hol = h.hollowT > G.time, col = hol ? ICH.red : ICH.c, s = hol ? 1.7 : 1.3, f = h.facing, p = { x: h.x + Math.sin(f) * 1.1, y: 1.3, z: h.z + Math.cos(f) * 1.1 };
-  SFX.at('slash', h.x, h.z, 0.5); SFX.at('whoosh', h.x, h.z, 0.25);
+  SFX.at('blade', h.x, h.z, 0.45); SFX.at('whoosh', h.x, h.z, 0.25);
   const g = FX.near(p.x, p.z, 70) ? ichCres(col, hol ? ICH.ink : 0xffffff, s, hol) : null, en = g ? FX.add(g, 4, null) : null; let n = 0;
   if (g) { g.position.set(p.x, p.y, p.z); g.rotation.y = f; }
   G.actors.push({ update(dt) {
@@ -243,7 +243,7 @@ function ichShoot(h, t) {
     if (d <= st + 0.6) {
       basicHit(h, t); if (en) en.dead = true;
       if (FX.near(t.x, t.z, 50)) { FX.slash(t.x, t.z, Math.atan2(dx, dz), { r: 1.8, sweep: 1.2, color: col, life: 0.2, y: 1.3 }); FX.sparks(t.x, 1.3, t.z, { n: 6, color: 0xffffff, color2: col, speed: [3, 8], life: [0.12, 0.3], dir: Math.atan2(dx, dz), spread: 0.8, w: 0.08 }); }
-      SFX.at('hit', t.x, t.z, 0.45); return false;
+      SFX.at('katana', t.x, t.z, 0.35); return false;
     }
     p.x += dx / d * st; p.z += dz / d * st; if (g) { g.position.set(p.x, p.y, p.z); g.rotation.y = Math.atan2(dx, dz); }
     if (++n % 2 === 0 && FX.near(p.x, p.z, 50)) FX.burst(p.x, p.y, p.z, { n: 1, color: hol ? 0x2a0408 : 0xffffff, color2: col, speed: [0.2, 0.8], life: [0.15, 0.3], size: [0.35, 0.05] });
@@ -354,11 +354,11 @@ HEROES.push(
         desc: 'Самое обычное убивающее заклинание — и потому отточенное до совершенства. Через 0.2 сек перед посохом раскрывается магический круг, и из него бьёт луч на 14: магический урон всем на пути.',
         cast(h, p) {
           const dir = p.dir, k = frSup(h), dmg = D(h, 82, 15, 0, 0.7) * k, L = 14, sx = Math.sin(dir), cz = Math.cos(dir), x0 = h.x + sx * 1.3, z0 = h.z + cz * 1.3;
-          frCircle(x0, 1.6, z0, dir, 1.0, FRI.c, 0.5, { spin: 3 }); SFX.at('cast', h.x, h.z, 0.7); FX.implode(x0, 1.6, z0, 1.6, { n: 8, color: 0xffffff, color2: FRI.c, life: 0.18, streak: true });
+          frCircle(x0, 1.6, z0, dir, 1.0, FRI.c, 0.5, { spin: 3 }); SFX.at('arcane', h.x, h.z, 0.7); FX.implode(x0, 1.6, z0, 1.6, { n: 8, color: 0xffffff, color2: FRI.c, life: 0.18, streak: true });
           after(0.2, () => {
             if (!h.alive) return;
             for (const e of stripHits(h, x0, z0, dir, L, 1.1)) { damage(h, e, dmg, 1); FX.hit(e.x, 1.4, e.z, FRI.c, e.kind === 'hero'); }
-            frZolt(x0, 1.6, z0, x0 + sx * L, 1.3, z0 + cz * L, k); SFX.at('laser', h.x, h.z, 0.9); SFX.at('zap', h.x, h.z, 0.4); FX.shake(0.15);
+            frZolt(x0, 1.6, z0, x0 + sx * L, 1.3, z0 + cz * L, k); SFX.at('laser', h.x, h.z, 0.9); SFX.at('arcane', h.x, h.z, 0.4); FX.shake(0.15);
           });
         }
       },
@@ -367,7 +367,7 @@ HEROES.push(
         desc: 'Любимое заклинание Фрирен — «совершенно бесполезное», как она сама говорит. На 5 сек в круге радиусом 4.5 распускается поле цветов: союзники в нём восстанавливают здоровье и бегают на 15% быстрее, а враги вязнут в стеблях — замедление на 20%.',
         cast(h, p) {
           const x = p.x, z = p.z, R = 4.5, DUR = 5, k = frSup(h), per = D(h, 95, 20, 0, 0.55) * k / 10;
-          frField(x, z, R, DUR); SFX.at('heal', x, z, 0.7); SFX.at('cleanse', x, z, 0.5);
+          frField(x, z, R, DUR); SFX.at('chime', x, z, 0.6); SFX.at('spirit', x, z, 0.5); SFX.at('heal', x, z, 0.35);
           zone(h, { x, z, r: R, dur: DUR, every: 0.5, tick: () => {
             for (const a of alliesIn(h, x, z, R, true)) { heal(h, a, per, true); addBuff(a, { id: 'frflow', dur: 0.6, ms: 0.15, src: h }); if (FX.near(a.x, a.z, 45)) FX.burst(a.x, 0.8, a.z, { n: 2, color: 0xd8ffd0, color2: FRI.leaf, speed: [0.1, 0.5], life: [0.5, 0.9], size: [0.28, 0.04], up: 2, rad: 0.6 }); }
             for (const e of enemiesIn(h, x, z, R)) slow(h, e, 0.2, 0.6, 'frstem');
@@ -382,7 +382,7 @@ HEROES.push(
           const k = frSup(h), sh = D(h, 92, 26, 0, 0.6) * k, b = shield(h, h, sh, 3, FRI.c);
           if (b) { if (b.fx) b.fx.dead = true; b.fx = frDome(h, 3); b.onEnd = u => { if (b.shield <= 0) frDomeBreak(u); }; }
           for (const a of alliesIn(h, h.x, h.z, 5, true)) if (a !== h) { shield(h, a, sh * 0.5, 3, FRI.c); if (FX.near(a.x, a.z, 45)) FX.beam(h.x, h.z, a.x, a.z, { color: FRI.c, w: 0.18, life: 0.35, y: 1.4 }); }
-          SFX.at('shield', h.x, h.z, 0.9); FX.ring(h.x, h.z, { r0: 0.4, r1: 5, color: FRI.c, life: 0.4, tex: 'ringThin' });
+          SFX.at('shield', h.x, h.z, 0.8); SFX.at('arcane', h.x, h.z, 0.45); FX.ring(h.x, h.z, { r0: 0.4, r1: 5, color: FRI.c, life: 0.4, tex: 'ringThin' });
         }
       },
       {
@@ -390,12 +390,12 @@ HEROES.push(
         desc: 'Фрирен поднимает посох — и над полем раскрываются семь магических кругов. 1.6 сек они бьют лучами Зольтраака по кругу радиусом 6: 21 луч, и каждый наносит магический урон всем рядом с местом попадания. Пока длится залп, Фрирен стоит на месте.',
         cast(h, p) {
           const x = p.x, z = p.z, R = 6, k = frSup(h), dmg = D(h, 56, 11, 0, 0.32) * k, f = angTo(h.x, h.z, x, z), sx = Math.sin(f), cz = Math.cos(f), CIR = [];
-          telegraph(h, x, z, R, 2.4, FRI.c); SFX.at('ultcue', h.x, h.z, 0.5); SFX.at('cast', h.x, h.z, 0.8);
+          telegraph(h, x, z, R, 2.4, FRI.c); SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('charge', h.x, h.z, 0.6); SFX.at('arcane', h.x, h.z, 0.5);
           // the circles open one by one in an arc behind and above her, tilted down toward the target
           for (let i = 0; i < 7; i++) {
             const lat = (i - 3) * 2.6, back = 1.8 + Math.abs(i - 3) * 0.45, cx = h.x - sx * back + cz * lat, cy = 5.6 - Math.abs(i - 3) * 0.5 + (i % 2) * 0.5, czz = h.z - cz * back - sx * lat, face = angTo(cx, czz, x, z);
             CIR.push({ x: cx, y: cy, z: czz });
-            after(i * 0.08, () => { if (!h.alive) return; frCircle(cx, cy, czz, face, 1.6, FRI.c, 2.5 - i * 0.08, { pitch: 0.55, spin: 2.6, op: 0.7 }); FX.sparks(cx, cy, czz, { n: 5, color: 0xffffff, color2: FRI.c, speed: [1, 3], life: [0.3, 0.5], w: 0.06 }); SFX.at('zap', cx, czz, 0.25); });
+            after(i * 0.08, () => { if (!h.alive) return; frCircle(cx, cy, czz, face, 1.6, FRI.c, 2.5 - i * 0.08, { pitch: 0.55, spin: 2.6, op: 0.7 }); FX.sparks(cx, cy, czz, { n: 5, color: 0xffffff, color2: FRI.c, speed: [1, 3], life: [0.3, 0.5], w: 0.06 }); SFX.at('arcane', cx, czz, 0.25); });
           }
           FX.implode(h.x, 2.6, h.z, 3, { n: 14, color: FRI.pale, color2: FRI.c, life: 0.6, streak: true }); FX.light(h.x, 4, h.z, FRI.c, 0.8, 18, 2.4);
           for (let j = 0; j < 21; j++) after(0.75 + j * 0.077, () => {
@@ -404,7 +404,7 @@ HEROES.push(
             r3Ray(c.x, c.y, c.z, tx, 0.2, tz, { color: FRI.c, w: 0.8, life: 0.28, grow: true, core: 0.4 }); FX.glow(c.x, c.y, c.z, 2, FRI.deep, 0.14, 'star');
             for (const e of enemiesIn(h, tx, tz, 1.7)) { damage(h, e, dmg, 1); FX.hit(e.x, 1.3, e.z, FRI.c, false); }
             if (FX.near(tx, tz, 55)) { FX.ring(tx, tz, { r0: 0.3, r1: 1.9, color: FRI.c, life: 0.3, tex: 'shock' }); FX.glow(tx, 0.6, tz, 1.8, FRI.c, 0.16, 'star'); FX.sparks(tx, 0.4, tz, { n: 6, color: 0xffffff, color2: FRI.c, speed: [3, 8], life: [0.15, 0.35], up: 4, w: 0.07 }); if (j % 4 === 0) FX.scorch(tx, tz, 0.9, FRI.c, 4); }
-            SFX.at(j % 3 ? 'zap' : 'laser', tx, tz, 0.45); if (j % 5 === 0) FX.shake(0.18);
+            SFX.at(j % 3 ? 'laser' : 'impact', tx, tz, 0.45); if (j % 5 === 0) FX.shake(0.18);
           });
         }
       }
@@ -422,7 +422,7 @@ HEROES.push(
       if (!o.basic || !t.alive) return; const b = t.buffs.find(q => q.id === 'lelcheck' + h.id && !q.dead); if (!b) return;
       if (++b.n < 2) { if (FX.near(t.x, t.z, 45)) FX.text(t.x, t.height + 1, t.z, 'шах', '#ffd0d8', 13); return; }
       b.dead = true; stun(h, t, 1); damage(h, t, b.mate, 1, { dot: true }); lelDoom(h, t);
-      SFX.at('crit', t.x, t.z, 0.9); SFX.at('heavy', t.x, t.z, 0.6); FX.shake(0.3); if (h === G.player || t === G.player) FX.hitstop(0.06);
+      SFX.at('clack', t.x, t.z, 1); SFX.at('crit', t.x, t.z, 0.7); SFX.at('bell', t.x, t.z, 0.4); FX.shake(0.3); if (h === G.player || t === G.player) FX.hitstop(0.06);
       if (FX.near(t.x, t.z, 50)) {
         FX.text(t.x, t.height + 1.4, t.z, 'МАТ', '#ff5a6a', 24); FX.ring(t.x, t.z, { r0: 3.4, r1: 0.4, color: 0xffffff, life: 0.4, tex: 'checker', op: 0.8 }); FX.ring(t.x, t.z, { r0: 0.4, r1: 3.6, color: LEL.c, life: 0.45, tex: 'shock' });
         FX.glow(t.x, 1.6, t.z, 4, LEL.c, 0.25, 'star'); FX.sparks(t.x, 1.4, t.z, { n: 14, color: 0xffd0d8, color2: LEL.c, speed: [4, 10], life: [0.2, 0.45], w: 0.1 });
@@ -435,7 +435,7 @@ HEROES.push(
         desc: 'Лелуш указывает на врага — и на него с неба падает огромный чёрный король: магический урон и замедление на 35% на 1.5 сек. Цели объявлен шах на 4 сек: если за это время Лелуш дважды ударит её атакой, это мат — оглушение на 1 сек и ещё магический урон.',
         cast(h, p) {
           const t = p.unit; if (!t || !t.alive) return false; const dmg = D(h, 72, 14, 0, 0.6), mate = D(h, 60, 14, 0, 0.5);
-          SFX.at('whoosh', t.x, t.z, 0.8); lelFeathers(h.x, 2, h.z, 3);
+          SFX.at('whoosh', t.x, t.z, 0.7); SFX.at('flap', h.x, h.z, 0.35); lelFeathers(h.x, 2, h.z, 3);
           lelKingDrop(t, () => {
             if (!t.alive) return; damage(h, t, dmg, 1);
             if (!t.alive) return;
@@ -452,7 +452,7 @@ HEROES.push(
         cast(h, p) {
           const a = p.unit && p.unit.alive ? p.unit : h, sh = D(h, 70, 15, 0, 0.42) + a.maxHp * 0.04, hl = D(h, 55, 13, 0, 0.4);
           shield(h, a, sh, 3.5, LEL.vio); heal(h, a, hl); FX.heal(a, LEL.pale); addBuff(a, { id: 'lelrun', dur: 2, ms: 0.2, src: h });
-          SFX.at('shield', a.x, a.z, 0.8); SFX.at('whoosh', a.x, a.z, 0.5); lelFeathers(a.x, 2.4, a.z, 10); r3Tex();
+          SFX.at('shield', a.x, a.z, 0.7); SFX.at('flap', a.x, a.z, 0.65); lelFeathers(a.x, 2.4, a.z, 10); r3Tex();
           if (a !== h) FX.beam(h.x, h.z, a.x, a.z, { color: LEL.vio, w: 0.2, life: 0.4, y: 1.4 });
           if (FX.near(a.x, a.z, 50)) { FX.zone(a.x, a.z, 2.2, LEL.c, 1.2, { tex: 'geass', spin: 2, op: 0.7, follow: a }); FX.ring(a.x, a.z, { r0: 0.4, r1: 2.8, color: LEL.vio, life: 0.4, tex: 'shock' }); FX.glow(a.x, 1.5, a.z, 3, LEL.vio, 0.25, 'star'); }
         }
@@ -468,7 +468,7 @@ HEROES.push(
           for (const b of a.buffs) if (b.slow || b.root) b.dead = true;
           addBuff(a, { id: 'lelcastle', dur: 1.5, dmgIn: 0.75, src: h });
           if (h === G.player || a === G.player) G.camSnap = true;
-          SFX.at('warp', hx, hz, 0.8); SFX.at('warp', ax, az, 0.8); SFX.at('whoosh', ax, az, 0.6);
+          SFX.at('blink', hx, hz, 0.7); SFX.at('clack', ax, az, 0.8); SFX.at('flap', ax, az, 0.5);
           for (const [x0, z0, x1, z1] of [[hx, hz, ax, az], [ax, az, hx, hz]]) {
             if (FX.near(x0, z0, 55)) { FX.ring(x0, z0, { r0: 0.4, r1: 2.6, color: 0xffffff, life: 0.45, tex: 'checker', op: 0.7 }); FX.ring(x0, z0, { r0: 2.2, r1: 0.3, color: LEL.c, life: 0.3, tex: 'ringThin' }); const m = chessMesh('rook', LEL.vio, 0.55); m.position.set(x0, 0, z0); m.scale.setScalar(1.3); FX.add(m, 0.5, (k, me) => { me.material.opacity = 0.55 * (1 - k); me.position.y = k * 1.2; }); }
             const rib = FX.ribbon(LEL.c, 0.5, 14); for (let i = 0; i <= 8; i++) { const f = i / 8; after(f * 0.18, () => { rib.add(lerp(x0, x1, f), 1.2 + Math.sin(Math.PI * f) * 3, lerp(z0, z1, f)); if (i === 8) rib.end(); }); }
@@ -481,7 +481,7 @@ HEROES.push(
         desc: '«Лелуш ви Британия повелевает тебе!» Птица Гиаса срывается из глаза Лелуша в глаза вражеского героя. На 2.5 / 3 / 3.5 сек тот подчиняется Лелушу: бьёт своих же союзников (тех, кого атакует Лелуш, или ближайших), обращает против них свои умения и атакует на 35% быстрее. Хозяин им не управляет, а союзники Лелуша могут бить подчинённого. Убийства подчинённого засчитываются Лелушу.',
         cast(h, p) {
           const t = p.unit; if (!t || !t.alive || t.kind !== 'hero') return false; const lv = Math.max(1, h.al[3]), dur = 2 + 0.5 * lv; r3Tex();
-          h.geassCast = G.time + 0.95; SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('dark', h.x, h.z, 0.5);
+          h.geassCast = G.time + 0.95; SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('hex', h.x, h.z, 0.5); SFX.at('charge', h.x, h.z, 0.4);
           if (FX.near(h.x, h.z, 50)) {   // the sigil opens over him like a seal
             const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.geass, color: LEL.c, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true })), e0 = lelEyes(h);
             sp.position.set(e0.x, e0.y + 0.6, e0.z); FX.add(sp, 0.9, (k, me) => { const q = easeOut(Math.min(1, k * 3)); me.scale.set(3.6 * q, 3.6 * q, 1); me.material.opacity = k < 0.6 ? 1 : (1 - k) / 0.4; me.material.rotation = k * 0.8; });
@@ -494,7 +494,7 @@ HEROES.push(
               const bird = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.geass, color: 0xff6a7a, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
               FX.add(bird, 0.16, k => { bird.position.set(lerp(A.x, B.x, k), lerp(A.y, B.y, k), lerp(A.z, B.z, k)); bird.scale.setScalar(1.6 - k); bird.material.opacity = 1; });
             }
-            SFX.at('warp', t.x, t.z, 0.8);
+            SFX.at('flap', t.x, t.z, 0.7); SFX.at('warp', t.x, t.z, 0.5);
             after(0.14, () => { if (t.alive) geassStart(h, t, dur); });
           });
         }
@@ -528,7 +528,7 @@ HEROES.push(
             return bonus;
           } });
           if (b) b.fx = FX.aura(h, ICH.c, 6, 1.5, 'ringThin', 5);
-          ichFlare(h, false); SFX.at('whoosh', h.x, h.z, 0.8); SFX.at('slash', h.x, h.z, 0.5);
+          ichFlare(h, false); SFX.at('blade', h.x, h.z, 0.8); SFX.at('gust', h.x, h.z, 0.5);
         }
       },
       {
@@ -537,7 +537,7 @@ HEROES.push(
         cast(h, p) {
           const x0 = h.x, z0 = h.z; dshGhost(h, ICH.c, 0.45, 0.45); blink(h, p.x, p.z); h.facing = p.dir;
           addBuff(h, { id: 'shunpo', dur: 2, onHit: (u, t, bf) => { if (bf.used) return 0; bf.used = true; bf.dead = true; if (FX.near(t.x, t.z, 45)) FX.glow(t.x, 1.4, t.z, 2.8, ICH.c, 0.2, 'star'); return u.ad * 0.35; } });
-          SFX.at('dash', x0, z0, 0.8); SFX.at('warp', h.x, h.z, 0.4);
+          SFX.at('dash', x0, z0, 0.7); SFX.at('blink', h.x, h.z, 0.6);
           if (FX.near(x0, z0, 55)) {
             FX.beam(x0, z0, h.x, h.z, { color: ICH.c, w: 0.5, life: 0.18, y: 1.1 }); FX.beam(x0, z0, h.x, h.z, { color: 0xffffff, w: 0.15, life: 0.12, y: 1.4 });
             for (const [x, z] of [[x0, z0], [h.x, h.z]]) { FX.ring(x, z, { r0: 0.3, r1: 2, color: ICH.c, life: 0.25, tex: 'shock' }); FX.burst(x, 0.3, z, { smoke: true, n: 4, color: 0x8a96a8, color2: 0x2a2e36, speed: [1, 3], life: [0.3, 0.6], size: [0.6, 1.2], up: 0.5, a: 0.35 }); }
@@ -551,10 +551,10 @@ HEROES.push(
           const dir = p.dir, hol = h.hollowT > G.time, dmg = D(h, 140, 28, 1.0) * (hol ? 1.3 : 1), W = hol ? 3.3 : 2.5, SP = 34, L = 15 + (h.castRange || 0), sx = Math.sin(dir), cz = Math.cos(dir), col = hol ? ICH.red : ICH.c;
           after(0.25, () => {
             if (!h.alive) return; const x0 = h.x + sx * 1.2, z0 = h.z + cz * 1.2, T = L / SP; let acc = 0;
-            SFX.at('slash', h.x, h.z, 1); SFX.at('whoosh', h.x, h.z, 1); SFX.at(hol ? 'dark' : 'boom', h.x, h.z, 0.6); FX.shake(0.35);
+            SFX.at('blade', h.x, h.z, 1); SFX.at('gust', h.x, h.z, 0.9); SFX.at(hol ? 'necro' : 'boom', h.x, h.z, 0.6); FX.shake(0.35);
             shot(h, { dir, x: x0, z: z0, speed: SP, range: 15, w: W * 0.55, color: col, mesh: false, ribbon: false, pierce: true, y: 1.2,
               trail: q => { if (++acc % 2 === 0 && FX.near(q.x, q.z, 55)) { FX.burst(q.x, 0.4, q.z, { n: 3, color: hol ? 0xff4a5a : 0xffffff, color2: col, speed: [0.5, 2.5], life: [0.25, 0.5], size: [0.45, 0.05], rad: W * 0.4 }); if (hol) FX.burst(q.x, 1, q.z, { smoke: true, n: 1, color: 0x14060a, color2: 0x050203, speed: [0.3, 1], life: [0.4, 0.7], size: [1, 1.8], a: 0.5 }); if (acc % 6 === 0) FX.scorch(q.x, q.z, W * 0.35, col, 5); } },
-              onHit: e => { damage(h, e, dmg, 0); FX.hit(e.x, 1.3, e.z, col, true); SFX.at('crit', e.x, e.z, 0.6); if (e === G.player || h === G.player) FX.hitstop(0.04); },
+              onHit: e => { damage(h, e, dmg, 0); FX.hit(e.x, 1.3, e.z, col, true); SFX.at('katana', e.x, e.z, 0.55); if (e === G.player || h === G.player) FX.hitstop(0.04); },
               onEnd: (x, z) => { if (FX.near(x, z, 55)) { FX.ring(x, z, { r0: 0.5, r1: 3, color: col, life: 0.3, tex: 'shock' }); FX.sparks(x, 1.2, z, { n: 12, color: 0xffffff, color2: col, speed: [4, 10], life: [0.2, 0.4], dir, spread: 0.8, w: 0.1 }); } }
             });
             if (!FX.near(x0, z0, 70)) return;
@@ -570,13 +570,13 @@ HEROES.push(
         desc: 'Внутренний пустой вырывается наружу: на лице Ичиго нарастает белая маска с красными полосами и рогами. На 10 / 12 / 14 сек: +35% к урону атак, +30% к скорости атаки, +12% к скорости бега, атаки лечат на 15% нанесённого урона, волны чёрные и крупнее, а «Гецуга Тэнсё» сразу перезаряжается и бьёт на 30% сильнее.',
         cast(h) {
           const lv = Math.max(1, h.al[3]), dur = 8 + 2 * lv;
-          SFX.at('ultcue', h.x, h.z, 0.5); SFX.at('dark', h.x, h.z, 0.8);
+          SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('ghost', h.x, h.z, 0.6); SFX.at('charge', h.x, h.z, 0.5);
           if (FX.near(h.x, h.z, 50)) { FX.implode(h.x, 1.8, h.z, 4, { n: 20, color: 0xff6a6a, color2: 0x1a0204, life: 0.45, streak: true }); FX.burst(h.x, 1.2, h.z, { smoke: true, n: 10, color: 0x1a060a, color2: 0x050203, speed: [0.5, 1.5], life: [0.6, 1], size: [1, 2], rad: 2.4, a: 0.6 }); }
           after(0.5, () => {
             if (!h.alive) return; h.hollowT = G.time + dur; h.cd[2] = 0;
-            const b = addBuff(h, { id: 'hollow', dur, ad: h.bAd * 0.35, as: 0.3, ms: 0.12, ls: 0.15, src: h, onEnd: u => { u.hollowT = 0; if (u.alive && FX.near(u.x, u.z, 50)) { FX.debris(u.x, u.height, u.z, { glow: true, n: 10, color: 0xf2efe6, speed: [2, 5], up: 5, size: [0.08, 0.2], life: 0.6 }); FX.sparks(u.x, u.height, u.z, { n: 8, color: 0xffffff, color2: ICH.red, speed: [2, 5], life: [0.2, 0.4], w: 0.06 }); SFX.at('shatter', u.x, u.z, 0.5); } } });
+            const b = addBuff(h, { id: 'hollow', dur, ad: h.bAd * 0.35, as: 0.3, ms: 0.12, ls: 0.15, src: h, onEnd: u => { u.hollowT = 0; if (u.alive && FX.near(u.x, u.z, 50)) { FX.debris(u.x, u.height, u.z, { glow: true, n: 10, color: 0xf2efe6, speed: [2, 5], up: 5, size: [0.08, 0.2], life: 0.6 }); FX.sparks(u.x, u.height, u.z, { n: 8, color: 0xffffff, color2: ICH.red, speed: [2, 5], life: [0.2, 0.4], w: 0.06 }); SFX.at('bone', u.x, u.z, 0.5); SFX.at('shatter', u.x, u.z, 0.4); } } });
             if (b) b.fx = FX.aura(h, ICH.red, dur, 2.1, 'swirl', 3);
-            SFX.at('bigboom', h.x, h.z, 0.7); SFX.at('heavy', h.x, h.z, 0.8); FX.shake(0.7); if (h === G.player) { FX.punch(1); FX.hitstop(0.08); }
+            SFX.at('roar', h.x, h.z, 1); SFX.at('bigboom', h.x, h.z, 0.7); SFX.at('necro', h.x, h.z, 0.5); FX.shake(0.7); if (h === G.player) { FX.punch(1); FX.hitstop(0.08); }
             if (FX.near(h.x, h.z, 55)) {
               FX.pillar(h.x, h.z, { r: 2, h: 18, color: ICH.red, life: 0.7, op: 0.55 }); FX.ring(h.x, h.z, { r0: 0.5, r1: 6, color: ICH.red, life: 0.5, tex: 'shock' }); FX.shock(h.x, h.z, 7, 1.2, 0.45);
               FX.burst(h.x, 1, h.z, { smoke: true, n: 16, color: 0x1a060a, color2: 0x050203, speed: [2, 6], life: [0.6, 1.2], size: [1.2, 2.6], ring: true, a: 0.7 }); FX.sparks(h.x, 1.4, h.z, { n: 22, color: 0xffd0d0, color2: ICH.red, speed: [5, 14], life: [0.2, 0.5], w: 0.1 });
@@ -597,7 +597,7 @@ HEROES.push(
     innate: { name: 'Лепные кристаллы', icon: 'carinn', desc: 'Атаки Карлотты и её «Хроматический веер» оставляют во враге ледяной кристалл (до 5, на 6 сек) — они кружат вокруг цели. «Деконструкция» и «Смертельный финал» взрывают кристаллы.' },
     shootAtk(u, t) {
       homing(u, t, { speed: 42, color: CAR.c, size: 0.45, mesh: 'shard', y: u.height * 0.62, onHit: tt => { basicHit(u, tt); carCry(u, tt, 1); FX.hit(tt.x, tt.height * 0.55, tt.z, CAR.c, true); } });
-      SFX.at('shoot', u.x, u.z, 0.55); SFX.at('ice', u.x, u.z, 0.15);
+      SFX.at('gunshot', u.x, u.z, 0.5); SFX.at('ice', u.x, u.z, 0.15);
     },
     tick(h) { h.spinning = h.waltzT > G.time && h.alive; },
     abilities: [
@@ -609,7 +609,7 @@ HEROES.push(
           [-1, 0, 1].forEach((k, i) => after(i * 0.06, () => {
             if (!h.alive) return; const d = dir + k * 0.16;
             shot(h, { dir: d, speed: 46, range: 10, w: 0.55, color: CAR.c, mesh: 'shard', size: 0.75, ribbon: 0.35, onHit: e => { damage(h, e, dmg, 0); carCry(h, e, 1); FX.hit(e.x, 1.3, e.z, CAR.c, e.kind === 'hero'); SFX.at('ice', e.x, e.z, 0.4); } });
-            SFX.at('shoot', h.x, h.z, 0.7); if (FX.near(h.x, h.z, 50)) { FX.glow(h.x + Math.sin(d) * 1.2, 1.5, h.z + Math.cos(d) * 1.2, 2, CAR.c, 0.12, 'flare'); FX.sparks(h.x + Math.sin(d) * 1.2, 1.5, h.z + Math.cos(d) * 1.2, { n: 4, color: 0xffffff, color2: CAR.c, speed: [3, 7], life: [0.1, 0.2], dir: d, spread: 0.4, w: 0.06 }); }
+            SFX.at('gunshot', h.x, h.z, 0.65); if (FX.near(h.x, h.z, 50)) { FX.glow(h.x + Math.sin(d) * 1.2, 1.5, h.z + Math.cos(d) * 1.2, 2, CAR.c, 0.12, 'flare'); FX.sparks(h.x + Math.sin(d) * 1.2, 1.5, h.z + Math.cos(d) * 1.2, { n: 4, color: 0xffffff, color2: CAR.c, speed: [3, 7], life: [0.1, 0.2], dir: d, spread: 0.4, w: 0.06 }); }
           }));
         }
       },
@@ -619,7 +619,7 @@ HEROES.push(
         cast(h) {
           const list = []; for (const u of G.units) if (u.alive && !u.struct) { const b = u.buffs.find(q => q.id === 'cry' + h.id); if (b) list.push([u, b]); }
           if (!list.length) { if (h === G.player) UI.msg('Ни в ком нет кристаллов'); return false; }
-          const per = D(h, 30, 7, 0.36); SFX.at('cast', h.x, h.z, 0.5);
+          const per = D(h, 30, 7, 0.36); SFX.at('pop', h.x, h.z, 0.7); SFX.at('chime', h.x, h.z, 0.35);
           for (const [u, b] of list) {
             const n = b.stacks || 1; b.dead = true;
             if (FX.near(u.x, u.z, 55) && udist(h, u) < 30) FX.beam(h.x, h.z, u.x, u.z, { color: CAR.c, w: 0.08, life: 0.15, y: 1.4 });
@@ -631,13 +631,13 @@ HEROES.push(
         key: 'E', name: 'Вальс', icon: 'carwaltz', cd: 12, cost: 40, range: 6, ind: { type: 'line', w: 1.2 }, lock: 0, ai: { t: 'escape', kite: true },
         desc: 'Карлотта уходит лёгким пируэтом (рывок на 6), а на выходе стреляет в ближайшего вражеского героя в радиусе 10: физический урон и сразу два кристалла.',
         cast(h, p) {
-          const dmg = D(h, 60, 12, 0.6); h.waltzT = G.time + 0.3; SFX.at('dash', h.x, h.z, 0.7);
+          const dmg = D(h, 60, 12, 0.6); h.waltzT = G.time + 0.3; SFX.at('whoosh', h.x, h.z, 0.6); SFX.at('chime', h.x, h.z, 0.3);
           dashTo(h, p.x, p.z, 26, { ribbon: CAR.pink, trail: u => { if (FX.near(u.x, u.z, 45) && Math.random() < 0.5) FX.sparks(u.x, 1.2, u.z, { n: 2, color: 0xffffff, color2: CAR.c, speed: [1, 3], life: [0.2, 0.4], w: 0.06 }); },
             onEnd: u => {
               u.waltzT = 0; let t = null, bd = 10; for (const e of G.heroes) if (e.alive && hostile(u, e)) { const d = udist(u, e); if (d < bd) { bd = d; t = e; } }
               if (FX.near(u.x, u.z, 45)) { FX.ring(u.x, u.z, { r0: 0.3, r1: 2.2, color: CAR.pink, life: 0.3, tex: 'ringThin' }); FX.burst(u.x, 1.2, u.z, { n: 8, color: 0xffd0e0, color2: CAR.pink, speed: [0.5, 2], life: [0.4, 0.8], size: [0.25, 0.04], up: 1.5, rad: 0.8 }); }
               if (!t) return; u.facing = angTo(u.x, u.z, t.x, t.z); u.anim.atkT = u.anim.atkDur = 0.3;
-              homing(u, t, { speed: 46, color: CAR.c, size: 0.6, mesh: 'shard', y: 1.5, onHit: tt => { damage(u, tt, dmg, 0); carCry(u, tt, 2); FX.hit(tt.x, 1.3, tt.z, CAR.c, true); } }); SFX.at('shoot', u.x, u.z, 0.8);
+              homing(u, t, { speed: 46, color: CAR.c, size: 0.6, mesh: 'shard', y: 1.5, onHit: tt => { damage(u, tt, dmg, 0); carCry(u, tt, 2); FX.hit(tt.x, 1.3, tt.z, CAR.c, true); } }); SFX.at('gunshot', u.x, u.z, 0.8); SFX.at('ice', u.x, u.z, 0.3);
             } });
         }
       },
@@ -646,11 +646,11 @@ HEROES.push(
         desc: 'Карлотта поднимает пистолет к лицу, собирает в пулю весь холод — и стреляет. В месте попадания вырастает лес ледяных шпилей, а через мгновение мир вокруг трескается и разлетается, как стекло: огромный физический урон всем врагам в радиусе 6 (+12% за каждый кристалл в цели, кристаллы взрываются) и замедление на 40% на 2 сек.',
         cast(h, p) {
           const x = p.x, z = p.z, R = 6, dmg = D(h, 240, 46, 1.5);
-          telegraph(h, x, z, R, 1.3, CAR.c); SFX.at('ultcue', h.x, h.z, 0.5); SFX.at('ice', h.x, h.z, 0.6);
+          telegraph(h, x, z, R, 1.3, CAR.c); SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('charge', h.x, h.z, 0.6); SFX.at('ice', h.x, h.z, 0.5);
           if (FX.near(h.x, h.z, 50)) { FX.implode(h.x, 1.8, h.z, 3.5, { n: 22, color: 0xffffff, color2: CAR.c, life: 0.55, streak: true }); FX.glow(h.x, 2.1, h.z, 2.6, CAR.c, 0.6, 'star'); FX.light(h.x, 2.5, h.z, CAR.c, 1.2, 12, 0.7); }
           after(0.62, () => {
             if (!h.alive) return; const x0 = h.x + Math.sin(h.facing) * 1.2, z0 = h.z + Math.cos(h.facing) * 1.2, T = 0.18;
-            SFX.at('shoot', h.x, h.z, 1); SFX.at('laser', h.x, h.z, 0.6); FX.shake(0.3);
+            SFX.at('rifle', h.x, h.z, 1); SFX.at('ice', h.x, h.z, 0.5); FX.shake(0.3);
             if (FX.near(x0, z0, 60)) {
               const m = FX.projMesh('shard', CAR.c, 2.2), rib = FX.ribbon(CAR.c, 1.1, 14); m.rotation.y = angTo(x0, z0, x, z);
               FX.add(new THREE.Group(), T, k => { m.position.set(lerp(x0, x, k), lerp(1.5, 1.0, k), lerp(z0, z, k)); rib.add(m.position.x, m.position.y, m.position.z); });
@@ -659,7 +659,7 @@ HEROES.push(
             }
             after(T, () => {
               // the bloom: a ring of ice spires breaks out of the ground, frost crawls over it
-              carSpikes(x, z, 14, R * 0.85, 0.75, true); SFX.at('ice', x, z, 1); SFX.at('rubble', x, z, 0.5);
+              carSpikes(x, z, 14, R * 0.85, 0.75, true); SFX.at('ice', x, z, 1); SFX.at('stone', x, z, 0.5); SFX.at('chime', x, z, 0.4);
               if (FX.near(x, z, 60)) { FX.ring(x, z, { r0: 0.5, r1: R, color: CAR.c, life: 0.6, tex: 'crack' }); FX.zone(x, z, R, CAR.c, 0.7, { tex: 'rune2', spin: 0.8, op: 0.6 }); FX.light(x, 3, z, CAR.c, 1.4, 20, 0.6); FX.glow(x, 1.5, z, 6, CAR.c, 0.3, 'star'); }
               after(0.38, () => {
                 // and it all breaks like glass

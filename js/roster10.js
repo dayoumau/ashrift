@@ -41,7 +41,7 @@ function gubToss(h, x0, z0, R, dmg, hl, fromLeft) {
   after(T, () => {
     for (const e of enemiesIn(h, tx, tz, 1.6)) { damage(h, e, dmg, 0); if (e.alive) slow(h, e, 0.25, 1, 'gubsauce'); }
     for (const o of G.heroes) if (o.alive && o.team === h.team && dist(o.x, o.z, tx, tz) < 1.6) { heal(h, o, hl); if (FX.near(o.x, o.z, 40) && Math.random() < 0.5) FX.text(o.x, o.height + 0.9, o.z, 'ням!', '#ffd86a', 12); }
-    gubSplat(tx, tz, 1); if (Math.random() < 0.35) SFX.at('hit', tx, tz, 0.35);
+    gubSplat(tx, tz, 1); if (Math.random() < 0.35) SFX.at('splat', tx, tz, 0.35);
     // a burger that lands sits there half-squashed for a moment
     if (FX.near(tx, tz, 50)) { const s = gubBurger(1.1), ry = rand(TAU); FX.add(s, 1.6, (k, me) => { me.position.set(tx, 0.02, tz); me.rotation.set(0, ry, 0); const q = k < 0.1 ? 1 - k / 0.1 * 0.4 : 0.6; me.scale.set(1.1 * (1 + (1 - q) * 0.4), 1.1 * q * (k > 0.8 ? (1 - k) / 0.2 : 1), 1.1 * (1 + (1 - q) * 0.4)); }); }
   });
@@ -53,7 +53,7 @@ function gubGiant(h, x, z, dmg) {
   if (near) { FX.decal(x, z, 3, GUB.c, T); FX.add(m, T + 1.4, (k, me, dt, en) => { const t = en.t; if (t < T) { const f = t / T; me.position.set(x, 26 * (1 - f * f), z); me.rotation.set(Math.sin(t * 5) * 0.2, t * 3, Math.cos(t * 4) * 0.15); me.scale.setScalar(5); } else { const s = t - T, q = s < 0.4 ? Math.sin(s * 25) * 0.15 * (1 - s / 0.4) : 0; me.position.set(x, 0, z); me.rotation.set(0, me.rotation.y, 0); me.scale.set(5 * (1 + q), 5 * (1 - q) * (s > 1 ? 1 - (s - 1) / 0.4 : 1), 5 * (1 + q)); } }); }
   after(T, () => {
     for (const e of enemiesIn(h, x, z, 3)) { damage(h, e, dmg, 0); if (e.alive) stun(h, e, 1, 0.8); }
-    SFX.at('heavy', x, z, 1); SFX.at('boom', x, z, 0.6); FX.shake(0.6); if (FX.near(x, z, 36)) FX.hitstop(0.06);
+    SFX.at('heavy', x, z, 1); SFX.at('splash', x, z, 0.7); SFX.at('punch', x, z, 0.6); FX.shake(0.6); if (FX.near(x, z, 36)) FX.hitstop(0.06);
     if (near) { FX.ring(x, z, { r0: 0.8, r1: 4.2, color: GUB.mustard, life: 0.5, tex: 'shock' }); FX.shock(x, z, 5, 1, 0.45); for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; gubSplat(x + Math.sin(a) * 2.6, z + Math.cos(a) * 2.6, 1.3); } gubSplat(x, z, 2.2);
       FX.burst(x, 0.5, z, { smoke: true, n: 12, color: 0xe8d8b0, color2: 0x6a4a2a, speed: [2, 6], life: [0.6, 1.2], size: [1.2, 2.6], ring: true, a: 0.4 }); }
   });
@@ -70,7 +70,7 @@ function gubBubbles(h, dir, dmg, n) {
       if (done) { en.dead = true; return; }
       const dr = Math.exp(-dt * 1.6); vx *= dr; vz *= dr; vy = vy * dr + 0.25 * dt; x += vx * dt + Math.sin(en.t * 4 + ph) * 0.4 * dt; y += vy * dt; z += vz * dt + Math.cos(en.t * 4 + ph) * 0.4 * dt;
       me.position.set(x, y, z); m.scale.set(r * (1 + Math.sin(en.t * 9 + ph) * 0.06), r * (1 + Math.cos(en.t * 8 + ph) * 0.06), r);
-      for (const e of enemiesIn(h, x, z, r + 0.5)) { if (e.struct) continue; const pc = DMG_CTX; DMG_CTX = ctx; damage(h, e, dmg, 1); DMG_CTX = pc; if (e.alive) slow(h, e, 0.25, 1.5, 'gubsoap'); SFX.at('hit', x, z, 0.15); pop(); break; }
+      for (const e of enemiesIn(h, x, z, r + 0.5)) { if (e.struct) continue; const pc = DMG_CTX; DMG_CTX = ctx; damage(h, e, dmg, 1); DMG_CTX = pc; if (e.alive) slow(h, e, 0.25, 1.5, 'gubsoap'); SFX.at('pop', x, z, 0.2); pop(); break; }
       if (k > 0.97) pop();
     });
   });
@@ -106,7 +106,7 @@ HEROES.push(
           SFX.at('whoosh', h.x, h.z, 0.7); dashTo(h, x, z, 18, { arc: 1.8, ribbon: false });
           after(T, () => {
             if (!h.alive) return; for (const e of enemiesIn(h, h.x, h.z, 2.6)) { damage(h, e, dmg, 0); if (e.alive) stun(h, e, 0.7, 1.6); FX.hit(e.x, 1.2, e.z, GUB.c, true); }
-            SFX.at('heavy', h.x, h.z, 0.9); SFX.at('fire', h.x, h.z, 0.3); FX.shake(0.35);
+            SFX.at('pan', h.x, h.z, 0.85); SFX.at('heavy', h.x, h.z, 0.6); FX.shake(0.35);
             if (FX.near(h.x, h.z, 55)) { FX.slash(h.x + Math.sin(h.facing) * 1.3, h.z + Math.cos(h.facing) * 1.3, h.facing, { r: 2.6, color: GUB.c, life: 0.25 }); FX.ring(h.x, h.z, { r0: 0.4, r1: 3, color: 0xffe0a0, life: 0.4, tex: 'shock' });
               FX.burst(h.x, 0.3, h.z, { smoke: true, n: 8, color: 0xc8b890, color2: 0x5a4a38, speed: [1.5, 4], life: [0.5, 1], size: [0.8, 1.6], ring: true, a: 0.4 }); FX.sparks(h.x, 0.4, h.z, { n: 12, color: 0xffffff, color2: 0xffa040, speed: [3, 8], life: [0.2, 0.45], w: 0.07, up: 4 }); }
           });
@@ -115,13 +115,13 @@ HEROES.push(
       {
         key: 'W', name: 'Мыльные пузыри', icon: 'gubsoap', cd: 8, cost: 55, range: 7, ind: { type: 'cone', r: 7 }, anim: 'blow', animDur: 0.7, lock: 0.45, ai: { t: 'cone', farm: true },
         desc: 'Губерт выдувает перед собой веер из 14 переливающихся мыльных пузырей (до 7). Пузырь лопается о первого же врага: магический урон и замедление на 25% на 1.5 сек. Чем ближе враг к Губерту, тем больше пузырей в него попадёт.',
-        cast(h, p) { SFX.at('cast', h.x, h.z, 0.5); after(0.12, () => { if (h.alive) gubBubbles(h, p.dir, D(h, 26, 6, 0.15, 0.15), 14); }); }
+        cast(h, p) { SFX.at('water', h.x, h.z, 0.5); SFX.at('pop', h.x, h.z, 0.35); after(0.12, () => { if (h.alive) gubBubbles(h, p.dir, D(h, 26, 6, 0.15, 0.15), 14); }); }
       },
       {
         key: 'E', name: 'Отжим', icon: 'gubsqueeze', cd: 14, cost: 60, range: 0, ind: { type: 'self', r: 5 }, anim: 'squeeze', animDur: 0.7, lock: 0.35, ai: { t: 'sanct' },
         desc: 'Губерт сжимается в лепёшку и выжимает из себя всю впитанную воду: струи бьют из каждой поры. Он восстанавливает здоровье — немного всегда и плюс всё, что впитал, — а союзные герои в радиусе 5 получают половину. С Губерта и союзников смываются замедления и обездвиживание.',
         cast(h) {
-          const st = h.sponge || 0, base = D(h, 60, 15, 0, 0.3); h.sponge = 0; h.squeezeT = G.time + 0.7; SFX.at('heal', h.x, h.z, 0.8); SFX.at('ice', h.x, h.z, 0.4);
+          const st = h.sponge || 0, base = D(h, 60, 15, 0, 0.3); h.sponge = 0; h.squeezeT = G.time + 0.7; SFX.at('splash', h.x, h.z, 0.75); SFX.at('heal', h.x, h.z, 0.5);
           after(0.25, () => {
             if (!h.alive) return; heal(h, h, base + st); for (const b of h.buffs) if (b.slow || b.root) b.dead = true;
             for (const o of G.heroes) if (o.alive && o !== h && o.team === h.team && udist(h, o) < 5) { heal(h, o, (base + st) * 0.5); for (const b of o.buffs) if (b.slow || b.root) b.dead = true; if (FX.near(o.x, o.z, 45)) FX.heal(o, GUB.water); }
@@ -138,7 +138,7 @@ HEROES.push(
         cast(h, p) {
           const lv = Math.max(1, h.al[3]);
           h.fling = { x: p.x, z: p.z, R: 5.5, until: G.time + 3, every: 1 / 12, acc: 0, left: false, dmg: D(h, 18, 4.5, 0.1, 0.08), heal: 14 + 8 * lv + h.ap * 0.05, big: D(h, 90, 22, 0.4, 0.25) };
-          h.flingUntil = G.time + 3; SFX.at('ultcue', h.x, h.z, 0.5);
+          h.flingUntil = G.time + 3; SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('whistle', h.x, h.z, 0.5);
           if (G.player && (h.team === G.player.team || udist(h, G.player) < 30)) mmMark({ x: p.x, z: p.z, r: 5.5, color: '#ffd84a', until: G.time + 3.7 });
         }
       }

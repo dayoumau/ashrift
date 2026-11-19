@@ -61,7 +61,7 @@ function rauSunderFx(h, t) {
     after(0.32, () => { for (const [u, col] of [[h, RAU.soul], [t, RAU.c]]) { if (!u.alive) continue; FX.burst(u.x, 1.4, u.z, { n: 14, color: 0xffffff, color2: col, speed: [1, 4], life: [0.4, 0.8], size: [0.5, 0.05], up: 2, rad: 0.8 }); FX.glow(u.x, 1.5, u.z, 3.4, col, 0.25, 'star'); } });
     FX.text(h.x, h.height + 1.6, h.z, 'САНДЕР', '#ff5a6a', 22);
   }
-  SFX.at('dark', h.x, h.z, 0.9); SFX.at('warp', t.x, t.z, 0.8); after(0.3, () => SFX.at('heavy', t.x, t.z, 0.6));
+  SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('blood', h.x, h.z, 0.9); SFX.at('ghost', t.x, t.z, 0.7); after(0.3, () => { SFX.at('heartbeat', t.x, t.z, 0.6); SFX.at('necro', h.x, h.z, 0.5); });
 }
 
 /* ================= Tanya ================= */
@@ -77,7 +77,7 @@ function tanBlast(h, x, z, r, dmg, o) {
     FX.sparks(x, 0.8, z, { n: big ? 18 : 8, color: 0xffffff, color2: TAN.c, speed: [r * 2, r * 5], life: [0.2, 0.5], up: r, w: 0.1 });
     if (big) { FX.shock(x, z, r * 1.5, 0.9, 0.4); FX.light(x, 2, z, TAN.fire, 1.6, r * 5, 0.35); FX.scorch(x, z, r * 0.6, TAN.fire, 5); FX.smoke(x, z, r * 0.6, 4); }
   }
-  SFX.at(r >= 2.6 ? 'boom' : 'hit', x, z, r >= 2.6 ? 0.7 : 0.45); return n;
+  SFX.at(r >= 2.6 ? 'boom' : 'ember', x, z, r >= 2.6 ? 0.7 : 0.45); return n;
 }
 // the halo of the prayer: a golden sigil turning behind her head
 function tanHalo(h, dur) {
@@ -117,20 +117,20 @@ function tanDeus(h, x, z, fire) {
     FX.implode(P.x, P.y, P.z, 4, { n: 26, color: 0xffffff, color2: TAN.c, life: 0.5, streak: true }); FX.light(P.x, P.y, P.z, TAN.c, 1.4, 18, 2);
     // circles along the barrel, small to large, then three great ones before the muzzle
     const l0 = 3.95 * S, Lm = Math.max(3, dist(P.x, P.z, x, z) / cp - l0), stp = Math.min(1.1, Lm * 0.75 / 7), C = [[3.2, 0.42], [5.0, 0.5]]; for (let i = 0; i < 7; i++) C.push([l0 + 0.8 + i * stp, 0.8 + i * 0.37]);
-    C.forEach(([l, r], i) => after(0.3 + i * 0.12, () => { if (!h.alive) return; const q = at(l); frCircle(q.x, q.y, q.z, dir, r, i % 2 ? TAN.fire : TAN.c, FIRE + 0.25 - (0.3 + i * 0.12), { pitch: pit, spin: (i % 2 ? -1 : 1) * (2 + i * 0.3), op: i < 2 ? 0.9 : 0.6 }); SFX.at('zap', q.x, q.z, 0.2); }));
+    C.forEach(([l, r], i) => after(0.3 + i * 0.12, () => { if (!h.alive) return; const q = at(l); frCircle(q.x, q.y, q.z, dir, r, i % 2 ? TAN.fire : TAN.c, FIRE + 0.25 - (0.3 + i * 0.12), { pitch: pit, spin: (i % 2 ? -1 : 1) * (2 + i * 0.3), op: i < 2 ? 0.9 : 0.6 }); SFX.at('arcane', q.x, q.z, 0.2); }));
     after(1.25, () => { if (!h.alive) return; const q = at(3.95 * S); FX.implode(q.x, q.y, q.z, 3, { n: 24, color: 0xffffff, color2: TAN.c, life: 0.3, streak: true }); FX.glow(q.x, q.y, q.z, 4, TAN.c, 0.35, 'star'); });
   }
-  SFX.at('ultcue', h.x, h.z, 0.5); SFX.at('cast', h.x, h.z, 0.8); after(0.6, () => SFX.at('horn', h.x, h.z, 0.3));
+  SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('holy', h.x, h.z, 0.6); SFX.at('charge', h.x, h.z, 0.7); after(0.6, () => SFX.at('bell', h.x, h.z, 0.4));
   after(FIRE, () => {
     if (!h.alive) return; const q = at(3.95 * S);
     if (near) { r3Ray(q.x, q.y, q.z, x, 0.3, z, { color: TAN.c, w: 3.2, life: 0.5, grow: true, core: 0.3 }); r3Ray(q.x, q.y, q.z, x, 0.3, z, { color: TAN.fire, w: 5, life: 0.3, op: 0.35 }); FX.glow(q.x, q.y, q.z, 7, 0xffffff, 0.2, 'flare'); FX.warp('line', q.x, 1.5, q.z, { ang: dir, w: 4, len: dist(q.x, q.z, x, z), str: 0.8, life: 0.4 }); }
-    SFX.at('laser', h.x, h.z, 1); SFX.at('bigboom', h.x, h.z, 0.6); FX.shake(0.5); if (h === G.player) FX.punch(1);
+    SFX.at('rifle', h.x, h.z, 1); SFX.at('laser', h.x, h.z, 0.8); FX.shake(0.5); if (h === G.player) FX.punch(1);
     after(0.08, fire);
   });
 }
 // where the shot lands: a column of light, rings rolling out, fire, stone thrown up, a burnt sigil left on the ground
 function tanImpact(x, z, R) {
-  SFX.at('bigboom', x, z, 1); SFX.at('boom', x, z, 0.9); after(0.1, () => SFX.at('rubble', x, z, 0.8)); FX.shake(1.0);
+  SFX.at('bigboom', x, z, 1); SFX.at('fire', x, z, 0.6); SFX.at('holy', x, z, 0.5); after(0.1, () => SFX.at('rubble', x, z, 0.8)); FX.shake(1.0);
   if (!FX.near(x, z, 60)) return;
   if (FX.near(x, z, 36)) FX.hitstop(0.1);
   FX.pillar(x, z, { r: 3.4, h: 30, color: TAN.fire, life: 0.9, op: 0.45 }); FX.pillar(x, z, { r: 1.3, h: 36, color: TAN.c, life: 0.5, op: 0.6 });
@@ -187,7 +187,7 @@ function seCut(h, ax, ay, az, bx, by, bz, hw, dmg, o) {
   seRift(ax, ay, az, bx, by, bz, { hold: o.hold || 0.8, w: o.w, onSnap: () => {
     if (!(snap > 0)) return; let n = 0;
     for (const e of seLine(h, ax, az, bx, bz, hw)) { damage(h, e, snap, 0, { dot: true }); n++; if (FX.near(e.x, e.z, 45)) FX.sparks(e.x, 1.2, e.z, { n: 6, color: 0xffffff, color2: SET.c, speed: [3, 8], life: [0.12, 0.3], w: 0.07 }); }
-    SFX.at(n ? 'crit' : 'zap', (ax + bx) / 2, (az + bz) / 2, n ? 0.45 : 0.2);
+    SFX.at(n ? 'katana' : 'warp', (ax + bx) / 2, (az + bz) / 2, n ? 0.45 : 0.2);
   } });
 }
 /* the picture itself cut: up to three lines across the screen along which the two halves slide apart over a slit of nothing (in the final post pass),
@@ -242,6 +242,7 @@ HEROES.push(
         if (!NAV.ok(h.x, h.z)) { const q = NAV.nearest(h.x, h.z); h.x = q.x; h.z = q.z; if (h === G.player) G.camSnap = true; }
         const last = h.path && h.path[h.path.length - 1]; h.path = null; if (h.order && h.order.type === 'move' && last) setMove(h, last.x, last.z);
         if (FX.near(h.x, h.z, 45)) { FX.ring(h.x, h.z, { r0: 0.4, r1: 2.8, color: RAU.c, life: 0.35, tex: 'shock' }); FX.burst(h.x, 0.3, h.z, { smoke: true, n: 6, color: 0x2a2228, color2: 0x08060a, speed: [1, 3], life: [0.4, 0.8], size: [0.8, 1.4], ring: true, a: 0.45 }); }
+        SFX.at('flap', h.x, h.z, 0.5);
       }
     },
     abilities: [
@@ -250,7 +251,7 @@ HEROES.push(
         desc: 'Рауль бьёт ладонью оземь — и в круге радиусом 3 из земли вырываются чёрные руки. Через 0.35 сек они хватают всех врагов в круге: магический урон и обездвиживание на 1.3 / 1.45 / 1.6 / 1.75 сек.',
         cast(h, p) {
           const x = p.x, z = p.z, R = 3, lv = Math.max(1, h.al[0]), dur = 1.15 + 0.15 * lv, dmg = D(h, 80, 16, 0.2, 0.6);
-          rauPit(x, z, R, dur + 0.55); SFX.at('dark', x, z, 0.7); SFX.at('rubble', x, z, 0.4);
+          rauPit(x, z, R, dur + 0.55); SFX.at('necro', x, z, 0.6); SFX.at('stone', x, z, 0.5);
           for (let i = 0; i < 6; i++) { const a = i / 6 * TAU + rand(0.4), d = R * rand(0.75, 1), hx = x + Math.sin(a) * d, hz = z + Math.cos(a) * d; after(i * 0.03, () => rauHandFx(hx, hz, angTo(hx, hz, x, z), dur + 0.5, 0.55, rand(1.25, 1.6))); }
           after(0.35, () => {
             const foes = enemiesIn(h, x, z, R + 0.3);
@@ -259,8 +260,8 @@ HEROES.push(
               for (const s of [-1, 1]) { const a = (e.facing || 0) + s * 1.9, hx = e.x + Math.sin(a) * 0.75, hz = e.z + Math.cos(a) * 0.75; rauHandFx(hx, hz, angTo(hx, hz, e.x, e.z), dur, 0.75, 1.05); }
               if (FX.near(e.x, e.z, 50)) { FX.burst(e.x, 0.6, e.z, { n: 8, color: 0xff6a7a, color2: RAU.deep, speed: [1, 4], life: [0.3, 0.6], size: [0.35, 0.05], up: 3 }); FX.glow(e.x, 1, e.z, 2.6, RAU.c, 0.2, 'star'); }
             }
-            if (foes.length) { SFX.at('heavy', x, z, 0.6); FX.shake(0.2); }
-            SFX.at('hit', x, z, 0.5);
+            if (foes.length) { SFX.at('claw', x, z, 0.7); SFX.at('flesh', x, z, 0.4); FX.shake(0.2); }
+            SFX.at('punch', x, z, 0.4);
           });
         }
       },
@@ -272,10 +273,10 @@ HEROES.push(
           [dir + Math.PI / 4, dir - Math.PI / 4].forEach((a, k) => after(0.14 + k * 0.29, () => {
             if (!h.alive) return; const sx = Math.sin(a), sz = Math.cos(a), x0 = cx - sx * L / 2, z0 = cz - sz * L / 2;
             for (const e of stripHits(h, x0, z0, a, L, 0.75)) { const was = e.alive; damage(h, e, dmg, 0); if (was && !e.alive) reset = true; else if (e.alive && FX.near(e.x, e.z, 45)) FX.hit(e.x, 1.2, e.z, RAU.c, e.kind === 'hero'); }
-            rauCut(cx, cz, a, L); SFX.at('slash', cx, cz, 0.9); SFX.at('whoosh', cx, cz, 0.6); FX.shake(0.12);
+            rauCut(cx, cz, a, L); SFX.at('shadowblade', cx, cz, 0.9); SFX.at('whoosh', cx, cz, 0.5); FX.shake(0.12);
             if (k === 1) {
               if (FX.near(cx, cz, 50)) { FX.glow(cx, 1.1, cz, 3.4, RAU.c, 0.25, 'star'); FX.ring(cx, cz, { r0: 0.3, r1: 2.6, color: RAU.c, life: 0.3, tex: 'shock' }); }
-              if (reset) { h.cd[1] = 0; if (FX.near(h.x, h.z, 45)) { FX.text(h.x, h.height + 1.2, h.z, 'ЕЩЁ', '#ff5a6a', 18); FX.ring(h.x, h.z, { r0: 2, r1: 0.3, color: RAU.c, life: 0.3, tex: 'ringThin' }); } SFX.at('cue', h.x, h.z, 0.6); }
+              if (reset) { h.cd[1] = 0; if (FX.near(h.x, h.z, 45)) { FX.text(h.x, h.height + 1.2, h.z, 'ЕЩЁ', '#ff5a6a', 18); FX.ring(h.x, h.z, { r0: 2, r1: 0.3, color: RAU.c, life: 0.3, tex: 'ringThin' }); } SFX.at('blood', h.x, h.z, 0.55); }
             }
           }));
         }
@@ -288,7 +289,7 @@ HEROES.push(
           const last = h.path && h.path[h.path.length - 1]; if (h.order && h.order.type === 'move' && last) setMove(h, last.x, last.z);   // the rest of the way goes straight
           for (const b of h.buffs) if (b.slow) b.dead = true;
           addBuff(h, { id: 'rauwing', dur, ms: 0.25 + 0.05 * lv, src: h });
-          SFX.at('whoosh', h.x, h.z, 1); SFX.at('dash', h.x, h.z, 0.6);
+          SFX.at('flap', h.x, h.z, 1); SFX.at('gust', h.x, h.z, 0.6);
           if (FX.near(h.x, h.z, 50)) { FX.ring(h.x, h.z, { r0: 0.4, r1: 4.5, color: RAU.c, life: 0.4, tex: 'shock' }); FX.burst(h.x, 0.3, h.z, { smoke: true, n: 12, color: 0x2a2228, color2: 0x08060a, speed: [2, 6], life: [0.5, 1], size: [0.8, 1.6], ring: true, a: 0.5 }); lelFeathers(h.x, 2.4, h.z, 14); FX.shock(h.x, h.z, 4, 0.8, 0.35); }
         }
       },
@@ -322,7 +323,7 @@ HEROES.push(
         basicHit(u, tt); FX.hit(tt.x, tt.height * 0.55, tt.z, TAN.c, form);
         if (form && u.alive) tanBlast(u, tt.x, tt.z, pray ? 2.6 : 2.2, (25 + 4 * u.level + 0.3 * u.ad + 0.3 * u.ap) * (pray ? 0.8 : 1), { dot: true });
       } });
-      SFX.at('shoot', u.x, u.z, 0.6); if (form) SFX.at('cast', u.x, u.z, 0.25);
+      SFX.at('rifle', u.x, u.z, 0.5); if (form) SFX.at('arcane', u.x, u.z, 0.25);
       if (FX.near(u.x, u.z, 50)) FX.glow(u.x + Math.sin(u.facing) * 1.6, 1.25 + hv, u.z + Math.cos(u.facing) * 1.6, form ? 2 : 1.2, TAN.c, 0.08, 'flare');
     },
     tick(h) { if (h.prayT && G.time > h.prayT) { h.prayT = 0; h.range = h.def.stats.range; } },
@@ -334,7 +335,7 @@ HEROES.push(
           const dir = p.dir, dmg = D(h, 88, 18, 0.55, 0.55), y0 = 1.25 + ((h.rig && h.rig.hover) || 0); let done = false;
           const boom = (x, z) => { if (done) return; done = true; tanBlast(h, x, z, 2.8, dmg, { slow: 0.3, knock: 1.2 }); };
           shot(h, { dir, speed: 52, range: 13, w: 0.6, color: TAN.c, mesh: 'bolt', size: 0.8, ribbon: 0.5, y: y0, onHit: e => boom(e.x, e.z), onEnd: (x, z) => boom(x, z) });
-          SFX.at('shoot', h.x, h.z, 1); SFX.at('cast', h.x, h.z, 0.4);
+          SFX.at('rifle', h.x, h.z, 1); SFX.at('arcane', h.x, h.z, 0.4);
           const mx = h.x + Math.sin(dir) * 1.8, mz = h.z + Math.cos(dir) * 1.8;
           frCircle(mx, y0, mz, dir, 0.75, TAN.c, 0.35, { open: 0.06, spin: 5, op: 0.8 }); FX.glow(mx, y0, mz, 2.4, TAN.c, 0.15, 'flare');
         }
@@ -343,7 +344,7 @@ HEROES.push(
         key: 'W', name: 'Пикирование', icon: 'tandive', cd: 13, cost: 60, range: 8, ind: { type: 'circle', r: 3 }, anim: 'dive', animDur: 0.4, lock: 0, ai: { t: 'gap', escape: true, rad: 3 },
         desc: 'Таня взмывает и пикирует в точку в пределах 8 — прямо над стенами. В месте приземления срабатывает взрывная формула: магический урон в радиусе 3 и замедление на 35% на 1.5 сек.',
         cast(h, p) {
-          const dmg = D(h, 70, 15, 0.35, 0.5); SFX.at('dash', h.x, h.z, 0.8); SFX.at('whoosh', h.x, h.z, 0.6);
+          const dmg = D(h, 70, 15, 0.35, 0.5); SFX.at('dash', h.x, h.z, 0.7); SFX.at('gust', h.x, h.z, 0.6);
           if (FX.near(h.x, h.z, 50)) { FX.ring(h.x, h.z, { r0: 0.3, r1: 2.4, color: TAN.pale, life: 0.3, tex: 'shock' }); FX.burst(h.x, 0.4, h.z, { smoke: true, n: 6, color: 0x9a9488, color2: 0x3a3630, speed: [1, 3], life: [0.4, 0.8], size: [0.8, 1.4], ring: true, a: 0.4 }); }
           dashTo(h, p.x, p.z, 26, { fly: true, arc: 3.2, ribbon: TAN.pale, trail: u => { if (FX.near(u.x, u.z, 45) && Math.random() < 0.6) FX.burst(u.x, 1 + (u.yOff || 0), u.z, { n: 2, color: 0xffffff, color2: TAN.c, speed: [0.2, 1], life: [0.2, 0.4], size: [0.4, 0.05] }); },
             onEnd: u => { tanBlast(u, u.x, u.z, 3, dmg, { slow: 0.35, slowT: 1.5 }); FX.shake(0.25); } });
@@ -353,12 +354,12 @@ HEROES.push(
         key: 'E', name: 'Молитва', icon: 'tanpray', cd: 20, cost: 70, range: 0, ind: { type: 'self', r: 2.5 }, anim: 'pray', animDur: 0.8, lock: 0.55, ai: { t: 'buff' }, noCue: true,
         desc: 'Скрепя сердце Таня молится — и проклятое вычислительное ядро отвечает. На 6 / 7 / 8 / 9 сек её глаза горят золотом: +40% к скорости атаки, +1.5 к дальности, и каждая атака несёт взрывную формулу (взрыв в радиусе 2.6). Пока Таня молится (0.55 сек), она стоит на месте.',
         cast(h) {
-          const lv = Math.max(1, h.al[2]), dur = 5 + lv; SFX.at('cast', h.x, h.z, 0.7);
+          const lv = Math.max(1, h.al[2]), dur = 5 + lv; SFX.at('spirit', h.x, h.z, 0.6);
           if (FX.near(h.x, h.z, 50)) { FX.text(h.x, h.height + 1.4, h.z, '…слава Господу', '#ffe08a', 15); FX.implode(h.x, 1.6, h.z, 3, { n: 14, color: 0xffffff, color2: TAN.c, life: 0.5, streak: true }); }
           after(0.5, () => {
             if (!h.alive) return; h.prayT = G.time + dur; h.range = h.def.stats.range + 1.5;
             const b = addBuff(h, { id: 'tanpray', dur, as: 0.4, src: h }); if (b) b.fx = tanHalo(h, dur);
-            SFX.at('ultcue', h.x, h.z, 0.3); SFX.at('cleanse', h.x, h.z, 0.6);
+            SFX.at('holy', h.x, h.z, 0.7); SFX.at('bell', h.x, h.z, 0.5);
             if (FX.near(h.x, h.z, 50)) { FX.pillar(h.x, h.z, { r: 1.2, h: 14, color: TAN.c, life: 0.6, op: 0.45 }); FX.ring(h.x, h.z, { r0: 0.4, r1: 4.5, color: TAN.c, life: 0.5, tex: 'shock' }); FX.burst(h.x, 2, h.z, { n: 16, color: 0xffffff, color2: TAN.c, speed: [0.3, 1.5], life: [0.8, 1.4], size: [0.4, 0.05], up: 3, rad: 1.5, drag: 1 }); }
           });
         }
@@ -387,7 +388,7 @@ HEROES.push(
     onDeal(h, t, d, o) {
       if (!o.basic || t.struct || !t.alive) return; h.seN = (h.seN || 0) + 1; if (h.seN % 4) return;
       const a = angTo(h.x, h.z, t.x, t.z) + (Math.random() < 0.5 ? 1 : -1) * rand(0.5, 1.1), sx = Math.sin(a) * 1.9, sz = Math.cos(a) * 1.9;
-      seCut(h, t.x - sx, 2.3, t.z - sz, t.x + sx, 0.4, t.z + sz, 0.7, 0, { snap: h.ad * 0.55, hold: 0.6, w: 0.34 }); SFX.at('slash', t.x, t.z, 0.4);
+      seCut(h, t.x - sx, 2.3, t.z - sz, t.x + sx, 0.4, t.z + sz, 0.7, 0, { snap: h.ad * 0.55, hold: 0.6, w: 0.34 }); SFX.at('katana', t.x, t.z, 0.4);
     },
     abilities: [
       {
@@ -397,7 +398,7 @@ HEROES.push(
           const dir = p.dir, sx = Math.sin(dir), sz = Math.cos(dir), dmg = D(h, 72, 15, 0.85);
           after(0.13, () => {   // the cut lands at the instant the blade leaves the scabbard
             if (!h.alive) return;
-            seCut(h, h.x + sx * 0.6, 1.8, h.z + sz * 0.6, h.x + sx * 9, 0.7, h.z + sz * 9, 0.8, dmg); SFX.at('slash', h.x, h.z, 1); SFX.at('whoosh', h.x, h.z, 0.7); FX.shake(0.12);
+            seCut(h, h.x + sx * 0.6, 1.8, h.z + sz * 0.6, h.x + sx * 9, 0.7, h.z + sz * 9, 0.8, dmg); SFX.at('katana', h.x, h.z, 1); SFX.at('warp', h.x, h.z, 0.5); FX.shake(0.12);
             FX.slash(h.x + sx, h.z + sz, dir, { r: 2.4, sweep: 1.6, color: SET.c, life: 0.18, y: 1.3 });
           });
         }
@@ -409,7 +410,7 @@ HEROES.push(
           const x0 = h.x, z0 = h.z, dmg = D(h, 58, 13, 0.55); dshGhost(h, SET.c, 0.5, 0.4);
           blink(h, p.x, p.z); h.facing = p.dir; h.atkCd = 0; h.drawT = G.time + 0.3; if (h === G.player) G.camSnap = true;
           seCut(h, x0, 0.4, z0, h.x, 2.3, h.z, 1.0, dmg, { w: 0.6 });
-          SFX.at('warp', x0, z0, 0.7); SFX.at('slash', h.x, h.z, 0.8);
+          SFX.at('blink', x0, z0, 0.7); SFX.at('katana', h.x, h.z, 0.8);
           if (FX.near(x0, z0, 55)) { FX.ring(x0, z0, { r0: 0.3, r1: 2.2, color: SET.c, life: 0.3, tex: 'shock' }); FX.implode(x0, 1.2, z0, 1.8, { n: 10, color: SET.pale, color2: SET.c, life: 0.2, streak: true }); FX.burst(h.x, 1.2, h.z, { n: 10, color: 0xffffff, color2: SET.c, speed: [1, 4], life: [0.2, 0.4], size: [0.35, 0.04] }); }
         }
       },
@@ -417,17 +418,17 @@ HEROES.push(
         key: 'E', name: 'Сфера разрезов', icon: 'setsphere', cd: 14, cost: 80, range: 10, ind: { type: 'circle', r: 3.2 }, anim: 'flick', animDur: 0.5, lock: 0.25, ai: { t: 'point', rad: 3.2, delay: 0.6 },
         desc: 'Взмах — и пространство в круге радиусом 3.2 разлетается на десятки разрезов. 0.5 сек всё внутри режет (4 удара физического урона, замедление на 40%), затем разрезы разом смыкаются — последний, самый сильный удар.',
         cast(h, p) {
-          const x = p.x, z = p.z, R = 3.2, tk = D(h, 26, 6, 0.28), fin = D(h, 60, 13, 0.55), T0 = 0.18, END = 1.16; SFX.at('whoosh', h.x, h.z, 0.7);
+          const x = p.x, z = p.z, R = 3.2, tk = D(h, 26, 6, 0.28), fin = D(h, 60, 13, 0.55), T0 = 0.18, END = 1.16; SFX.at('whoosh', h.x, h.z, 0.5); SFX.at('void', x, z, 0.6);
           if (FX.near(x, z, 60)) { FX.sphere(x, 1.4, z, { r0: 0.3, r1: R, color: SET.deep, life: 1.1, op: 0.45 }); FX.zone(x, z, R, SET.c, 1.25, { tex: 'crack', spin: 0, op: 0.55 }); FX.warp('lens', x, 1.4, z, { r: R, str: 0.6, life: 1.1 }); }
           for (let i = 0; i < 16; i++) after(T0 + i * 0.032, () => {
             const a = rand(TAU), b2 = rand(-0.8, 0.8), L = rand(2.6, 4.6), cx = x + rand(-1.4, 1.4), cz = z + rand(-1.4, 1.4), cy = rand(0.7, 2.4), dx = Math.sin(a) * Math.cos(b2) * L / 2, dz = Math.cos(a) * Math.cos(b2) * L / 2, dy = Math.sin(b2) * L / 2;
-            seRift(cx - dx, Math.max(0.15, cy - dy), cz - dz, cx + dx, cy + dy, cz + dz, { hold: END - (T0 + i * 0.032), w: 0.3 }); if (i % 3 === 0) SFX.at('slash', cx, cz, 0.35);
+            seRift(cx - dx, Math.max(0.15, cy - dy), cz - dz, cx + dx, cy + dy, cz + dz, { hold: END - (T0 + i * 0.032), w: 0.3 }); if (i % 3 === 0) SFX.at('katana', cx, cz, 0.3);
           });
           for (let j = 0; j < 4; j++) after(T0 + 0.05 + j * 0.13, () => { for (const e of enemiesIn(h, x, z, R)) { damage(h, e, tk, 0); if (e.alive) slow(h, e, 0.4, 0.6, 'setslow'); FX.hit(e.x, 1.2, e.z, SET.c, false); } });
           after(END, () => {
             for (const e of enemiesIn(h, x, z, R + 0.3)) { damage(h, e, fin, 0); FX.hit(e.x, 1.2, e.z, SET.c, true); }
             if (FX.near(x, z, 55)) { FX.implode(x, 1.4, z, R + 1, { n: 22, color: 0xffffff, color2: SET.c, life: 0.2, streak: true }); FX.ring(x, z, { r0: R + 0.8, r1: 0.4, color: SET.c, life: 0.3, tex: 'shock' }); FX.glow(x, 1.4, z, 5, SET.c, 0.25, 'star'); FX.shock(x, z, R + 1, -1, 0.35); }
-            SFX.at('shatter', x, z, 0.8); SFX.at('heavy', x, z, 0.6); FX.shake(0.3);
+            SFX.at('shatter', x, z, 0.8); SFX.at('impact', x, z, 0.6); FX.shake(0.3);
           });
         }
       },
@@ -436,7 +437,7 @@ HEROES.push(
         desc: 'Сэцуна замирает, положив ладонь на рукоять, — пространство вокруг густеет, враги в радиусе 9 замедлены на 60%. Через 0.9 сек щёлкает гарда: всё в круге рассечено разом — огромный физический урон и оглушение на 0.8 сек, а сам мир на миг раскалывается по линиям разрезов. Ещё через 0.5 сек разрезы смыкаются: второй удар — 40% урона, вдвое больше по почти мёртвым (чем меньше у цели здоровья, тем сильнее).',
         cast(h) {
           const x = h.x, z = h.z, R = 9, dmg = D(h, 200, 46, 1.2), T = 0.9;
-          telegraph(h, x, z, R, T, SET.c); SFX.at('ultcue', x, z, 0.6); SFX.at('dark', x, z, 0.5);
+          telegraph(h, x, z, R, T, SET.c); SFX.at('ultcue', x, z, 0.6); SFX.at('void', x, z, 0.6); SFX.at('heartbeat', x, z, 0.5);
           for (const e of enemiesIn(h, x, z, R)) slow(h, e, 0.6, T, 'setthick');
           if (FX.near(x, z, 60)) { FX.zone(x, z, R, SET.c, T + 0.6, { tex: 'rune2', spin: -0.4, op: 0.5 }); FX.ring(x, z, { r0: R + 2, r1: R, color: SET.c, life: T, tex: 'ringThin' }); FX.implode(x, 1.4, z, R, { n: 40, color: SET.pale, color2: SET.c, life: T, streak: true }); FX.light(x, 3, z, SET.c, 1, 22, T + 0.4); }
           // the stillness: the world darkens while he waits
@@ -444,7 +445,7 @@ HEROES.push(
           after(T, () => {
             if (!h.alive) return; const hit = enemiesIn(h, x, z, R);
             for (const e of hit) { damage(h, e, dmg, 0); FX.hit(e.x, 1.3, e.z, SET.c, true); if (!e.alive) continue; stun(h, e, 0.8); for (let k = 0; k < 2; k++) { const a = rand(TAU), sx = Math.sin(a) * 2.2, sz = Math.cos(a) * 2.2; seRift(e.x - sx, rand(1.6, 2.6), e.z - sz, e.x + sx, rand(0.2, 0.9), e.z + sz, { hold: 0.5, w: 0.5 }); } }
-            SFX.at('slash', x, z, 1); SFX.at('crit', x, z, 0.8); SFX.at('bigboom', x, z, 0.5); FX.shake(0.9); FX.punch(1.2); if (FX.near(x, z, 40)) FX.hitstop(0.12);
+            SFX.at('katana', x, z, 1); SFX.at('crit', x, z, 0.7); SFX.at('shatter', x, z, 0.6); SFX.at('bigboom', x, z, 0.5); FX.shake(0.9); FX.punch(1.2); if (FX.near(x, z, 40)) FX.hitstop(0.12);
             // dozens of cuts across the whole circle at once
             for (let i = 0; i < 24; i++) { const a = rand(TAU), d = R * Math.sqrt(Math.random()), cx = x + Math.sin(a) * d, cz = z + Math.cos(a) * d, b2 = rand(TAU), L = rand(4, 9), cy = rand(0.5, 3), tl = rand(-0.35, 0.35), dx = Math.sin(b2) * L / 2, dz = Math.cos(b2) * L / 2;
               seRift(cx - dx, Math.max(0.1, cy - tl * L / 2), cz - dz, cx + dx, Math.max(0.1, cy + tl * L / 2), cz + dz, { hold: 0.5, w: rand(0.3, 0.6) }); }
@@ -453,7 +454,7 @@ HEROES.push(
             if (FX.near(x, z, 34)) { const sp = UI.proj(x, 1.2, z); if (sp) for (let i = 0; i < 3; i++) SCUT.add(sp.x / UI.W + rand(-0.08, 0.08), 1 - sp.y / UI.H + rand(-0.08, 0.08), rand(Math.PI), 0.024 - i * 0.005, 0.5, i * 0.04); }
             after(0.5, () => {
               for (const e of enemiesIn(h, x, z, R + 0.5)) { const miss = 1 - e.hp / e.maxHp; damage(h, e, dmg * 0.4 * (1 + miss), 0); FX.hit(e.x, 1.3, e.z, SET.c, true); }
-              SFX.at('shatter', x, z, 1); SFX.at('heavy', x, z, 0.8); FX.shake(0.5);
+              SFX.at('shatter', x, z, 1); SFX.at('void', x, z, 0.7); SFX.at('heavy', x, z, 0.5); FX.shake(0.5);
               if (FX.near(x, z, 60)) { FX.implode(x, 1.4, z, R, { n: 30, color: 0xffffff, color2: SET.c, life: 0.18, streak: true }); FX.ring(x, z, { r0: R, r1: 0.5, color: SET.c, life: 0.3, tex: 'shock' }); FX.shock(x, z, R, -1.2, 0.35); }
             });
           });

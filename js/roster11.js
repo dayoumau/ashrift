@@ -105,7 +105,7 @@ function twSwap(h, manual) {
 }
 // the swap: a flash of a black-and-white board under both, a red and a violet streak crossing between them, two brackets snapping shut
 function twSwapFx(h, ox, oz) {
-  SFX.at('whoosh', h.x, h.z, 0.6); SFX.at('cast', h.x, h.z, 0.3); if (!FX.near(h.x, h.z, 55)) return;
+  SFX.at('blink', h.x, h.z, 0.5); SFX.at('blip', h.x, h.z, 0.35); if (!FX.near(h.x, h.z, 55)) return;
   const mx = (h.x + ox) / 2, mz = (h.z + oz) / 2, a = angTo(ox, oz, h.x, h.z), cA = h.tw.f ? TWN.h : TWN.t, cB = h.tw.f ? TWN.t : TWN.h;
   const bd = twBoardMesh(4, 4.2, 0xffffff, a); bd.position.set(mx, 0.09, mz); FX.add(bd, 0.45, (k, me) => { me.material.opacity = 0.55 * (1 - k); const s = 4.2 * (0.8 + 0.25 * easeOut(k)); me.scale.set(s, 1, s); });
   FX.beam(ox, oz, h.x, h.z, { color: cA, w: 0.5, life: 0.25, y: 1.2 }); FX.beam(h.x, h.z, ox, oz, { color: cB, w: 0.35, life: 0.3, y: 1.0 });
@@ -145,7 +145,7 @@ function twAnim2(h, dt) {
 // his basic attack: a card flicked at the target, spinning
 function twCardAtk(u, t) {
   const A = twHand(u); let done = false;
-  const p = homing(u, t, { x: A.x, z: A.z, y: A.y, speed: 34, color: TWN.t, size: 0.16, onHit: tt => { done = true; basicHit(u, tt); FX.sparks(tt.x, tt.height * 0.55, tt.z, { n: 5, color: 0xffffff, color2: TWN.t, speed: [3, 8], life: [0.12, 0.3], w: 0.08 }); SFX.at('hit', tt.x, tt.z, 0.2); } });
+  const p = homing(u, t, { x: A.x, z: A.z, y: A.y, speed: 34, color: TWN.t, size: 0.16, onHit: tt => { done = true; basicHit(u, tt); FX.sparks(tt.x, tt.height * 0.55, tt.z, { n: 5, color: 0xffffff, color2: TWN.t, speed: [3, 8], life: [0.12, 0.3], w: 0.08 }); SFX.at('needle', tt.x, tt.z, 0.25); } });
   if (!FX.near(u.x, u.z, 55)) return; const g = twCard(2 + Math.floor(Math.random() * 13), 0.55);
   FX.add(g, 2, (k, me, dt, en) => { if (done || !G.proj.includes(p)) { en.dead = true; return; } me.position.set(p.x, p.y, p.z); me.rotation.set(-HPI, 0, en.t * 22); });
 }
@@ -155,13 +155,13 @@ let TWN_N = 0;
 // "read": the enemy's hand is open — he takes 10% more damage, and his card hangs over his head
 function twRead(h, e) {
   const b = addBuff(e, { id: 'twread', dur: 5, dmgIn: 1.1, src: h }); if (!b) return;
-  FX.text(e.x, e.height + 1.1, e.z, 'прочитан', '#ff8aa0', 13); SFX.at('cast', e.x, e.z, 0.25);
+  FX.text(e.x, e.height + 1.1, e.z, 'прочитан', '#ff8aa0', 13); SFX.at('blip', e.x, e.z, 0.4);
   const c = twCard(14, 0.7); b.fx = FX.add(c, 5, (k, me, dt, en) => { if (!e.alive) { en.dead = true; return; } me.position.set(e.x, e.height + 1.25 + Math.sin(en.t * 3) * 0.08 + (e.yOff || 0), e.z); me.rotation.set(-0.35, en.t * 2.2, 0); me.scale.setScalar(0.7 * Math.min(1, en.t / 0.15) * Math.min(1, (5 - en.t) / 0.3)); });
 }
 const twIsRead = e => e.buffs.some(b => b.id === 'twread');
 function twThrow(h, A, dir, range, dmg, id) {
   const p = shot(h, { x: A.x, z: A.z, y: A.y, dir, speed: 30, range, w: 0.5, mesh: false, ribbon: 0.3, color: TWN.t,
-    onHit(u) { damage(h, u, dmg, 1); FX.sparks(u.x, 1.2, u.z, { n: 6, color: 0xffffff, color2: TWN.t, speed: [3, 8], life: [0.15, 0.35], w: 0.08 }); SFX.at('hit', u.x, u.z, 0.3);
+    onHit(u) { damage(h, u, dmg, 1); FX.sparks(u.x, 1.2, u.z, { n: 6, color: 0xffffff, color2: TWN.t, speed: [3, 8], life: [0.15, 0.35], w: 0.08 }); SFX.at('needle', u.x, u.z, 0.35);
       if (u.kind === 'hero' && u.alive) { u._twc = u._twc && u._twc.id === id ? u._twc : { id, n: 0 }; if (++u._twc.n === 2) twRead(h, u); } } });
   if (!FX.near(h.x, h.z, 55)) return; const g = twCard(2 + Math.floor(Math.random() * 13), 0.75);
   FX.add(g, range / 30 + 0.3, (k, me, dt, en) => { if (!G.proj.includes(p)) { en.dead = true; return; } me.position.set(p.x, p.y, p.z); me.rotation.set(-HPI, 0, en.t * 26); });
@@ -174,7 +174,7 @@ function twDecoy(h, x, z, dmg) {
   const burst = () => {
     if (done) return; done = true; for (const g of gs) g.dead = true; if (spin) spin.dead = true;
     for (const e of enemiesIn(h, x, z, 3)) { damage(h, e, dmg, 1); if (e.alive) slow(h, e, 0.35, 1.5, 'twdecoy'); }
-    SFX.at('boom', x, z, 0.5); SFX.at('whoosh', x, z, 0.6); if (!FX.near(x, z, 55)) return;
+    SFX.at('card', x, z, 0.75); SFX.at('gust', x, z, 0.5); SFX.at('pop', x, z, 0.45); if (!FX.near(x, z, 55)) return;
     twCardsBurst(x, 1.2, z, 18, 9, 1.1); FX.ring(x, z, { r0: 0.4, r1: 3.3, color: TWN.t, life: 0.4, tex: 'shock' }); FX.shock(x, z, 3.5, 0.8, 0.4);
     FX.burst(x, 1, z, { n: 14, color: TWN.tp, color2: TWN.t, speed: [3, 8], life: [0.3, 0.6], size: [0.4, 0.05], ring: true }); FX.glow(x, 1.2, z, 4, TWN.t, 0.25, 'star');
   };
@@ -182,7 +182,7 @@ function twDecoy(h, x, z, dmg) {
 }
 // the deal: a golden contract between the two, a shield for both
 function twPactFx(h, a) {
-  SFX.at('heal', h.x, h.z, 0.6); SFX.at('coin', h.x, h.z, 0.4);
+  SFX.at('shield', h.x, h.z, 0.5); SFX.at('cash', h.x, h.z, 0.55);
   for (const o of a === h ? [h] : [h, a]) { FX.text(o.x, o.height + 1, o.z, 'Сделка!', '#ffd86a', 15); if (FX.near(o.x, o.z, 50)) { FX.ring(o.x, o.z, { r0: 0.4, r1: 2.2, color: TWN.gold, life: 0.45, tex: 'rune' }); FX.sparks(o.x, 1.3, o.z, { n: 10, color: 0xffffff, color2: TWN.gold, speed: [2, 6], life: [0.25, 0.5], w: 0.07, up: 2 }); } }
   if (a !== h && FX.near(h.x, h.z, 55)) { FX.beam(h.x, h.z, a.x, a.z, { color: TWN.gold, w: 0.35, life: 0.5, y: 1.3 }); const c1 = twCard(13, 0.8), c2 = twCard(12, 0.8);
     for (const [c, s] of [[c1, 1], [c2, -1]]) FX.add(c, 0.6, (k, me) => { const q = s > 0 ? k : 1 - k; me.position.set(lerp(h.x, a.x, q), 1.6 + Math.sin(Math.PI * k) * 1.2, lerp(h.z, a.z, q)); me.rotation.set(-0.3, k * 12, 0); }); }
@@ -205,7 +205,7 @@ function twDealCard(h, e, rank, dmg) {
     if (!e.alive) return; const k = 0.5 + (rank - 6) / 8 * 0.8, ace = rank === 14;
     damage(h, e, dmg * k, 1); if (e.alive && ace) stun(h, e, 1.3, 0.6);
     const nm = ({ 11: 'Валет', 12: 'Дама', 13: 'Король', 14: 'ТУЗ!' })[rank] || String(rank);
-    FX.text(e.x, e.height + 1.7, e.z, nm, ace ? '#ffd86a' : '#ff8aa0', ace ? 24 : 16); SFX.at(ace ? 'crit' : 'hit', e.x, e.z, ace ? 0.9 : 0.5);
+    FX.text(e.x, e.height + 1.7, e.z, nm, ace ? '#ffd86a' : '#ff8aa0', ace ? 24 : 16); SFX.at(ace ? 'crit' : 'card', e.x, e.z, ace ? 0.9 : 0.55); SFX.at(ace ? 'chime' : 'hit', e.x, e.z, ace ? 0.7 : 0.35);
     if (!FX.near(e.x, e.z, 55)) return; twCardsBurst(e.x, 1.6, e.z + 0.8, ace ? 14 : 7, ace ? 9 : 6, 0.9);
     FX.sparks(e.x, 1.4, e.z, { n: ace ? 22 : 10, color: 0xffffff, color2: ace ? TWN.gold : TWN.t, speed: [4, 11], life: [0.2, 0.5], w: 0.1 }); FX.hit(e.x, 1.2, e.z, ace ? TWN.gold : TWN.t, true);
     if (ace) { FX.ring(e.x, e.z, { r0: 0.5, r1: 3.2, color: TWN.gold, life: 0.45, tex: 'shock' }); FX.pillar(e.x, e.z, { r: 1.1, h: 10, color: TWN.gold, life: 0.45, op: 0.5 }); FX.shock(e.x, e.z, 3.5, 1, 0.4); FX.shake(0.3); }
@@ -227,7 +227,7 @@ function twKnight(h, x0, z0, x1, z1, d1, d2) {
   const d = Math.max(0.5, dist(x0, z0, x1, z1)), dir = angTo(x0, z0, x1, z1), side = Math.random() < 0.5 ? 1 : -1, th = Math.atan(0.5), a1 = dir + side * th, L1 = d * Math.cos(th);
   const cx = x0 + Math.sin(a1) * L1, cz = z0 + Math.cos(a1) * L1, H1 = 0.32, H2 = 0.3, near = FX.near(x1, z1, 60);
   if (near) { FX.lineDecal(x0, z0, a1, L1, 0.5, TWN.h, H1); FX.lineDecal(cx, cz, angTo(cx, cz, x1, z1), dist(cx, cz, x1, z1), 0.5, TWN.h, H1 + H2); FX.decal(x1, z1, 2.2, TWN.h, H1 + H2); }
-  SFX.at('whoosh', x0, z0, 0.6);
+  SFX.at('clack', x0, z0, 0.55); SFX.at('whoosh', x0, z0, 0.4);
   if (near) {
     const pc = twPiece('knight', 1.25, 0xf2eefa, 0x3a2470), D = 0.45;
     FX.add(pc, H1 + H2 + D, (k, me, dt, en) => {
@@ -241,7 +241,7 @@ function twKnight(h, x0, z0, x1, z1, d1, d2) {
   }
   const land = (x, z, R, dmg, big) => {
     for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 1); if (big && e.alive) { stun(h, e, 0.8, 0.8); twCheck(h, e); } }
-    SFX.at(big ? 'heavy' : 'hit', x, z, big ? 0.8 : 0.5); if (!FX.near(x, z, 55)) return;
+    SFX.at('clack', x, z, big ? 0.9 : 0.6); SFX.at(big ? 'impact' : 'hit', x, z, big ? 0.7 : 0.3); if (!FX.near(x, z, 55)) return;
     const bd = twBoardMesh(3, R * 2.2, TWN.h, a1); bd.position.set(x, 0.09, z); FX.add(bd, 0.6, (k, me) => { me.material.opacity = 0.6 * (1 - k); });
     FX.ring(x, z, { r0: 0.3, r1: R + 0.6, color: TWN.h, life: 0.35, tex: 'shock' }); FX.sparks(x, 0.4, z, { n: big ? 16 : 8, color: 0xffffff, color2: TWN.h, speed: [3, 9], life: [0.2, 0.45], w: 0.08, up: 4 });
     FX.burst(x, 0.3, z, { smoke: true, n: big ? 7 : 4, color: 0xd8d0f0, color2: 0x4a4060, speed: [1, 3], life: [0.4, 0.8], size: [0.7, 1.4], ring: true, a: 0.35 }); if (big) { FX.shock(x, z, 3, 0.8, 0.35); FX.shake(0.25); }
@@ -255,12 +255,12 @@ function twRicochet(h, t0, dmg) {
   for (let i = 0; i < 4; i++) { let best = null, bs = 1e9; for (const u of G.units) { if (!u.alive || u.struct || used.has(u.id) || !hostile(h, u)) continue; const dd = udist(cur, u); if (dd > 6.5) continue; const sc = dd - (u.kind === 'hero' ? 3 : 0); if (sc < bs) { bs = sc; best = u; } } if (!best) break; chain.push(best); used.add(best.id); cur = best; }
   const A = twHand(h), pts = [{ x: A.x, z: A.z }].concat(chain.map(u => ({ x: u.x, z: u.z }))), near = FX.near(h.x, h.z, 60);
   if (near) for (let i = 0; i < pts.length - 1; i++) { FX.beam(pts[i].x, pts[i].z, pts[i + 1].x, pts[i + 1].z, { color: TWN.h, w: 0.12, life: 0.35, y: 1.3, op: 0.6 }); if (i) FX.text(pts[i].x, 2.2, pts[i].z, String(i), '#d8c8ff', 12); }
-  h.eyeT = G.time + 0.5; SFX.at('cast', h.x, h.z, 0.4);
+  h.eyeT = G.time + 0.5; SFX.at('tick', h.x, h.z, 0.4); SFX.at('arcane', h.x, h.z, 0.35);
   chain.forEach((u, i) => after(0.18 + i * 0.07, () => {
     const a = i ? chain[i - 1] : h, ax = i ? a.x : twHand(h).x, az = i ? a.z : twHand(h).z;
     if (FX.near(u.x, u.z, 60)) { FX.beam(ax, az, u.x, u.z, { color: TWN.h, w: 0.55, life: 0.18, y: 1.3 }); FX.beam(ax, az, u.x, u.z, { color: 0xffffff, w: 0.2, life: 0.12, y: 1.3 }); }
     if (!u.alive) return; damage(h, u, dmg * (1 + 0.2 * i), 1); twCheck(h, u);
-    SFX.at('arrow', u.x, u.z, 0.4); if (FX.near(u.x, u.z, 50)) { FX.sparks(u.x, 1.3, u.z, { n: 8, color: 0xffffff, color2: TWN.h, speed: [4, 10], life: [0.12, 0.3], w: 0.07 }); FX.glow(u.x, 1.3, u.z, 1.6 + i * 0.3, TWN.h, 0.15, 'star'); }
+    SFX.at('arcane', u.x, u.z, 0.4); SFX.at('hit', u.x, u.z, 0.25); if (FX.near(u.x, u.z, 50)) { FX.sparks(u.x, 1.3, u.z, { n: 8, color: 0xffffff, color2: TWN.h, speed: [4, 10], life: [0.12, 0.3], w: 0.07 }); FX.glow(u.x, 1.3, u.z, 1.6 + i * 0.3, TWN.h, 0.15, 'star'); }
   }));
 }
 // under fire: a 6×6 board; three times her invisible pieces attack — the rook's lines through every enemy, then the bishop's, then the queen's.
@@ -271,8 +271,8 @@ function twBoard(h, x, z, dmg) {
   const toW = (u, v) => ({ x: x + u * ca + v * sa, z: z - u * sa + v * ca });
   const sq = (px, pz) => { const l = toL(px, pz), i = Math.floor((l.u + half) / Q), j = Math.floor((l.v + half) / Q); return i >= 0 && j >= 0 && i < N && j < N ? { i, j } : null; };
   let bd = null; if (near) { bd = twBoardMesh(N, N * Q * 1.04, TWN.h, ang); bd.position.set(x, 0.09, z); FX.add(bd, DUR, (k, me, dt, en) => { const t = en.t; me.material.opacity = 0.42 * Math.min(1, t / 0.25, (DUR - t) / 0.35) * (0.85 + 0.15 * Math.sin(t * 5)); }); FX.wall(x, z, half * 1.38, TWN.h, DUR, { h: 1.2, op: 0.18, spin: 0 }); }
-  SFX.at('cast', x, z, 0.6); SFX.at('ice', x, z, 0.3);
-  const pat = ['rook', 'bishop', 'queen'];
+  SFX.at('clack', x, z, 0.65); SFX.at('arcane', x, z, 0.4);
+  const pat =['rook', 'bishop', 'queen'];
   pat.forEach((kind, w) => after(0.5 + w * 1.05, () => {
     const foes = enemiesIn(h, x, z, half * 1.45).filter(e => sq(e.x, e.z)), set = new Set();
     const mark = (i, j) => { if (i >= 0 && j >= 0 && i < N && j < N) set.add(i + j * N); };
@@ -283,10 +283,10 @@ function twBoard(h, x, z, dmg) {
     }
     h.eyeT = G.time + 0.6;
     if (near) for (const id of set) { const i = id % N, j = Math.floor(id / N), c = toW((i + 0.5) * Q - half, (j + 0.5) * Q - half), m = new THREE.Mesh(FX.geo.flat, twSqMat(0xff3a6a)); m.position.set(c.x, 0.11, c.z); m.rotation.y = ang; m.scale.set(Q * 0.9, 1, Q * 0.9); FX.add(m, 0.55, (k, me) => { me.material.opacity = (0.16 + 0.24 * k) * (0.75 + 0.25 * Math.sin(k * 40)); }); }
-    SFX.at('cue', x, z, 0.3);
+    SFX.at('tick', x, z, 0.35);
     after(0.55, () => {
       for (const e of enemiesIn(h, x, z, half * 1.45)) { const s = sq(e.x, e.z); if (!s || !set.has(s.i + s.j * N)) continue; damage(h, e, dmg, 1); if (e.alive) { slow(h, e, 0.3, 1, 'twboard'); twCheck(h, e); } FX.hit(e.x, 1.2, e.z, TWN.h, true); }
-      SFX.at('hit', x, z, 0.7); SFX.at('ice', x, z, 0.4); if (!near) return; let n = 0;
+      SFX.at('clack', x, z, 0.7); SFX.at('impact', x, z, 0.5); if (!near) return; let n = 0;
       for (const id of set) { const i = id % N, j = Math.floor(id / N), c = toW((i + 0.5) * Q - half, (j + 0.5) * Q - half); n++;
         if (n % 3 === 0 || set.size < 8) FX.pillar(c.x, c.z, { r: 0.45, h: 2.6, color: 0x7a5ad8, life: 0.28, op: 0.32 });
         const m = new THREE.Mesh(FX.geo.flat, twSqMat(0xb89cff)); m.position.set(c.x, 0.12, c.z); m.rotation.y = ang; m.scale.set(Q * 0.92, 1, Q * 0.92); FX.add(m, 0.3, (k, me) => { me.material.opacity = 0.32 * (1 - k); });
@@ -298,7 +298,7 @@ function twBoard(h, x, z, dmg) {
 // checkmate: the board under the enemy, six white pieces rise around him and strike one after another, a black king over his head cracks — and falls
 function twMate(h, t, small, big) {
   const near = FX.near(t.x, t.z, 60), x = t.x, z = t.z, kinds = ['pawn', 'knight', 'bishop', 'rook', 'queen', 'king'], R = 3.3, a0 = rand(TAU);
-  root(h, t, 1.5, TWN.h); SFX.at('ultcue', x, z, 0.7);
+  root(h, t, 1.5, TWN.h); SFX.at('ultcue', x, z, 0.7); SFX.at('clack', x, z, 0.6);
   const pos = kinds.map((k, i) => { const a = a0 + i / 6 * TAU; return { x: x + Math.sin(a) * R, z: z + Math.cos(a) * R, a }; });
   if (near) {
     const bd = twBoardMesh(8, 8.4, TWN.h, a0); bd.position.set(x, 0.09, z); FX.add(bd, 2.1, (k, me, dt, en) => { const q = en.t; me.material.opacity = 0.5 * Math.min(1, q / 0.2, (2.1 - q) / 0.4); });
@@ -313,12 +313,12 @@ function twMate(h, t, small, big) {
   kinds.forEach((kd, i) => after(0.45 + i * 0.15, () => {
     if (!t.alive) return; const P = pos[i]; damage(h, t, small, 1);
     if (FX.near(t.x, t.z, 55)) { FX.beam(P.x, P.z, t.x, t.z, { color: TWN.h, w: 0.7, life: 0.2, y: 1.3 }); FX.beam(P.x, P.z, t.x, t.z, { color: 0xffffff, w: 0.25, life: 0.14, y: 1.3 }); FX.sparks(t.x, 1.4, t.z, { n: 6, color: 0xffffff, color2: TWN.h, speed: [3, 8], life: [0.12, 0.3], w: 0.07 }); }
-    SFX.at('hit', t.x, t.z, 0.4);
+    SFX.at('clack', t.x, t.z, 0.5);
   }));
   after(1.5, () => {
     if (!t.alive) { h.cd[3] *= 0.7; return; } const ch = twChecks(t), miss = 1 - t.hp / t.maxHp, k = (1 + 0.15 * ch) * (1 + 0.6 * miss);
     t.buffs = t.buffs.filter(b => { if (b.id === 'twchk') { if (b.fx) b.fx.dead = true; return false; } return true; });
-    damage(h, t, big * k, 1); FX.text(t.x, t.height + 1.8, t.z, 'МАТ', '#d8c8ff', 28); SFX.at('heavy', t.x, t.z, 1); SFX.at('crit', t.x, t.z, 0.8);
+    damage(h, t, big * k, 1); FX.text(t.x, t.height + 1.8, t.z, 'МАТ', '#d8c8ff', 28); SFX.at('heavy', t.x, t.z, 1); SFX.at('bell', t.x, t.z, 0.75); SFX.at('shatter', t.x, t.z, 0.6);
     if (!FX.near(t.x, t.z, 60)) return; FX.shake(0.5); FX.hitstop(0.07); FX.punch(0.6); FX.shock(t.x, t.z, 5, 1.1, 0.45);
     FX.debris(t.x, t.height + 1, t.z, { n: 12, color: 0x2a2236, speed: [3, 8], up: 6, size: [0.12, 0.3], glow: true });
     FX.ring(t.x, t.z, { r0: 0.5, r1: 4.6, color: TWN.h, life: 0.5, tex: 'shock' }); FX.pillar(t.x, t.z, { r: 1.1, h: 14, color: 0x7a5ad8, life: 0.45, op: 0.38 }); FX.glow(t.x, 1.6, t.z, 4.5, TWN.h, 0.25, 'star'); FX.light(t.x, 3, t.z, TWN.h, 3, 22, 0.5);
@@ -341,7 +341,7 @@ function rsPawnMesh(kind) { return twPiece(kind, kind === 'queen' ? 1.25 : 1.05,
 function rsPick(h, x, z, r) { let best = null, bd = r; for (const u of G.units) { if (!u.alive || (u.kind !== 'minion' && u.kind !== 'monster') || u.boss) continue; const d = dist(u.x, u.z, x, z); if (d < bd) { bd = d; best = u; } } return best; }
 function rsPawn(h, m, dmg) {
   const x0 = m.x, z0 = m.z, extra = m.maxHp * 0.05; kill(m, m.team === h.team ? null : h);
-  SFX.at('cast', x0, z0, 0.5); SFX.at('ice', x0, z0, 0.3);
+  SFX.at('clack', x0, z0, 0.6); SFX.at('pop', x0, z0, 0.35);
   if (FX.near(x0, z0, 55)) { FX.pillar(x0, z0, { r: 0.8, h: 6, color: RSE.c, life: 0.35, op: 0.5 }); FX.sparks(x0, 0.8, z0, { n: 10, color: 0xffffff, color2: RSE.ice, speed: [2, 7], life: [0.2, 0.45], w: 0.07, up: 3 }); }
   const P = { x: x0, z: z0, walked: 0, queen: false, t: 0, done: false }; h.pawnDbg = P; let mesh = null;   // pawnDbg: the last pawn, for tests
   if (FX.near(x0, z0, 60)) { mesh = rsPawnMesh('pawn'); FX.add(mesh, 6, (k, me, dt, en) => { if (P.done) { en.dead = true; return; } const up = Math.min(1, P.t / 0.2); me.position.set(P.x, -1.2 * (1 - up) + Math.abs(Math.sin(P.walked * Math.PI)) * 0.4, P.z); me.rotation.y = P.face || 0; }); }
@@ -349,7 +349,7 @@ function rsPawn(h, m, dmg) {
   const boom = () => {
     if (P.done) return; P.done = true; rib.end(); const R = P.queen ? 3 : 2.5;
     for (const e of enemiesIn(h, P.x, P.z, R)) { damage(h, e, (dmg + extra) * (P.queen ? 1.5 : 1) * rsMul(h, e), 0); if (e.alive) { slow(h, e, 0.4, 1.5, 'rspawn'); if (P.queen) stun(h, e, 0.8); } }
-    SFX.at('heavy', P.x, P.z, 0.7); SFX.at('ice', P.x, P.z, 0.4); if (!FX.near(P.x, P.z, 55)) return;
+    SFX.at('boom', P.x, P.z, 0.6); SFX.at('clack', P.x, P.z, 0.5); SFX.at('shatter', P.x, P.z, 0.3); if (!FX.near(P.x, P.z, 55)) return;
     FX.ring(P.x, P.z, { r0: 0.4, r1: R + 0.8, color: RSE.c, life: 0.4, tex: 'shock' }); FX.shock(P.x, P.z, R + 1, 0.9, 0.4);
     FX.debris(P.x, 1, P.z, { n: 10, color: 0xe8f0fa, speed: [3, 8], up: 7, size: [0.1, 0.28], glow: true }); FX.sparks(P.x, 1, P.z, { n: 16, color: 0xffffff, color2: RSE.ice, speed: [4, 11], life: [0.2, 0.5], w: 0.09 });
     const bd = twBoardMesh(3, R * 2.2, RSE.c, P.face || 0); bd.position.set(P.x, 0.09, P.z); FX.add(bd, 0.6, (k, me) => { me.material.opacity = 0.55 * (1 - k); });
@@ -370,7 +370,7 @@ function rsPawn(h, m, dmg) {
       const d = dist(P.x, P.z, tg.x, tg.z); if (d < 1.2 + (tg.radius || 0.6) * 0.5) { boom(); return false; }
       const st = Math.min(d, 18 * dt); P.face = angTo(P.x, P.z, tg.x, tg.z); P.x += Math.sin(P.face) * st; P.z += Math.cos(P.face) * st; P.walked += st; rib.add(P.x, 0.6, P.z);
     }
-    if (!P.queen && P.walked >= 6) { P.queen = true; if (mesh) { const q = rsPawnMesh('queen'); mesh.remove(...mesh.children); mesh.add(...q.children); mesh.userData = q.userData; } FX.text(P.x, 2.6, P.z, 'превращение', '#cfeeff', 14); SFX.at('cue', P.x, P.z, 0.5); if (FX.near(P.x, P.z, 50)) { FX.pillar(P.x, P.z, { r: 0.9, h: 7, color: RSE.c, life: 0.35, op: 0.5 }); FX.glow(P.x, 1.5, P.z, 3, RSE.c, 0.25, 'star'); } }
+    if (!P.queen && P.walked >= 6) { P.queen = true; if (mesh) { const q = rsPawnMesh('queen'); mesh.remove(...mesh.children); mesh.add(...q.children); mesh.userData = q.userData; } FX.text(P.x, 2.6, P.z, 'превращение', '#cfeeff', 14); SFX.at('chime', P.x, P.z, 0.5); if (FX.near(P.x, P.z, 50)) { FX.pillar(P.x, P.z, { r: 0.9, h: 7, color: RSE.c, life: 0.35, op: 0.5 }); FX.glow(P.x, 1.5, P.z, 3, RSE.c, 0.25, 'star'); } }
     return true;
   } });
 }
@@ -381,7 +381,7 @@ function rsPawnHero(h, t, dmg, dur) {
   const b = addBuff(t, { id: 'rspawned', dur, silence: true, blind: true, slow: 0.35, src: h }); if (!b) return;
   const rig = t.rig; rig.root.visible = false; t.pawnT = G.time + dur;
   b.onEnd = u => { if (u.rig === rig) rig.root.visible = true; u.pawnT = 0; rsPawnPop(u, false); };
-  SFX.at('cast', t.x, t.z, 0.6); SFX.at('ice', t.x, t.z, 0.5); FX.text(t.x, (t.height || 2) + 1.2, t.z, 'пешка', '#eaf6ff', 16);
+  SFX.at('clack', t.x, t.z, 0.7); SFX.at('blink', t.x, t.z, 0.5); FX.text(t.x, (t.height || 2) + 1.2, t.z, 'пешка', '#eaf6ff', 16);
   rsPawnPop(t, true);
   if (!FX.near(t.x, t.z, 60)) return;
   const pc = rsPawnMesh('pawn'); pc.scale.setScalar(1.15); const bd = twBoardMesh(3, 3.2, RSE.c, 0);
@@ -406,7 +406,7 @@ function rsShove(h, e, dir, len, wallDmg) {
   if (e.boss || e.struct || !e.alive) return; let free = 0; for (let s = 0.25; s <= len + 0.001; s += 0.25) { if (!NAV.ok(e.x + Math.sin(dir) * s, e.z + Math.cos(dir) * s)) break; free = s; }
   const T = 0.22; if (free > 0.05) { e.forced = { vx: Math.sin(dir) * free / T, vz: Math.cos(dir) * free / T, t: T }; e.dash = null; }
   if (free < len - 0.01) after(T, () => {
-    if (!e.alive) return; damage(h, e, wallDmg * rsMul(h, e), 0); stun(h, e, 0.9); FX.text(e.x, e.height + 1, e.z, 'в стену', '#cfeeff', 14); SFX.at('heavy', e.x, e.z, 0.8); SFX.at('rubble', e.x, e.z, 0.6);
+    if (!e.alive) return; damage(h, e, wallDmg * rsMul(h, e), 0); stun(h, e, 0.9); FX.text(e.x, e.height + 1, e.z, 'в стену', '#cfeeff', 14); SFX.at('impact', e.x, e.z, 0.8); SFX.at('stone', e.x, e.z, 0.7);
     if (FX.near(e.x, e.z, 55)) { const wx = e.x + Math.sin(dir) * 0.8, wz = e.z + Math.cos(dir) * 0.8; FX.debris(wx, 1, wz, { n: 9, color: 0x5a5650, speed: [2, 6], up: 6, size: [0.15, 0.4] }); FX.ring(wx, wz, { r0: 0.3, r1: 2, color: RSE.c, life: 0.3, tex: 'crack' }); FX.shake(0.3); FX.hitstop(0.05); }
   });
 }
@@ -434,14 +434,14 @@ function rsCounter(h, src, dmg) {
   if (FX.near(ox, oz, 55)) twGhost(h.rig, 0xeaf6ff, 0.45, 0.55, ox, oz);
   blink(h, bx, bz); h.facing = angTo(h.x, h.z, src.x, src.z); h.anim.castT = h.anim.castDur = 0.4; h.anim.castType = 'palm'; h.eyeT = G.time + 0.8;
   damage(h, src, dmg * rsMul(h, src), 0); if (src.alive) stun(h, src, 0.8);
-  SFX.at('whoosh', h.x, h.z, 0.6); SFX.at('heavy', src.x, src.z, 0.8); FX.text(src.x, src.height + 1, src.z, 'предсказуемо', '#cfeeff', 14);
+  SFX.at('blink', h.x, h.z, 0.55); SFX.at('punch', src.x, src.z, 0.85); FX.text(src.x, src.height + 1, src.z, 'предсказуемо', '#cfeeff', 14);
   if (FX.near(h.x, h.z, 55)) { FX.beam(ox, oz, h.x, h.z, { color: 0xffffff, w: 0.35, life: 0.25, y: 1.2 }); FX.hit(src.x, 1.3, src.z, RSE.c, true); FX.glow(src.x, 1.4, src.z, 3, RSE.c, 0.2, 'star'); FX.ring(src.x, src.z, { r0: 0.3, r1: 2.4, color: RSE.c, life: 0.3, tex: 'shock' }); FX.hitstop(0.06); }
 }
 // everything according to plan: a board under the target, a black king over his head that cracks with every hit his team takes,
 // lines from him to each of Reisei's allies like moves on a board; then Reisei is behind him and the plan is finished
 function rsPlan(h, t) {
   const P = { t, rec: 0, last: t.hp, t0: G.time, end: G.time + 4, done: false, cr: 0 }; h.plan = P;
-  SFX.at('ultcue', t.x, t.z, 0.6); if (h.isPlayer || t.isPlayer) UI.announce(t.isPlayer ? 'Вас взяли в план' : 'План в действии', '#cfeeff');
+  SFX.at('ultcue', t.x, t.z, 0.6); SFX.at('tick', t.x, t.z, 0.5); if (h.isPlayer || t.isPlayer) UI.announce(t.isPlayer ? 'Вас взяли в план' : 'План в действии', '#cfeeff');
   if (G.player && (h.team === G.player.team)) mmMark({ x: t.x, z: t.z, r: 4, color: '#cfeeff', until: G.time + 4 });
   for (const o of G.heroes) if (o.alive && o.team === h.team && udist(o, t) < 14) addBuff(o, { id: 'rsplan', dur: 4, ms: 0.12, src: h });
   let king = null;
@@ -466,13 +466,13 @@ function rsFinish(h, t, P) {
   if (reach) {
     const ox = h.x, oz = h.z, a = angTo(h.x, h.z, t.x, t.z); if (FX.near(ox, oz, 55)) twGhost(h.rig, 0xeaf6ff, 0.5, 0.5, ox, oz);
     blink(h, t.x - Math.sin(a) * 1.3, t.z - Math.cos(a) * 1.3); h.facing = angTo(h.x, h.z, t.x, t.z); addBuff(h, { id: 'rsfin', dur: 0.45, invuln: true });
-    h.anim.castT = h.anim.castDur = 0.7; h.anim.castType = 'axe'; h.anim.atkT = 0; h.eyeT = G.time + 1; h.castLock = Math.max(h.castLock, 0.45); SFX.at('whoosh', h.x, h.z, 0.6);
+    h.anim.castT = h.anim.castDur = 0.7; h.anim.castType = 'axe'; h.anim.atkT = 0; h.eyeT = G.time + 1; h.castLock = Math.max(h.castLock, 0.45); SFX.at('blink', h.x, h.z, 0.6);
     if (FX.near(h.x, h.z, 55)) { FX.beam(ox, oz, h.x, h.z, { color: 0xffffff, w: 0.4, life: 0.3, y: 1.2 }); G.dim = Math.max(G.dim || 0, 0.5); }
   }
   after(reach ? 0.32 : 0.05, () => {
     P.fall = true; if (!t.alive) return; const k = reach ? rsMul(h, t) : 0.5;
     damage(h, t, base * k, 0); if (t.alive && t.hp / t.maxHp < 0.15) damage(h, t, t.hp + 5, 2, { raw: true }); if (t.alive) stun(h, t, 0.8);
-    FX.text(t.x, (t.height || 2) + 1.8, t.z, 'Всё по плану.', '#eaf6ff', 22); SFX.at('heavy', t.x, t.z, 1); SFX.at('crit', t.x, t.z, 0.8); SFX.at('shatter', t.x, t.z, 0.7);
+    FX.text(t.x, (t.height || 2) + 1.8, t.z, 'Всё по плану.', '#eaf6ff', 22); SFX.at('kick', t.x, t.z, 1); SFX.at('heavy', t.x, t.z, 0.8); SFX.at('shatter', t.x, t.z, 0.65);
     if (!FX.near(t.x, t.z, 60)) return; FX.shake(0.55); FX.hitstop(0.08); FX.punch(0.7); FX.shock(t.x, t.z, 5, 1.1, 0.5);
     FX.debris(t.x, (t.height || 2) + 1.1, t.z, { n: 14, color: 0x16141c, speed: [3, 9], up: 6, size: [0.12, 0.3], glow: true });
     FX.slash(t.x, t.z, h.facing + HPI, { r: 3.4, color: RSE.c, life: 0.3, sweep: 0.5 }); FX.ring(t.x, t.z, { r0: 0.5, r1: 5, color: RSE.c, life: 0.5, tex: 'shock' });
@@ -519,12 +519,12 @@ HEROES.push(
       {
         key: 'Q', name: 'Козырь', icon: 'twcard', cd: 6, cost: 55, range: 9, ind: { type: 'line', w: 1.6, fixed: true }, anim: 'deal', animDur: 0.5, lock: 0.25, ai: { t: 'shot', sp: 30, farm: true },
         desc: 'Тэн веером бросает три карты (на 9). Каждая — магический урон первому врагу на пути. Герой, в которого попали две карты или больше, «прочитан» на 5 сек: он получает на 10% больше урона, а над ним висит его туз. В «Последней раздаче» прочитанному всегда выпадает туз.',
-        cast(h, p) { const dmg = D(h, 55, 14, 0, 0.45), id = ++TWN_N; after(0.14, () => { if (!h.alive) return; const A = twHand(h); for (let k = -1; k <= 1; k++) twThrow(h, A, p.dir + k * 0.11, 9, dmg, id); SFX.at('whoosh', h.x, h.z, 0.5); }); }
+        cast(h, p) { const dmg = D(h, 55, 14, 0, 0.45), id = ++TWN_N; after(0.14, () => { if (!h.alive) return; const A = twHand(h); for (let k = -1; k <= 1; k++) twThrow(h, A, p.dir + k * 0.11, 9, dmg, id); SFX.at('card', h.x, h.z, 0.7); SFX.at('whoosh', h.x, h.z, 0.3); }); }
       },
       {
         key: 'W', name: 'Ложный ход', icon: 'twfeint', cd: 13, cost: 70, range: 6.5, ind: { type: 'line', w: 1.4, fixed: true }, anim: 'feint', animDur: 0.35, lock: 0, ai: { t: 'escape', kite: true },
         desc: 'Тэн и Хаку отскакивают на 6.5, а на прежнем месте остаётся приманка — их двойники из света и карт. Через 2.5 сек, или как только к приманке подойдёт вражеский герой, она рассыпается вихрем карт: магический урон и замедление на 35% на 1.5 сек всем врагам в радиусе 3.',
-        cast(h, p) { const x0 = h.x, z0 = h.z; twDecoy(h, x0, z0, D(h, 70, 18, 0, 0.5)); dashTo(h, h.x + Math.sin(p.dir) * 6.5, h.z + Math.cos(p.dir) * 6.5, 28, { ribbon: TWN.t }); SFX.at('dash', h.x, h.z, 0.6); }
+        cast(h, p) { const x0 = h.x, z0 = h.z; twDecoy(h, x0, z0, D(h, 70, 18, 0, 0.5)); dashTo(h, h.x + Math.sin(p.dir) * 6.5, h.z + Math.cos(p.dir) * 6.5, 28, { ribbon: TWN.t }); SFX.at('dash', h.x, h.z, 0.5); SFX.at('card', h.x, h.z, 0.4); }
       },
       {
         key: 'E', name: 'Сделка', icon: 'twpact', cd: 14, cost: 65, range: 8, ind: { type: 'ally' }, anim: 'pact', animDur: 0.5, lock: 0.2, ai: { t: 'shieldAlly' },
@@ -536,7 +536,7 @@ HEROES.push(
         desc: 'Тэн сдаёт по карте каждому вражескому герою в радиусе 7.5: перед ним встаёт огромная карта рубашкой вверх — и переворачивается. Чем старше карта (от шестёрки до туза), тем больше магического урона; туз ещё и оглушает на 1.3 сек. «Прочитанным» всегда выпадает туз: Тэн не гадает, он знает.',
         cast(h) {
           const foes = G.heroes.filter(e => e.alive && hostile(h, e) && udist(h, e) < 7.5); if (!foes.length) { if (h.isPlayer) UI.msg('Рядом нет вражеских героев'); return false; }
-          twLockR(h); const dmg = D(h, 150, 45, 0, 0.8); SFX.at('ultcue', h.x, h.z, 0.6);
+          twLockR(h); const dmg = D(h, 150, 45, 0, 0.8); SFX.at('ultcue', h.x, h.z, 0.65); SFX.at('card', h.x, h.z, 0.7);
           foes.forEach((e, i) => after(0.06 * i, () => twDealCard(h, e, twIsRead(e) ? 14 : 6 + Math.floor(Math.random() * 9), dmg)));
           if (FX.near(h.x, h.z, 55)) { FX.ring(h.x, h.z, { r0: 0.5, r1: 7.5, color: TWN.t, life: 0.5, tex: 'rune' }); twCardsBurst(h.x, 1.8, h.z, 10, 5, 0.8); }
         }
@@ -593,14 +593,14 @@ HEROES.push(
           const dmg = D(h, 65, 17, 1.0, 0), dir = p.dir; SFX.at('dash', h.x, h.z, 0.6);
           dashTo(h, h.x + Math.sin(dir) * 5, h.z + Math.cos(dir) * 5, 32, { ribbon: RSE.c, w: 1.2, onHit(e) {
             if (e.struct) return false; damage(h, e, dmg * rsMul(h, e), 0); rsShove(h, e, dir, 3.5, dmg * 0.5); h.anim.castT = h.anim.castDur = 0.4; h.anim.castType = 'palm';
-            SFX.at('heavy', e.x, e.z, 0.7); if (FX.near(e.x, e.z, 55)) { FX.hit(e.x, 1.3, e.z, RSE.c, true); FX.ring(e.x, e.z, { r0: 0.3, r1: 2.2, color: RSE.c, life: 0.25, tex: 'shock' }); FX.sparks(e.x, 1.3, e.z, { n: 10, color: 0xffffff, color2: RSE.ice, speed: [4, 10], life: [0.15, 0.35], w: 0.08, dir, spread: 0.6 }); FX.shock(e.x, e.z, 2.4, 0.7, 0.3); }
+            SFX.at('punch', e.x, e.z, 0.8); SFX.at('impact', e.x, e.z, 0.4); if (FX.near(e.x, e.z, 55)) { FX.hit(e.x, 1.3, e.z, RSE.c, true); FX.ring(e.x, e.z, { r0: 0.3, r1: 2.2, color: RSE.c, life: 0.25, tex: 'shock' }); FX.sparks(e.x, 1.3, e.z, { n: 10, color: 0xffffff, color2: RSE.ice, speed: [4, 10], life: [0.15, 0.35], w: 0.08, dir, spread: 0.6 }); FX.shock(e.x, e.z, 2.4, 0.7, 0.3); }
             return true; } });
         }
       },
       {
         key: 'E', name: 'Белая комната', icon: 'rsroom', cd: 14, cost: 60, range: 0, ind: { type: 'self', r: 1.5 }, anim: 'wroom', animDur: 1.0, lock: 0, ai: { t: 'parry' },
         desc: 'На 1 сек Рэйсэй уходит в себя — вокруг него смыкается белая комната: он получает на 60% меньше урона. Первый вражеский герой, который его ударит, проиграл: Рэйсэй мгновенно оказывается у него за спиной, бьёт (физический урон) и оглушает на 0.8 сек. Если никто не ударил — половина перезарядки возвращается.',
-        cast(h) { h.wroomT = G.time + 1.0; h.wroomDmg = D(h, 60, 16, 0.9, 0); addBuff(h, { id: 'wroom', dur: 1.0, dmgIn: 0.4 }); h.eyeT = G.time + 1; rsRoomFx(h, 1.0); SFX.at('cue', h.x, h.z, 0.5); SFX.at('ice', h.x, h.z, 0.3); }
+        cast(h) { h.wroomT = G.time + 1.0; h.wroomDmg = D(h, 60, 16, 0.9, 0); addBuff(h, { id: 'wroom', dur: 1.0, dmgIn: 0.4 }); h.eyeT = G.time + 1; rsRoomFx(h, 1.0); SFX.at('heartbeat', h.x, h.z, 0.5); SFX.at('tick', h.x, h.z, 0.4); }
       },
       {
         key: 'R', name: 'Всё по плану', icon: 'rsplan', cd: 75, cost: 100, range: 10, ind: { type: 'target', hero: true }, anim: 'pawn', animDur: 0.6, lock: 0.2, ai: { t: 'target', ult: true, hp: 0.75 },

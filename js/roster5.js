@@ -66,6 +66,7 @@ function jinRaise(h, c, elite, dur) {
   u.rig = jinShadeRig(elite ? { look: JIN_IGRIS } : c, !!elite, h.team); placeRig(u); u.yOff = -2.4;
   (h.shadows || (h.shadows = [])).push(u);
   if (FX.near(c.x, c.z, 55)) { FX.pillar(c.x, c.z, { r: strong ? 1.1 : 0.7, h: strong ? 9 : 6, color: elite ? JNW.red : JNW.c, life: 0.6, op: 0.55 }); FX.burst(c.x, 0.4, c.z, { smoke: true, n: strong ? 10 : 5, color: 0x1c0a30, color2: 0x05020a, speed: [0.5, 2], life: [0.6, 1.1], size: [0.8, 1.8], up: 2, rad: 0.8, a: 0.6 }); FX.ring(c.x, c.z, { r0: 0.3, r1: strong ? 2.6 : 1.6, color: elite ? JNW.red : JNW.c, life: 0.4, tex: 'shock' }); }
+  SFX.at(elite ? 'necro' : 'ghost', c.x, c.z, strong ? 0.55 : 0.3);
   return u;
 }
 function jinFade(u) { if (FX.near(u.x, u.z, 50)) { FX.burst(u.x, 1, u.z, { smoke: true, n: 8, color: 0x1c0a30, color2: 0x05020a, speed: [0.5, 2], life: [0.5, 1], size: [0.8, 1.6], up: 2, rad: 0.6, a: 0.6 }); FX.sparks(u.x, 1.2, u.z, { n: 8, color: JNW.pale, color2: JNW.c, speed: [1, 4], life: [0.3, 0.6], up: 2, w: 0.07 }); } }
@@ -138,7 +139,7 @@ HEROES.push(
       if (!o.basic || !h.titan || !t.alive && !t.dead) return;
       for (const e of enemiesIn(h, t.x, t.z, 2.4)) if (e !== t) damage(h, e, d * 0.5, 0, { dot: true });
       if (FX.near(t.x, t.z, 45)) { FX.ring(t.x, t.z, { r0: 0.4, r1: 2.6, color: REI.c, life: 0.3, tex: 'crack' }); FX.debris(t.x, 0.3, t.z, { n: 4, color: 0x4a4038, speed: [2, 5], up: 6, size: [0.15, 0.35] }); }
-      SFX.at('heavy', t.x, t.z, 0.4); if (h === G.player) FX.shake(0.15);
+      SFX.at('stone', t.x, t.z, 0.4); if (h === G.player) FX.shake(0.15);
     },
     abilities: [
       {
@@ -146,13 +147,13 @@ HEROES.push(
         desc: 'Райнер срывается с места плечом вперёд на 7 и сносит всех на пути: физический урон (растёт от здоровья Райнера), отбрасывание в сторону и оглушение на 0.6 сек (героев — на 0.9). Титан таранит на 10, шире и оглушает на 1.2 сек.',
         cast(h, p) {
           const T = h.titan, L = T ? 10 : 7, dmg = D(h, 70, 15, 0.4) + h.maxHp * 0.03, st = T ? 1.2 : 0.9, dir = p.dir, tx = h.x + Math.sin(dir) * L, tz = h.z + Math.cos(dir) * L;
-          SFX.at('dash', h.x, h.z, 1); SFX.at('heavy', h.x, h.z, 0.4); if (FX.near(h.x, h.z, 50)) { FX.ring(h.x, h.z, { r0: 0.4, r1: T ? 4 : 2.5, color: REI.c, life: 0.3, tex: 'shock' }); FX.burst(h.x, 0.3, h.z, { smoke: true, n: T ? 10 : 5, color: 0x8a8070, color2: 0x3a3630, speed: [1, 3], life: [0.4, 0.8], size: [0.8, 1.8], ring: true, a: 0.45 }); }
+          SFX.at('dash', h.x, h.z, 1); SFX.at('stone', h.x, h.z, 0.45); if (FX.near(h.x, h.z, 50)) { FX.ring(h.x, h.z, { r0: 0.4, r1: T ? 4 : 2.5, color: REI.c, life: 0.3, tex: 'shock' }); FX.burst(h.x, 0.3, h.z, { smoke: true, n: T ? 10 : 5, color: 0x8a8070, color2: 0x3a3630, speed: [1, 3], life: [0.4, 0.8], size: [0.8, 1.8], ring: true, a: 0.45 }); }
           dashTo(h, tx, tz, T ? 30 : 26, { ribbon: REI.c, w: T ? 2.2 : 1.3,
             trail: u => { if (FX.near(u.x, u.z, 45) && Math.random() < 0.6) FX.burst(u.x, 0.3, u.z, { smoke: true, n: T ? 3 : 1, color: 0x8a8070, color2: 0x3a3630, speed: [0.5, 2], life: [0.4, 0.7], size: [0.6, T ? 2 : 1.2], a: 0.4 }); },
             onHit: (e, u) => {
               damage(u, e, dmg, 0); if (!e.alive) return; const side = ((e.x - u.x) * Math.cos(dir) - (e.z - u.z) * Math.sin(dir)) >= 0 ? 1 : -1;
               knock(e, e.x - Math.cos(dir) * side, e.z + Math.sin(dir) * side, T ? 3.2 : 2.2, 0.22); stun(u, e, e.kind === 'hero' ? st : 0.6, T ? 1.2 : 0.5);
-              if (FX.near(e.x, e.z, 45)) { FX.hit(e.x, 1.3, e.z, REI.c, true); FX.debris(e.x, 0.4, e.z, { n: 4, color: 0x4a4038, speed: [2, 6], up: 6, size: [0.15, 0.35] }); } SFX.at('heavy', e.x, e.z, 0.7); FX.shake(T ? 0.35 : 0.2);
+              if (FX.near(e.x, e.z, 45)) { FX.hit(e.x, 1.3, e.z, REI.c, true); FX.debris(e.x, 0.4, e.z, { n: 4, color: 0x4a4038, speed: [2, 6], up: 6, size: [0.15, 0.35] }); } SFX.at('mace', e.x, e.z, 0.7); SFX.at('punch', e.x, e.z, 0.4); FX.shake(T ? 0.35 : 0.2);
             },
             onEnd: u => { if (FX.near(u.x, u.z, 45)) { FX.ring(u.x, u.z, { r0: 0.4, r1: T ? 4 : 2.4, color: REI.c, life: 0.3, tex: 'crack' }); FX.shock(u.x, u.z, T ? 4 : 2.5, 0.6, 0.3); } } });
         }
@@ -165,7 +166,7 @@ HEROES.push(
           const b = shield(h, h, sh, 4, REI.c); if (b) { if (b.fx) b.fx.dead = true; b.fx = reiHarden(h, 4); }
           for (const e of enemiesIn(h, h.x, h.z, R)) { if (e.boss) continue; e.tauntBy = h; e.tauntT = G.time + dur; if (e.kind !== 'hero') e.target = h; else { e.order = { type: 'attack', tgt: h, rp: 0 }; e.windup = 0; }
             const bb = addBuff(e, { id: 'taunted', dur, src: h }); if (bb) bb.fx = FX.aura(e, REI.c, dur, e.radius + 0.5, 'ring', 6); if (FX.near(e.x, e.z, 45)) FX.beam(h.x, h.z, e.x, e.z, { color: REI.c, w: 0.15, life: 0.3, y: 1.4 }); }
-          SFX.at('quake', h.x, h.z, 0.6); SFX.at('shield', h.x, h.z, 0.8); SFX.at('horn', h.x, h.z, 0.4); FX.shake(0.25);
+          SFX.at('mace', h.x, h.z, 0.7); SFX.at('shield', h.x, h.z, 0.6); SFX.at('horn', h.x, h.z, 0.45); FX.shake(0.25);
           if (FX.near(h.x, h.z, 50)) { FX.ring(h.x, h.z, { r0: 0.5, r1: R, color: REI.c, life: 0.45, tex: 'shock' }); FX.ring(h.x, h.z, { r0: R, r1: R + 0.5, color: REI.hard, life: 0.7, tex: 'ringThin' }); FX.shock(h.x, h.z, R, 0.8, 0.4); FX.debris(h.x, h.height * 0.6, h.z, { glow: true, n: 10, color: REI.hard, speed: [2, 5], up: 4, size: [0.1, 0.25], life: 0.5 }); FX.text(h.x, h.height + 1.2, h.z, 'СЮДА!', '#ffc870', 18); }
         }
       },
@@ -177,7 +178,7 @@ HEROES.push(
           after(0.3, () => {
             if (!h.alive) return; const x = h.x + Math.sin(h.facing) * (T ? 1.8 : 0.8), z = h.z + Math.cos(h.facing) * (T ? 1.8 : 0.8);
             for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 0); if (e.alive) stun(h, e, 0.8, T ? 1.8 : 1.2); }
-            SFX.at('heavy', x, z, 1); SFX.at('rubble', x, z, 0.8); if (T) SFX.at('bigboom', x, z, 0.5); FX.shake(T ? 0.7 : 0.4); if (h === G.player) FX.hitstop(0.05);
+            SFX.at('punch', x, z, 0.9); SFX.at('quake', x, z, 0.8); SFX.at('rubble', x, z, 0.7); if (T) SFX.at('bigboom', x, z, 0.5); FX.shake(T ? 0.7 : 0.4); if (h === G.player) FX.hitstop(0.05);
             if (FX.near(x, z, 55)) {
               FX.ring(x, z, { r0: 0.5, r1: R + 0.6, color: REI.c, life: 0.45, tex: 'shock' }); FX.ring(x, z, { r0: R * 0.9, r1: R, color: 0x8a7050, life: 1.6, tex: 'crack' }); FX.shock(x, z, R * 1.3, 1.1, 0.4);
               FX.debris(x, 0.4, z, { n: T ? 18 : 10, color: 0x4a4038, speed: [3, 9], up: 10, size: [0.2, T ? 0.7 : 0.45], rad: R * 0.4 }); FX.smoke(x, z, R * 0.6, T ? 10 : 6, 0x6a6050); FX.scorch(x, z, R * 0.55, REI.c, 6);
@@ -190,10 +191,10 @@ HEROES.push(
         desc: 'С ясного неба бьёт золотая молния — и на месте Райнера встаёт Бронированный титан: взрыв в радиусе 6 (физический урон, отбрасывание), лечение на 25% здоровья. На 12 / 15 / 18 сек: +45 / 60 / 75 защиты, +40% к силе атаки, 35% меньше физического урона, удары кулаками крошат землю вокруг цели (половина урона), а умения бьют дальше и шире. Из-под брони всё время валит пар.',
         cast(h) {
           const lv = Math.max(1, h.al[3]), dur = 9 + 3 * lv, x = h.x, z = h.z, dmg = D(h, 150, 40, 0.5) + h.maxHp * 0.05; h.order = null; h.path = null;
-          SFX.at('ultcue', x, z, 0.6); G.dim = Math.max(G.dim || 0, FX.near(x, z, 40) ? 0.7 : 0);
+          SFX.at('ultcue', x, z, 0.6); SFX.at('charge', x, z, 0.6); G.dim = Math.max(G.dim || 0, FX.near(x, z, 40) ? 0.7 : 0);
           if (FX.near(x, z, 55)) { FX.implode(x, 2, z, 5, { n: 24, color: 0xfff0c0, color2: REI.c, life: 0.45, streak: true }); FX.bolt(x + 6, 30, z - 4, x + 1, 22, z, { color: REI.bolt, w: 0.8, life: 0.2 }); }
           after(0.45, () => {
-            if (!h.alive) return; reiLightning(h.x, h.z); SFX.at('bigboom', h.x, h.z, 1); SFX.at('zap', h.x, h.z, 1); SFX.at('boom', h.x, h.z, 0.8); FX.shake(1.0); if (FX.near(h.x, h.z, 36)) FX.hitstop(0.1);
+            if (!h.alive) return; reiLightning(h.x, h.z); SFX.at('thunder', h.x, h.z, 1); SFX.at('bigboom', h.x, h.z, 1); SFX.at('roar', h.x, h.z, 0.9); FX.shake(1.0); if (FX.near(h.x, h.z, 36)) FX.hitstop(0.1);
             for (const e of enemiesIn(h, h.x, h.z, 6)) { damage(h, e, dmg, 0); if (e.alive) knock(e, h.x, h.z, 3.5, 0.3); }
             reiTitan(h, true); h.titanT = G.time + dur; heal(h, h, h.maxHp * 0.25);
             addBuff(h, { id: 'titan', dur, def: 30 + 15 * lv, ad: h.bAd * 0.4, src: h });
@@ -224,9 +225,9 @@ HEROES.push(
         key: 'Q', name: 'Рывок кинжалов', icon: 'jindash', cd: 8, cost: 50, range: 7, ind: { type: 'line', w: 1.4 }, lock: 0, ai: { t: 'gap', escape: true },
         desc: 'Сун Джину проносится на 7 вперёд, полосуя кинжалами всех на пути (физический урон). Его тени в радиусе 20 тут же возникают у ближайшего врага в конце рывка и набрасываются на него.',
         cast(h, p) {
-          const dmg = D(h, 64, 14, 0.75), dir = p.dir; dshGhost(h, JNW.c, 0.4, 0.45); SFX.at('dash', h.x, h.z, 0.9); SFX.at('slash', h.x, h.z, 0.6);
+          const dmg = D(h, 64, 14, 0.75), dir = p.dir; dshGhost(h, JNW.c, 0.4, 0.45); SFX.at('dash', h.x, h.z, 0.8); SFX.at('shadowblade', h.x, h.z, 0.6);
           dashTo(h, p.x, p.z, 36, { ribbon: JNW.c, w: 1.3,
-            onHit: (e, u) => { damage(u, e, dmg, 0); if (FX.near(e.x, e.z, 45)) { FX.slash(e.x, e.z, dir + HPI, { r: 1.8, sweep: 1.4, color: JNW.c, life: 0.18, y: 1.2 }); FX.hit(e.x, 1.2, e.z, JNW.c, e.kind === 'hero'); } SFX.at('slash', e.x, e.z, 0.5); },
+            onHit: (e, u) => { damage(u, e, dmg, 0); if (FX.near(e.x, e.z, 45)) { FX.slash(e.x, e.z, dir + HPI, { r: 1.8, sweep: 1.4, color: JNW.c, life: 0.18, y: 1.2 }); FX.hit(e.x, 1.2, e.z, JNW.c, e.kind === 'hero'); } SFX.at('dagger', e.x, e.z, 0.5); },
             onEnd: u => {
               let t = null, bd = 6; for (const e of G.units) if (e.alive && !e.struct && hostile(u, e)) { const d = udist(u, e) - (e.kind === 'hero' ? 2 : 0); if (d < bd) { bd = d; t = e; } }
               if (!t) return;
@@ -238,14 +239,14 @@ HEROES.push(
         key: 'W', name: 'Власть правителя', icon: 'jingrip', cd: 13, cost: 75, range: 9, ind: { type: 'circle', r: 2.8 }, anim: 'grip', animDur: 0.9, lock: 0.35, ai: { t: 'point', rad: 2.8, delay: 0.3 },
         desc: 'Невидимая рука хватает врагов в круге радиусом 2.8, поднимает их в воздух (оглушение на 0.9 сек) и с размаху бьёт о землю: магический урон и замедление на 30% на 1.5 сек.',
         cast(h, p) {
-          const x = p.x, z = p.z, R = 2.8, dmg = D(h, 95, 19, 0.3, 0.6); SFX.at('warp', x, z, 0.8); SFX.at('dark', x, z, 0.5);
+          const x = p.x, z = p.z, R = 2.8, dmg = D(h, 95, 19, 0.3, 0.6); SFX.at('dark', x, z, 0.7); SFX.at('warp', x, z, 0.6);
           if (FX.near(x, z, 55)) { FX.warp('lens', x, 1.6, z, { r: R + 0.5, str: 1, life: 0.9 }); FX.sphere(x, 1.6, z, { r0: R + 1, r1: R * 0.6, color: JNW.c, life: 0.4, op: 0.5 }); FX.zone(x, z, R, JNW.c, 1.0, { tex: 'rune2', spin: 1.5, op: 0.6 }); }
           after(0.15, () => {
             const foes = enemiesIn(h, x, z, R);
             for (const e of foes) { if (!e.boss) stun(h, e, 0.9, 2.3); if (FX.near(e.x, e.z, 45)) FX.sparks(e.x, 0.4, e.z, { n: 8, color: JNW.pale, color2: JNW.c, speed: [1, 3], life: [0.4, 0.7], up: 8, grav: 0, w: 0.08, stretch: 0.1 }); }
             after(0.75, () => {
               for (const e of enemiesIn(h, x, z, R + 0.6)) { damage(h, e, dmg, 1); if (e.alive) slow(h, e, 0.3, 1.5, 'jinslow'); FX.hit(e.x, 0.6, e.z, JNW.c, true); }
-              SFX.at('heavy', x, z, 1); SFX.at('rubble', x, z, 0.6); FX.shake(0.4);
+              SFX.at('heavy', x, z, 1); SFX.at('stone', x, z, 0.7); FX.shake(0.4);
               if (FX.near(x, z, 55)) { FX.ring(x, z, { r0: 0.4, r1: R + 1, color: JNW.c, life: 0.4, tex: 'shock' }); FX.ring(x, z, { r0: R * 0.8, r1: R, color: 0x5a3a8a, life: 1.4, tex: 'crack' }); FX.debris(x, 0.3, z, { n: 10, color: 0x2a2430, speed: [2, 7], up: 8, size: [0.15, 0.4], rad: R * 0.5 }); FX.shock(x, z, R + 1.5, 1, 0.35); }
             });
           });
@@ -259,7 +260,7 @@ HEROES.push(
           const x0 = h.x, z0 = h.z;
           if (best) { const bx = best.x, bz = best.z; blink(h, bx, bz); best.x = x0; best.z = z0; best.path = null; jinFade(best); }
           else { const d = Math.min(6, dist(h.x, h.z, p.x, p.z)); blink(h, h.x + Math.sin(p.dir) * d, h.z + Math.cos(p.dir) * d); }
-          h.facing = p.dir; h.atkCd = 0; if (h === G.player) G.camSnap = true; SFX.at('warp', x0, z0, 0.8); SFX.at('dark', h.x, h.z, 0.6);
+          h.facing = p.dir; h.atkCd = 0; if (h === G.player) G.camSnap = true; SFX.at('blink', x0, z0, 0.7); SFX.at('ghost', h.x, h.z, 0.5); SFX.at('dark', h.x, h.z, 0.4);
           for (const [x, z] of [[x0, z0], [h.x, h.z]]) if (FX.near(x, z, 55)) { FX.burst(x, 0.8, z, { smoke: true, n: 10, color: 0x1c0a30, color2: 0x05020a, speed: [0.5, 2.5], life: [0.5, 0.9], size: [0.8, 1.8], up: 1.5, rad: 0.6, a: 0.65 }); FX.implode(x, 1.2, z, 2.2, { n: 10, color: JNW.pale, color2: JNW.c, life: 0.22, streak: true }); FX.ring(x, z, { r0: 2.2, r1: 0.3, color: JNW.c, life: 0.3, tex: 'ringThin' }); }
         }
       },
@@ -270,7 +271,7 @@ HEROES.push(
           const lv = Math.max(1, h.al[3]), dur = 25 + 5 * lv, cap = 4 + 2 * lv, R = 15, x = h.x, z = h.z;
           h.shadows = (h.shadows || []).filter(s => s.alive);
           const C = (h.corpses || []).filter(c => c.until > G.time && dist(c.x, c.z, x, z) < R).sort((a, b) => (b.hero - a.hero) || (b.big - a.big) || (dist(a.x, a.z, x, z) - dist(b.x, b.z, x, z)));
-          SFX.at('ultcue', x, z, 0.6); SFX.at('dark', x, z, 1); G.dim = Math.max(G.dim || 0, FX.near(x, z, 40) ? 0.8 : 0);
+          SFX.at('ultcue', x, z, 0.7); SFX.at('necro', x, z, 1); SFX.at('dark', x, z, 0.6); G.dim = Math.max(G.dim || 0, FX.near(x, z, 40) ? 0.8 : 0);
           if (FX.near(x, z, 60)) { FX.text(x, h.height + 1.5, z, 'ВОССТАНЬ', '#c8a0ff', 26); FX.ring(x, z, { r0: 0.5, r1: R, color: JNW.c, life: 0.8, tex: 'shock', op: 0.7 }); FX.zone(x, z, R, JNW.c, 1.4, { tex: 'rune2', spin: -0.5, op: 0.45 }); FX.light(x, 3, z, JNW.c, 1.5, 30, 1); }
           // Igris rises at his side (an old one is renewed)
           let ig = h.shadows.find(s => s.elite && s.alive);
@@ -304,7 +305,7 @@ HEROES.push(
         key: 'Q', name: 'Рейлган', icon: 'misrail', cd: 9, cost: 60, range: 20, noReach: true, ind: { type: 'line', w: 1.8, len: 20, fixed: true }, anim: 'railgun', animDur: 0.7, lock: 0.45, ai: { t: 'shot', sp: 999, farm: true },
         desc: 'Мисака подбрасывает монетку, ловит её на большой палец — и монета уходит на втрое сверхзвуковой скорости: луч на 20, огромный физический урон всем на линии и отбрасывание. За выстрелом остаётся выжженная борозда.',
         cast(h, p) {
-          const dir = p.dir, L = 20, dmg = D(h, 105, 22, 0.9), sx = Math.sin(dir), sz = Math.cos(dir); SFX.at('coin', h.x, h.z, 0.8);
+          const dir = p.dir, L = 20, dmg = D(h, 105, 22, 0.9), sx = Math.sin(dir), sz = Math.cos(dir); SFX.at('coin', h.x, h.z, 0.7); SFX.at('charge', h.x, h.z, 0.4);
           if (FX.near(h.x, h.z, 50)) {   // the coin flicked up and falling back
             const c = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: 0xffc860, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
             FX.add(c, 0.4, k => { c.position.set(h.x + sx * 0.7, 1.7 + Math.sin(Math.PI * k) * 1.6, h.z + sz * 0.7); c.scale.setScalar(0.45 + Math.abs(Math.sin(k * 20)) * 0.25); c.material.opacity = 1; });
@@ -312,7 +313,7 @@ HEROES.push(
           after(0.4, () => {
             if (!h.alive) return; const x0 = h.x + sx * 1.1, z0 = h.z + sz * 1.1;
             for (const e of stripHits(h, x0, z0, dir, L, 0.95)) { damage(h, e, dmg, 0); FX.hit(e.x, 1.4, e.z, MIS.rail, true); if (e.alive) knock(e, e.x - sx, e.z - sz, 1.6, 0.18); }
-            misRail(x0, z0, dir, L, true); SFX.at('laser', h.x, h.z, 1); SFX.at('bigboom', h.x, h.z, 0.5); SFX.at('zap', h.x, h.z, 0.8); FX.shake(0.45); if (h === G.player) { FX.punch(0.9); FX.hitstop(0.04); }
+            misRail(x0, z0, dir, L, true); SFX.at('railgun', h.x, h.z, 1); SFX.at('boom', h.x, h.z, 0.5); SFX.at('zap', h.x, h.z, 0.6); FX.shake(0.45); if (h === G.player) { FX.punch(0.9); FX.hitstop(0.04); }
           });
         }
       },
@@ -320,11 +321,11 @@ HEROES.push(
         key: 'W', name: 'Железный песок', icon: 'missand', cd: 9, cost: 55, range: 6.5, ind: { type: 'cone', r: 6.5 }, anim: 'whip', animDur: 0.5, lock: 0.25, ai: { t: 'cone', farm: true },
         desc: 'Мисака поднимает из земли железный песок и хлещет им, как кнутом: физический урон всем врагам в конусе перед собой (до 6.5) и замедление на 35% на 1.5 сек. По хлысту бегут искры.',
         cast(h, p) {
-          const dir = p.dir, R = 6.5, half = 0.8, dmg = D(h, 75, 16, 0.5, 0.4); SFX.at('whoosh', h.x, h.z, 0.8); SFX.at('rubble', h.x, h.z, 0.3);
+          const dir = p.dir, R = 6.5, half = 0.8, dmg = D(h, 75, 16, 0.5, 0.4); SFX.at('sand', h.x, h.z, 0.8); SFX.at('zap', h.x, h.z, 0.3);
           after(0.12, () => {
             if (!h.alive) return; const x = h.x, z = h.z;
             for (const e of enemiesIn(h, x, z, R)) if (inCone(h, e, dir, half, R)) { damage(h, e, dmg, 0); if (e.alive) slow(h, e, 0.35, 1.5, 'missand'); FX.hit(e.x, 1.2, e.z, MIS.c, false); }
-            SFX.at('slash', x, z, 0.8); SFX.at('zap', x, z, 0.4);
+            SFX.at('whip', x, z, 0.9); SFX.at('zap', x, z, 0.4);
             if (!FX.near(x, z, 55)) return;
             // the black crescent of the whip and the sand pouring along it
             const m = new THREE.Mesh(FX.geo.flat, FX.mat('slash', 0x101016, 0.9, false)); m.position.set(x, 1.1, z);
@@ -338,13 +339,13 @@ HEROES.push(
         key: 'E', name: 'Магнитный рывок', icon: 'misdash', cd: 12, cost: 45, range: 8, ind: { type: 'line', w: 1.2 }, lock: 0, ai: { t: 'escape', kite: true },
         desc: 'Мисака притягивает себя магнитом на 8 — по стенам и над ними. Следующая атака в течение 3 сек — малый рейлган: +60% урона и луч на 7 за целью, задевающий всех на нём (половина урона).',
         cast(h, p) {
-          SFX.at('dash', h.x, h.z, 0.8); SFX.at('zap', h.x, h.z, 0.6);
+          SFX.at('dash', h.x, h.z, 0.7); SFX.at('zap', h.x, h.z, 0.6); SFX.at('servo', h.x, h.z, 0.35);
           dashTo(h, p.x, p.z, 34, { fly: true, arc: 1.2, ribbon: MIS.c, trail: u => { if (FX.near(u.x, u.z, 45) && Math.random() < 0.5) FX.bolt(u.x, 1.2 + (u.yOff || 0), u.z, u.x + rand(-1.5, 1.5), rand(0.2, 2), u.z + rand(-1.5, 1.5), { color: MIS.c, w: 0.25, life: 0.1, jag: 0.3, fork: false }); },
             onEnd: u => {
               if (FX.near(u.x, u.z, 45)) { FX.ring(u.x, u.z, { r0: 0.3, r1: 2.4, color: MIS.c, life: 0.3, tex: 'shock' }); FX.arcs(u.x, 1, u.z, 1.8, 3, MIS.c); }
               addBuff(u, { id: 'misamp', dur: 3, onHit: (s, t, bf) => {
                 if (bf.used) return 0; bf.used = true; bf.dead = true; const a = angTo(s.x, s.z, t.x, t.z);
-                after(0.01, () => { for (const e of stripHits(s, t.x, t.z, a, 7, 0.7)) if (e !== t) damage(s, e, s.ad * 0.8, 0, { dot: true }); misRail(t.x - Math.sin(a) * 0.5, t.z - Math.cos(a) * 0.5, a, 7.5, false); SFX.at('laser', t.x, t.z, 0.5); });
+                after(0.01, () => { for (const e of stripHits(s, t.x, t.z, a, 7, 0.7)) if (e !== t) damage(s, e, s.ad * 0.8, 0, { dot: true }); misRail(t.x - Math.sin(a) * 0.5, t.z - Math.cos(a) * 0.5, a, 7.5, false); SFX.at('railgun', t.x, t.z, 0.55); });
                 return s.ad * 0.6;
               } });
             } });
@@ -354,7 +355,7 @@ HEROES.push(
         key: 'R', name: 'Миллиард вольт', icon: 'misstorm', cd: 85, cost: 140, range: 14, ind: { type: 'circle', r: 5 }, anim: 'storm', animDur: 1.25, lock: 1.05, ai: { t: 'point', rad: 5, delay: 1.0, ult: true, hp: 0.6 },
         desc: 'Мисака вскидывает руки, и над точкой (до 14) сгущается грозовой заряд. Через 1 сек в землю бьёт колонна молний: огромный магический урон и оглушение на 1 сек в радиусе 5, а разряды перескакивают ещё на врагов в радиусе 10 (30% урона). Ещё 3 сек на месте удара трещит электрическое поле: урон и замедление на 30%.',
         cast(h, p) {
-          const x = p.x, z = p.z, R = 5, dmg = D(h, 190, 40, 0.5, 0.85), tk = D(h, 24, 5, 0, 0.15); telegraph(h, x, z, R, 1.0, MIS.c); SFX.at('ultcue', h.x, h.z, 0.5); SFX.at('zap', h.x, h.z, 0.8);
+          const x = p.x, z = p.z, R = 5, dmg = D(h, 190, 40, 0.5, 0.85), tk = D(h, 24, 5, 0, 0.15); telegraph(h, x, z, R, 1.0, MIS.c); SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('overload', x, z, 0.6); SFX.at('zap', h.x, h.z, 0.5);
           if (FX.near(x, z, 60)) {
             FX.zone(x, z, R, MIS.c, 4.2, { tex: 'rune2', spin: 1.2, op: 0.5 });
             const cl = new THREE.Mesh(FX.geo.flat, FX.mat('swirl', 0x4a8ac0, 0.5)); cl.position.set(x, 11, z); FX.add(cl, 1.3, (k, me, dt) => { const s = R * 2.6 * 2 * RK * Math.min(1, k * 3); me.scale.set(s, 1, s); me.rotation.y += dt * 2; me.material.opacity = 0.5 * Math.min(1, (1 - k) * 6); });
@@ -365,7 +366,7 @@ HEROES.push(
             if (!h.alive) return; const hit = enemiesIn(h, x, z, R);
             for (const e of hit) { damage(h, e, dmg, 1); FX.hit(e.x, 1.3, e.z, MIS.c, true); if (e.alive) stun(h, e, 1); }
             for (const e of G.units) { if (!e.alive || e.struct || !hostile(h, e) || hit.includes(e)) continue; const d = dist(e.x, e.z, x, z); if (d > 10) continue; damage(h, e, dmg * 0.3, 1, { dot: true }); misArc(x, 2, z, e, 0.6); }
-            SFX.at('bigboom', x, z, 1); SFX.at('laser', x, z, 0.8); SFX.at('zap', x, z, 1); FX.shake(0.9); if (FX.near(x, z, 36)) { FX.hitstop(0.08); FX.punch(1); }
+            SFX.at('thunder', x, z, 1); SFX.at('bigboom', x, z, 0.8); SFX.at('zap', x, z, 0.8); FX.shake(0.9); if (FX.near(x, z, 36)) { FX.hitstop(0.08); FX.punch(1); }
             if (FX.near(x, z, 60)) {
               for (let i = 0; i < 5; i++) after(i * 0.05, () => FX.bolt(x + rand(-2, 2), 26, z + rand(-2, 2), x + rand(-0.6, 0.6), 0.2, z + rand(-0.6, 0.6), { color: i % 2 ? MIS.pale : MIS.c, w: 3 - i * 0.4, life: 0.35, jag: 1.4 }));
               FX.pillar(x, z, { r: 2.2, h: 28, color: MIS.c, life: 0.6, op: 0.55 }); FX.pillar(x, z, { r: 0.8, h: 32, color: 0xffffff, life: 0.35, op: 0.6 });

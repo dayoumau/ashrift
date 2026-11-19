@@ -30,7 +30,7 @@ function kaiInfHit(h, src, d) {
   h.infCd = G.time + 8; h.dmgIn /= 0.3;   // the rest of this frame's blows meet the thin infinity again
   for (const o of h.buffs) if (o.id === 'kinf') { o.dmgIn = 0.88; if (o.fx) { o.fx.dead = true; o.fx = null; } }
   if (src && src.kind === 'hero' && hostile(h, src) && udist(h, src) < 6) slow(h, src, 0.3, 1, 'kinfslow');
-  SFX.at('shield', h.x, h.z, 0.6);
+  SFX.at('arcane', h.x, h.z, 0.6); SFX.at('shield', h.x, h.z, 0.35);
   if (!FX.near(h.x, h.z, 50)) return;
   FX.sphere(h.x, 1.3, h.z, { r0: 1.5, r1: 2.4, color: 0x3fa9ff, life: 0.32, op: 0.6 }); FX.ring(h.x, h.z, { r0: 1.4, r1: 3.2, color: 0xffffff, life: 0.3, tex: 'ringThin', y: 1.2 });
   FX.warp('ring', h.x, 1.2, h.z, { r0: 0.5, r1: 3, str: 0.8, life: 0.3 });
@@ -65,7 +65,7 @@ function kaiDomain(h) {
   const lv = Math.max(1, h.al[3]), R = 9, T0 = 0.4, dur = 2 + 0.5 * lv, end = T0 + dur, dmg = D(h, 150, 35, 0, 0.7), x = h.x, z = h.z;
   h.domainT = G.time + end; h.order = null; h.path = null;
   const caught = new Map(), near = FX.near(x, z, 70); let el = 0, formed = false, acc = 0, ring = 0, fe = null, se = null;
-  SFX.at('ultcue', x, z, 0.6); SFX.at('void', x, z, 0.7); G.dim = Math.max(G.dim || 0, FX.near(x, z, 40) ? 0.9 : 0);
+  SFX.at('ultcue', x, z, 0.6); SFX.at('void', x, z, 0.7); SFX.at('charge', x, z, 0.5); G.dim = Math.max(G.dim || 0, FX.near(x, z, 40) ? 0.9 : 0);
   const mk = mmMark({ x, z, r: R, color: '#7ad0ff', until: G.time + end });
   globalWarn(h, null, null);
   if (near) {
@@ -97,7 +97,7 @@ function kaiDomain(h) {
       }
       if (el < T0) return true;
       if (!formed) {
-        formed = true; SFX.at('warp', x, z, 1); SFX.at('void', x, z, 1); SFX.at('bigboom', x, z, 0.4); FX.shake(0.5);
+        formed = true; SFX.at('warp', x, z, 1); SFX.at('void', x, z, 1); SFX.at('arcane', x, z, 0.6); SFX.at('bigboom', x, z, 0.4); FX.shake(0.5);
         if (near) {
           FX.ring(x, z, { r0: 0.5, r1: R, color: 0x7ad0ff, life: 0.45, tex: 'shock' }); FX.ring(x, z, { r0: 0.5, r1: R + 1, color: 0xffffff, life: 0.35, tex: 'ringThin' });
           FX.warp('ring', x, 0.5, z, { r0: 1, r1: R * 1.3, str: 1.5, life: 0.5 }); FX.shock(x, z, R * 1.2, 1, 0.4); FX.light(x, 6, z, 0x4a7aff, 2.2, R * 3, dur);
@@ -168,7 +168,7 @@ function megCat() {
 // EXPLOSION: a column of white fire out of the sky, a fireball swelling to the edge of the blast, rings, a mushroom cloud, a burning crater
 function megBoom(h, x, z, R, dmg) {
   for (const e of enemiesIn(h, x, z, R)) { const mk = e.buffs.some(b => b.id === 'megmark' + h.id); damage(h, e, dmg * (mk ? 1.2 : 1), 1); if (e.alive) knock(e, x, z, 3.5, 0.3); FX.hit(e.x, 1.3, e.z, MEG.fire, true); }
-  SFX.at('bigboom', x, z, 1.2); SFX.at('boom', x, z, 1); SFX.at('fire', x, z, 1); after(0.12, () => SFX.at('bigboom', x, z, 0.8)); after(0.25, () => SFX.at('rubble', x, z, 1)); after(0.45, () => SFX.at('quake', x, z, 0.8));
+  SFX.at('bigboom', x, z, 1.2); SFX.at('thunder', x, z, 1); SFX.at('fire', x, z, 1); after(0.12, () => SFX.at('bigboom', x, z, 0.8)); after(0.25, () => SFX.at('rubble', x, z, 1)); after(0.45, () => SFX.at('quake', x, z, 0.8));
   FX.shake(1.2); if (!FX.near(x, z, 80)) return;
   if (FX.near(x, z, 40)) { FX.hitstop(0.12); FX.punch(1.5); }
   FX.light(x, 6, z, 0xff6a1a, 4, 70, 1.4); FX.glow(x, 3, z, 15, 0xff6a1a, 0.5); FX.glow(x, 3, z, 11, 0xffffff, 0.1, 'flare');
@@ -238,7 +238,7 @@ function zenBolt(x0, z0, x1, z1, big) {
 function zenSleep(h, dur, auto) {
   h.sleepT = G.time + dur; h.sleeping = true; if (auto) h.sleepCd = G.time + 30; h.range = h.def.stats.range + 2.4;
   addBuff(h, { id: 'zsleep', dur, as: 0.3, ms: 0.2, onHit: zenSleepHit });
-  SFX.at('zap', h.x, h.z, 0.8); if (!FX.near(h.x, h.z, 50)) return;
+  SFX.at('zap', h.x, h.z, 0.6); SFX.at('charge', h.x, h.z, 0.5); if (!FX.near(h.x, h.z, 50)) return;
   FX.text(h.x, h.height + 1, h.z, 'Zzz…', '#fff0a0', 18); FX.arcs(h.x, 1.2, h.z, 1.8, 5, ZEN.c); FX.ring(h.x, h.z, { r0: 0.5, r1: 3, color: ZEN.c, life: 0.35, tex: 'shock' }); FX.glow(h.x, 1.4, h.z, 4, ZEN.c, 0.3, 'star');
 }
 function zenWake(h) { h.sleeping = false; h.range = h.def.stats.range; if (h === G.player) FX.text(h.x, h.height + 0.9, h.z, '…а? что случилось?', '#fff0a0', 14); }
@@ -246,7 +246,7 @@ function zenWake(h) { h.sleeping = false; h.range = h.def.stats.range; if (h ===
 function zenSleepHit(u, t) {
   if (t.struct) return 0;
   if (udist(u, t) > 2.2) { const a = angTo(t.x, t.z, u.x, u.z), q = NAV.nearest(t.x + Math.sin(a) * 1.2, t.z + Math.cos(a) * 1.2), x0 = u.x, z0 = u.z; u.x = q.x; u.z = q.z; u.facing = angTo(u.x, u.z, t.x, t.z); zenBolt(x0, z0, u.x, u.z, false); }
-  u.drawT = G.time + 0.25; damage(u, t, u.ad * 0.3, 1, { dot: true }); if (FX.near(t.x, t.z, 45)) FX.arcs(t.x, 1.2, t.z, 1.2, 2, ZEN.c); SFX.at('zap', t.x, t.z, 0.35);
+  u.drawT = G.time + 0.25; damage(u, t, u.ad * 0.3, 1, { dot: true }); if (FX.near(t.x, t.z, 45)) FX.arcs(t.x, 1.2, t.z, 1.2, 2, ZEN.c); SFX.at('thunderblade', t.x, t.z, 0.35);
   return 0;
 }
 // the god of flaming thunder: a dragon of fire and lightning racing along the line, its body following its head, coiling at the end and burning out
@@ -285,12 +285,12 @@ HEROES.push(
         key: 'Q', name: 'Искра', icon: 'megspark', cd: 6, cost: 45, range: 11, ind: { type: 'circle', r: 3 }, anim: 'flourish', animDur: 0.45, lock: 0.2, ai: { t: 'point', rad: 3, delay: 0.38 },
         desc: 'Мегумин чертит в точке (до 11) малый круг, и через 0.4 сек в нём вспыхивает взрыв-малыш: магический урон в радиусе 3. Каждый задетый вражеский герой даёт заряд «Алого взора». Мегумин считает это заклинание недостойным, но иногда приходится.',
         cast(h, p) {
-          const x = p.x, z = p.z, R = 3, dmg = D(h, 78, 15, 0, 0.55); telegraph(h, x, z, R, 0.38, MEG.c); megSigil(x, 0.14, z, R, MEG.c, 0.5, 2.4, 0.8); SFX.at('cast', h.x, h.z, 0.6);
+          const x = p.x, z = p.z, R = 3, dmg = D(h, 78, 15, 0, 0.55); telegraph(h, x, z, R, 0.38, MEG.c); megSigil(x, 0.14, z, R, MEG.c, 0.5, 2.4, 0.8); SFX.at('arcane', h.x, h.z, 0.5); SFX.at('ember', x, z, 0.4);
           if (FX.near(x, z, 55)) FX.implode(x, 1, z, R, { n: 10, color: MEG.pale, color2: MEG.c, life: 0.45, streak: true });
           after(0.38, () => {
             let n = 0; for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 1); FX.hit(e.x, 1.2, e.z, MEG.fire, false); if (e.kind === 'hero') n++; }
             if (n) megCharge(h, n);
-            SFX.at('boom', x, z, 0.8); SFX.at('fire', x, z, 0.5); FX.shake(0.25);
+            SFX.at('boom', x, z, 0.8); SFX.at('firebolt', x, z, 0.5); FX.shake(0.25);
             if (FX.near(x, z, 55)) { FX.explosion(x, z, 2, MEG.fire, { el: 'fire', color2: MEG.deep }); FX.pillar(x, z, { r: 0.9, h: 8, color: 0xff5a10, life: 0.4, op: 0.5 }); FX.flame(x, 2.5, z, { n: 6, color: 0xff8a3a, color2: 0x2a0804, size: [1, 2], life: [0.4, 0.8], up: 4, a: 0.4 }); FX.burst(x, 4, z, { smoke: true, n: 5, color: 0x3a2a24, color2: 0x0c0806, speed: [0.6, 1.6], life: [0.8, 1.4], size: [1.2, 2.4], ring: true, up: 1, a: 0.45 }); }
           });
         }
@@ -303,7 +303,7 @@ HEROES.push(
             if (!h.alive) return; const x = h.x, z = h.z, R = 3.6, dmg = D(h, 55, 10, 0, 0.35);
             for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 1); if (e.alive) { knock(e, x, z, 3.5, 0.25); slow(h, e, 0.35, 1.5, 'megslow'); } FX.hit(e.x, 1.2, e.z, MEG.c, false); }
             addBuff(h, { id: 'megrun', dur: 2, ms: 0.3 });
-            SFX.at('heavy', x, z, 0.6); SFX.at('fire', x, z, 0.6); FX.shake(0.3);
+            SFX.at('impact', x, z, 0.7); SFX.at('firebolt', x, z, 0.6); FX.shake(0.3);
             if (FX.near(x, z, 55)) { megSigil(x, 0.13, z, R, MEG.c, 0.7, 4, 0.9); FX.ring(x, z, { r0: 0.5, r1: R + 0.5, color: MEG.fire, life: 0.4, tex: 'shock' }); FX.shock(x, z, R * 1.3, 0.9, 0.35); FX.flame(x, 0.5, z, { n: 14, color: 0xff7a2a, color2: MEG.deep, ring: true, speed: [4, 9], size: [0.8, 1.8], life: [0.3, 0.6], up: 0.8, a: 0.45 }); FX.sparks(x, 0.4, z, { n: 18, color: 0xffd0a0, color2: MEG.c, speed: [6, 14], life: [0.2, 0.45], ring: true, w: 0.11 }); FX.debris(x, 0.3, z, { n: 6, color: 0x3a3028, speed: [2, 6], up: 6, size: [0.12, 0.3] }); }
           });
         }
@@ -314,7 +314,7 @@ HEROES.push(
         cast(h, p) {
           const t = p.unit; if (!t || !hostile(h, t)) return false;
           const dmg = D(h, 60, 12, 0, 0.45), cat = megCat(), wl = cat.getObjectByName('wL'), wr = cat.getObjectByName('wR'); let x = h.x + Math.sin(h.facing) * 0.8, z = h.z + Math.cos(h.facing) * 0.8, el = 0, back = false;
-          const ce = FX.add(cat, 8); cat.position.set(x, 2.2, z); SFX.at('dark', h.x, h.z, 0.4); SFX.at('whoosh', h.x, h.z, 0.5);
+          const ce = FX.add(cat, 8); cat.position.set(x, 2.2, z); SFX.at('flap', h.x, h.z, 0.6); SFX.at('hex', h.x, h.z, 0.3);
           G.actors.push({
             update(dt) {
               el += dt; if (!back && !t.alive) back = true; const tg = back ? h : t;
@@ -323,7 +323,7 @@ HEROES.push(
               if (d < (back ? 0.9 : 0.8)) {
                 if (!back) {
                   back = true; damage(h, t, dmg, 1); if (t.alive) { slow(h, t, 0.4, 1.5, 'megbite'); const b = addBuff(t, { id: 'megmark' + h.id, dur: 6, src: h }); if (b) b.fx = FX.aura(t, MEG.c, 6, t.radius + 0.7, 'rune2', 2); }
-                  if (t.kind === 'hero') megCharge(h, 2); SFX.at('hit', t.x, t.z, 0.6); SFX.at('fire', t.x, t.z, 0.3);
+                  if (t.kind === 'hero') megCharge(h, 2); SFX.at('bite', t.x, t.z, 0.7); SFX.at('ember', t.x, t.z, 0.3);
                   if (FX.near(t.x, t.z, 50)) { FX.hit(t.x, 1.4, t.z, MEG.c, true); FX.slash(t.x, t.z, rand(TAU), { r: 1.4, sweep: 1.2, color: MEG.c, life: 0.18, y: 1.6 }); FX.sparks(t.x, 1.5, t.z, { n: 10, color: 0xffd0a0, color2: MEG.c, speed: [3, 8], life: [0.2, 0.4], w: 0.09 }); }
                 } else { if (FX.near(x, z, 45)) FX.burst(x, 2.2, z, { smoke: true, n: 5, color: 0x1a1620, color2: 0x050408, speed: [0.5, 1.5], life: [0.3, 0.6], size: [0.6, 1.2], a: 0.6 }); ce.dead = true; return false; }
               } else { x += (tg.x - x) / d * st; z += (tg.z - z) / d * st; }
@@ -340,12 +340,12 @@ HEROES.push(
         cast(h, p) {
           const ch = h.meg || 0, R = 7.5 + ch * 0.4, x = p.x, z = p.z, dmg = D(h, 230, 42, 0, 0.9) * (1 + 0.06 * ch), T = 1.8; h.meg = 0; h.mana = this.cost; h.order = null; h.path = null;
           G.dangers.push({ x, z, r: R, team: h.team, until: G.time + T }); const mk = mmMark({ x, z, r: R, color: '#ff5a3a', until: G.time + T + 0.3 });
-          SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('cast', h.x, h.z, 0.8); SFX.at('fire', x, z, 0.4); G.dim = Math.max(G.dim || 0, FX.near(h.x, h.z, 40) ? 0.8 : 0);
+          SFX.at('ultcue', h.x, h.z, 0.7); SFX.at('charge', h.x, h.z, 0.8); SFX.at('fire', x, z, 0.4); G.dim = Math.max(G.dim || 0, FX.near(h.x, h.z, 40) ? 0.8 : 0);
           const near = FX.near(x, z, 75) || FX.near(h.x, h.z, 60);
           if (near) {
             FX.text(h.x, h.height + 1.4, h.z, 'Алое пламя, внемли мне…', '#ff9a7a', 15);
             megSigil(h.x, 0.12, h.z, 2.4, MEG.c, T + 0.2, 1.5, 0.9); megSigil(x, 0.15, z, R, MEG.c, T + 0.4, 0.6, 0.9);
-            [3, 6, 9, 12, 15, 18].forEach((y, i) => after(0.15 + i * 0.17, () => { if (!h.alive || h.faintT > G.time) return; megSigil(x, y, z, R * (0.9 - i * 0.12), i % 2 ? MEG.fire : MEG.c, T + 0.06 - (0.15 + i * 0.17), (i % 2 ? -1 : 1) * (0.8 + i * 0.25), 0.62 - i * 0.06); SFX.at('zap', x, z, 0.25); }));
+            [3, 6, 9, 12, 15, 18].forEach((y, i) => after(0.15 + i * 0.17, () => { if (!h.alive || h.faintT > G.time) return; megSigil(x, y, z, R * (0.9 - i * 0.12), i % 2 ? MEG.fire : MEG.c, T + 0.06 - (0.15 + i * 0.17), (i % 2 ? -1 : 1) * (0.8 + i * 0.25), 0.62 - i * 0.06); SFX.at('arcane', x, z, 0.3); }));
             FX.light(x, 8, z, MEG.c, 1.6, 40, T);
           }
           let el = 0, acc = 0;
@@ -364,7 +364,7 @@ HEROES.push(
               }
               // the column of white fire, then the blast; she falls where she stands
               if (near) { r3Ray(x, 23, z, x, 0, z, { color: 0xff7a2a, w: 2.6, life: 0.3, grow: true, core: 0.35 }); FX.glow(x, 21, z, 6, 0xffd0a0, 0.25, 'flare'); }
-              SFX.at('laser', x, z, 0.6);
+              SFX.at('firebolt', x, z, 0.8); SFX.at('laser', x, z, 0.5);
               after(0.08, () => { megBoom(h, x, z, R, dmg); if (FX.near(x, z, 45)) FX.text(x, 9, z, 'ВЗРЫВ!', '#ffb070', 30); });
               const ally = G.heroes.some(o => o !== h && o.alive && o.team === h.team && udist(o, h) < 7), fd = ally ? 1.3 : 2.5;
               h.faintT = G.time + fd; h.faint0 = G.time; h.anim.castT = 0; addBuff(h, { id: 'faint', dur: fd, stun: true, src: h });
@@ -394,13 +394,13 @@ HEROES.push(
         key: 'Q', name: 'Вихрь клинков', icon: 'levspin', cd: 8, cost: 40, range: 8, ind: { type: 'line', w: 2.4 }, lock: 0, ai: { t: 'shot', sp: 32, farm: true },
         desc: 'Леви срывается вперёд на 8, вращаясь стальным вихрем: каждый враг на пути получает физический урон, а в конце рывка клинки ещё раз проходят по кругу радиусом 3 (60% урона).',
         cast(h, p) {
-          const dmg = D(h, 60, 13, 0.75); h.spinning = true; h.spinEnd = G.time + 0.6; SFX.at('whoosh', h.x, h.z, 1); SFX.at('dash', h.x, h.z, 0.7); levGas(h, 6); let tk = 0;
+          const dmg = D(h, 60, 13, 0.75); h.spinning = true; h.spinEnd = G.time + 0.6; SFX.at('whoosh', h.x, h.z, 0.9); SFX.at('sand', h.x, h.z, 0.5); levGas(h, 6); let tk = 0;
           dashTo(h, p.x, p.z, 30, { ribbon: LEV.c, w: 1.5,
             trail: u => { if (FX.near(u.x, u.z, 45) && tk++ % 2 === 0) FX.slash(u.x, u.z, rand(TAU), { r: 2.2, sweep: 5, color: LEV.steel, life: 0.15, y: 1.0 + rand(0.6) }); },
-            onHit: (e, u) => { damage(u, e, dmg, 0); FX.hit(e.x, 1.3, e.z, LEV.c, e.kind === 'hero'); levBlood(e, 4); SFX.at('slash', e.x, e.z, 0.6); },
+            onHit: (e, u) => { damage(u, e, dmg, 0); FX.hit(e.x, 1.3, e.z, LEV.c, e.kind === 'hero'); levBlood(e, 4); SFX.at('blade', e.x, e.z, 0.6); },
             onEnd: u => {
               u.spinning = false; for (const e of enemiesIn(u, u.x, u.z, 3)) { damage(u, e, dmg * 0.6, 0); FX.hit(e.x, 1.2, e.z, LEV.c, false); levBlood(e, 3); }
-              SFX.at('slash', u.x, u.z, 0.8); if (FX.near(u.x, u.z, 45)) { FX.slash(u.x, u.z, u.facing, { r: 3.2, sweep: 5.5, color: LEV.steel, life: 0.24, y: 1.1 }); FX.slash(u.x, u.z, u.facing + 2, { r: 2.9, sweep: 5.5, color: LEV.c, life: 0.22, y: 1.6, flip: true }); FX.ring(u.x, u.z, { r0: 0.5, r1: 3.4, color: LEV.c, life: 0.3, tex: 'ringThin' }); }
+              SFX.at('blade', u.x, u.z, 0.8); SFX.at('flesh', u.x, u.z, 0.35); if (FX.near(u.x, u.z, 45)) { FX.slash(u.x, u.z, u.facing, { r: 3.2, sweep: 5.5, color: LEV.steel, life: 0.24, y: 1.1 }); FX.slash(u.x, u.z, u.facing + 2, { r: 2.9, sweep: 5.5, color: LEV.c, life: 0.22, y: 1.6, flip: true }); FX.ring(u.x, u.z, { r0: 0.5, r1: 3.4, color: LEV.c, life: 0.3, tex: 'ringThin' }); }
             } });
         }
       },
@@ -410,7 +410,7 @@ HEROES.push(
         desc: 'Пистолеты манёвренного снаряжения выстреливают два троса в точку (до 15), и газ тащит Леви к ней по воздуху — над стенами, лесом и врагами. В течение 3.5 сек «Трос» можно выпустить ещё раз бесплатно. После приземления следующая атака в течение 3 сек наносит на 60% больше урона.',
         cast(h, p) {
           const sec = h.hook2 > G.time; h.hook2 = sec ? 0 : G.time + 3.5;
-          const ax = p.x, az = p.z, d = dist(h.x, h.z, ax, az); SFX.at('whoosh', h.x, h.z, 0.8); SFX.at('dash', h.x, h.z, 0.6); levGas(h, 8); levCables(h, ax, 3.2, az, d / 40 + 0.12);
+          const ax = p.x, az = p.z, d = dist(h.x, h.z, ax, az); SFX.at('whip', h.x, h.z, 0.6); SFX.at('sand', h.x, h.z, 0.6); SFX.at('dash', h.x, h.z, 0.5); levGas(h, 8); levCables(h, ax, 3.2, az, d / 40 + 0.12);
           dashTo(h, ax, az, 40, { fly: true, arc: 2.6, ribbon: LEV.green,
             trail: u => { if (FX.near(u.x, u.z, 45) && Math.random() < 0.7) FX.burst(u.x - Math.sin(u.facing) * 0.6, 1.1 + (u.yOff || 0), u.z - Math.cos(u.facing) * 0.6, { smoke: true, n: 1, color: 0xeef2f6, color2: 0x8a9098, speed: [0.3, 1], life: [0.4, 0.8], size: [0.5, 1.2], a: 0.5 }); },
             onEnd: u => {
@@ -426,14 +426,14 @@ HEROES.push(
         cast(h, p) {
           const t = p.unit; if (!t || !hostile(h, t)) return false;
           const a = angTo(h.x, h.z, t.x, t.z), bx = t.x + Math.sin(a) * 1.3, bz = t.z + Math.cos(a) * 1.3, base = D(h, 85, 18, 1.0);
-          SFX.at('whoosh', h.x, h.z, 0.8); levGas(h, 6); levCables(h, t.x, 3.6, t.z, 0.3);
+          SFX.at('whip', h.x, h.z, 0.6); SFX.at('sand', h.x, h.z, 0.5); levGas(h, 6); levCables(h, t.x, 3.6, t.z, 0.3);
           dashTo(h, bx, bz, 34, { fly: true, arc: 3.4, ribbon: LEV.green,
             onEnd: u => {
               if (!t.alive) return; u.facing = angTo(u.x, u.z, t.x, t.z); if (udist(u, t) > 4) return;
               const air = hasBuff(u, 'levair'), crit = t.stunned || t.rooted || air; let dmg = base + (t.maxHp - t.hp) * 0.08; if (crit) dmg *= 1.5;
               if (air) for (const b of u.buffs) if (b.id === 'levair') b.dead = true;
               damage(u, t, dmg, 0, { crit }); if (t.alive) addBuff(t, { id: 'levbleed', dur: 3, every: 0.5, src: u, onTick: q => { damage(u, q, dmg * 0.05, 0, { dot: true }); levBlood(q, 2); } });
-              SFX.at('slash', t.x, t.z, 1); SFX.at('heavy', t.x, t.z, 0.5); FX.shake(0.3); if (u === G.player) FX.hitstop(0.06);
+              SFX.at('blade', t.x, t.z, 1); SFX.at('flesh', t.x, t.z, 0.6); FX.shake(0.3); if (u === G.player) FX.hitstop(0.06);
               if (FX.near(t.x, t.z, 50)) { levCut(t, u.facing + 0.8, 0.5, 1.6); levCut(t, u.facing - 0.8, -0.5, 1.6); levBlood(t, 12); FX.hit(t.x, (t.height || 2) * 0.8, t.z, 0xff3040, true); if (crit && u === G.player) FX.text(t.x, t.height + 1, t.z, 'в затылок!', '#ffd0d0', 15); }
             } });
         }
@@ -445,11 +445,11 @@ HEROES.push(
           const t = p.unit; if (!t || t.kind !== 'hero' || !hostile(h, t)) return false;
           const cut = D(h, 16, 4.5, 0.17), fin = D(h, 60, 15, 0.6), N = 8, T = 1.9; let el = 0, n = 0, acc = 0, cab = 0; const a0 = angTo(t.x, t.z, h.x, h.z);
           addBuff(h, { id: 'levult', dur: T + 0.1, invuln: true }); root(h, t, T + 0.1, LEV.c); h.phase = true; h.order = null; h.path = null;
-          SFX.at('ultcue', h.x, h.z, 0.5); SFX.at('whoosh', h.x, h.z, 1); G.dim = Math.max(G.dim || 0, FX.near(h.x, h.z, 40) ? 0.6 : 0); if (FX.near(h.x, h.z, 45)) FX.text(h.x, h.height + 1, h.z, 'тц.', '#cfe8ff', 18);
+          SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('whip', h.x, h.z, 0.7); SFX.at('sand', h.x, h.z, 0.6); G.dim = Math.max(G.dim || 0, FX.near(h.x, h.z, 40) ? 0.6 : 0); if (FX.near(h.x, h.z, 45)) FX.text(h.x, h.height + 1, h.z, 'тц.', '#cfe8ff', 18);
           const finish = () => {
             for (const b of h.buffs) if (b.id === 'levult') b.dead = true; h.invuln = false; h.phase = false; h.castLock = 0.15; h.anim.castT = 0;
             if (t.alive && h.alive) {
-              damage(h, t, fin, 0); if (t.alive) stun(h, t, 0.6); SFX.at('slash', t.x, t.z, 1); SFX.at('heavy', t.x, t.z, 0.8); FX.shake(0.5); if (FX.near(t.x, t.z, 36)) { FX.hitstop(0.09); FX.punch(0.8); }
+              damage(h, t, fin, 0); if (t.alive) stun(h, t, 0.6); SFX.at('blade', t.x, t.z, 1); SFX.at('flesh', t.x, t.z, 0.7); SFX.at('heavy', t.x, t.z, 0.5); FX.shake(0.5); if (FX.near(t.x, t.z, 36)) { FX.hitstop(0.09); FX.punch(0.8); }
               if (FX.near(t.x, t.z, 55)) { levCut(t, h.facing, 1.25, 2.2); levCut(t, h.facing + HPI, 1.1, 2); levBlood(t, 18); FX.ring(t.x, t.z, { r0: 0.5, r1: 3.5, color: LEV.c, life: 0.35, tex: 'shock' }); FX.debris(t.x, 0.3, t.z, { n: 6, color: 0x4a4038, speed: [2, 6], up: 6, size: [0.15, 0.35] }); }
             }
             const b = t.alive ? angTo(t.x, t.z, h.x, h.z) : 0, q = NAV.nearest(t.x + Math.sin(b) * 1.6, t.z + Math.cos(b) * 1.6); h.x = q.x; h.z = q.z; h.yOff = 0; if (t.alive) h.facing = angTo(h.x, h.z, t.x, t.z); levGas(h, 6);
@@ -459,8 +459,8 @@ HEROES.push(
               el += dt; acc += dt;
               if (el >= T || !t.alive || !h.alive) { finish(); return false; }
               const a = a0 + el * 6.2, r = 3 + Math.sin(el * 7) * 0.6; h.x = t.x + Math.sin(a) * r; h.z = t.z + Math.cos(a) * r; h.yOff = 1 + Math.abs(Math.sin(el * 4.5)) * 2.6; h.facing = angTo(h.x, h.z, t.x, t.z); h.castLock = Math.max(h.castLock, 0.1);
-              if (acc > 0.18) { acc = 0; cab++; const aa = rand(TAU); levCables(h, t.x + Math.sin(aa) * 7, 3 + rand(2), t.z + Math.cos(aa) * 7, 0.22); levGas(h, 3); dshGhost(h, 0x9ad0b0, 0.3, 0.35); SFX.at('whoosh', h.x, h.z, 0.4); }
-              if (n < N && el >= 0.15 + n * 0.2) { n++; damage(h, t, cut, 0); levCut(t, rand(TAU), rand(-0.9, 0.9), 1.5); levBlood(t, 6); FX.hit(t.x, 1.4, t.z, LEV.c, false); SFX.at('slash', t.x, t.z, 0.7); }
+              if (acc > 0.18) { acc = 0; cab++; const aa = rand(TAU); levCables(h, t.x + Math.sin(aa) * 7, 3 + rand(2), t.z + Math.cos(aa) * 7, 0.22); levGas(h, 3); dshGhost(h, 0x9ad0b0, 0.3, 0.35); SFX.at('whip', h.x, h.z, 0.3); }
+              if (n < N && el >= 0.15 + n * 0.2) { n++; damage(h, t, cut, 0); levCut(t, rand(TAU), rand(-0.9, 0.9), 1.5); levBlood(t, 6); FX.hit(t.x, 1.4, t.z, LEV.c, false); SFX.at('blade', t.x, t.z, 0.55); }
               return true;
             }
           });
@@ -497,7 +497,7 @@ HEROES.push(
           after(0.1, () => {
             if (!h.alive || h.stunned) return; const x0 = h.x, z0 = h.z, e = zenReach(x0, z0, dir, 9);
             dshGhost(h, ZEN.c, 0.35, 0.5); blink(h, e.x, e.z); h.facing = dir; h.drawT = G.time + 0.3; h.order = null; zenBolt(x0, z0, h.x, h.z, false);
-            SFX.at('zap', h.x, h.z, 0.9); SFX.at('slash', h.x, h.z, 0.8); SFX.at('dash', x0, z0, 0.5); FX.shake(0.2);
+            SFX.at('thunderblade', h.x, h.z, 0.9); SFX.at('katana', h.x, h.z, 0.5); SFX.at('thunder', x0, z0, 0.4); FX.shake(0.2);
             for (const u of stripHits(h, x0, z0, dir, Math.max(0.5, e.d), 1.1)) { damage(h, u, dmg, 0); FX.hit(u.x, 1.3, u.z, ZEN.c, u.kind === 'hero'); after(0.1, () => { if (FX.near(u.x, u.z, 45)) { FX.slash(u.x, u.z, dir + HPI, { r: 1.8, sweep: 1.2, color: ZEN.c, life: 0.18, y: 1.2 }); FX.arcs(u.x, 1.2, u.z, 1, 2, ZEN.c); } }); }
             if (FX.near(h.x, h.z, 45)) FX.ring(h.x, h.z, { r0: 0.3, r1: 2.2, color: ZEN.c, life: 0.25, tex: 'ringThin' });
           });
@@ -511,7 +511,7 @@ HEROES.push(
           for (const b of h.buffs) if (b.slow || b.root) b.dead = true;
           addBuff(h, { id: 'zfear', dur: 2, ms: 0.6, every: 0.1, onTick: u => { if (FX.near(u.x, u.z, 40)) { FX.burst(u.x, 0.2, u.z, { smoke: true, n: 1, color: 0x8a8070, color2: 0x3a3630, speed: [0.3, 1], life: [0.3, 0.5], size: [0.4, 0.9], a: 0.4 }); if (Math.random() < 0.4) FX.burst(u.x, u.height, u.z, { n: 1, color: 0xbfe6ff, speed: [1, 3], life: [0.3, 0.5], size: [0.18, 0.04], up: 2, grav: -12 }); } } });
           for (const e of enemiesIn(h, h.x, h.z, 4.5)) slow(h, e, 0.25, 1, 'zshriek');
-          SFX.at('whoosh', h.x, h.z, 0.8); SFX.at('horn', h.x, h.z, 0.25);
+          SFX.at('yelp', h.x, h.z, 0.7); SFX.at('whoosh', h.x, h.z, 0.7); SFX.at('dash', h.x, h.z, 0.4);
           if (FX.near(h.x, h.z, 50)) { FX.text(h.x, h.height + 1, h.z, 'А-А-А-А-А!', '#ffe27a', 20); for (let i = 0; i < 3; i++) after(i * 0.1, () => FX.ring(h.x, h.z, { r0: 0.5, r1: 4.5, color: ZEN.c, life: 0.4, tex: 'ringThin', y: 1.6 })); FX.warp('ring', h.x, 1.4, h.z, { r0: 0.5, r1: 5, str: 0.7, life: 0.35 }); FX.burst(h.x, h.height, h.z, { n: 6, color: 0xbfe6ff, speed: [2, 4], life: [0.3, 0.5], size: [0.2, 0.05], up: 3, grav: -12 }); }
         }
       },
@@ -521,7 +521,7 @@ HEROES.push(
         cast(h, p) {
           const t = p.unit; if (!t || !hostile(h, t)) return false;
           const N = h.sleepT > G.time ? 8 : 6, dmg = D(h, 22, 5, 0.3), step = 0.065; let n = 0, el = 0, a = angTo(t.x, t.z, h.x, h.z);
-          addBuff(h, { id: 'zsix', dur: N * step + 0.15, invuln: true }); h.phase = true; h.castLock = N * step + 0.15; h.order = null; h.path = null; SFX.at('zap', h.x, h.z, 0.8);
+          addBuff(h, { id: 'zsix', dur: N * step + 0.15, invuln: true }); h.phase = true; h.castLock = N * step + 0.15; h.order = null; h.path = null; SFX.at('zap', h.x, h.z, 0.7); SFX.at('katana', h.x, h.z, 0.5);
           G.actors.push({
             update(dt) {
               el += dt;
@@ -529,9 +529,9 @@ HEROES.push(
                 n++; if (!h.alive) { h.phase = false; return false; }
                 const cx = t.alive ? t.x : h.x, cz = t.alive ? t.z : h.z; a += Math.PI + rand(-0.7, 0.7);
                 const q = NAV.nearest(cx + Math.sin(a) * 3.4, cz + Math.cos(a) * 3.4), x0 = h.x, z0 = h.z, dir = angTo(x0, z0, q.x, q.z), L = dist(x0, z0, q.x, q.z);
-                h.x = q.x; h.z = q.z; h.facing = dir; h.drawT = G.time + 0.2; zenBolt(x0, z0, h.x, h.z, false); SFX.at('zap', h.x, h.z, 0.4); SFX.at('slash', h.x, h.z, 0.4);
+                h.x = q.x; h.z = q.z; h.facing = dir; h.drawT = G.time + 0.2; zenBolt(x0, z0, h.x, h.z, false); SFX.at('zap', h.x, h.z, 0.3); SFX.at('thunderblade', h.x, h.z, 0.35);
                 for (const u of stripHits(h, x0, z0, dir, Math.max(0.5, L), 1.2)) { damage(h, u, dmg, 0); FX.hit(u.x, 1.3, u.z, ZEN.c, false); }
-                if (n === N && t.alive) { stun(h, t, 0.6); h.facing = angTo(h.x, h.z, t.x, t.z); if (FX.near(t.x, t.z, 50)) { FX.ring(t.x, t.z, { r0: 0.4, r1: 3, color: ZEN.c, life: 0.35, tex: 'shock' }); FX.bolt(t.x, 22, t.z, t.x, 0.2, t.z, { color: ZEN.c, w: 1.2, life: 0.25, jag: 1 }); FX.hit(t.x, 1.4, t.z, ZEN.c, true); } SFX.at('boom', t.x, t.z, 0.5); FX.shake(0.3); }
+                if (n === N && t.alive) { stun(h, t, 0.6); h.facing = angTo(h.x, h.z, t.x, t.z); if (FX.near(t.x, t.z, 50)) { FX.ring(t.x, t.z, { r0: 0.4, r1: 3, color: ZEN.c, life: 0.35, tex: 'shock' }); FX.bolt(t.x, 22, t.z, t.x, 0.2, t.z, { color: ZEN.c, w: 1.2, life: 0.25, jag: 1 }); FX.hit(t.x, 1.4, t.z, ZEN.c, true); } SFX.at('thunder', t.x, t.z, 0.6); FX.shake(0.3); }
               }
               if (n >= N && el >= N * step + 0.05) { h.phase = false; return false; }
               return true;
@@ -544,7 +544,7 @@ HEROES.push(
         desc: 'Седьмая форма — его собственная. Зеницу 0.9 сек сидит в низкой стойке, собирая гром, — и исчезает: по линии на 22 (сквозь стены) проносится пылающий дракон молнии, а сам Зеницу оказывается в конце пути с клинком, уже входящим в ножны. Все на линии получают огромный физический урон и горят 3 сек. После удара он засыпает на 4 сек («Спящий гром»).',
         cast(h, p) {
           const dir = p.dir, L = 22, dmg = D(h, 210, 45, 1.25), T = 0.9; let el = 0, acc = 0; h.order = null; h.path = null;
-          SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('zap', h.x, h.z, 0.8); G.dim = Math.max(G.dim || 0, FX.near(h.x, h.z, 40) ? 0.85 : 0);
+          SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('charge', h.x, h.z, 0.7); SFX.at('zap', h.x, h.z, 0.5); G.dim = Math.max(G.dim || 0, FX.near(h.x, h.z, 40) ? 0.85 : 0);
           if (FX.near(h.x, h.z, 50)) { FX.text(h.x, h.height + 1.2, h.z, 'Седьмая форма…', '#ffe27a', 16); FX.lineDecal(h.x, h.z, dir, L, 2.6, ZEN.fire, T); }
           G.actors.push({
             update(dt) {
@@ -556,7 +556,7 @@ HEROES.push(
               }
               const x0 = h.x, z0 = h.z, ex = x0 + Math.sin(dir) * L, ez = z0 + Math.cos(dir) * L, q = NAV.nearest(ex, ez), hits = stripHits(h, x0, z0, dir, L, 1.6);
               zenDragon(x0, z0, dir, L); dshGhost(h, ZEN.c, 0.5, 0.55); blink(h, q.x, q.z); h.facing = dir; h.drawT = G.time + 0.6; zenBolt(x0, z0, ex, ez, true);
-              SFX.at('bigboom', x0, z0, 0.8); SFX.at('laser', x0, z0, 0.6); SFX.at('zap', h.x, h.z, 1); SFX.at('fire', h.x, h.z, 0.7); FX.shake(0.8); if (FX.near(x0, z0, 40) || FX.near(h.x, h.z, 40)) { FX.punch(1.2); FX.hitstop(0.08); }
+              SFX.at('thunder', x0, z0, 1); SFX.at('roar', x0, z0, 0.7); SFX.at('thunderblade', h.x, h.z, 0.9); SFX.at('firebolt', h.x, h.z, 0.8); FX.shake(0.8); if (FX.near(x0, z0, 40) || FX.near(h.x, h.z, 40)) { FX.punch(1.2); FX.hitstop(0.08); }
               if (FX.near(x0, z0, 60)) { FX.ring(x0, z0, { r0: 0.4, r1: 4, color: ZEN.c, life: 0.35, tex: 'shock' }); FX.warp('line', x0, 1.4, z0, { ang: dir, w: 4, len: L, str: 0.9, life: 0.45 }); FX.scorch(x0, z0, 1.6, ZEN.fire, 6); }
               after(0.2, () => {
                 for (const u of hits) {
@@ -564,7 +564,7 @@ HEROES.push(
                   if (u.alive) addBuff(u, { id: 'zburn', dur: 3, every: 0.5, src: h, onTick: o => { damage(h, o, dmg * 0.03, 1, { dot: true }); if (FX.near(o.x, o.z, 40)) FX.flame(o.x, 1, o.z, { n: 2, color: 0xffa040, color2: 0x601000, size: [0.5, 1], life: [0.3, 0.6] }); } });
                   if (FX.near(u.x, u.z, 50)) { FX.slash(u.x, u.z, dir + HPI, { r: 2.6, sweep: 1.4, color: ZEN.fire, life: 0.22, y: 1.3 }); FX.bolt(u.x, 20, u.z, u.x, 0.2, u.z, { color: ZEN.c, w: 0.9, life: 0.22, jag: 0.9 }); FX.hit(u.x, 1.3, u.z, ZEN.fire, true); FX.flame(u.x, 1, u.z, { n: 5, color: 0xffb040, color2: 0x6a1a00, size: [0.8, 1.8], life: [0.3, 0.6], up: 2, a: 0.4 }); }
                 }
-                SFX.at('slash', h.x, h.z, 0.9);
+                SFX.at('katana', h.x, h.z, 0.9); SFX.at('fire', h.x, h.z, 0.5);
               });
               after(0.55, () => { if (h.alive) zenSleep(h, 4, false); });
               return false;

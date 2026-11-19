@@ -136,7 +136,7 @@ function nerMaelstrom(h, x, z, R, dur, tick, burst) {
       const a = angTo(e.x, e.z, x, z), sp = (2.6 + (1 - d / R) * 2.4) * dt, tw = 1.6 * dt, nx = e.x + Math.sin(a) * sp + Math.cos(a) * tw, nz = e.z + Math.cos(a) * sp - Math.sin(a) * tw;
       if (NAV.ok(nx, nz)) { e.x = nx; e.z = nz; }
     }
-    if (tk >= 0.5) { tk -= 0.5; for (const e of enemiesIn(h, x, z, R)) { nerHit(h, e, tick); if (FX.near(e.x, e.z, 40)) FX.hit(e.x, 1, e.z, NER.c, false); } SFX.at('hit', x, z, 0.25); }
+    if (tk >= 0.5) { tk -= 0.5; for (const e of enemiesIn(h, x, z, R)) { nerHit(h, e, tick); if (FX.near(e.x, e.z, 40)) FX.hit(e.x, 1, e.z, NER.c, false); } SFX.at('water', x, z, 0.25); }
     if (near && fx > 0.05) { fx = 0; const a = rand(TAU), r = rand(R * 0.3, R); FX.burst(x + Math.cos(a) * r, 0.3, z + Math.sin(a) * r, { n: 1, color: NER.foam, color2: NER.c, speed: [1, 3], life: [0.4, 0.8], size: [0.45, 0.06], up: 1.5, grav: -6, ring: true });
       FX.burst(x + rand(-1, 1), 0.2, z + rand(-1, 1), { smoke: true, n: 1, color: 0xcfeeff, color2: 0x4a8ab0, speed: [0.3, 1], life: [0.8, 1.4], size: [1, 2.4], up: 1.2, a: 0.22 }); }
     if (el < dur) return true;
@@ -176,10 +176,10 @@ HEROES.push(
         desc: 'Нерея сжимает воду в узкую струю и 0.7 сек бьёт ею по прямой (до 9): каждую десятую долю секунды — магический урон всем врагам на линии и лёгкий толчок назад. Всех задетых струя оставляет промокшими. Если Нерею оглушат, струя оборвётся.',
         cast(h, p) {
           const dir = p.dir, R = 9, per = D(h, 11, 2.2, 0, 0.09), T = 0.7, hit = new Map(); let el = 0, tk = 0;
-          h.order = null; h.path = null; nerJetFx(h, dir, R, T); SFX.at('whoosh', h.x, h.z, 0.8); SFX.at('ice', h.x, h.z, 0.35);
+          h.order = null; h.path = null; nerJetFx(h, dir, R, T); SFX.at('water', h.x, h.z, 0.7); SFX.at('sand', h.x, h.z, 0.45);
           G.actors.push({ update(dt) {
             el += dt; tk += dt; if (!h.alive || h.stunned || el > T) return false; h.facing = dir;
-            if (tk >= 0.1) { tk -= 0.1; for (const e of enemiesIn(h, h.x, h.z, R + 1.5)) { if (!nerInLine(h, e, dir, R, 0.75)) continue; nerHit(h, e, per); if (e.alive && !e.boss) { const nx = e.x + Math.sin(dir) * 0.22, nz = e.z + Math.cos(dir) * 0.22; if (NAV.ok(nx, nz)) { e.x = nx; e.z = nz; } } if (!hit.has(e.id) && FX.near(e.x, e.z, 45)) { hit.set(e.id, 1); nerSplash(e.x, 1.3, e.z, 0.8, dir); } } SFX.at('hit', h.x, h.z, 0.12); }
+            if (tk >= 0.1) { tk -= 0.1; for (const e of enemiesIn(h, h.x, h.z, R + 1.5)) { if (!nerInLine(h, e, dir, R, 0.75)) continue; nerHit(h, e, per); if (e.alive && !e.boss) { const nx = e.x + Math.sin(dir) * 0.22, nz = e.z + Math.cos(dir) * 0.22; if (NAV.ok(nx, nz)) { e.x = nx; e.z = nz; } } if (!hit.has(e.id) && FX.near(e.x, e.z, 45)) { hit.set(e.id, 1); nerSplash(e.x, 1.3, e.z, 0.8, dir); } } SFX.at('water', h.x, h.z, 0.12); }
             return true;
           } });
         }
@@ -190,14 +190,14 @@ HEROES.push(
         cast(h, p) {
           const t = p.unit; if (!t || !t.alive || t.struct) return false; const lv = Math.max(1, h.al[1]), foe = hostile(h, t);
           const dmg = D(h, 70, 16, 0, 0.5), amt = D(h, 70, 18, 0, 0.6), dur = 1.0 + 0.2 * lv;
-          SFX.at('cast', h.x, h.z, 0.6);
+          SFX.at('water', h.x, h.z, 0.6);
           nerBubbleFly(h, t, Math.min(0.4, 0.12 + udist(h, t) / 40), () => {
-            if (!t.alive || !h.alive && foe) return; SFX.at('ice', t.x, t.z, 0.6);
+            if (!t.alive || !h.alive && foe) return; SFX.at('water', t.x, t.z, 0.5); SFX.at('shield', t.x, t.z, 0.35);
             if (!foe) { const b = addBuff(t, { id: 'nerbub', dur: 3, shield: amt, src: h }); if (b) b.fx = nerBubbleOn(t, 3, 1.5); if (t !== h) h.healDone += amt * 0.6; if (FX.near(t.x, t.z, 45)) nerSplash(t.x, 1.4, t.z, 0.7); return; }
             if (t.boss) { nerHit(h, t, dmg); nerPop(t.x, 1.5, t.z, 1.4); return; }
             addBuff(t, { id: 'nerbub', dur, stun: true, air: 1.6, src: h }); const fx = nerBubbleOn(t, dur, 1.35, true);
             if (G.player && (t === G.player || h === G.player)) FX.text(t.x, t.height + 1.2, t.z, 'в пузыре!', '#9fe8ff', 15);
-            after(dur, () => { fx.dead = true; const x = t.x, z = t.z, y = (t.height || 2) * 0.55 + 1.2; SFX.at('ice', x, z, 0.9); SFX.at('hit', x, z, 0.6); nerPop(x, y, z, 1.35); for (const e of enemiesIn(h, x, z, 2.5)) nerHit(h, e, e === t ? dmg : dmg * 0.6); });
+            after(dur, () => { fx.dead = true; const x = t.x, z = t.z, y = (t.height || 2) * 0.55 + 1.2; SFX.at('pop', x, z, 0.9); SFX.at('splash', x, z, 0.6); nerPop(x, y, z, 1.35); for (const e of enemiesIn(h, x, z, 2.5)) nerHit(h, e, e === t ? dmg : dmg * 0.6); });
           });
         }
       },
@@ -206,9 +206,9 @@ HEROES.push(
         desc: 'Нерея поднимает волну и проносится на её гребне вперёд (до 8). Враги, которых накроет волна, получают магический урон, промокают и уносятся вместе с ней до самого конца пути, где волна разбивается о землю брызгами.',
         cast(h, p) {
           const dir = p.dir, dmg = D(h, 60, 14, 0, 0.5), T = p.dist / 20 + 0.15; let hitN = 0;
-          nerWaveFx(h, dir, T + 0.25); SFX.at('whoosh', h.x, h.z, 1); SFX.at('dash', h.x, h.z, 0.5);
+          nerWaveFx(h, dir, T + 0.25); SFX.at('splash', h.x, h.z, 0.8); SFX.at('gust', h.x, h.z, 0.5);
           dashTo(h, p.x, p.z, 20, { ribbon: false, w: 1.9, onHit: e => { if (e.struct) return; nerHit(h, e, dmg); hitN++; if (e.alive && !e.boss) { const left = Math.max(0.6, dist(e.x, e.z, p.x, p.z) + 1.2); knock(e, e.x - Math.sin(dir), e.z - Math.cos(dir), left, left / 20); } if (FX.near(e.x, e.z, 45)) nerSplash(e.x, 1.4, e.z, 0.9, dir); } });
-          after(T, () => { const x = h.x + Math.sin(dir) * 1.5, z = h.z + Math.cos(dir) * 1.5; SFX.at('hit', x, z, 0.7); if (FX.near(x, z, 55)) { nerSplash(x, 1.2, z, 1.6, dir); FX.ring(x, z, { r0: 0.6, r1: 3.6, color: NER.c, life: 0.45, tex: 'shock' }); FX.burst(x, 0.3, z, { smoke: true, n: 8, color: 0xe0f6ff, color2: 0x5a9ac0, speed: [1, 3], life: [0.6, 1.2], size: [1, 2.2], ring: true, a: 0.35 }); } });
+          after(T, () => { const x = h.x + Math.sin(dir) * 1.5, z = h.z + Math.cos(dir) * 1.5; SFX.at('splash', x, z, 0.8); if (FX.near(x, z, 55)) { nerSplash(x, 1.2, z, 1.6, dir); FX.ring(x, z, { r0: 0.6, r1: 3.6, color: NER.c, life: 0.45, tex: 'shock' }); FX.burst(x, 0.3, z, { smoke: true, n: 8, color: 0xe0f6ff, color2: 0x5a9ac0, speed: [1, 3], life: [0.6, 1.2], size: [1, 2.2], ring: true, a: 0.35 }); } });
         }
       },
       {
@@ -216,9 +216,9 @@ HEROES.push(
         desc: 'Нерея закручивает в точке (до 11) огромный водоворот радиусом 6. 3.5 сек он тянет всех врагов внутри по спирали к центру — чем ближе к центру, тем сильнее — и каждые полсекунды наносит магический урон, оставляя их промокшими. Потом из воронки бьёт гейзер: огромный магический урон и оглушение на 1.2 сек всем, кто оказался ближе 3.3 к центру.',
         cast(h, p) {
           const x = p.x, z = p.z, R = 6, dur = 3.5, tick = D(h, 14, 3.5, 0, 0.07), big = D(h, 110, 26, 0, 0.6);
-          SFX.at('ultcue', h.x, h.z, 0.5); SFX.at('void', x, z, 0.5);
+          SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('splash', x, z, 0.6); SFX.at('void', x, z, 0.4);
           nerMaelstrom(h, x, z, R, dur, tick, () => {
-            SFX.at('bigboom', x, z, 0.6); SFX.at('ice', x, z, 1); FX.shake(0.6); if (FX.near(x, z, 36)) FX.hitstop(0.06);
+            SFX.at('splash', x, z, 1); SFX.at('bigboom', x, z, 0.6); SFX.at('water', x, z, 0.6); FX.shake(0.6); if (FX.near(x, z, 36)) FX.hitstop(0.06);
             for (const e of enemiesIn(h, x, z, R * 0.55)) { nerHit(h, e, big); if (e.alive) stun(h, e, 1.2, 2.2); }
             nerGeyser(x, z, 2.6);
           });

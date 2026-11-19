@@ -344,17 +344,17 @@ function performHit(u, t) {
   if (hero && u.range >= 5 && u.def.shootAtk) { u.def.shootAtk(u, t); u.anim.alt = !u.anim.alt; return; }   // a hero with his own kind of shot (a flying crescent, a crystal bullet)
   if (u.range < 5) {
     basicHit(u, t);
-    if ((hero && !u.def.noSlash) || u.boss) { FX.slash(u.x + Math.sin(u.facing) * 1.3, u.z + Math.cos(u.facing) * 1.3, u.facing, { r: u.boss ? 4 : 2.4, color: u.pcol, flip: u.anim.alt, life: 0.2 }); SFX.at('slash', u.x, u.z, 0.6); if (u.boss) { FX.shock(t.x, t.z, 4, 0.8, 0.4); FX.debris(t.x, 0.3, t.z, { n: 5, color: 0x45423c, speed: [3, 8], up: 9, size: [0.2, 0.5] }); } }
+    if ((hero && !u.def.noSlash) || u.boss) { FX.slash(u.x + Math.sin(u.facing) * 1.3, u.z + Math.cos(u.facing) * 1.3, u.facing, { r: u.boss ? 4 : 2.4, color: u.pcol, flip: u.anim.alt, life: 0.2 }); if (u.boss) { SFX.at('slash', u.x, u.z, 0.6); FX.shock(t.x, t.z, 4, 0.8, 0.4); FX.debris(t.x, 0.3, t.z, { n: 5, color: 0x45423c, speed: [3, 8], up: 9, size: [0.2, 0.5] }); } }
     FX.hit(t.x, t.height * 0.55, t.z, u.pcol || 0xffd9a0, hero); if (!hero) SFX.at('hit', t.x, t.z, 0.25);
-    else if (u.def.noSlash && u.def.hitSfx !== false) SFX.at(u.def.hitSfx || 'impact', t.x, t.z, 0.6);   // a hero without a swing trail still needs a sound for the blow
+    else { const s = heroSfx(u, 'hit'); if (s) SFX.at(s, t.x, t.z, 0.6); }   // each hero's blow has its own sound: a mace clangs, a katana rings, a fist thumps
   } else {
     const st = u.struct;
     homing(u, t, {
       speed: st ? 32 : (hero ? 36 : 24), color: u.pcol || 0xffe0a0, size: st ? 1 : (hero ? 0.5 : 0.32), mesh: hero ? (u.def.projMesh || 'bolt') : (st ? 'orb' : null),
       y: st ? (u.kind === 'core' ? 5.4 : 8.6) : u.height * 0.62,
-      onHit: tt => { basicHit(u, tt); FX.hit(tt.x, tt.height * 0.55, tt.z, u.pcol || 0xffe0a0, hero || st); if (st) { FX.ring(tt.x, tt.z, { r1: 2.2, color: u.pcol, life: 0.3, tex: 'shock' }); SFX.at('hit', tt.x, tt.z, 0.6); } }
+      onHit: tt => { basicHit(u, tt); FX.hit(tt.x, tt.height * 0.55, tt.z, u.pcol || 0xffe0a0, hero || st); if (st) { FX.ring(tt.x, tt.z, { r1: 2.2, color: u.pcol, life: 0.3, tex: 'shock' }); SFX.at('hit', tt.x, tt.z, 0.6); } else if (hero) { const s = heroSfx(u, 'imp'); if (s) SFX.at(s, tt.x, tt.z, 0.35); } }
     });
-    if (st) { u.shotFlash = 0.5; SFX.at('towershot', u.x, u.z, 0.8); } else SFX.at(hero ? (u.def.atkSfx || 'shoot') : 'shoot', u.x, u.z, hero ? 0.55 : 0.2);
+    if (st) { u.shotFlash = 0.5; SFX.at('towershot', u.x, u.z, 0.8); } else SFX.at(hero ? (heroSfx(u, 'atk') || 'shoot') : 'shoot', u.x, u.z, hero ? 0.55 : 0.2);
   }
   u.anim.alt = !u.anim.alt;
 }

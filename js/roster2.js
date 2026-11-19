@@ -19,7 +19,7 @@ HEROES.push(
         key: 'Q', name: 'Порыв', icon: 'wind', cd: 8, cost: 55, range: 13, ind: { type: 'line', w: 2.6, fixed: true }, anim: 'thrust', ai: { t: 'shot', sp: 26, farm: true },
         desc: 'Волна ветра проходит сквозь всех: враги получают урон, отбрасываются и замедляются на 30%, союзные герои ускоряются на 30% на 2 сек.',
         cast(h, p) {
-          const dmg = D(h, 55, 8, 0, 0.45), x0 = h.x, z0 = h.z; SFX.at('dash', h.x, h.z); castGlow(h, 0xd5e8ff);
+          const dmg = D(h, 55, 8, 0, 0.45), x0 = h.x, z0 = h.z; SFX.at('gust', h.x, h.z, 0.85); SFX.at('whoosh', h.x, h.z, 0.4); castGlow(h, 0xd5e8ff);
           FX.slash(h.x, h.z, p.dir, { r: 3, color: 0xffffff, life: 0.22 });
           shot(h, {
             dir: p.dir, speed: 26, range: 13, w: 1.3, mesh: false, color: 0xd5e8ff, ribbon: 2.4, pierce: true,
@@ -34,7 +34,7 @@ HEROES.push(
         desc: 'Лечит союзного героя (или себя) сразу и ещё четыре раза в течение 4 сек.',
         cast(h, p) {
           const t = p.unit, now = D(h, 40, 6, 0, 0.3), tick = D(h, 13, 2.2, 0, 0.09);
-          heal(h, t, now); FX.heal(t, 0xd5e8ff); FX.pillar(t.x, t.z, { r: 1.1, h: 9, color: 0x8fbfee, life: 0.6, op: 0.5 }); FX.ring(t.x, t.z, { r1: 3, color: 0x8fbfee, life: 0.45, tex: 'shock' }); SFX.at('heal', t.x, t.z, 1);
+          heal(h, t, now); FX.heal(t, 0xd5e8ff); FX.pillar(t.x, t.z, { r: 1.1, h: 9, color: 0x8fbfee, life: 0.6, op: 0.5 }); FX.ring(t.x, t.z, { r1: 3, color: 0x8fbfee, life: 0.45, tex: 'shock' }); SFX.at('heal', t.x, t.z, 0.8); SFX.at('spirit', t.x, t.z, 0.55);
           if (t !== h) { FX.beam(h.x, h.z, t.x, t.z, { color: 0xd5e8ff, w: 1.2, life: 0.4 }); FX.beam(h.x, h.z, t.x, t.z, { color: 0xffffff, w: 0.4, life: 0.25 }); }
           const b = addBuff(t, { id: 'chant' + h.id, dur: 4.05, every: 1, src: h, onTick: u => { heal(h, u, tick); FX.sparks(u.x, 0.3, u.z, { n: 6, color: 0xffffff, color2: 0x7fb4e8, speed: [0.2, 0.8], life: [0.5, 1], up: 5, rad: 0.9, ring: true, grav: -1, w: 0.08, stretch: 0.05 }); } });
           if (b) b.fx = FX.aura(t, 0xd5e8ff, 4, 1.5, 'rune', 2.5);
@@ -44,10 +44,10 @@ HEROES.push(
         key: 'E', name: 'Затишье', icon: 'lull', cd: 13, cost: 60, range: 11, ind: { type: 'circle', r: 4.2 }, ai: { t: 'point', delay: 0.5 },
         desc: 'Через 0.5 сек в точке схлопывается воздух: урон и безмолвие на 1.6 сек — враги не могут применять способности.',
         cast(h, p) {
-          const dmg = D(h, 50, 8, 0, 0.4), x = p.x, z = p.z; telegraph(h, x, z, 4.2, 0.5, 0xd5e8ff); castGlow(h, 0xd5e8ff); SFX.at('cast', x, z);
+          const dmg = D(h, 50, 8, 0, 0.4), x = p.x, z = p.z; telegraph(h, x, z, 4.2, 0.5, 0xd5e8ff); castGlow(h, 0xd5e8ff); SFX.at('gust', x, z, 0.55); SFX.at('spirit', x, z, 0.35);
           FX.ring(x, z, { r0: 5.5, r1: 0.6, color: 0xd5e8ff, life: 0.5, tex: 'swirl', spin: -6, op: 0.7 }); FX.implode(x, 1.2, z, 5, { n: 22, color: 0xd5e8ff, color2: 0xffffff, life: 0.48, streak: true });
           after(0.5, () => {
-            FX.explosion(x, z, 4.2, 0x8fbfee, { smoke: false }); FX.shock(x, z, 5.5, -0.9, 0.4); FX.sphere(x, 1.2, z, { r0: 4.2, r1: 0.4, color: 0x8fbfee, life: 0.35, op: 0.3 }); SFX.at('void', x, z, 0.7); SFX.at('boom', x, z, 0.4);
+            FX.explosion(x, z, 4.2, 0x8fbfee, { smoke: false }); FX.shock(x, z, 5.5, -0.9, 0.4); FX.sphere(x, 1.2, z, { r0: 4.2, r1: 0.4, color: 0x8fbfee, life: 0.35, op: 0.3 }); SFX.at('void', x, z, 0.6); SFX.at('impact', x, z, 0.55);
             for (const e of enemiesIn(h, x, z, 4.2)) { damage(h, e, dmg, 1); const b = silence(h, e, 1.6); if (b) b.fx = FX.aura(e, 0xd5e8ff, b.dur, e.radius + 0.5, 'ringThin', -4); }
           });
         }
@@ -56,7 +56,7 @@ HEROES.push(
         key: 'R', name: 'Попутный шторм', icon: 'tailwind', cd: 85, cost: 100, range: 0, ind: { type: 'self', r: 9 }, animDur: 0.7, lock: 0.3, ai: { t: 'nova', r: 8, ult: true, hp: 0.7, rad: 8 },
         desc: 'Шторм вокруг Лиры: враги отбрасываются и замедляются на 40%. Союзные герои рядом на 6 сек получают +35% скорости, +30% скорости атаки и исцеление.',
         cast(h) {
-          const hl = D(h, 16, 3, 0, 0.07), x = h.x, z = h.z; SFX.at('dash', x, z, 1); SFX.at('heal', x, z, 1); FX.shake(0.5); FX.shock(x, z, 10, 1, 0.6); FX.punch(0.5);
+          const hl = D(h, 16, 3, 0, 0.07), x = h.x, z = h.z; SFX.at('ultcue', x, z, 0.8); SFX.at('gust', x, z, 1); SFX.at('spirit', x, z, 0.6); SFX.at('heal', x, z, 0.5); FX.shake(0.5); FX.shock(x, z, 10, 1, 0.6); FX.punch(0.5);
           FX.ring(x, z, { r1: 9.5, color: 0x3f7fc4, life: 0.55, tex: 'ringThin', op: 0.9 }); FX.ring(x, z, { r0: 1, r1: 9, color: 0x3f7fc4, life: 0.9, tex: 'swirl', spin: 7, op: 0.45 }); FX.pillar(x, z, { r: 1.5, h: 13, color: 0x4f8fd0, life: 0.8, op: 0.25, grow: true });
           for (let i = 0; i < 3; i++) after(i * 0.1, () => FX.slash(x, z, i * 2.1, { r: 3.8 + i * 1.1, color: 0x4f8fd0, sweep: 4.5, life: 0.36, y: 0.7 + i * 0.5 }));
           FX.sparks(x, 0.5, z, { n: 30, color: 0xffffff, color2: 0x7fb4e8, speed: [8, 20], life: [0.3, 0.7], ring: true, up: 4, w: 0.1, stretch: 0.1 }); FX.smoke(x, z, 4, 6, 0x6c7a88);
@@ -80,10 +80,10 @@ HEROES.push(
         key: 'Q', name: 'Заслон', icon: 'intercept', cd: 11, cost: 55, range: 11, ind: { type: 'ally' }, anim: 'slam', ai: { t: 'shieldAlly' },
         desc: 'Прыгает к союзному герою: оба получают щит на 3.5 сек, враги в точке приземления отбрасываются и замедляются на 40%. На себя — щит и удар на месте.',
         cast(h, p) {
-          const t = p.unit, amt = D(h, 70, 12) + h.maxHp * 0.08; SFX.at('dash', h.x, h.z);
+          const t = p.unit, amt = D(h, 70, 12) + h.maxHp * 0.08; SFX.at('horn', h.x, h.z, 0.45); SFX.at('dash', h.x, h.z, 0.6);
           const land = u => {
             shield(h, u, amt, 3.5, 0x3d9cff); if (t !== u && t.alive) { shield(h, t, amt, 3.5, 0x3d9cff); FX.pillar(t.x, t.z, { r: 1.3, h: 9, color: 0x3d9cff, life: 0.5 }); }
-            FX.explosion(u.x, u.z, 3.6, 0x3d9cff, { el: 'earth', rock: 0x3b4a5c, smoke: false }); FX.shock(u.x, u.z, 5, 0.8, 0.4); FX.ring(u.x, u.z, { r0: 0.6, r1: 4, color: 0x9fd0ff, life: 0.6, tex: 'rune2', spin: 3, op: 0.7 }); FX.shake(0.4); SFX.at('quake', u.x, u.z, 0.6); SFX.at('shield', u.x, u.z);
+            FX.explosion(u.x, u.z, 3.6, 0x3d9cff, { el: 'earth', rock: 0x3b4a5c, smoke: false }); FX.shock(u.x, u.z, 5, 0.8, 0.4); FX.ring(u.x, u.z, { r0: 0.6, r1: 4, color: 0x9fd0ff, life: 0.6, tex: 'rune2', spin: 3, op: 0.7 }); FX.shake(0.4); SFX.at('mace', u.x, u.z, 0.75); SFX.at('quake', u.x, u.z, 0.5); SFX.at('shield', u.x, u.z, 0.6);
             for (const e of enemiesIn(u, u.x, u.z, 3.6)) { damage(u, e, D(u, 55, 8, 0.4), 0); knock(e, u.x, u.z, 3, 0.22); slow(u, e, 0.4, 1.5); }
           };
           if (t === h || udist(h, t) < 2.2) { land(h); return; }
@@ -95,7 +95,7 @@ HEROES.push(
         key: 'W', name: 'Удар щитом', icon: 'shieldbash', cd: 10, cost: 45, range: 5, ind: { type: 'cone', r: 5, narrow: true }, anim: 'thrust', lock: 0.25, ai: { t: 'cone' },
         desc: 'Бьёт щитом перед собой: урон и оглушение на 0.9 сек всем в узком конусе.',
         cast(h, p) {
-          const dmg = D(h, 60, 9, 0.45), x = h.x + Math.sin(p.dir) * 2.4, z = h.z + Math.cos(p.dir) * 2.4; SFX.at('hit', h.x, h.z, 1); SFX.at('boom', h.x, h.z, 0.45);
+          const dmg = D(h, 60, 9, 0.45), x = h.x + Math.sin(p.dir) * 2.4, z = h.z + Math.cos(p.dir) * 2.4; SFX.at('mace', h.x, h.z, 0.9); SFX.at('impact', h.x, h.z, 0.6);
           FX.slash(h.x, h.z, p.dir, { r: 5.2, color: 0x3d9cff, sweep: 0.9, life: 0.25 }); FX.slash(h.x, h.z, p.dir, { r: 4.2, color: 0xffffff, sweep: 0.7, life: 0.18 });
           FX.ring(x, z, { r1: 3, color: 0x3d9cff, life: 0.3, tex: 'shock' }); FX.shock(x, z, 4, 0.7, 0.3); FX.debris(x, 0.3, z, { n: 5, color: 0x3b4a5c, speed: [3, 7], up: 7 });
           FX.sparks(x, 1.2, z, { n: 18, color: 0xffffff, color2: 0x3d9cff, speed: [7, 16], life: [0.15, 0.4], dir: p.dir, spread: 0.9 });
@@ -106,7 +106,7 @@ HEROES.push(
         key: 'E', name: 'Клятва стража', icon: 'oath', cd: 14, cost: 50, range: 10, ind: { type: 'ally' }, lock: 0.1, ai: { t: 'shieldAlly' },
         desc: 'На 5 сек связывает себя с союзным героем: пока Хальд рядом, союзник получает на 35% меньше урона, а Хальд — +25 защиты. На себя — только защита.',
         cast(h, p) {
-          const t = p.unit; addBuff(h, { id: 'oathself', dur: 5, def: 25 }); SFX.at('shield', t.x, t.z); FX.ring(h.x, h.z, { r1: 3, color: 0x3d9cff, life: 0.4, tex: 'shock' });
+          const t = p.unit; addBuff(h, { id: 'oathself', dur: 5, def: 25 }); SFX.at('shield', t.x, t.z, 0.8); SFX.at('bell', t.x, t.z, 0.35); FX.ring(h.x, h.z, { r1: 3, color: 0x3d9cff, life: 0.4, tex: 'shock' });
           if (t === h) { FX.pillar(h.x, h.z, { r: 1.4, h: 9, color: 0x3d9cff, life: 0.5 }); return; }
           const b = addBuff(t, { id: 'oath' + h.id, dur: 5, dmgIn: 0.65, src: h, every: 0.2, onTick: (u, bb) => { if (!h.alive || udist(h, u) > 13) bb.dur = 0; } });
           if (b) { b.fx = FX.aura(t, 0x3d9cff, 5, 1.7, 'rune2', 2.5); tether(h, t, 0x3d9cff, 5, () => hasBuff(t, 'oath' + h.id)); }
@@ -117,11 +117,11 @@ HEROES.push(
         key: 'R', name: 'Нерушимый строй', icon: 'phalanx', cd: 95, cost: 100, range: 0, ind: { type: 'self', r: 8.5 }, anim: 'slam', animDur: 0.7, lock: 0.3, ai: { t: 'save', r: 8, hp: 0.32 },
         desc: 'На 2.8 сек союзные герои рядом не могут умереть — их здоровье не опускается ниже 1. Когда эффект заканчивается, они исцеляются.',
         cast(h) {
-          const hl = D(h, 70, 12) + h.maxHp * 0.06, x = h.x, z = h.z; SFX.at('shield', x, z); SFX.at('quake', x, z, 0.8); FX.shake(0.5); FX.shock(x, z, 10, 0.9, 0.6);
+          const hl = D(h, 70, 12) + h.maxHp * 0.06, x = h.x, z = h.z; SFX.at('ultcue', x, z, 0.75); SFX.at('horn', x, z, 0.9); SFX.at('shield', x, z, 0.8); SFX.at('quake', x, z, 0.6); FX.shake(0.5); FX.shock(x, z, 10, 0.9, 0.6);
           FX.ring(x, z, { r1: 9, color: 0x3d9cff, life: 0.6, tex: 'shock', op: 0.8 }); FX.zone(x, z, 8.5, 0x3d9cff, 2.8, { tex: 'rune2', spin: 1.2, op: 0.5 }); FX.wall(x, z, 8.5, 0x3d9cff, 2.8, { h: 4.5, op: 0.22 });
           FX.pillar(x, z, { r: 1.6, h: 14, color: 0x3d9cff, life: 0.8, op: 0.32, grow: true }); FX.sparks(x, 0.4, z, { n: 24, color: 0xffffff, color2: 0x1560c8, speed: [0.5, 2], life: [0.6, 1.3], up: 9, rad: 8, ring: true, grav: -2, w: 0.1 });
           for (const a of alliesIn(h, x, z, 8.5, true)) {
-            const b = addBuff(a, { id: 'bulwark', dur: 2.8, undying: true, def: 15, onEnd: u => { if (!u.alive) return; heal(h, u, hl); FX.heal(u, 0x3d9cff); FX.ring(u.x, u.z, { r1: 3.5, color: 0x3d9cff, life: 0.5, tex: 'shock' }); } });
+            const b = addBuff(a, { id: 'bulwark', dur: 2.8, undying: true, def: 15, onEnd: u => { if (!u.alive) return; heal(h, u, hl); SFX.at('heal', u.x, u.z, 0.5); FX.heal(u, 0x3d9cff); FX.ring(u.x, u.z, { r1: 3.5, color: 0x3d9cff, life: 0.5, tex: 'shock' }); } });
             if (b) b.fx = FX.bubble(a, 0x3d9cff, 2.8, a.radius + 0.9); if (a !== h) { FX.pillar(a.x, a.z, { r: 1, h: 9, color: 0x3d9cff, life: 0.6, op: 0.4 }); FX.beam(x, z, a.x, a.z, { color: 0x3d9cff, w: 1, life: 0.45 }); }
           }
         }
@@ -139,11 +139,11 @@ HEROES.push(
         key: 'Q', name: 'Липкая нить', icon: 'thread', cd: 10, cost: 55, range: 14, ind: { type: 'line', w: 1.6, fixed: true }, anim: 'thrust', ai: { t: 'shot', sp: 30 },
         desc: 'Выстреливает нить: первый враг на пути получает урон и приковывается к месту на 1.3 сек.',
         cast(h, p) {
-          const dmg = D(h, 60, 9, 0, 0.5), x0 = h.x, z0 = h.z; SFX.at('arrow', h.x, h.z);
+          const dmg = D(h, 60, 9, 0, 0.5), x0 = h.x, z0 = h.z; SFX.at('string', h.x, h.z, 0.8); SFX.at('whoosh', h.x, h.z, 0.3);
           shot(h, {
             dir: p.dir, speed: 30, range: 14, w: 0.8, mesh: 'shard', color: 0xff4dae, size: 0.8, ribbon: 0.5,
             onHit: e => {
-              damage(h, e, dmg, 1); root(h, e, 1.3, 0xff4dae); FX.explosion(e.x, e.z, 2, 0xff4dae, { el: 'shadow', smoke: false }); SFX.at('hit', e.x, e.z, 0.8);
+              damage(h, e, dmg, 1); root(h, e, 1.3, 0xff4dae); FX.explosion(e.x, e.z, 2, 0xff4dae, { el: 'shadow', smoke: false }); SFX.at('needle', e.x, e.z, 0.8); SFX.at('whip', e.x, e.z, 0.45);
               FX.beam(x0, z0, e.x, e.z, { color: 0xff4dae, w: 0.5, life: 0.5, y: 1.3 }); for (let i = 0; i < 5; i++) { const a = i / 5 * TAU; FX.beam(e.x, e.z, e.x + Math.sin(a) * 2.4, e.z + Math.cos(a) * 2.4, { color: 0xffb3dc, w: 0.3, life: 1.2, y: 0.25 }); }
             }
           });
@@ -153,16 +153,16 @@ HEROES.push(
         key: 'W', name: 'Нить спасения', icon: 'lifeline', cd: 14, cost: 60, range: 12, ind: { type: 'ally' }, lock: 0.1, ai: { t: 'shieldAlly' },
         desc: 'Притягивает союзного героя к себе и даёт ему щит на 3 сек. На себя — только щит.',
         cast(h, p) {
-          const t = p.unit; shield(h, t, D(h, 70, 12, 0, 0.5), 3, 0xff4dae); SFX.at('shield', t.x, t.z); FX.ring(t.x, t.z, { r1: 2.6, color: 0xff4dae, life: 0.4, tex: 'shock' });
+          const t = p.unit; shield(h, t, D(h, 70, 12, 0, 0.5), 3, 0xff4dae); SFX.at('shield', t.x, t.z, 0.7); SFX.at('string', t.x, t.z, 0.5); FX.ring(t.x, t.z, { r1: 2.6, color: 0xff4dae, life: 0.4, tex: 'shock' });
           if (t === h) return;
-          const tm = pullTo(t, h.x, h.z, 30, 2.4); tether(h, t, 0xff4dae, tm + 0.1, null, 0.8); FX.pillar(h.x, h.z, { r: 1, h: 7, color: 0xff4dae, life: 0.4 }); SFX.at('dash', t.x, t.z);
+          const tm = pullTo(t, h.x, h.z, 30, 2.4); tether(h, t, 0xff4dae, tm + 0.1, null, 0.8); FX.pillar(h.x, h.z, { r: 1, h: 7, color: 0xff4dae, life: 0.4 }); SFX.at('whip', t.x, t.z, 0.6); SFX.at('dash', t.x, t.z, 0.45);
         }
       },
       {
         key: 'E', name: 'Паутина', icon: 'web', cd: 13, cost: 60, range: 11, ind: { type: 'circle', r: 4.6 }, ai: { t: 'point', delay: 0.2, trap: true },
         desc: 'На 4 сек растягивает паутину: враги внутри замедляются на 45% и получают урон дважды в секунду.',
         cast(h, p) {
-          const dmg = D(h, 11, 2, 0, 0.07), x = p.x, z = p.z; SFX.at('cast', x, z); castGlow(h, 0xff4dae);
+          const dmg = D(h, 11, 2, 0, 0.07), x = p.x, z = p.z; SFX.at('string', x, z, 0.75); SFX.at('hex', x, z, 0.4); castGlow(h, 0xff4dae);
           FX.zone(x, z, 4.6, 0xff4dae, 4, { tex: 'crack', spin: 0.15, op: 0.9 }); FX.zone(x, z, 4.6, 0xffb3dc, 4, { tex: 'ringThin', spin: -0.3, op: 0.7 }); FX.ring(x, z, { r1: 4.8, color: 0xff4dae, life: 0.4, tex: 'shock' });
           for (let i = 0; i < 8; i++) { const a = i / 8 * TAU; FX.beam(x, z, x + Math.sin(a) * 4.6, z + Math.cos(a) * 4.6, { color: 0xffb3dc, w: 0.28, life: 4, y: 0.22 }); }
           zone(h, { x, z, r: 4.6, dur: 4, every: 0.5, first: true, tick: () => { for (const e of enemiesIn(h, x, z, 4.6)) { damage(h, e, dmg, 1, { dot: true }); slow(h, e, 0.45, 0.7, 'web'); FX.sparks(e.x, 0.6, e.z, { n: 2, color: 0xffb3dc, color2: 0xa0105a, speed: [0.5, 2], life: [0.3, 0.6], up: 2, w: 0.07 }); } } });
@@ -172,7 +172,7 @@ HEROES.push(
         key: 'R', name: 'Кокон', icon: 'cocoon', cd: 80, cost: 100, range: 10, ind: { type: 'target', hero: true }, lock: 0.3, ai: { t: 'target', ult: true, hp: 0.8 },
         desc: 'Заматывает вражеского героя в кокон на 2.2 сек: он оглушён. Затем кокон лопается — урон цели и врагам рядом, замедление на 50%.',
         cast(h, p) {
-          const t = p.unit, dmg = D(h, 130, 19, 0, 0.55); SFX.at('dark', t.x, t.z); castGlow(h, 0xff4dae);
+          const t = p.unit, dmg = D(h, 130, 19, 0, 0.55); SFX.at('ultcue', t.x, t.z, 0.7); SFX.at('string', t.x, t.z, 0.85); SFX.at('hex', t.x, t.z, 0.5); castGlow(h, 0xff4dae);
           stun(h, t, 2.2, 1.6); FX.bubble(t, 0xff4dae, 2.2, t.radius + 0.7); FX.pillar(t.x, t.z, { r: 1.3, h: 9, color: 0xff4dae, life: 0.5 }); FX.beam(h.x, h.z, t.x, t.z, { color: 0xff4dae, w: 1, life: 0.4 });
           let el = 0, nx = 0;
           G.actors.push({
@@ -180,7 +180,7 @@ HEROES.push(
               el += dt; if (!t.alive) return false;
               if (el >= nx && el < 2.1) { nx = el + 0.12; const a = rand(TAU), y = 0.4 + rand(2.4) + (t.yOff || 0); FX.beam(t.x + Math.sin(a) * 1.4, t.z + Math.cos(a) * 1.4, t.x - Math.sin(a) * 1.4, t.z - Math.cos(a) * 1.4, { color: Math.random() < 0.5 ? 0xff4dae : 0xffd0ea, w: 0.3, life: 0.5, y }); }
               if (el < 2.2) return true;
-              FX.explosion(t.x, t.z, 4.6, 0xff4dae, { el: 'shadow' }); FX.shock(t.x, t.z, 6, 0.9, 0.45); FX.punch(0.7); SFX.at('boom', t.x, t.z, 0.8); FX.sparks(t.x, 1.3, t.z, { n: 26, color: 0xffd0ea, color2: 0xa0105a, speed: [6, 16], life: [0.2, 0.55], ring: true, up: 4 });
+              FX.explosion(t.x, t.z, 4.6, 0xff4dae, { el: 'shadow' }); FX.shock(t.x, t.z, 6, 0.9, 0.45); FX.punch(0.7); SFX.at('boom', t.x, t.z, 0.75); SFX.at('whip', t.x, t.z, 0.6); SFX.at('pop', t.x, t.z, 0.5); FX.sparks(t.x, 1.3, t.z, { n: 26, color: 0xffd0ea, color2: 0xa0105a, speed: [6, 16], life: [0.2, 0.55], ring: true, up: 4 });
               const x = t.x, z = t.z; damage(h, t, dmg, 1); for (const e of enemiesIn(h, x, z, 4.6)) { if (e !== t) damage(h, e, dmg * 0.5, 1); slow(h, e, 0.5, 2, 'cocoon'); }
               return false;
             }
@@ -200,11 +200,11 @@ HEROES.push(
         key: 'Q', name: 'Ядовитый плевок', icon: 'spit', cd: 6.5, cost: 35, range: 12, ind: { type: 'line', w: 1.6, fixed: true }, anim: 'thrust', ai: { t: 'shot', sp: 32, farm: true },
         desc: 'Плевок яда: урон, отравление на 4 сек и замедление на 25% на 2 сек.',
         cast(h, p) {
-          const dmg = D(h, 45, 7, 0.5), tick = D(h, 8, 1.4, 0.09); SFX.at('poison', h.x, h.z);
+          const dmg = D(h, 45, 7, 0.5), tick = D(h, 8, 1.4, 0.09); SFX.at('poison', h.x, h.z, 0.75); SFX.at('pop', h.x, h.z, 0.35);
           shot(h, {
             dir: p.dir, speed: 32, range: 12, w: 0.8, mesh: 'orb', color: 0xd6f03a, size: 0.7,
             trail: q => FX.flame(q.x, q.y, q.z, { n: 1, color: 0xd6f03a, color2: 0x2a3800, size: [0.4, 0.9], life: [0.2, 0.45], up: 0.4, a: 0.5 }),
-            onHit: e => { damage(h, e, dmg, 0); poison(h, e, tick, 8, 'venom'); slow(h, e, 0.25, 2); FX.explosion(e.x, e.z, 1.8, 0xd6f03a, { el: 'toxic', smoke: false }); SFX.at('hit', e.x, e.z, 0.6); }
+            onHit: e => { damage(h, e, dmg, 0); poison(h, e, tick, 8, 'venom'); slow(h, e, 0.25, 2); FX.explosion(e.x, e.z, 1.8, 0xd6f03a, { el: 'toxic', smoke: false }); SFX.at('sizzle', e.x, e.z, 0.55); SFX.at('hit', e.x, e.z, 0.35); }
           });
         }
       },
@@ -212,10 +212,10 @@ HEROES.push(
         key: 'W', name: 'Бросок гадюки', icon: 'viper', cd: 11, cost: 40, range: 8.5, ind: { type: 'line', w: 2.2 }, anim: 'thrust', ai: { t: 'gap', escape: true },
         desc: 'Рывок сквозь врагов: урон всем на пути. Отравленные цели получают на 40% больше урона.',
         cast(h, p) {
-          const dmg = D(h, 55, 8, 0.55); SFX.at('dash', h.x, h.z); FX.explosion(h.x, h.z, 1.6, 0xd6f03a, { el: 'toxic', smoke: false });
+          const dmg = D(h, 55, 8, 0.55); SFX.at('sand', h.x, h.z, 0.7); SFX.at('hiss', h.x, h.z, 0.4); SFX.at('dash', h.x, h.z, 0.5); FX.explosion(h.x, h.z, 1.6, 0xd6f03a, { el: 'toxic', smoke: false });
           dashTo(h, p.x, p.z, 38, {
             w: 1.5, trail: u => { FX.flame(u.x, 0.8, u.z, { n: 2, color: 0xd6f03a, color2: 0x2a3800, size: [0.7, 1.4], life: [0.3, 0.6], up: 0.6, a: 0.45 }); FX.sparks(u.x, 0.4, u.z, { n: 1, color: 0xf4ffb0, color2: 0x6a8a00, speed: [2, 5], life: [0.2, 0.4], dir: u.facing + Math.PI, spread: 0.8 }); },
-            onHit: (e, u) => { const ps = hasBuff(e, 'venom' + u.id); damage(u, e, dmg * (ps ? 1.4 : 1), 0); FX.slash(e.x, e.z, u.facing + 0.6, { r: 2.6, color: ps ? 0xffffff : 0xd6f03a, life: 0.22 }); FX.hit(e.x, 1.3, e.z, 0xd6f03a, true); SFX.at('slash', e.x, e.z, 0.7); }
+            onHit: (e, u) => { const ps = hasBuff(e, 'venom' + u.id); damage(u, e, dmg * (ps ? 1.4 : 1), 0); FX.slash(e.x, e.z, u.facing + 0.6, { r: 2.6, color: ps ? 0xffffff : 0xd6f03a, life: 0.22 }); FX.hit(e.x, 1.3, e.z, 0xd6f03a, true); SFX.at('bite', e.x, e.z, 0.65); SFX.at('dagger', e.x, e.z, 0.35); }
           });
         }
       },
@@ -223,18 +223,18 @@ HEROES.push(
         key: 'E', name: 'Песчаная завеса', icon: 'sandveil', cd: 14, cost: 45, range: 0, ind: { type: 'self', r: 3 }, lock: 0.05, ai: { t: 'shield' },
         desc: 'На 2.5 сек скрывается в вихре песка: получает на 50% меньше урона и +30% скорости. Следующая атака отравляет и наносит бонусный урон.',
         cast(h) {
-          const bonus = D(h, 30, 6, 0.4), tick = D(h, 8, 1.4, 0.09); SFX.at('dash', h.x, h.z, 0.7);
+          const bonus = D(h, 30, 6, 0.4), tick = D(h, 8, 1.4, 0.09); SFX.at('sand', h.x, h.z, 0.85); SFX.at('gust', h.x, h.z, 0.35);
           const b = addBuff(h, { id: 'sandveil', dur: 2.5, dmgIn: 0.5, ms: 0.3, every: 0.12, onTick: u => { FX.burst(u.x, 0.8, u.z, { smoke: true, n: 1, color: 0x8a744a, color2: 0x2a2218, speed: [0.5, 2], life: [0.5, 0.9], size: [1, 2.2], up: 1, rad: 1, a: 0.4 }); FX.sparks(u.x, 0.6, u.z, { n: 1, color: 0xf4e8b0, color2: 0x8a6a2a, speed: [3, 7], life: [0.2, 0.4], ring: true, up: 2, rad: 1, w: 0.07 }); } });
           if (b) b.fx = FX.aura(h, 0xd6c070, 2.5, 1.7, 'swirl', 9);
           FX.ring(h.x, h.z, { r1: 3.4, color: 0xd6c070, life: 0.4, tex: 'shock' }); FX.smoke(h.x, h.z, 2, 6, 0x8a744a);
-          addBuff(h, { id: 'fang', dur: 5, onHit: (u, t, bb) => { bb.dur = 0; if (!t.struct) poison(u, t, tick, 8, 'venom'); FX.explosion(t.x, t.z, 1.7, 0xd6f03a, { el: 'toxic', smoke: false }); return bonus; } });
+          addBuff(h, { id: 'fang', dur: 5, onHit: (u, t, bb) => { bb.dur = 0; if (!t.struct) poison(u, t, tick, 8, 'venom'); FX.explosion(t.x, t.z, 1.7, 0xd6f03a, { el: 'toxic', smoke: false }); SFX.at('bite', t.x, t.z, 0.6); SFX.at('poison', t.x, t.z, 0.4); return bonus; } });
         }
       },
       {
         key: 'R', name: 'Тысяча укусов', icon: 'bites', cd: 70, cost: 80, range: 7.5, ind: { type: 'target', hero: true }, lock: 1.05, ai: { t: 'target', ult: true, hp: 0.55 },
         desc: 'Исчезает и наносит герою пять ударов с разных сторон, оставаясь неуязвимой. Последний удар отравляет. Убийство возвращает половину перезарядки.',
         cast(h, p) {
-          const t = p.unit, dmg = D(h, 33, 5, 0.31), tick = D(h, 10, 1.8, 0.1); h.order = null; h.path = null; SFX.at('dark', h.x, h.z);
+          const t = p.unit, dmg = D(h, 33, 5, 0.31), tick = D(h, 10, 1.8, 0.1); h.order = null; h.path = null; SFX.at('ultcue', h.x, h.z, 0.7); SFX.at('sand', h.x, h.z, 0.8);
           addBuff(h, { id: 'flurry', dur: 1.1, invuln: true }); FX.explosion(h.x, h.z, 1.8, 0xd6f03a, { el: 'toxic' });
           let el = 0.08, n = 0;
           G.actors.push({
@@ -245,10 +245,10 @@ HEROES.push(
               const a = n * 2.513 + rand(-0.3, 0.3), q = NAV.nearest(t.x + Math.sin(a) * 1.9, t.z + Math.cos(a) * 1.9), x0 = h.x, z0 = h.z;
               h.x = q.x; h.z = q.z; h.facing = angTo(h.x, h.z, t.x, t.z); h.anim.atkT = h.anim.atkDur = 0.2; h.anim.alt = !h.anim.alt;
               FX.beam(x0, z0, h.x, h.z, { color: 0xd6f03a, w: 1.1, life: 0.22, y: 1.2 }); FX.slash(t.x, t.z, h.facing + (n % 2 ? 0.7 : -0.7), { r: 3.4, color: n % 2 ? 0xffffff : 0xd6f03a, flip: n % 2 === 0, life: 0.24 });
-              FX.hit(t.x, 1.3, t.z, 0xd6f03a, true); FX.flame(h.x, 1, h.z, { n: 3, color: 0xd6f03a, color2: 0x2a3800, size: [0.7, 1.4], life: [0.2, 0.45], up: 0.5, a: 0.45 }); SFX.at('slash', t.x, t.z, 0.9);
+              FX.hit(t.x, 1.3, t.z, 0xd6f03a, true); FX.flame(h.x, 1, h.z, { n: 3, color: 0xd6f03a, color2: 0x2a3800, size: [0.7, 1.4], life: [0.2, 0.45], up: 0.5, a: 0.45 }); SFX.at('dagger', t.x, t.z, 0.75); SFX.at('bite', t.x, t.z, 0.45);
               damage(h, t, dmg, 0);
               if (n < 5) return true;
-              if (t.alive) { poison(h, t, tick, 8, 'venom'); FX.explosion(t.x, t.z, 2.6, 0xd6f03a, { el: 'toxic' }); h.order = { type: 'attack', tgt: t, rp: 0 }; } else h.cd[3] *= 0.5;
+              if (t.alive) { poison(h, t, tick, 8, 'venom'); FX.explosion(t.x, t.z, 2.6, 0xd6f03a, { el: 'toxic' }); SFX.at('poison', t.x, t.z, 0.75); h.order = { type: 'attack', tgt: t, rp: 0 }; } else h.cd[3] *= 0.5;
               FX.punch(0.7); return false;
             }
           });
@@ -267,13 +267,13 @@ HEROES.push(
         key: 'Q', name: 'Прыжок на добычу', icon: 'pounce', cd: 8, cost: 40, range: 9, ind: { type: 'target' }, anim: 'slam', ai: { t: 'target', farm: true },
         desc: 'Прыгает на врага: урон и замедление на 35% на 1.5 сек. По целям ниже 40% здоровья урон выше на 40%.',
         cast(h, p) {
-          const t = p.unit; SFX.at('dash', h.x, h.z); FX.ring(h.x, h.z, { r1: 2.4, color: 0x38f07a, life: 0.3, tex: 'shock' });
+          const t = p.unit; SFX.at('dash', h.x, h.z, 0.7); SFX.at('roar', h.x, h.z, 0.35); FX.ring(h.x, h.z, { r1: 2.4, color: 0x38f07a, life: 0.3, tex: 'shock' });
           dashTo(h, t.x, t.z, 36, {
             fly: true, follow: t, stop: 1.5, arc: 2.2, trail: u => FX.flame(u.x, 1 + (u.yOff || 0), u.z, { n: 1, color: 0x38f07a, color2: 0x04301a, size: [0.7, 1.4], life: [0.2, 0.45], up: 0.4, a: 0.45 }),
             onEnd: u => {
               if (!t.alive) return; const low = t.hp / t.maxHp < 0.4, d = D(u, 60, 9, 0.6) * (low ? 1.4 : 1);
               damage(u, t, d, 0); slow(u, t, 0.35, 1.5); for (const s of [-0.7, 0, 0.7]) FX.slash(t.x, t.z, u.facing + s, { r: 2.8, color: s ? 0x38f07a : 0xffffff, life: 0.24, sweep: 0.9 });
-              FX.explosion(t.x, t.z, low ? 2.6 : 2, 0x38f07a, { smoke: false }); FX.hit(t.x, 1.3, t.z, 0x38f07a, true); SFX.at('slash', t.x, t.z, 1); if (low) FX.punch(0.5);
+              FX.explosion(t.x, t.z, low ? 2.6 : 2, 0x38f07a, { smoke: false }); FX.hit(t.x, 1.3, t.z, 0x38f07a, true); SFX.at('claw', t.x, t.z, 0.95); SFX.at('bite', t.x, t.z, 0.5); if (low) FX.punch(0.5);
               if (t.alive) u.order = { type: 'attack', tgt: t, rp: 0 };
             }
           });
@@ -284,7 +284,7 @@ HEROES.push(
         desc: 'На 4.5 сек: +45% скорости атаки, +20% скорости передвижения и 15% вампиризма от атак.',
         cast(h) {
           const b = addBuff(h, { id: 'howl', dur: 4.5, as: 0.45, ms: 0.2, ls: 0.15 }); if (b) b.fx = FX.aura(h, 0x38f07a, 4.5, 1.6, 'rune', 4);
-          SFX.at('dark', h.x, h.z, 0.8); FX.pillar(h.x, h.z, { r: 1.6, h: 13, color: 0x38f07a, life: 0.7 }); FX.shock(h.x, h.z, 6, 0.6, 0.45);
+          SFX.at('howl', h.x, h.z, 0.9); FX.pillar(h.x, h.z, { r: 1.6, h: 13, color: 0x38f07a, life: 0.7 }); FX.shock(h.x, h.z, 6, 0.6, 0.45);
           for (let i = 0; i < 3; i++) after(i * 0.12, () => FX.ring(h.x, h.z, { r0: 0.5, r1: 4 + i * 1.6, color: i ? 0x38f07a : 0xffffff, life: 0.55, tex: 'ringThin' }));
           FX.flame(h.x, 2.4, h.z, { n: 8, color: 0x38f07a, color2: 0x04301a, size: [0.8, 1.8], life: [0.4, 0.9], up: 4, a: 0.5 });
         }
@@ -294,11 +294,11 @@ HEROES.push(
         key: 'R', name: 'Призрачная охота', icon: 'pack', cd: 70, cost: 90, range: 12, ind: { type: 'target', hero: true }, lock: 0.25, ai: { t: 'target', ult: true, hp: 0.6 },
         desc: 'Призрачная стая окружает вражеского героя: три волка по очереди наносят урон и замедляют. Затем Фенрис сам прыгает к цели и на 4 сек получает +50% скорости атаки.',
         cast(h, p) {
-          const t = p.unit, dmg = D(h, 52, 8, 0.36); SFX.at('dark', h.x, h.z, 1); castGlow(h, 0x38f07a); FX.aura(t, 0x38f07a, 1.2, t.radius + 1.4, 'rune2', -5);
+          const t = p.unit, dmg = D(h, 52, 8, 0.36); SFX.at('ultcue', h.x, h.z, 0.75); SFX.at('howl', h.x, h.z, 1); SFX.at('ghost', h.x, h.z, 0.45); castGlow(h, 0x38f07a); FX.aura(t, 0x38f07a, 1.2, t.radius + 1.4, 'rune2', -5);
           for (let i = 0; i < 3; i++) after(i * 0.22, () => {
             if (!t.alive || !h.alive) return; const a = h.facing + 2.1 * (i - 1) + Math.PI, x = t.x + Math.sin(a) * 6, z = t.z + Math.cos(a) * 6;
-            FX.explosion(x, z, 1.6, 0x38f07a, { el: 'shadow', smoke: false }); FX.pillar(x, z, { r: 0.9, h: 6, color: 0x38f07a, life: 0.35 });
-            homing(h, t, { x, z, y: 1.2, speed: 30, color: 0x38f07a, size: 1.15, mesh: 'shard', onHit: e => { damage(h, e, dmg, 0); slow(h, e, 0.35, 1.2, 'pack'); FX.slash(e.x, e.z, angTo(x, z, e.x, e.z), { r: 3.2, color: i % 2 ? 0xffffff : 0x38f07a, life: 0.24 }); FX.explosion(e.x, e.z, 1.8, 0x38f07a, { smoke: false }); SFX.at('slash', e.x, e.z, 0.8); } });
+            FX.explosion(x, z, 1.6, 0x38f07a, { el: 'shadow', smoke: false }); FX.pillar(x, z, { r: 0.9, h: 6, color: 0x38f07a, life: 0.35 }); SFX.at('ghost', x, z, 0.35);
+            homing(h, t, { x, z, y: 1.2, speed: 30, color: 0x38f07a, size: 1.15, mesh: 'shard', onHit: e => { damage(h, e, dmg, 0); slow(h, e, 0.35, 1.2, 'pack'); FX.slash(e.x, e.z, angTo(x, z, e.x, e.z), { r: 3.2, color: i % 2 ? 0xffffff : 0x38f07a, life: 0.24 }); FX.explosion(e.x, e.z, 1.8, 0x38f07a, { smoke: false }); SFX.at('bite', e.x, e.z, 0.75); SFX.at('claw', e.x, e.z, 0.4); } });
           });
           after(0.75, () => {
             if (!t.alive || !h.alive || h.stunned) return;
@@ -306,7 +306,7 @@ HEROES.push(
               fly: true, follow: t, stop: 1.5, arc: 1.6, trail: u => FX.flame(u.x, 1 + (u.yOff || 0), u.z, { n: 2, color: 0x38f07a, color2: 0x04301a, size: [0.8, 1.6], life: [0.25, 0.5], up: 0.4, a: 0.5 }),
               onEnd: u => {
                 const b = addBuff(u, { id: 'hunt', dur: 4, as: 0.5 }); if (b) b.fx = FX.aura(u, 0xffffff, 4, 1.3, 'ringThin', 7);
-                if (!t.alive) return; damage(u, t, dmg * 1.4, 0); FX.explosion(t.x, t.z, 3, 0x38f07a, { el: 'shadow' }); FX.punch(0.8); FX.shock(t.x, t.z, 5, 0.8, 0.35); SFX.at('boom', t.x, t.z, 0.6);
+                if (!t.alive) return; damage(u, t, dmg * 1.4, 0); FX.explosion(t.x, t.z, 3, 0x38f07a, { el: 'shadow' }); FX.punch(0.8); FX.shock(t.x, t.z, 5, 0.8, 0.35); SFX.at('roar', t.x, t.z, 0.8); SFX.at('claw', t.x, t.z, 0.7); SFX.at('impact', t.x, t.z, 0.5);
                 if (t.alive) u.order = { type: 'attack', tgt: t, rp: 0 };
               }
             });
@@ -326,11 +326,11 @@ HEROES.push(
         key: 'Q', name: 'Иай', icon: 'iai', cd: 7, cost: 35, range: 8, ind: { type: 'line', w: 2.4 }, anim: 'thrust', ai: { t: 'gap', escape: true },
         desc: 'Молниеносный рывок с ударом: урон всем врагам на пути.',
         cast(h, p) {
-          const dmg = D(h, 62, 9, 0.65), x0 = h.x, z0 = h.z; SFX.at('dash', h.x, h.z); SFX.at('slash', h.x, h.z, 0.8);
+          const dmg = D(h, 62, 9, 0.65), x0 = h.x, z0 = h.z; SFX.at('dash', h.x, h.z, 0.6); SFX.at('katana', h.x, h.z, 0.9);
           dashTo(h, p.x, p.z, 46, {
             w: 1.6, ribbon: 0x9a9cff, trail: u => FX.sparks(u.x, 1.1, u.z, { n: 2, color: 0xffffff, color2: 0x5a5cff, speed: [1, 5], life: [0.15, 0.4], dir: u.facing + Math.PI, spread: 0.7, w: 0.1, stretch: 0.12 }),
             onHit: (e, u) => { damage(u, e, dmg, 0); FX.slash(e.x, e.z, u.facing, { r: 3, color: 0xffffff, life: 0.22, sweep: 0.6 }); FX.hit(e.x, 1.3, e.z, 0x5a5cff, true); },
-            onEnd: u => { FX.beam(x0, z0, u.x, u.z, { color: 0x5a5cff, w: 1.4, life: 0.35, y: 1.1 }); FX.beam(x0, z0, u.x, u.z, { color: 0xffffff, w: 0.35, life: 0.22, y: 1.15 }); FX.slash(u.x, u.z, u.facing, { r: 3.4, color: 0x5a5cff, life: 0.28 }); }
+            onEnd: u => { SFX.at('ghost', u.x, u.z, 0.3); FX.beam(x0, z0, u.x, u.z, { color: 0x5a5cff, w: 1.4, life: 0.35, y: 1.1 }); FX.beam(x0, z0, u.x, u.z, { color: 0xffffff, w: 0.35, life: 0.22, y: 1.15 }); FX.slash(u.x, u.z, u.facing, { r: 3.4, color: 0x5a5cff, life: 0.28 }); }
           });
         }
       },
@@ -338,14 +338,14 @@ HEROES.push(
         key: 'W', name: 'Стойка отражения', icon: 'parry', cd: 14, cost: 40, range: 0, ind: { type: 'self', r: 4.2 }, lock: 0.3, ai: { t: 'parry' },
         desc: 'На 1.1 сек принимает стойку: получает на 75% меньше урона. Если за это время его ударили — отвечает круговым ударом с оглушением на 0.7 сек.',
         cast(h) {
-          const dmg = D(h, 65, 10, 0.6), t0 = G.time; SFX.at('shield', h.x, h.z, 0.8);
+          const dmg = D(h, 65, 10, 0.6), t0 = G.time; SFX.at('blade', h.x, h.z, 0.55); SFX.at('shield', h.x, h.z, 0.4);
           const b = addBuff(h, { id: 'parry', dur: 1.1, dmgIn: 0.25 }); if (b) b.fx = FX.aura(h, 0x5a5cff, 1.1, 1.9, 'ringThin', 10);
           FX.ring(h.x, h.z, { r0: 3, r1: 1.4, color: 0x9a9cff, life: 0.3 }); FX.glow(h.x, 1.6, h.z, 4, 0x5a5cff, 0.3, 'star');
           G.actors.push({
             update() {
               if (!h.alive || G.time - t0 > 1.1) return false;
               if (h.lastDamageT <= t0 + 0.02) return true;
-              SFX.at('slash', h.x, h.z, 1); SFX.at('hit', h.x, h.z, 1); FX.punch(0.6); FX.shock(h.x, h.z, 5, 0.7, 0.3); h.anim.atkT = h.anim.atkDur = 0.35;
+              SFX.at('katana', h.x, h.z, 1); SFX.at('impact', h.x, h.z, 0.7); SFX.at('ghost', h.x, h.z, 0.35); FX.punch(0.6); FX.shock(h.x, h.z, 5, 0.7, 0.3); h.anim.atkT = h.anim.atkDur = 0.35;
               FX.slash(h.x, h.z, h.facing, { r: 4.6, color: 0xffffff, sweep: 6, life: 0.3 }); FX.slash(h.x, h.z, h.facing + 2, { r: 4.2, color: 0x5a5cff, sweep: 6, life: 0.36, y: 0.8 }); FX.ring(h.x, h.z, { r1: 4.4, color: 0x5a5cff, life: 0.35, tex: 'shock' });
               FX.sparks(h.x, 1.2, h.z, { n: 24, color: 0xffffff, color2: 0x5a5cff, speed: [8, 18], life: [0.15, 0.4], ring: true, w: 0.14, stretch: 0.1 });
               for (const e of enemiesIn(h, h.x, h.z, 4.2)) { damage(h, e, dmg, 0); stun(h, e, 0.7); FX.hit(e.x, 1.3, e.z, 0x5a5cff, true); }
@@ -358,7 +358,7 @@ HEROES.push(
         key: 'E', name: 'Лунный серп', icon: 'crescent', cd: 8, cost: 40, range: 6, ind: { type: 'cone', r: 6 }, lock: 0.2, ai: { t: 'cone', farm: true },
         desc: 'Широкий взмах перед собой: урон и замедление на 30% на 1.5 сек. Рэйдзи лечится на 25% урона, нанесённого героям.',
         cast(h, p) {
-          const dmg = D(h, 55, 8, 0.55); SFX.at('slash', h.x, h.z, 1);
+          const dmg = D(h, 55, 8, 0.55); SFX.at('blade', h.x, h.z, 0.85); SFX.at('scythe', h.x, h.z, 0.5);
           FX.slash(h.x, h.z, p.dir, { r: 6.2, color: 0x5a5cff, sweep: 2.2, life: 0.3 }); FX.slash(h.x, h.z, p.dir, { r: 5.4, color: 0xffffff, sweep: 2, life: 0.2, y: 1.4 });
           FX.sparks(h.x + Math.sin(p.dir) * 3, 1.1, h.z + Math.cos(p.dir) * 3, { n: 16, color: 0xffffff, color2: 0x5a5cff, speed: [5, 13], life: [0.15, 0.4], dir: p.dir, spread: 1.3, w: 0.12, stretch: 0.1 });
           for (const e of enemiesIn(h, h.x, h.z, 6 + 1)) if (inCone(h, e, p.dir, 0.95, 6)) { const d = damage(h, e, dmg, 0); slow(h, e, 0.3, 1.5); FX.hit(e.x, 1.3, e.z, 0x5a5cff, true); if (e.kind === 'hero' && d > 0) { heal(h, h, d * 0.25); FX.heal(h, 0x5a5cff); } }
@@ -368,16 +368,16 @@ HEROES.push(
         key: 'R', name: 'Семь сечений', icon: 'sevencuts', noReach: true, cd: 70, cost: 90, range: 12, ind: { type: 'line', w: 3.4, fixed: true }, anim: 'thrust', animDur: 0.6, lock: 0.3, ai: { t: 'shot', r: 10, ult: true, hp: 0.55 },
         desc: 'Проносится по прямой, неуязвимый в рывке. Через мгновение все, кого он миновал, получают семь разрезов: большой урон, сильнее по раненым героям.',
         cast(h, p) {
-          const dmg = D(h, 150, 22, 0.9), dir = p.dir, x0 = h.x, z0 = h.z, vict = new Set(); SFX.at('dark', h.x, h.z); castGlow(h, 0x5a5cff);
+          const dmg = D(h, 150, 22, 0.9), dir = p.dir, x0 = h.x, z0 = h.z, vict = new Set(); SFX.at('ultcue', h.x, h.z, 0.8); SFX.at('charge', h.x, h.z, 0.5); SFX.at('ghost', h.x, h.z, 0.5); castGlow(h, 0x5a5cff);
           FX.lineDecal(x0, z0, dir, 12, 3.4, 0x5a5cff, 0.5); addBuff(h, { id: 'sevencut', dur: 0.5, invuln: true });
           dashTo(h, x0 + Math.sin(dir) * 12, z0 + Math.cos(dir) * 12, 60, {
             w: 2.1, ribbon: 0xffffff, trail: u => FX.flame(u.x, 1.1, u.z, { n: 2, color: 0x5a5cff, color2: 0x0a0a40, size: [0.8, 1.6], life: [0.25, 0.5], up: 0.3, a: 0.5 }),
             onHit: e => { vict.add(e); FX.hit(e.x, 1.3, e.z, 0xffffff, false); },
             onEnd: u => {
-              const x1 = u.x, z1 = u.z; SFX.at('slash', x1, z1, 1); FX.beam(x0, z0, x1, z1, { color: 0x5a5cff, w: 2.4, life: 0.5, y: 1.1 }); FX.beam(x0, z0, x1, z1, { color: 0xffffff, w: 0.6, life: 0.35, y: 1.15 });
-              for (let k = 0; k < 7; k++) after(0.12 + k * 0.05, () => { const f = (k + 0.5) / 7, x = lerp(x0, x1, f), z = lerp(z0, z1, f); FX.slash(x, z, dir + (k % 2 ? 1.2 : -1.2), { r: 3.6, color: k % 2 ? 0xffffff : 0x5a5cff, flip: k % 2 === 0, life: 0.26, sweep: 0.8, y: 0.8 + (k % 3) * 0.35 }); SFX.at('slash', x, z, 0.5); });
+              const x1 = u.x, z1 = u.z; SFX.at('katana', x1, z1, 1); FX.beam(x0, z0, x1, z1, { color: 0x5a5cff, w: 2.4, life: 0.5, y: 1.1 }); FX.beam(x0, z0, x1, z1, { color: 0xffffff, w: 0.6, life: 0.35, y: 1.15 });
+              for (let k = 0; k < 7; k++) after(0.12 + k * 0.05, () => { const f = (k + 0.5) / 7, x = lerp(x0, x1, f), z = lerp(z0, z1, f); FX.slash(x, z, dir + (k % 2 ? 1.2 : -1.2), { r: 3.6, color: k % 2 ? 0xffffff : 0x5a5cff, flip: k % 2 === 0, life: 0.26, sweep: 0.8, y: 0.8 + (k % 3) * 0.35 }); SFX.at('katana', x, z, 0.45); });
               after(0.5, () => {
-                FX.shake(0.6); FX.punch(1); FX.shock(lerp(x0, x1, 0.5), lerp(z0, z1, 0.5), 8, 1, 0.45); SFX.at('boom', x1, z1, 0.7);
+                FX.shake(0.6); FX.punch(1); FX.shock(lerp(x0, x1, 0.5), lerp(z0, z1, 0.5), 8, 1, 0.45); SFX.at('impact', x1, z1, 0.85); SFX.at('bell', x1, z1, 0.55); SFX.at('ghost', x1, z1, 0.4);
                 for (const e of vict) if (e.alive) { damage(h, e, dmg + (e.kind === 'hero' ? (e.maxHp - e.hp) * 0.12 : 0), 0); FX.explosion(e.x, e.z, 2.4, 0x5a5cff, { el: 'shadow' }); FX.pillar(e.x, e.z, { r: 0.7, h: 10, color: 0xffffff, life: 0.3 }); }
               });
             }
@@ -463,7 +463,7 @@ function vintDrone(h, i, n, dur, dmg, gen) {
           shotT = 0.8; fl = 1; const ey = tg.height * 0.5 + (tg.yOff || 0), mx = x + Math.sin(want) * 0.35, mz = z + Math.cos(want) * 0.35;
           FX.bolt(mx, y - 0.05, mz, tg.x, ey, tg.z, { color: VINT.red, w: 0.34, jag: 0.1, life: 0.13, fork: false }); FX.glow(mx, y, mz, 2.4, VINT.red, 0.14, 'star');
           FX.hit(tg.x, ey, tg.z, VINT.red, false); FX.sparks(tg.x, ey, tg.z, { n: 4, color: VINT.hot, color2: VINT.deep, speed: [2, 6], life: [0.2, 0.45], up: 2, w: 0.08 });
-          SFX.at('shoot', x, z, 0.3); damage(h, tg, dmg, 1); slow(h, tg, 0.15, 1, 'droneslow');
+          SFX.at('blaster', x, z, 0.3); damage(h, tg, dmg, 1); slow(h, tg, 0.15, 1, 'droneslow');
         }
       } else if (shotT < 0.15) shotT = 0.15;
       face += angDiff(face, want) * Math.min(1, dt * 10);
@@ -519,7 +519,7 @@ HEROES.push(
         key: 'Q', name: 'Лазер', icon: 'laser', cd: 7, cost: 55, range: 10.5, ind: { type: 'target' }, anim: 'shoot', animDur: 0.5, lock: 0.3, ai: { t: 'target' },
         desc: 'Мгновенный луч по цели: чистый урон, который игнорирует защиту, и ослепление на 2.5 сек — атаки цели промахиваются. Под «Перегрузкой» луч перескакивает ещё на двух врагов.',
         cast(h, p) {
-          const t = p.unit, dmg = D(h, 80, 12.5, 0, 0.6), m = vintMuzzle(h); SFX.at('laser', h.x, h.z, 1); FX.shake(0.18);
+          const t = p.unit, dmg = D(h, 80, 12.5, 0, 0.6), m = vintMuzzle(h); SFX.at('laser', h.x, h.z, 0.95); SFX.at('zap', t.x, t.z, 0.4); FX.shake(0.18);
           vintBeam(h, t, 0.4); vintZap(h, t, dmg, m.x, m.z);
           if (vintOD(h)) {
             const seen = new Set([t.id]); let from = t;
@@ -540,7 +540,7 @@ HEROES.push(
         key: 'W', name: 'Рой дронов', icon: 'drone', cd: 16, cost: 65, range: 0, ind: { type: 'self', r: 8 }, lock: 0.15, ai: { t: 'nova', r: 7, farm: true },
         desc: 'Выпускает 3 боевых дрона на 7 сек. Они кружат вокруг Винта и расстреливают врагов в радиусе 8, выбирая в первую очередь героев; каждое попадание замедляет на 15%. Под «Перегрузкой» дронов 5.',
         cast(h) {
-          const n = vintOD(h) ? 5 : 3, dmg = D(h, 11, 1.9, 0, 0.07); h.droneGen = (h.droneGen || 0) + 1; SFX.at('drone', h.x, h.z, 1);
+          const n = vintOD(h) ? 5 : 3, dmg = D(h, 11, 1.9, 0, 0.07); h.droneGen = (h.droneGen || 0) + 1; SFX.at('drone', h.x, h.z, 0.9); SFX.at('servo', h.x, h.z, 0.55);
           for (let i = 0; i < n; i++) vintDrone(h, i, n, 7, dmg, h.droneGen);
           FX.ring(h.x, h.z, { r0: 0.5, r1: 3.2, color: VINT.red, life: 0.45, tex: 'ringThin' }); FX.ring(h.x, h.z, { r1: 8, color: VINT.red, life: 0.6, tex: 'ringThin', op: 0.45 }); FX.pillar(h.x, h.z, { r: 0.9, h: 6, color: VINT.red, life: 0.4, op: 0.5 });
           FX.sparks(h.x, 1.6, h.z, { n: 14, color: 0xffffff, color2: VINT.red, speed: [3, 9], life: [0.2, 0.5], up: 5, w: 0.1 }); FX.burst(h.x, 1.4, h.z, { smoke: true, n: 4, color: 0x8e8e96, color2: 0x1c1c20, speed: [0.5, 2], life: [0.5, 1], size: [0.8, 2], up: 1.5, a: 0.35 });
@@ -555,7 +555,7 @@ HEROES.push(
           const ts = G.heroes.filter(o => o.alive && o.team !== h.team && udist(h, o) <= 34).sort((a, b) => udist(h, a) - udist(h, b)).slice(0, n);
           if (!ts.length) { if (h.isPlayer) { UI.msg('Нет вражеских героев в радиусе ракет'); SFX.play('deny'); } return false; }
           ts.forEach((t, k) => after(k * 0.11, () => { if (h.alive) vintRocket(h, t, dmg, k); }));
-          FX.ring(h.x, h.z, { r1: 2.4, color: 0xc96a1e, life: 0.35, tex: 'shock', op: 0.6 }); FX.shake(0.2);
+          FX.ring(h.x, h.z, { r1: 2.4, color: 0xc96a1e, life: 0.35, tex: 'shock', op: 0.6 }); FX.shake(0.2); SFX.at('servo', h.x, h.z, 0.6); SFX.at('blip', h.x, h.z, 0.35);
           return vintCd(h, 15);
         }
       },
@@ -563,14 +563,14 @@ HEROES.push(
         key: 'R', name: 'Перегрузка реактора', icon: 'core', cd: 20, cost: 100, range: 0, ind: { type: 'self', r: 3 }, anim: 'overload', animDur: 0.9, lock: 0.75, ai: { t: 'rearm', ult: true },
         desc: 'Через 0.7 сек разгоняет реактор: лазер, дроны и ракеты мгновенно перезаряжаются. Следующие 6 / 8 / 10 сек они перезаряжаются вдвое быстрее и усилены: лазер бьёт по трём целям, дронов пять, ракет четыре. Оглушение срывает разгон.',
         cast(h) {
-          SFX.at('overload', h.x, h.z, 1); h.hot = G.time + 0.8;
+          SFX.at('ultcue', h.x, h.z, 0.7); SFX.at('overload', h.x, h.z, 1); SFX.at('servo', h.x, h.z, 0.45); h.hot = G.time + 0.8;
           FX.ring(h.x, h.z, { r0: 6, r1: 0.8, color: VINT.red, life: 0.7, tex: 'swirl', spin: -9, op: 0.7 }); FX.ring(h.x, h.z, { r0: 4.5, r1: 0.6, color: VINT.red, life: 0.7, tex: 'ringThin', op: 0.8 }); FX.sphere(h.x, 1.6, h.z, { r0: 4.2, r1: 0.9, color: VINT.red, life: 0.7, op: 0.5 }); FX.zone(h.x, h.z, 3.2, VINT.red, 0.75, { tex: 'rune2', spin: 9, op: 0.9, follow: h }); FX.pillar(h.x, h.z, { r: 0.8, h: 7, color: 0xb0122e, life: 0.7, op: 0.3, grow: true });
           let el = 0, nx = 0;
           G.actors.push({
             update(dt) {
               el += dt; if (!h.alive) return false;
               if (el < 0.7) {
-                if (h.stunned) { h.cd[3] = Math.min(h.cd[3], 8); FX.smoke(h.x, h.z, 1.6, 6, 0x3a3a40); FX.sparks(h.x, 1.5, h.z, { n: 12, color: 0xffffff, color2: VINT.red, speed: [3, 9], life: [0.2, 0.5] }); return false; }
+                if (h.stunned) { h.cd[3] = Math.min(h.cd[3], 8); SFX.at('servo', h.x, h.z, 0.5); SFX.at('sizzle', h.x, h.z, 0.4); FX.smoke(h.x, h.z, 1.6, 6, 0x3a3a40); FX.sparks(h.x, 1.5, h.z, { n: 12, color: 0xffffff, color2: VINT.red, speed: [3, 9], life: [0.2, 0.5] }); return false; }
                 if (el >= nx) { nx = el + 0.07; const k = el / 0.7; FX.implode(h.x, 1.7, h.z, 5 - k * 2, { n: 8 + Math.round(k * 10), color: VINT.red, color2: 0xffffff, life: 0.26, streak: true }); FX.sparks(h.x, 0.3, h.z, { n: 3, color: 0xffffff, color2: VINT.red, speed: [0.5, 2], life: [0.3, 0.6], up: 7 + k * 6, rad: 1.6, ring: true, grav: 0, w: 0.08, stretch: 0.08 }); FX.arcs(h.x, 1.6, h.z, 1.6 + k, 1, VINT.red); FX.glow(h.x, 1.9, h.z, 2 + k * 5, VINT.red, 0.12); }
                 return true;
               }
@@ -581,7 +581,7 @@ HEROES.push(
                 if (Math.random() < 0.3) FX.arcs(u.x, 1.5, u.z, 1.8, 1, VINT.red);
               } });
               if (b) b.fx = FX.aura(h, VINT.red, od, 2.0, 'rune2', 7);
-              FX.explosion(x, z, 2.4, 0xc4183a, { el: 'elec' }); FX.pillar(x, z, { r: 1.3, h: 13, color: 0xb0122e, life: 0.7, op: 0.3 }); FX.shock(x, z, 9, 1, 0.5); FX.punch(0.8); FX.shake(0.5);
+              FX.explosion(x, z, 2.4, 0xc4183a, { el: 'elec' }); FX.pillar(x, z, { r: 1.3, h: 13, color: 0xb0122e, life: 0.7, op: 0.3 }); FX.shock(x, z, 9, 1, 0.5); FX.punch(0.8); FX.shake(0.5); SFX.at('zap', x, z, 0.85); SFX.at('impact', x, z, 0.55);
               for (let i = 0; i < 3; i++) after(i * 0.09, () => FX.ring(x, z, { r0: 0.6, r1: 5 + i * 2.2, color: i === 1 ? VINT.red : 0xb0122e, life: 0.55, tex: 'ringThin', op: 0.8 - i * 0.2 }));
               FX.sparks(x, 1.4, z, { n: 26, color: VINT.pale, color2: VINT.red, speed: [8, 22], life: [0.2, 0.6], ring: true, up: 3, w: 0.11, stretch: 0.1 }); FX.light(x, 3, z, VINT.red, 2, 22, 0.5);
               return false;
@@ -618,10 +618,10 @@ const topRotDps = h => [24, 42, 60, 78][Math.max(1, h.al[1]) - 1] + 0.14 * h.ap;
 function topRot(h) {
   const R = 4.3; let acc = 0, idle = 0, t = 0;
   const z1 = FX.zone(h.x, h.z, R, TOP.rot, 3600, { follow: h, tex: 'swirl', spin: -1.4, op: 0.5 }), z2 = FX.zone(h.x, h.z, R, TOP.c, 3600, { follow: h, tex: 'ringThin', spin: 0.5, op: 0.55 });
-  FX.ring(h.x, h.z, { r1: R + 0.4, color: TOP.rot, life: 0.4, tex: 'shock', op: 0.7 }); SFX.at('poison', h.x, h.z, 1);
+  FX.ring(h.x, h.z, { r1: R + 0.4, color: TOP.rot, life: 0.4, tex: 'shock', op: 0.7 }); SFX.at('water', h.x, h.z, 0.7); SFX.at('poison', h.x, h.z, 0.7);
   G.actors.push({
     update(dt) {
-      if (!h.alive || !h.rotOn) { h.rotOn = false; z1.dead = z2.dead = true; FX.ring(h.x, h.z, { r0: R, r1: 0.6, color: TOP.rot, life: 0.3, tex: 'ringThin', op: 0.6 }); return false; }
+      if (!h.alive || !h.rotOn) { h.rotOn = false; z1.dead = z2.dead = true; SFX.at('water', h.x, h.z, 0.35); FX.ring(h.x, h.z, { r0: R, r1: 0.6, color: TOP.rot, life: 0.3, tex: 'ringThin', op: 0.6 }); return false; }
       acc += dt; t += dt;
       if (FX.near(h.x, h.z, 50)) {
         if (Math.random() < dt * 16) { const a = rand(TAU), r = Math.sqrt(Math.random()) * R; FX.burst(h.x + Math.sin(a) * r, 0.5, h.z + Math.cos(a) * r, { smoke: true, n: 1, color: TOP.murk, color2: 0x10140a, speed: [0.2, 0.9], life: [0.7, 1.4], size: [1, 2.6], up: 1, a: 0.42 }); }
@@ -654,7 +654,7 @@ HEROES.push(
         cast(h, p) {
           const dmg = D(h, 72, 11, 0.5), dir = p.dir, sx = Math.sin(dir), cz = Math.cos(dir), m = topAnchor(), e = FX.add(m, 40, null), ch = topChain(24), ce = FX.add(ch, 40, null);
           let x = h.x + sx * 1.3, z = h.z + cz * 1.3, left = p.range, out = true, vic = null, hb = null, sp = 0;
-          h.rig.handR.visible = false; m.scale.setScalar(1.25); SFX.at('arrow', h.x, h.z, 1); SFX.at('hit', h.x, h.z, 0.5); FX.ring(h.x, h.z, { r1: 2.2, color: TOP.c, life: 0.3, tex: 'shock', op: 0.7 });
+          h.rig.handR.visible = false; m.scale.setScalar(1.25); SFX.at('chain', h.x, h.z, 0.9); SFX.at('whoosh', h.x, h.z, 0.5); FX.ring(h.x, h.z, { r1: 2.2, color: TOP.c, life: 0.3, tex: 'shock', op: 0.7 });
           const finish = () => { e.dead = ce.dead = true; h.rig.handR.visible = true; };
           G.actors.push({
             update(dt) {
@@ -665,7 +665,7 @@ HEROES.push(
                   x += sx * st / n; z += cz * st / n; left -= st / n;
                   for (const u of G.units) {
                     if (!u.alive || u.struct || u.team === h.team || u.invuln) continue; const rr = 0.95 + u.radius, dx = u.x - x, dz = u.z - z; if (dx * dx + dz * dz > rr * rr) continue;
-                    damage(h, u, dmg, 2); FX.explosion(u.x, u.z, 2, TOP.c, { smoke: false }); FX.sparks(u.x, 1.2, u.z, { n: 16, color: 0xffffff, color2: TOP.c, speed: [5, 14], life: [0.2, 0.5], dir: dir + Math.PI, spread: 1.1 }); SFX.at('hit', u.x, u.z, 1); FX.hitstop(0.04);
+                    damage(h, u, dmg, 2); FX.explosion(u.x, u.z, 2, TOP.c, { smoke: false }); FX.sparks(u.x, 1.2, u.z, { n: 16, color: 0xffffff, color2: TOP.c, speed: [5, 14], life: [0.2, 0.5], dir: dir + Math.PI, spread: 1.1 }); SFX.at('mace', u.x, u.z, 0.95); SFX.at('chain', u.x, u.z, 0.45); FX.hitstop(0.04);
                     if (u.alive && !u.boss) { vic = u; hb = addBuff(u, { id: 'hooked', dur: 3, stun: true, src: h }); u.dash = null; u.forced = null; }
                     out = false; break;
                   }
@@ -675,7 +675,7 @@ HEROES.push(
                 sp = Math.min(38, sp + 160 * dt); const dx = hx - x, dz = hz - z, d = Math.hypot(dx, dz), st = sp * dt, stop = vic ? 2.1 : 1.0;
                 if (d <= st + stop || !h.alive) {
                   finish();
-                  if (vic && vic.alive) { const q = NAV.nearest(vic.x, vic.z); vic.x = q.x; vic.z = q.z; if (hb) hb.dur = 0; stun(h, vic, 0.35); FX.ring(vic.x, vic.z, { r1: 2.4, color: TOP.c, life: 0.3, tex: 'shock' }); FX.smoke(vic.x, vic.z, 1.2, 4, 0x3a3d42); }
+                  if (vic && vic.alive) { const q = NAV.nearest(vic.x, vic.z); vic.x = q.x; vic.z = q.z; if (hb) hb.dur = 0; stun(h, vic, 0.35); SFX.at('impact', vic.x, vic.z, 0.5); SFX.at('water', vic.x, vic.z, 0.4); FX.ring(vic.x, vic.z, { r1: 2.4, color: TOP.c, life: 0.3, tex: 'shock' }); FX.smoke(vic.x, vic.z, 1.2, 4, 0x3a3d42); }
                   return false;
                 }
                 x += dx / d * st; z += dz / d * st;
@@ -704,7 +704,7 @@ HEROES.push(
         desc: 'Хватает вражеского героя и 2.6 сек рвёт его: цель оглушена, семь раз получает урон, а Топляк лечится на весь нанесённый урон. Оглушение самого Топляка прерывает пир.',
         cast(h, p) {
           const t = p.unit, tick = D(h, 22, 3.6, 0.15) + h.maxHp * 0.008, b = addBuff(t, { id: 'devour', dur: 2.6, stun: true, src: h }); if (!b) return false;
-          const L = b.dur; let el = 0, nx = 0.2, n = 0; pullTo(t, h.x, h.z, 24, 1.8); SFX.at('dark', h.x, h.z, 1); h.order = null; h.path = null;
+          const L = b.dur; let el = 0, nx = 0.2, n = 0; pullTo(t, h.x, h.z, 24, 1.8); SFX.at('ultcue', h.x, h.z, 0.75); SFX.at('chain', h.x, h.z, 0.85); SFX.at('splash', h.x, h.z, 0.5); h.order = null; h.path = null;
           const ch = topChain(10), ce = FX.add(ch, 10, null), mark = FX.aura(t, TOP.c, L, t.radius + 1, 'rune2', -6);
           const stop = () => { ce.dead = true; mark.dead = true; h.castLock = 0; h.anim.castT = 0; const bb = t.buffs.find(q => q.id === 'devour'); if (bb) bb.dur = 0; };
           G.actors.push({
@@ -713,9 +713,9 @@ HEROES.push(
               h.castLock = L - el; h.facing = angTo(h.x, h.z, t.x, t.z); topChainSet(ch, h.x, 1.6, h.z, t.x, 1.2 + Math.sin(el * 20) * 0.2, t.z);
               if (el >= nx && n < 7) {
                 nx += (L - 0.25) / 7; n++; const d = damage(h, t, tick, 1); if (d > 0) heal(h, h, d, true);
-                FX.slash(t.x, t.z, h.facing + (n % 2 ? 0.8 : -0.8), { r: 2.8, color: n % 2 ? TOP.c : 0xffffff, flip: n % 2 === 0, life: 0.22 }); FX.hit(t.x, 1.3, t.z, TOP.c, true); SFX.at('slash', t.x, t.z, 0.8);
+                FX.slash(t.x, t.z, h.facing + (n % 2 ? 0.8 : -0.8), { r: 2.8, color: n % 2 ? TOP.c : 0xffffff, flip: n % 2 === 0, life: 0.22 }); FX.hit(t.x, 1.3, t.z, TOP.c, true); SFX.at('munch', t.x, t.z, 0.65); SFX.at('flesh', t.x, t.z, 0.45);
                 FX.sparks(t.x, 1.3, t.z, { n: 8, color: TOP.pale, color2: TOP.deep, speed: [3, 9], life: [0.2, 0.5], dir: h.facing + Math.PI, spread: 1.4, w: 0.1 }); FX.implode(h.x, 1.5, h.z, 2.4, { n: 5, color: TOP.c, color2: 0xffffff, life: 0.25, streak: true });
-                FX.beam(t.x, t.z, h.x, h.z, { color: TOP.c, w: 0.9, life: 0.2, y: 1.4 }); if (n === 7) { FX.explosion(t.x, t.z, 2.6, TOP.c, { smoke: false }); FX.punch(0.6); FX.heal(h, TOP.c); }
+                FX.beam(t.x, t.z, h.x, h.z, { color: TOP.c, w: 0.9, life: 0.2, y: 1.4 }); if (n === 7) { FX.explosion(t.x, t.z, 2.6, TOP.c, { smoke: false }); FX.punch(0.6); FX.heal(h, TOP.c); SFX.at('bite', t.x, t.z, 0.85); }
               }
               return true;
             }
@@ -762,12 +762,12 @@ function kolMark(h, t) {
   if (!t.cardFx || !t.cardFx[h.id]) kolOrbit(h, t);
   if ((b.stacks || 1) < 3) return;
   b.dur = 0; lk[h.id] = G.time + 8; const x = t.x, z = t.z, y = t.height * 0.6;
-  kolBurst(x, y, z, 8); FX.ring(x, z, { r1: 3, color: KOL.c, life: 0.4, tex: 'shock' }); FX.glow(x, y, z, 4.5, KOL.c, 0.25, 'star'); SFX.at('coin', x, z, 0.9);
-  if (t.team !== h.team) { damage(h, t, 26 + 7 * h.level + 0.3 * h.ap, 1); slow(h, t, 0.25, 1.5, 'marked'); FX.pillar(x, z, { r: 0.8, h: 7, color: 0xc2264e, life: 0.4, op: 0.5 }); SFX.at('hit', x, z, 0.8); }
-  else { heal(h, t, 24 + 6.5 * h.level + 0.25 * h.ap); FX.heal(t, KOL.c); FX.pillar(x, z, { r: 1, h: 8, color: 0xc2264e, life: 0.5, op: 0.45 }); SFX.at('heal', x, z, 0.8); }
+  kolBurst(x, y, z, 8); FX.ring(x, z, { r1: 3, color: KOL.c, life: 0.4, tex: 'shock' }); FX.glow(x, y, z, 4.5, KOL.c, 0.25, 'star'); SFX.at('cash', x, z, 0.75); SFX.at('card', x, z, 0.5);
+  if (t.team !== h.team) { damage(h, t, 26 + 7 * h.level + 0.3 * h.ap, 1); slow(h, t, 0.25, 1.5, 'marked'); FX.pillar(x, z, { r: 0.8, h: 7, color: 0xc2264e, life: 0.4, op: 0.5 }); SFX.at('arcane', x, z, 0.6); SFX.at('impact', x, z, 0.45); }
+  else { heal(h, t, 24 + 6.5 * h.level + 0.25 * h.ap); FX.heal(t, KOL.c); FX.pillar(x, z, { r: 1, h: 8, color: 0xc2264e, life: 0.5, op: 0.45 }); SFX.at('heal', x, z, 0.65); SFX.at('chime', x, z, 0.5); }
 }
-function kolHit(h, u, dmg) { damage(h, u, dmg, 1); kolMark(h, u); FX.hit(u.x, u.height * 0.55, u.z, KOL.c, true); kolBurst(u.x, 1.3, u.z, 3); FX.slash(u.x, u.z, rand(TAU), { r: 2.2, color: KOL.c, life: 0.2, sweep: 0.8 }); SFX.at('slash', u.x, u.z, 0.6); }
-function kolMend(h, a, hl) { heal(h, a, hl); kolMark(h, a); FX.heal(a, KOL.c); FX.ring(a.x, a.z, { r1: 2.2, color: KOL.c, life: 0.35, tex: 'shock', op: 0.7 }); SFX.at('heal', a.x, a.z, 0.6); }
+function kolHit(h, u, dmg) { damage(h, u, dmg, 1); kolMark(h, u); FX.hit(u.x, u.height * 0.55, u.z, KOL.c, true); kolBurst(u.x, 1.3, u.z, 3); FX.slash(u.x, u.z, rand(TAU), { r: 2.2, color: KOL.c, life: 0.2, sweep: 0.8 }); SFX.at('card', u.x, u.z, 0.6); SFX.at('hit', u.x, u.z, 0.3); }
+function kolMend(h, a, hl) { heal(h, a, hl); kolMark(h, a); FX.heal(a, KOL.c); FX.ring(a.x, a.z, { r1: 2.2, color: KOL.c, life: 0.35, tex: 'shock', op: 0.7 }); SFX.at('heal', a.x, a.z, 0.55); SFX.at('chime', a.x, a.z, 0.3); }
 // Full Deck is up: the ace jumps on to one more target at half strength (another of the same side first, otherwise the other side)
 function kolBounce(h, from, dmg, hl, wasEnemy) {
   const foe = nearestEnemyTo(h, from.x, from.z, 7.5, new Set([from.id])); let ally = null, bh = 1;
@@ -816,7 +816,7 @@ HEROES.push(
         desc: 'Бросает карту по прямой до первой цели. Враг получает магический урон, раненый союзный герой — лечение. Пока стоит «Полная колода», карта перескакивает ещё на одну цель с половинной силой.',
         cast(h, p) {
           const dmg = D(h, 42, 6.5, 0, 0.45), hl = D(h, 34, 5.5, 0, 0.3), m = kolCardMesh(1.15), e = FX.add(m, 4, null), deck = G.time < (h.deckT || 0);
-          m.position.set(h.x, 1.5, h.z); SFX.at('arrow', h.x, h.z, 0.9);
+          m.position.set(h.x, 1.5, h.z); SFX.at('card', h.x, h.z, 0.8); SFX.at('whoosh', h.x, h.z, 0.3);
           shot(h, {
             dir: p.dir, speed: 34, range: 13, w: 0.8, mesh: false, color: KOL.c, ribbon: 0.55,
             trail: q => { m.position.set(q.x, q.y, q.z); m.rotation.y += 0.7; if (Math.random() < 0.5) FX.sparks(q.x, q.y, q.z, { n: 1, color: 0xffffff, color2: KOL.c, speed: [1, 3], life: [0.15, 0.35], grav: 0, w: 0.07 }); },
@@ -833,7 +833,7 @@ HEROES.push(
           const t = p.unit, m = kolCardMesh(2.2), y0 = t.height + 3; m.rotation.x = HPI;
           FX.add(m, 0.3, (k, me) => { me.position.set(t.x, lerp(y0, t.height * 0.6, easeOut(k)) + (t.yOff || 0), t.z); me.rotation.set(HPI, k * 9, 0); me.scale.setScalar(2.2 * (1 - k * 0.5)); });
           if (t !== h) FX.beam(h.x, h.z, t.x, t.z, { color: KOL.c, w: 0.5, life: 0.25, y: 1.5 });
-          if (t.team === h.team) { shield(h, t, D(h, 62, 10, 0, 0.45), 2, KOL.c); kolMark(h, t); FX.ring(t.x, t.z, { r1: 2.6, color: KOL.c, life: 0.4, tex: 'shock' }); SFX.at('shield', t.x, t.z, 0.9); }
+          if (t.team === h.team) { shield(h, t, D(h, 62, 10, 0, 0.45), 2, KOL.c); kolMark(h, t); FX.ring(t.x, t.z, { r1: 2.6, color: KOL.c, life: 0.4, tex: 'shock' }); SFX.at('card', t.x, t.z, 0.6); SFX.at('shield', t.x, t.z, 0.7); }
           else { kolHit(h, t, D(h, 46, 7.5, 0, 0.45)); slow(h, t, 0.3, 1.5); FX.pillar(t.x, t.z, { r: 0.8, h: 7, color: 0xc2264e, life: 0.35, op: 0.5 }); }
         }
       },
@@ -841,10 +841,10 @@ HEROES.push(
         key: 'E', name: 'Подтасовка', icon: 'shuffle', cd: 8, cost: 40, range: 5.5, ind: { type: 'line', w: 1.6 }, lock: 0, ai: { t: 'escape', kite: true },
         desc: 'Короткий рывок. На месте остаётся карта, которая через 0.45 сек взрывается: магический урон и замедление на 35% на 1.2 сек всем врагам рядом.',
         cast(h, p) {
-          const x = h.x, z = h.z, dmg = D(h, 46, 7.5, 0, 0.42), m = kolCardMesh(1.9); SFX.at('dash', x, z, 0.8); telegraph(h, x, z, 3.1, 0.45, KOL.c);
+          const x = h.x, z = h.z, dmg = D(h, 46, 7.5, 0, 0.42), m = kolCardMesh(1.9); SFX.at('dash', x, z, 0.6); SFX.at('card', x, z, 0.55); telegraph(h, x, z, 3.1, 0.45, KOL.c);
           FX.add(m, 0.45, (k, me) => { me.position.set(x, 1.3 + k * 0.5, z); me.rotation.set(HPI, k * 26, 0); me.scale.setScalar(1.9 * (0.6 + k * 0.5)); });
           after(0.45, () => {
-            FX.explosion(x, z, 3.1, 0xc2264e, { smoke: false }); kolBurst(x, 1.3, z, 10); SFX.at('boom', x, z, 0.5);
+            FX.explosion(x, z, 3.1, 0xc2264e, { smoke: false }); kolBurst(x, 1.3, z, 10); SFX.at('pop', x, z, 0.75); SFX.at('boom', x, z, 0.4);
             for (const u of enemiesIn(h, x, z, 3.1)) { damage(h, u, dmg, 1); slow(h, u, 0.35, 1.2); kolMark(h, u); FX.hit(u.x, 1.3, u.z, KOL.c, true); }
           });
           dashTo(h, p.x, p.z, 36, { ribbon: KOL.c, trail: u => { if (Math.random() < 0.6) FX.debris(u.x, 1.2, u.z, { n: 1, color: KOL.card, speed: [1, 3], up: 3, size: [0.12, 0.2] }); } });
@@ -854,7 +854,7 @@ HEROES.push(
         key: 'R', name: 'Полная колода', icon: 'deck', cd: 45, cost: 90, range: 8, ind: { type: 'circle', r: 6.5 }, animDur: 0.6, lock: 0.25, ai: { t: 'point', ult: true, hp: 0.85, rad: 6, delay: 0.1 },
         desc: 'На 4 сек раскладывает в области хоровод карт. Сразу наносит магический урон врагам и даёт щиты союзным героям внутри. Пока колода на столе, «Туз в рукаве» перескакивает на вторую цель с половинной силой.',
         cast(h, p) {
-          const x = p.x, z = p.z, R = 6.5, dmg = D(h, 85, 13, 0, 0.6), sh = D(h, 70, 11, 0, 0.5); h.deckT = G.time + 4; SFX.at('cast', x, z, 1); SFX.at('coin', x, z, 1);
+          const x = p.x, z = p.z, R = 6.5, dmg = D(h, 85, 13, 0, 0.6), sh = D(h, 70, 11, 0, 0.5); h.deckT = G.time + 4; SFX.at('ultcue', x, z, 0.75); SFX.at('card', x, z, 1); SFX.at('chime', x, z, 0.7);
           const g = new THREE.Group(), n1 = 16, n2 = 8; for (let i = 0; i < n1 + n2; i++) g.add(kolCardMesh(i < n1 ? 1.5 : 1.1)); g.position.set(x, 0, z);
           FX.add(g, 4, (k, me, dt, en) => {
             const t = en.t, s = Math.min(1, t / 0.3, (4 - t) / 0.3);
@@ -881,7 +881,7 @@ HEROES.push(
       const st = Math.floor(h.mom); if (!st || !lv) return;
       addBuff(h, {
         id: 'mom', dur: 0.35, ms: (0.02 + 0.01 * lv) * st, onHit: st < 5 ? undefined : (u, t, b) => {
-          u.mom = 0; b.dur = 0; if (!t.struct) slow(u, t, 0.3, 1, 'slam'); FX.explosion(t.x, t.z, 1.9, KOS.c, { smoke: false }); FX.debris(t.x, 1, t.z, { n: 4, color: KOS.bone, speed: [3, 7], up: 7, size: [0.1, 0.22] }); SFX.at('hit', t.x, t.z, 1);
+          u.mom = 0; b.dur = 0; if (!t.struct) slow(u, t, 0.3, 1, 'slam'); FX.explosion(t.x, t.z, 1.9, KOS.c, { smoke: false }); FX.debris(t.x, 1, t.z, { n: 4, color: KOS.bone, speed: [3, 7], up: 7, size: [0.1, 0.22] }); SFX.at('bone', t.x, t.z, 0.85); SFX.at('impact', t.x, t.z, 0.5);
           return [25, 45, 65, 85][lv - 1] + 0.5 * u.ad;
         }
       });
@@ -892,11 +892,11 @@ HEROES.push(
         key: 'Q', name: 'Олли', icon: 'ollie', cd: 7, cost: 35, range: 8, ind: { type: 'circle', r: 2.8 }, lock: 0, ai: { t: 'gap', escape: true, rad: 2 },
         desc: 'Прыжок на доске в точку, в том числе через стены. При приземлении — урон и замедление на 35% на 1.5 сек всем врагам рядом.',
         cast(h, p) {
-          const dmg = D(h, 55, 9, 0.6); SFX.at('dash', h.x, h.z, 0.9); FX.ring(h.x, h.z, { r1: 2.2, color: KOS.c, life: 0.3, tex: 'shock', op: 0.7 }); kosFlame(h.x, 0.4, h.z, 4);
+          const dmg = D(h, 55, 9, 0.6); SFX.at('skate', h.x, h.z, 0.85); SFX.at('whoosh', h.x, h.z, 0.4); FX.ring(h.x, h.z, { r1: 2.2, color: KOS.c, life: 0.3, tex: 'shock', op: 0.7 }); kosFlame(h.x, 0.4, h.z, 4);
           dashTo(h, p.x, p.z, 27, {
             fly: true, arc: 2.7, ribbon: KOS.c, trail: u => kosFlame(u.x, 0.5 + (u.yOff || 0), u.z, 1, 0.35),
             onEnd: u => {
-              FX.explosion(u.x, u.z, 2.8, KOS.c, { el: 'earth', rock: 0x4a4640, smoke: false }); FX.debris(u.x, 0.4, u.z, { n: 6, color: KOS.bone, speed: [3, 8], up: 8, size: [0.1, 0.24] }); FX.shock(u.x, u.z, 4.5, 0.7, 0.3); SFX.at('boom', u.x, u.z, 0.5); SFX.at('hit', u.x, u.z, 1);
+              FX.explosion(u.x, u.z, 2.8, KOS.c, { el: 'earth', rock: 0x4a4640, smoke: false }); FX.debris(u.x, 0.4, u.z, { n: 6, color: KOS.bone, speed: [3, 8], up: 8, size: [0.1, 0.24] }); FX.shock(u.x, u.z, 4.5, 0.7, 0.3); SFX.at('impact', u.x, u.z, 0.75); SFX.at('skate', u.x, u.z, 0.5); SFX.at('bone', u.x, u.z, 0.45);
               for (const e of enemiesIn(u, u.x, u.z, 2.8)) { damage(u, e, dmg, 0); slow(u, e, 0.35, 1.5); FX.hit(e.x, 1.2, e.z, KOS.c, true); }
             }
           });
@@ -906,10 +906,10 @@ HEROES.push(
         key: 'W', name: 'Черепушка', icon: 'skullthrow', cd: 8, cost: 45, range: 12, ind: { type: 'line', w: 1.6, fixed: true }, anim: 'thrust', animDur: 0.4, lock: 0.2, ai: { t: 'shot', sp: 30 },
         desc: 'Срывает с плеч собственный череп и швыряет его. Первый враг получает урон и оглушается на 0.5 сек, затем череп отскакивает в ещё одного врага рядом (70% урона, оглушение 0.35 сек) и возвращается на место.',
         cast(h, p) {
-          const dmg = D(h, 52, 8.5, 0.55), m = kosSkull(), e = FX.add(m, 12, null); let hitAny = false; m.position.set(h.x, 1.6, h.z); h.rig.head.visible = false; SFX.at('arrow', h.x, h.z, 1); kosFlame(h.x, 2.4, h.z, 3);
-          const home = () => { e.dead = true; h.rig.head.visible = true; if (h.alive) { FX.glow(h.x, h.rig.headY, h.z, 2.6, KOS.c, 0.2, 'star'); kosFlame(h.x, h.rig.headY, h.z, 2); } };
+          const dmg = D(h, 52, 8.5, 0.55), m = kosSkull(), e = FX.add(m, 12, null); let hitAny = false; m.position.set(h.x, 1.6, h.z); h.rig.head.visible = false; SFX.at('whoosh', h.x, h.z, 0.7); SFX.at('bone', h.x, h.z, 0.4); kosFlame(h.x, 2.4, h.z, 3);
+          const home = () => { e.dead = true; h.rig.head.visible = true; if (h.alive) { FX.glow(h.x, h.rig.headY, h.z, 2.6, KOS.c, 0.2, 'star'); kosFlame(h.x, h.rig.headY, h.z, 2); SFX.at('bone', h.x, h.z, 0.35); } };
           const back = (x, z) => kosFly(m, x, z, h, 38, home);
-          const strike = (u, k) => { damage(h, u, dmg * k, 0); stun(h, u, k < 1 ? 0.35 : 0.5); FX.explosion(u.x, u.z, 1.9, KOS.c, { smoke: false }); FX.debris(u.x, 1.2, u.z, { n: 3, color: KOS.bone, speed: [3, 7], up: 6, size: [0.1, 0.2] }); SFX.at('hit', u.x, u.z, 1); };
+          const strike = (u, k) => { damage(h, u, dmg * k, 0); stun(h, u, k < 1 ? 0.35 : 0.5); FX.explosion(u.x, u.z, 1.9, KOS.c, { smoke: false }); FX.debris(u.x, 1.2, u.z, { n: 3, color: KOS.bone, speed: [3, 7], up: 6, size: [0.1, 0.2] }); SFX.at('bone', u.x, u.z, 0.9); SFX.at('impact', u.x, u.z, 0.4); };
           after(8, () => { h.rig.head.visible = true; });
           shot(h, {
             dir: p.dir, speed: 30, range: 12, w: 0.9, mesh: false, color: KOS.c, ribbon: 0.7,
@@ -932,14 +932,14 @@ HEROES.push(
         cast(h) {
           const dur = 5, burn = D(h, 15, 2.5, 0.1), ram = D(h, 42, 7, 0.45), pts = [], hitT = {}; let el = 0, acc = 0, lx = h.x, lz = h.z; h.rideT = G.time + dur;
           const b = addBuff(h, { id: 'ride', dur, ms: 0.25 }); if (b) b.fx = FX.aura(h, KOS.c, dur, 1.8, 'swirl', 9);
-          SFX.at('fire', h.x, h.z, 1); SFX.at('dash', h.x, h.z, 1); FX.explosion(h.x, h.z, 2.6, 0x1f78c8, { smoke: false }); FX.pillar(h.x, h.z, { r: 1.2, h: 10, color: 0x1f78c8, life: 0.5, op: 0.4 }); FX.shock(h.x, h.z, 6, 0.8, 0.4);
+          SFX.at('ultcue', h.x, h.z, 0.75); SFX.at('skate', h.x, h.z, 1); SFX.at('necro', h.x, h.z, 0.6); SFX.at('fire', h.x, h.z, 0.6); FX.explosion(h.x, h.z, 2.6, 0x1f78c8, { smoke: false }); FX.pillar(h.x, h.z, { r: 1.2, h: 10, color: 0x1f78c8, life: 0.5, op: 0.4 }); FX.shock(h.x, h.z, 6, 0.8, 0.4);
           G.actors.push({
             update(dt) {
               el += dt; if (!h.alive) h.rideT = 0;
               if (el < dur && h.alive) {
                 if (dist(h.x, h.z, lx, lz) > 0.8) { pts.push({ x: h.x, z: h.z, t: G.time + 2.2 }); lx = h.x; lz = h.z; FX.scorch(h.x, h.z, 1.1, KOS.c, 2.6); }
                 kosFlame(h.x - Math.sin(h.facing) * 0.6, 0.4, h.z - Math.cos(h.facing) * 0.6, 2, 0.5);
-                for (const u of enemiesIn(h, h.x, h.z, 2)) if (G.time > (hitT[u.id] || 0)) { hitT[u.id] = G.time + 1; damage(h, u, ram, 0); slow(h, u, 0.3, 1, 'ram'); FX.hit(u.x, 1.2, u.z, KOS.c, true); FX.slash(u.x, u.z, h.facing, { r: 2.6, color: KOS.c, life: 0.2 }); SFX.at('hit', u.x, u.z, 0.8); }
+                for (const u of enemiesIn(h, h.x, h.z, 2)) if (G.time > (hitT[u.id] || 0)) { hitT[u.id] = G.time + 1; damage(h, u, ram, 0); slow(h, u, 0.3, 1, 'ram'); FX.hit(u.x, 1.2, u.z, KOS.c, true); FX.slash(u.x, u.z, h.facing, { r: 2.6, color: KOS.c, life: 0.2 }); SFX.at('bone', u.x, u.z, 0.65); SFX.at('impact', u.x, u.z, 0.45); }
               }
               while (pts.length && pts[0].t < G.time) pts.shift();
               if (!pts.length && el >= dur) return false;
@@ -1013,7 +1013,7 @@ function kaiOrb(col, deep, r) {
 function kaiSpin(g, dt, dir) { for (const c of g.children) if (c.userData.ring) c.rotation.y += dt * c.userData.ring * dir; }
 // red and blue meeting: a violet blast
 function kaiPurpleBurst(x, z, R) {
-  SFX.at('bigboom', x, z, 0.8); SFX.at('void', x, z, 1); FX.explosion(x, z, 2.4, KAI.pur, { el: 'void' }); FX.sphere(x, 1.4, z, { r0: 0.6, r1: R, color: KAI.pur, life: 0.45, op: 0.4 }); FX.ring(x, z, { r0: 0.8, r1: R, color: KAI.pur, life: 0.5, tex: 'shock' }); FX.scorch(x, z, R * 0.8, KAI.pur, 6); FX.shock(x, z, R * 1.6, 1.2, 0.5);
+  SFX.at('bigboom', x, z, 0.85); SFX.at('void', x, z, 0.8); SFX.at('arcane', x, z, 0.6); FX.explosion(x, z, 2.4, KAI.pur, { el: 'void' }); FX.sphere(x, 1.4, z, { r0: 0.6, r1: R, color: KAI.pur, life: 0.45, op: 0.4 }); FX.ring(x, z, { r0: 0.8, r1: R, color: KAI.pur, life: 0.5, tex: 'shock' }); FX.scorch(x, z, R * 0.8, KAI.pur, 6); FX.shock(x, z, R * 1.6, 1.2, 0.5);
   FX.pillar(x, z, { r: 1.3, h: 16, color: 0x7a2ad8, life: 0.6, op: 0.45 }); FX.ring(x, z, { r0: 0.6, r1: R + 2, color: KAI.pale, life: 0.4, tex: 'ringThin' }); FX.arcs(x, 1.6, z, R * 0.8, 6, KAI.pur);
   FX.sparks(x, 1.3, z, { n: 40, color: 0xffffff, color2: KAI.pur, speed: [10, 26], life: [0.25, 0.6], ring: true, w: 0.15, stretch: 0.1, up: 2 }); FX.shake(0.6); FX.punch(1);
 }
@@ -1041,7 +1041,7 @@ function umbBlade(x0, z0, dir, len, life) {
 // the blast itself
 function umbAtom(h, x, z, R, dmg) {
   for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 1); if (e.alive) slow(h, e, 0.3, 1.5); FX.hit(e.x, 1.3, e.z, UMB.c, true); }
-  SFX.at('bigboom', x, z, 1.2); SFX.at('void', x, z, 1); if (!FX.near(x, z, 80)) return;
+  SFX.at('bigboom', x, z, 1); SFX.at('thunder', x, z, 0.8); SFX.at('void', x, z, 0.7); if (!FX.near(x, z, 80)) return;
   FX.shake(1.1); FX.punch(1.5); FX.hitstop(0.07); FX.light(x, 5, z, UMB.c, 4.5, 60, 0.9);
   FX.glow(x, 2.6, z, 12, 0xffffff, 0.1, 'flare'); FX.glow(x, 2.6, z, 12, UMB.mid, 0.45);
   FX.sphere(x, 0.5, z, { r0: 1, r1: R, color: UMB.c, life: 0.7, op: 0.7 }); FX.sphere(x, 0.5, z, { r0: 0.5, r1: R * 0.72, color: UMB.mid, life: 0.4, op: 0.35 }); FX.sphere(x, 0.5, z, { r0: R * 0.5, r1: R * 1.15, color: UMB.mid, life: 1.0, op: 0.25 });
@@ -1073,9 +1073,9 @@ HEROES.push(
         key: 'Q', name: 'Пронзание', icon: 'kagune', cd: 6, cost: 35, range: 9.5, ind: { type: 'line', w: 2.2, fixed: true }, anim: 'kstab', animDur: 0.45, lock: 0.3, ai: { t: 'shot', sp: 60, farm: true },
         desc: 'Два щупальца бьют по прямой насквозь: урон всем врагам на линии и замедление на 30% на 1.5 сек.',
         cast(h, p) {
-          const dmg = D(h, 60, 9.5, 0.6), dir = p.dir, len = p.range, sx = Math.sin(dir), cz = Math.cos(dir); SFX.at('dash', h.x, h.z, 0.9); FX.lineDecal(h.x, h.z, dir, len, 2.2, SHI.c, 0.13);
+          const dmg = D(h, 60, 9.5, 0.6), dir = p.dir, len = p.range, sx = Math.sin(dir), cz = Math.cos(dir); SFX.at('flesh', h.x, h.z, 0.55); SFX.at('whoosh', h.x, h.z, 0.5); FX.lineDecal(h.x, h.z, dir, len, 2.2, SHI.c, 0.13);
           after(0.12, () => {
-            if (!h.alive) return; const ex = h.x + sx * len, ez = h.z + cz * len; SFX.at('slash', h.x, h.z, 1); SFX.at('hit', ex, ez, 0.7); FX.shake(0.22);
+            if (!h.alive) return; const ex = h.x + sx * len, ez = h.z + cz * len; SFX.at('spear', h.x, h.z, 0.9); SFX.at('flesh', ex, ez, 0.65); FX.shake(0.22);
             shiLash(h, ex + cz * 0.5, 1.0, ez - sx * 0.5, { side: 1, n: 14, th: 0.48, life: 0.46 }); shiLash(h, ex - cz * 0.5, 1.0, ez + sx * 0.5, { side: -1, n: 14, th: 0.48, life: 0.46 });
             FX.beam(h.x, h.z, ex, ez, { color: SHI.mid, w: 2.2, life: 0.26, y: 1.1, op: 0.55 }); FX.explosion(ex, ez, 1.5, SHI.mid, { smoke: false });
             for (let i = 1; i <= 5; i++) { const f = i / 5.5; FX.sparks(h.x + sx * len * f, 1.1, h.z + cz * len * f, { n: 4, color: SHI.hot, color2: SHI.deep, speed: [3, 9], life: [0.2, 0.45], dir, spread: 0.9, w: 0.11 }); }
@@ -1087,11 +1087,11 @@ HEROES.push(
         key: 'W', name: 'Бросок хищника', icon: 'pounce', cd: 11, cost: 45, range: 8.5, ind: { type: 'circle', r: 3.4 }, lock: 0, ai: { t: 'gap', escape: true, rad: 2.5 },
         desc: 'Отталкивается щупальцами и перелетает в точку, в том числе через стены. При приземлении кагунэ хлещет по кругу: урон и оглушение на 0.5 сек всем врагам рядом.',
         cast(h, p) {
-          const dmg = D(h, 55, 9, 0.55); SFX.at('dash', h.x, h.z, 1); FX.ring(h.x, h.z, { r1: 2.4, color: SHI.c, life: 0.3, tex: 'shock', op: 0.7 }); FX.debris(h.x, 0.3, h.z, { n: 5, color: 0x3a3632, speed: [2, 6], up: 7, size: [0.15, 0.4] });
+          const dmg = D(h, 55, 9, 0.55); SFX.at('dash', h.x, h.z, 0.7); SFX.at('flesh', h.x, h.z, 0.5); FX.ring(h.x, h.z, { r1: 2.4, color: SHI.c, life: 0.3, tex: 'shock', op: 0.7 }); FX.debris(h.x, 0.3, h.z, { n: 5, color: 0x3a3632, speed: [2, 6], up: 7, size: [0.15, 0.4] });
           dashTo(h, p.x, p.z, 30, {
             fly: true, arc: 2.6, ribbon: SHI.c, trail: u => FX.flame(u.x, 1 + (u.yOff || 0), u.z, { n: 1, color: SHI.c, color2: SHI.dark, size: [0.6, 1.3], life: [0.2, 0.45], up: 0.3, a: 0.4 }),
             onEnd: u => {
-              u.anim.castT = u.anim.castDur = 0.38; u.anim.castType = 'kflare'; SFX.at('boom', u.x, u.z, 0.5); SFX.at('slash', u.x, u.z, 1);
+              u.anim.castT = u.anim.castDur = 0.38; u.anim.castType = 'kflare'; SFX.at('whip', u.x, u.z, 0.85); SFX.at('flesh', u.x, u.z, 0.6); SFX.at('impact', u.x, u.z, 0.5);
               FX.explosion(u.x, u.z, 2.2, SHI.mid, { el: 'earth', rock: 0x3a3632, smoke: false }); FX.ring(u.x, u.z, { r0: 0.6, r1: 3.6, color: SHI.c, life: 0.4, tex: 'shock' }); FX.shock(u.x, u.z, 5, 0.8, 0.35); FX.slash(u.x, u.z, u.facing, { r: 3.8, color: SHI.mid, sweep: 3.6, life: 0.28 });
               for (let i = 0; i < 4; i++) { const a = u.facing + 0.8 + i * HPI; shiLash(u, u.x + Math.sin(a) * 3.3, 0.3, u.z + Math.cos(a) * 3.3, { side: i % 2 ? 1 : -1, n: 7, th: 0.42, life: 0.36, bow: 0.8 }); }
               for (const e of enemiesIn(u, u.x, u.z, 3.4)) { damage(u, e, dmg, 0); stun(u, e, 0.5); FX.hit(e.x, 1.2, e.z, SHI.c, true); shiBlood(e); }
@@ -1104,10 +1104,10 @@ HEROES.push(
         desc: 'Вонзает щупальца в землю. Через 0.55 сек они шипами вырываются в указанной области: урон и обездвиживание на 1 / 1.1 / 1.2 / 1.3 сек.',
         cast(h, p) {
           const x = p.x, z = p.z, R = 3, dmg = D(h, 65, 10, 0.6), rt = 0.9 + 0.1 * h.al[2], fx = h.x + Math.sin(h.facing) * 1.4, fz = h.z + Math.cos(h.facing) * 1.4;
-          telegraph(h, x, z, R, 0.55, SHI.c); SFX.at('quake', h.x, h.z, 0.5); FX.debris(fx, 0.2, fz, { n: 6, color: 0x3a3632, speed: [2, 5], up: 6, size: [0.15, 0.35], rad: 0.8 }); FX.smoke(fx, fz, 1, 3, 0x3a3632);
+          telegraph(h, x, z, R, 0.55, SHI.c); SFX.at('stone', h.x, h.z, 0.55); SFX.at('flesh', h.x, h.z, 0.35); FX.debris(fx, 0.2, fz, { n: 6, color: 0x3a3632, speed: [2, 5], up: 6, size: [0.15, 0.35], rad: 0.8 }); FX.smoke(fx, fz, 1, 3, 0x3a3632);
           for (let i = 1; i <= 4; i++) after(i * 0.1, () => { const f = i / 5; FX.ring(lerp(fx, x, f), lerp(fz, z, f), { r0: 0.3, r1: 1.3, color: SHI.mid, life: 0.35, tex: 'crack', op: 0.9 }); });
           after(0.55, () => {
-            SFX.at('slash', x, z, 1); SFX.at('boom', x, z, 0.5); FX.shake(0.35); FX.shock(x, z, 4.5, 0.7, 0.35); FX.ring(x, z, { r1: R + 0.4, color: SHI.c, life: 0.4, tex: 'shock' }); FX.scorch(x, z, R, SHI.mid, 6);
+            SFX.at('stone', x, z, 0.8); SFX.at('spear', x, z, 0.75); SFX.at('flesh', x, z, 0.5); FX.shake(0.35); FX.shock(x, z, 4.5, 0.7, 0.35); FX.ring(x, z, { r1: R + 0.4, color: SHI.c, life: 0.4, tex: 'shock' }); FX.scorch(x, z, R, SHI.mid, 6);
             FX.debris(x, 0.3, z, { n: 10, color: 0x3a3632, speed: [3, 8], up: 9, size: [0.2, 0.5], rad: R * 0.7 }); FX.flame(x, 0.6, z, { n: 8, color: SHI.c, color2: SHI.dark, size: [1, 2.2], life: [0.3, 0.7], rad: R * 0.6, up: 2.5, a: 0.35 });
             for (let i = 0; i < 13; i++) { const a = i * 0.524 + rand(0.3), r = i === 0 ? 0 : R * (0.4 + (i % 2) * 0.45); shiSpike(x + Math.sin(a) * r, z + Math.cos(a) * r, i === 0 ? 5 : rand(2.8, 4.2), i === 0 ? 0.8 : 0.58, 0.85 + rand(0.15), i === 0 ? 0 : 0.3, a); }
             for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 0); root(h, e, rt, SHI.c); FX.hit(e.x, 1.2, e.z, SHI.c, true); shiBlood(e); shiSpike(e.x + 0.3, e.z, 3, 0.46, 0.75, 0.12, rand(TAU)); }
@@ -1122,10 +1122,10 @@ HEROES.push(
           const b = addBuff(h, {
             id: 'feast', dur, as: 0.2 + 0.15 * lv, ms: 0.2, every: 0.15,
             onTick: u => { if (!FX.near(u.x, u.z, 45)) return; const a = rand(TAU), r = rand(0.6, 2); FX.burst(u.x + Math.sin(a) * r, rand(1, 2.6), u.z + Math.cos(a) * r, { n: 1, color: SHI.hot, color2: SHI.deep, speed: [0.2, 0.8], life: [0.4, 0.8], size: [0.3, 0.03], up: 3 }); if (Math.random() < 0.4) FX.flame(u.x, 1.6, u.z, { n: 1, color: SHI.mid, color2: SHI.dark, size: [1, 2.2], life: [0.3, 0.6], up: 1.5, a: 0.25, rad: 1.2 }); },
-            onHit: (u, t) => { if (t.struct) return 0; for (const e of enemiesIn(u, t.x, t.z, 3.2)) if (e !== t) { damage(u, e, u.ad * 0.6, 0); FX.hit(e.x, 1.2, e.z, SHI.c, false); } FX.slash(t.x, t.z, u.facing + (u.anim.alt ? 0.8 : -0.8), { r: 3.6, color: SHI.c, life: 0.22, flip: u.anim.alt, sweep: 1.8 }); return 0; }
+            onHit: (u, t) => { if (t.struct) return 0; for (const e of enemiesIn(u, t.x, t.z, 3.2)) if (e !== t) { damage(u, e, u.ad * 0.6, 0); FX.hit(e.x, 1.2, e.z, SHI.c, false); } FX.slash(t.x, t.z, u.facing + (u.anim.alt ? 0.8 : -0.8), { r: 3.6, color: SHI.c, life: 0.22, flip: u.anim.alt, sweep: 1.8 }); SFX.at('whip', t.x, t.z, 0.35); return 0; }
           });
           if (b) b.fx = FX.aura(h, SHI.c, dur, 2.2, 'swirl', -7);
-          SFX.at('dark', h.x, h.z, 1); SFX.at('quake', h.x, h.z, 0.6); FX.explosion(h.x, h.z, 5, SHI.mid, { el: 'shadow' }); FX.pillar(h.x, h.z, { r: 1.6, h: 13, color: SHI.mid, life: 0.6, op: 0.5 }); FX.shock(h.x, h.z, 7, 1, 0.5);
+          SFX.at('ultcue', h.x, h.z, 0.75); SFX.at('roar', h.x, h.z, 0.8); SFX.at('flesh', h.x, h.z, 0.7); SFX.at('heartbeat', h.x, h.z, 0.6); FX.explosion(h.x, h.z, 5, SHI.mid, { el: 'shadow' }); FX.pillar(h.x, h.z, { r: 1.6, h: 13, color: SHI.mid, life: 0.6, op: 0.5 }); FX.shock(h.x, h.z, 7, 1, 0.5);
           for (let i = 0; i < 3; i++) after(i * 0.1, () => FX.ring(h.x, h.z, { r0: 0.5, r1: 3.5 + i * 1.2, color: i === 1 ? 0xffffff : SHI.c, life: 0.5, tex: 'ringThin' }));
           for (const e of enemiesIn(h, h.x, h.z, 5)) { damage(h, e, dmg, 0); slow(h, e, 0.4, 1.5); FX.hit(e.x, 1.2, e.z, SHI.c, true); shiBlood(e); }
         }
@@ -1150,13 +1150,13 @@ HEROES.push(
           const Z = h.blueZ = { x, z, r: R, until: G.time + dur, dead: false }; orb.position.set(x, 2.5, z);
           const oe = FX.add(orb, dur + 0.05, (k, me, dt, en) => { kaiSpin(me, dt, 1); me.scale.setScalar(Math.min(1, en.t / 0.15) * (1 + Math.sin(en.t * 22) * 0.05)); });
           const z1 = FX.zone(x, z, R, KAI.blue, dur, { tex: 'swirl', spin: -7, op: 0.8 }), z2 = FX.zone(x, z, R, 0x1f6fd8, dur, { tex: 'ringThin', spin: 1, op: 0.9 });
-          SFX.at('void', x, z, 1); FX.ring(x, z, { r0: R + 1, r1: 0.5, color: KAI.blue, life: 0.35, tex: 'shock', op: 0.8 }); FX.shock(x, z, 6, -0.9, 0.5); FX.light(x, 2, z, KAI.blue, 2.4, 22, dur);
+          SFX.at('void', x, z, 0.85); SFX.at('arcane', x, z, 0.45); FX.ring(x, z, { r0: R + 1, r1: 0.5, color: KAI.blue, life: 0.35, tex: 'shock', op: 0.8 }); FX.shock(x, z, 6, -0.9, 0.5); FX.light(x, 2, z, KAI.blue, 2.4, 22, dur);
           G.actors.push({
             update(dt) {
               el += dt; if (Z.dead) { oe.dead = z1.dead = z2.dead = true; return false; }
               if (FX.near(x, z, 50)) { FX.implode(x, 2.5, z, R, { n: 2, color: KAI.blue, color2: 0xffffff, life: 0.28, streak: true }); if (Math.random() < dt * 16) FX.implode(x, 2.3, z, R * 0.9, { n: 1, color: 0x9fd4ff, color2: KAI.bdeep, life: 0.4, size: [0.55, 0.1] }); if (Math.random() < dt * 10) FX.debris(x + rand(-R, R) * 0.6, 0.2, z + rand(-R, R) * 0.6, { n: 1, color: 0x3a3c46, speed: [0, 1], up: 5, size: [0.12, 0.3] }); }
               for (const e of enemiesIn(h, x, z, R)) { if (e.boss || e.invuln) continue; const d = dist(e.x, e.z, x, z); if (d < 0.5) continue; const st = Math.min(d - 0.4, 6.5 * dt), ax = e.x + (x - e.x) / d * st, az = e.z + (z - e.z) / d * st; if (NAV.ok(ax, az)) { e.x = ax; e.z = az; } }
-              if (el >= nx && n < 4) { nx += 0.3; n++; for (const e of enemiesIn(h, x, z, R)) { damage(h, e, tick, 1); FX.hit(e.x, 1.2, e.z, KAI.blue, false); } }
+              if (el >= nx && n < 4) { nx += 0.3; n++; SFX.at('warp', x, z, 0.3); for (const e of enemiesIn(h, x, z, R)) { damage(h, e, tick, 1); FX.hit(e.x, 1.2, e.z, KAI.blue, false); } }
               if (el < dur) return true;
               Z.dead = true; if (h.blueZ === Z) h.blueZ = null; FX.explosion(x, z, 2, KAI.blue, { smoke: false }); FX.ring(x, z, { r0: 0.4, r1: R, color: 0x9fd4ff, life: 0.3, tex: 'ringThin' }); return false;
             }
@@ -1167,7 +1167,7 @@ HEROES.push(
         key: 'W', name: 'Багрянец', icon: 'repel', iconCol: KAI.red, cd: 9, cost: 55, range: 12, ind: { type: 'line', w: 1.8, fixed: true }, anim: 'thrust', animDur: 0.35, lock: 0.15, ai: { t: 'shot', sp: 30, farm: true },
         desc: 'Сфера отталкивания летит по прямой и взрывается у первого врага или в конце пути: магический урон и отбрасывание от центра взрыва. Взорвавшись внутри «Лазури», сливается с ней: пурпурная вспышка бьёт на 60% сильнее по большей области и оглушает на 0.6 сек.',
         cast(h, p) {
-          const dmg = D(h, 75, 12, 0, 0.6), orb = kaiOrb(KAI.red, 0x3a0208, 0.55), oe = FX.add(orb, 3, (k, me, dt) => kaiSpin(me, dt, -1)); orb.position.set(h.x, 1.5, h.z); SFX.at('cast', h.x, h.z, 1);
+          const dmg = D(h, 75, 12, 0, 0.6), orb = kaiOrb(KAI.red, 0x3a0208, 0.55), oe = FX.add(orb, 3, (k, me, dt) => kaiSpin(me, dt, -1)); orb.position.set(h.x, 1.5, h.z); SFX.at('arcane', h.x, h.z, 0.75); SFX.at('whoosh', h.x, h.z, 0.45);
           const boom = (x, z) => {
             oe.dead = true; const Z = h.blueZ;
             if (Z && !Z.dead && G.time < Z.until && dist(x, z, Z.x, Z.z) < Z.r + 1) {   // red meets blue
@@ -1175,7 +1175,7 @@ HEROES.push(
               for (const e of enemiesIn(h, Z.x, Z.z, R)) { damage(h, e, dmg * 1.6, 1); stun(h, e, 0.6); FX.hit(e.x, 1.2, e.z, KAI.pur, true); }
               return;
             }
-            const R = 3.4; FX.explosion(x, z, 2, KAI.red, { color2: KAI.rdeep }); FX.ring(x, z, { r0: 0.5, r1: R, color: KAI.red, life: 0.45, tex: 'shock' }); FX.shock(x, z, R * 1.5, 0.9, 0.4); SFX.at('boom', x, z, 0.7); FX.ring(x, z, { r0: 0.5, r1: R + 2.4, color: KAI.red, life: 0.45, tex: 'ringThin' });
+            const R = 3.4; FX.explosion(x, z, 2, KAI.red, { color2: KAI.rdeep }); FX.ring(x, z, { r0: 0.5, r1: R, color: KAI.red, life: 0.45, tex: 'shock' }); FX.shock(x, z, R * 1.5, 0.9, 0.4); SFX.at('boom', x, z, 0.7); SFX.at('gust', x, z, 0.55); FX.ring(x, z, { r0: 0.5, r1: R + 2.4, color: KAI.red, life: 0.45, tex: 'ringThin' });
             FX.sparks(x, 1.2, z, { n: 28, color: 0xffffff, color2: KAI.red, speed: [10, 22], life: [0.2, 0.45], ring: true, w: 0.14, stretch: 0.11 }); FX.sphere(x, 1.3, z, { r0: 0.4, r1: R, color: KAI.red, life: 0.35, op: 0.4 });
             for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 1); knock(e, x, z, 4.5, 0.28); FX.hit(e.x, 1.2, e.z, KAI.red, true); }
           };
@@ -1193,7 +1193,7 @@ HEROES.push(
           const bx = sx > 0 ? (104 - h.x) / sx : (sx < 0 ? (-104 - h.x) / sx : 1e9), bz = cz > 0 ? (104 - h.z) / cz : (cz < 0 ? (-104 - h.z) / cz : 1e9), len = Math.max(12, Math.min(bx, bz, 300));
           const fx0 = () => h.x + Math.sin(h.facing) * 1.6, fz0 = () => h.z + Math.cos(h.facing) * 1.6; h.order = null; h.path = null;
           { const lm = new THREE.Mesh(FX.geo.line, FX.mat('line', 0x7a2ad8, 0.2)); lm.position.set(h.x, 0.1, h.z); lm.rotation.y = dir; lm.scale.set(4.6, 1, len); FX.add(lm, T + 0.25, (k, me) => { me.material.opacity = k < 0.8 ? 0.14 + k * 0.3 : 0.38 * (1 - k) / 0.2; }); }
-          FX.zone(h.x, h.z, 3, KAI.pur, T, { tex: 'rune2', spin: 3, op: 0.7 }); SFX.at('void', h.x, h.z, 1); SFX.at('overload', h.x, h.z, 0.5);
+          FX.zone(h.x, h.z, 3, KAI.pur, T, { tex: 'rune2', spin: 3, op: 0.7 }); SFX.at('charge', h.x, h.z, 0.85); SFX.at('void', h.x, h.z, 0.7); SFX.at('arcane', h.x, h.z, 0.4);
           const mk = mmMark({ line: true, x: h.x, z: h.z, x2: h.x + sx * len, z2: h.z + cz * len, color: '#c77dff', until: G.time + T + len / SP });
           globalWarn(h, 'Кайсэй выпускает «Пурпур»', 'Вражеский «Пурпур» летит через карту!');
           const half = s => (k, me, dt, en) => { const t = Math.min(1, en.t / (T * 0.7)), a = h.facing, off = (1 - easeOut(t)) * 2 * s; me.position.set(fx0() + Math.cos(a) * off, 1.75, fz0() - Math.sin(a) * off); kaiSpin(me, dt, s); me.scale.setScalar(1 - 0.45 * t * t); };
@@ -1208,7 +1208,7 @@ HEROES.push(
                 if (acc > 0.05 && FX.near(h.x, h.z, 50)) { acc = 0; const x = fx0(), z = fz0(); FX.implode(x, 1.8, z, 3, { n: 3, color: el < T * 0.6 ? (Math.random() < 0.5 ? KAI.blue : KAI.red) : KAI.pur, color2: 0xffffff, life: 0.25, streak: true }); if (el > T * 0.6 && Math.random() < 0.6) FX.arcs(x, 1.8, z, 1.6, 1, KAI.pur); }
                 return true;
               }
-              fired = true; const ox = fx0(), oz = fz0(); SFX.at('bigboom', ox, oz, 0.9); SFX.at('laser', ox, oz, 0.7); FX.shake(0.7); FX.punch(1.1); FX.shock(ox, oz, 9, 1.2, 0.5);
+              fired = true; const ox = fx0(), oz = fz0(); SFX.at('railgun', ox, oz, 1); SFX.at('bigboom', ox, oz, 0.7); FX.shake(0.7); FX.punch(1.1); FX.shock(ox, oz, 9, 1.2, 0.5);
               FX.ring(ox, oz, { r0: 1, r1: 5.5, color: 0x7a2ad8, life: 0.45, tex: 'shock', op: 0.8 }); FX.ring(ox, oz, { r0: 0.5, r1: 4, color: KAI.pur, life: 0.3, tex: 'ringThin' }); FX.glow(ox, 1.8, oz, 5, KAI.pur, 0.22); FX.sparks(ox, 1.6, oz, { n: 30, color: 0xffffff, color2: KAI.pur, speed: [8, 22], life: [0.25, 0.6], dir: dir + Math.PI, spread: 1.3, w: 0.14 });
               shot(h, {
                 x: ox, z: oz, y: 1.9, dir, speed: SP, range: len, w: 2.3, pierce: true, mesh: false, color: 0x7a2ad8, ribbon: 1.5,
@@ -1220,7 +1220,7 @@ HEROES.push(
                   if (tk % 4 === 0) { FX.ring(q.x, q.z, { r0: 1.2, r1: 4.2, color: 0x8a35e0, life: 0.4, tex: 'ringThin', op: 0.7 }); FX.debris(q.x, 0.3, q.z, { n: 2, color: 0x3a3440, speed: [3, 7], up: 8, size: [0.2, 0.45], rad: 1.6 }); }
                   if (tk % 9 === 0) { FX.scorch(q.x, q.z, 2.2, KAI.pur, 5); FX.shock(q.x, q.z, 5, 0.6, 0.3); }
                 },
-                onHit: e => { damage(h, e, dmg * (e.kind === 'monster' ? 0.5 : 1), 1); if (e.kind === 'hero') { FX.hit(e.x, 1.3, e.z, KAI.pur, true); FX.ring(e.x, e.z, { r0: 0.5, r1: 3, color: KAI.pur, life: 0.4, tex: 'shock' }); FX.pillar(e.x, e.z, { r: 0.8, h: 9, color: 0x7a2ad8, life: 0.4, op: 0.5 }); FX.flame(e.x, 1.2, e.z, { n: 5, color: KAI.pur, color2: KAI.pdeep, size: [1, 2.2], life: [0.3, 0.7], a: 0.4 }); FX.shake(0.3); SFX.at('boom', e.x, e.z, 0.7); } else { FX.hit(e.x, 1.2, e.z, KAI.pur, true); FX.flame(e.x, 1.1, e.z, { n: 3, color: KAI.pur, color2: KAI.pdeep, size: [0.8, 1.8], life: [0.3, 0.6], a: 0.4 }); } },
+                onHit: e => { damage(h, e, dmg * (e.kind === 'monster' ? 0.5 : 1), 1); if (e.kind === 'hero') { FX.hit(e.x, 1.3, e.z, KAI.pur, true); FX.ring(e.x, e.z, { r0: 0.5, r1: 3, color: KAI.pur, life: 0.4, tex: 'shock' }); FX.pillar(e.x, e.z, { r: 0.8, h: 9, color: 0x7a2ad8, life: 0.4, op: 0.5 }); FX.flame(e.x, 1.2, e.z, { n: 5, color: KAI.pur, color2: KAI.pdeep, size: [1, 2.2], life: [0.3, 0.7], a: 0.4 }); FX.shake(0.3); SFX.at('boom', e.x, e.z, 0.6); SFX.at('void', e.x, e.z, 0.45); } else { FX.hit(e.x, 1.2, e.z, KAI.pur, true); FX.flame(e.x, 1.1, e.z, { n: 3, color: KAI.pur, color2: KAI.pdeep, size: [0.8, 1.8], life: [0.3, 0.6], a: 0.4 }); } },
                 onEnd: (x, z) => { pe.dead = true; mk.until = 0; FX.explosion(x, z, 4, KAI.pur, { el: 'void' }); }
               });
               return false;
@@ -1246,9 +1246,9 @@ HEROES.push(
         key: 'Q', name: 'Жидкий клинок', icon: 'longblade', cd: 6, cost: 35, range: 10, ind: { type: 'line', w: 1.8, fixed: true }, anim: 'thrust', animDur: 0.4, lock: 0.25, ai: { t: 'shot', sp: 70, farm: true },
         desc: 'Клинок из живой тени вытягивается по прямой и пронзает всех врагов на линии: магический урон и «метка тени» на 4 сек.',
         cast(h, p) {
-          const dmg = D(h, 58, 9, 0.3, 0.5), dir = p.dir, len = p.range, sx = Math.sin(dir), cz = Math.cos(dir); SFX.at('dash', h.x, h.z, 0.6);
+          const dmg = D(h, 58, 9, 0.3, 0.5), dir = p.dir, len = p.range, sx = Math.sin(dir), cz = Math.cos(dir); SFX.at('dark', h.x, h.z, 0.4);
           after(0.1, () => {
-            if (!h.alive) return; SFX.at('slash', h.x, h.z, 1); umbBlade(h.x + sx * 0.9, h.z + cz * 0.9, dir, len - 0.9, 0.3);
+            if (!h.alive) return; SFX.at('shadowblade', h.x, h.z, 0.9); SFX.at('blade', h.x, h.z, 0.4); umbBlade(h.x + sx * 0.9, h.z + cz * 0.9, dir, len - 0.9, 0.3);
             for (const e of stripHits(h, h.x, h.z, dir, len, 0.9)) { damage(h, e, dmg, 1); umbMark(h, e); umbCharge(h, e); FX.hit(e.x, 1.3, e.z, UMB.c, true); FX.slash(e.x, e.z, dir + 1, { r: 2.2, color: UMB.c, life: 0.2, sweep: 0.8 }); }
           });
         }
@@ -1257,10 +1257,10 @@ HEROES.push(
         key: 'W', name: 'Шаг в тень', icon: 'blink', cd: 12, cost: 45, range: 9, ind: { type: 'circle', r: 3 }, anim: 'cut', animDur: 0.32, lock: 0.14, ai: { t: 'gap', escape: true, rad: 2.5 },
         desc: 'Мгновенно переносится в точку и рассекает всё вокруг: магический урон и замедление на 30% на 1.2 сек. Цель с «меткой тени» получает на 50% больше урона, метка сгорает; если сгорела хоть одна, перезарядка сокращается на 60%.',
         cast(h, p) {
-          const dmg = D(h, 50, 8, 0.3, 0.42), x0 = h.x, z0 = h.z; let burnt = false; umbPuff(x0, z0); SFX.at('dark', x0, z0, 0.8); blink(h, p.x, p.z); SFX.at('slash', h.x, h.z, 1);
+          const dmg = D(h, 50, 8, 0.3, 0.42), x0 = h.x, z0 = h.z; let burnt = false; umbPuff(x0, z0); SFX.at('blink', x0, z0, 0.8); SFX.at('dark', x0, z0, 0.4); blink(h, p.x, p.z); SFX.at('shadowblade', h.x, h.z, 0.9); SFX.at('blade', h.x, h.z, 0.4);
           FX.beam(x0, z0, h.x, h.z, { color: UMB.mid, w: 1.1, life: 0.3, y: 1.2, op: 0.7 }); umbPuff(h.x, h.z); FX.slash(h.x, h.z, p.dir, { r: 3.3, color: UMB.mid, sweep: 3.4, life: 0.26 }); FX.ring(h.x, h.z, { r0: 0.6, r1: 3.2, color: UMB.c, life: 0.35, tex: 'shock', op: 0.8 });
           for (const e of enemiesIn(h, h.x, h.z, 3)) {
-            const b = e.buffs.find(q => q.id === 'umark' + h.id); if (b) { b.dur = 0; burnt = true; FX.pillar(e.x, e.z, { r: 0.7, h: 8, color: UMB.c, life: 0.35 }); FX.explosion(e.x, e.z, 1.6, UMB.c, { smoke: false }); }
+            const b = e.buffs.find(q => q.id === 'umark' + h.id); if (b) { b.dur = 0; burnt = true; SFX.at('arcane', e.x, e.z, 0.45); FX.pillar(e.x, e.z, { r: 0.7, h: 8, color: UMB.c, life: 0.35 }); FX.explosion(e.x, e.z, 1.6, UMB.c, { smoke: false }); }
             damage(h, e, dmg * (b ? 1.5 : 1), 1); slow(h, e, 0.3, 1.2); umbCharge(h, e); FX.hit(e.x, 1.2, e.z, UMB.c, true);
           }
           if (burnt) return { cd: 12 * 0.4 * 100 / (100 + h.haste) };
@@ -1275,7 +1275,7 @@ HEROES.push(
         desc: 'Глобальное умение. 1.2 сек собирает ману, затем переносится в любую точку карты и ещё через 0.9 сек взрывается: огромный магический урон и замедление всем врагам в радиусе 8. Над точкой он получает на 60% меньше урона. Оглушение прерывает умение. Точку можно указать на поле или щелчком по мини-карте.',
         cast(h, p) {
           const q = NAV.nearest(p.x, p.z), x = q.x, z = q.z, R = 8, T1 = 1.2, T2 = 0.9, base = D(h, 180, 30, 0, 0.9), x0 = h.x, z0 = h.z; let el = 0, ph = 0, acc = 0; h.order = null; h.path = null;
-          SFX.at('dark', x0, z0, 1); SFX.at('overload', x0, z0, 0.6);
+          SFX.at('ultcue', x0, z0, 0.85); SFX.at('charge', x0, z0, 0.9); SFX.at('void', x0, z0, 0.5);
           const c1 = FX.zone(x0, z0, 3, UMB.c, T1, { tex: 'rune2', spin: 3, op: 0.8 }), c2 = FX.pillar(x0, z0, { r: 1.2, h: 15, color: UMB.mid, life: T1, op: 0.45, grow: true });
           const d1 = FX.zone(x, z, R, UMB.c, T1 + T2, { tex: 'rune', spin: 0.9, op: 0.55 }), d2 = FX.zone(x, z, R, UMB.mid, T1 + T2, { tex: 'ring', spin: -0.4, op: 0.9 }), d3 = FX.zone(x, z, 2.4, UMB.pale, T1 + T2, { tex: 'rune2', spin: -2.5, op: 0.7 });
           const mk = mmMark({ x, z, r: R, color: '#a58cff', until: G.time + T1 + T2 + 0.3 }); let core = null;
@@ -1292,7 +1292,7 @@ HEROES.push(
                 if (el < T1) return true;
                 ph = 1; umbPuff(h.x, h.z); FX.pillar(h.x, h.z, { r: 1.4, h: 20, color: UMB.c, life: 0.4, op: 0.6 }); h.x = x; h.z = z; h.path = null; h.order = null; if (h.isPlayer) { G.camLock = true; G.camSnap = true; }
                 addBuff(h, { id: 'atomic', dur: T2 + 0.05, dmgIn: 0.4, air: 1.6 }); G.dangers.push({ x, z, r: R, team: h.team, until: G.time + T2 });
-                SFX.at('void', x, z, 1); SFX.at('overload', x, z, 0.8); umbPuff(x, z); FX.pillar(x, z, { r: 1.6, h: 26, color: UMB.c, life: 0.5, op: 0.6 }); FX.ring(x, z, { r0: R, r1: 1, color: UMB.c, life: T2, tex: 'shock', op: 0.6 }); FX.shock(x, z, R, -1, T2);
+                SFX.at('blink', x, z, 0.8); SFX.at('overload', x, z, 0.9); SFX.at('void', x, z, 0.6); umbPuff(x, z); FX.pillar(x, z, { r: 1.6, h: 26, color: UMB.c, life: 0.5, op: 0.6 }); FX.ring(x, z, { r0: R, r1: 1, color: UMB.c, life: T2, tex: 'shock', op: 0.6 }); FX.shock(x, z, R, -1, T2);
                 core = FX.add(kaiOrb(UMB.c, 0x0a0420, 1), T2 + 0.05, (k, me, dt2) => { me.position.set(h.x, 2.5 + (h.yOff || 0), h.z); me.scale.setScalar(0.3 + k * 1.2); kaiSpin(me, dt2, 2); });
                 return true;
               }
@@ -1357,18 +1357,18 @@ HEROES.push(
       if (!o.alive) return; for (let i = 0; i < 3; i++) o.cd[i] = 0; heal(o, o, o.maxHp * 0.12, true);
       o.rampN = G.time < (o.rampT || 0) ? (o.rampN || 0) + 1 : 1; o.rampT = G.time + 10; const n = Math.min(5, o.rampN);
       const b = addBuff(o, { id: 'carnage', dur: 6, as: 0.25, ms: 0.15 }); if (b) b.fx = FX.aura(o, RMP.c, 6, 1.9, 'swirl', 8);
-      SFX.at('dark', o.x, o.z, 0.9); FX.heal(o, RMP.c); FX.pillar(o.x, o.z, { r: 1.1 + n * 0.15, h: 9 + n * 2, color: RMP.mid, life: 0.6, op: 0.5 }); FX.ring(o.x, o.z, { r0: 3.5 + n * 0.5, r1: 0.6, color: RMP.c, life: 0.4, tex: 'shock' }); rmpBlood(o.x, 1.6, o.z, 6 + n * 3);
+      SFX.at('blood', o.x, o.z, 0.8); SFX.at('heartbeat', o.x, o.z, 0.5); FX.heal(o, RMP.c); FX.pillar(o.x, o.z, { r: 1.1 + n * 0.15, h: 9 + n * 2, color: RMP.mid, life: 0.6, op: 0.5 }); FX.ring(o.x, o.z, { r0: 3.5 + n * 0.5, r1: 0.6, color: RMP.c, life: 0.4, tex: 'shock' }); rmpBlood(o.x, 1.6, o.z, 6 + n * 3);
       if (FX.near(o.x, o.z, 45)) FX.text(o.x, o.height + 1.4, o.z, ['резня', 'двойная резня', 'тройная резня', 'бойня', 'РЭМПЭЙДЖ!'][n - 1], n >= 4 ? '#ff5a4a' : '#ff9a8a', 15 + n * 2);
-      if (n >= 5 && typeof UI !== 'undefined' && G.player) { UI.announce('РЭМПЭЙДЖ!', '#ff3a3a'); FX.shake(0.6); FX.punch(1); }
+      if (n >= 5 && typeof UI !== 'undefined' && G.player) { UI.announce('РЭМПЭЙДЖ!', '#ff3a3a'); FX.shake(0.6); FX.punch(1); SFX.at('roar', o.x, o.z, 0.8); }
     },
     abilities: [
       {
         key: 'Q', name: 'Жатва', icon: 'reap', cd: 6, cost: 35, range: 6.2, ind: { type: 'cone', r: 6.2 }, anim: 'mow', animDur: 0.55, lock: 0.32, ai: { t: 'cone', farm: true },
         desc: 'Широкий взмах косой перед собой. Враги на самом острие, дальше 4 метров, получают на 35% больше урона. За каждого задетого героя Рэмпэйдж лечится на 4% максимального здоровья, за истекающего кровью — на 8%.',
         cast(h, p) {
-          const dmg = D(h, 62, 10, 0.65), R = 6.2, dir = p.dir; SFX.at('dash', h.x, h.z, 0.7);
+          const dmg = D(h, 62, 10, 0.65), R = 6.2, dir = p.dir; SFX.at('whoosh', h.x, h.z, 0.5);
           after(0.2, () => {
-            if (!h.alive) return; let fed = 0; SFX.at('slash', h.x, h.z, 1); FX.shake(0.25);
+            if (!h.alive) return; let fed = 0; SFX.at('scythe', h.x, h.z, 1); SFX.at('flesh', h.x, h.z, 0.4); FX.shake(0.25);
             rmpArc(h.x, h.z, dir, R + 0.4, 2.7, 0.36, 0x8a0a14, 1.2, false, 0.9); rmpArc(h.x, h.z, dir, R - 1.2, 2.5, 0.24, RMP.mid, 1.4, false, 0.6);
             for (let i = -3; i <= 3; i++) { const a = dir + i * 0.36; FX.sparks(h.x + Math.sin(a) * (R - 0.6), 1.2, h.z + Math.cos(a) * (R - 0.6), { n: 3, color: RMP.hot, color2: RMP.deep, speed: [4, 11], life: [0.2, 0.45], dir: a + 1.2, spread: 0.7, w: 0.12 }); }
             for (const e of enemiesIn(h, h.x, h.z, R + 1)) {
@@ -1377,7 +1377,7 @@ HEROES.push(
               if (tip && h === G.player) FX.text(e.x, e.height + 1.2, e.z, 'остриё', '#ff9a8a', 13);
               if (e.kind === 'hero') { fed++; heal(h, h, h.maxHp * (bled ? 0.08 : 0.04)); FX.beam(e.x, e.z, h.x, h.z, { color: RMP.mid, w: 0.7, life: 0.3, y: 1.3, op: 0.8 }); }
             }
-            if (fed) { FX.heal(h, RMP.c); FX.implode(h.x, 1.4, h.z, 2.6, { n: 8, color: RMP.c, color2: 0xffffff, life: 0.3, streak: true }); }
+            if (fed) { FX.heal(h, RMP.c); SFX.at('blood', h.x, h.z, 0.5); FX.implode(h.x, 1.4, h.z, 2.6, { n: 8, color: RMP.c, color2: 0xffffff, life: 0.3, streak: true }); }
           });
         }
       },
@@ -1386,7 +1386,7 @@ HEROES.push(
         desc: 'Швыряет косу по прямой: она пролетает сквозь врагов и возвращается в руку, раня всех на пути туда и обратно. Каждое попадание вызывает кровотечение на 3 сек, а удар на пути туда ещё и замедляет на 35% на 1.5 сек.',
         cast(h, p) {
           const dmg = D(h, 46, 7.5, 0.45), tick = D(h, 7, 1.2, 0.07), dir = p.dir, sx = Math.sin(dir), cz = Math.cos(dir), len = p.range, m = rmpScythe(), e = FX.add(m, 6, null), rib = FX.ribbon(RMP.mid, 1.7, 16), hit = new Set();
-          let x = h.x + sx * 1.2, z = h.z + cz * 1.2, out = true, left = len, sp = 34, acc = 0; h.rig.handR.visible = false; m.scale.setScalar(1.2); m.position.set(x, 1.3, z); SFX.at('arrow', h.x, h.z, 1); SFX.at('slash', h.x, h.z, 0.7);
+          let x = h.x + sx * 1.2, z = h.z + cz * 1.2, out = true, left = len, sp = 34, acc = 0; h.rig.handR.visible = false; m.scale.setScalar(1.2); m.position.set(x, 1.3, z); SFX.at('scythe', h.x, h.z, 0.8); SFX.at('whoosh', h.x, h.z, 0.6);
           const finish = () => { e.dead = true; rib.end(); h.rig.handR.visible = true; };
           after(4, () => { h.rig.handR.visible = true; });
           G.actors.push({
@@ -1394,15 +1394,15 @@ HEROES.push(
               if (!h.alive) { finish(); return false; }
               if (out) {
                 sp = lerp(10, 34, Math.min(1, left / (len * 0.45))); const st = sp * dt; x += sx * st; z += cz * st; left -= st;
-                if (left <= 0.2) { out = false; hit.clear(); sp = 6; FX.ring(x, z, { r0: 0.4, r1: 2.6, color: RMP.c, life: 0.3, tex: 'ringThin' }); SFX.at('slash', x, z, 0.6); }
+                if (left <= 0.2) { out = false; hit.clear(); sp = 6; FX.ring(x, z, { r0: 0.4, r1: 2.6, color: RMP.c, life: 0.3, tex: 'ringThin' }); SFX.at('whoosh', x, z, 0.55); }
               } else {
                 sp = Math.min(44, sp + 110 * dt); const dx = h.x - x, dz = h.z - z, d = Math.hypot(dx, dz), st = sp * dt;
-                if (d <= st + 1.1) { finish(); FX.glow(h.x, 1.6, h.z, 3, RMP.c, 0.2, 'star'); SFX.at('hit', h.x, h.z, 0.5); return false; }
+                if (d <= st + 1.1) { finish(); FX.glow(h.x, 1.6, h.z, 3, RMP.c, 0.2, 'star'); SFX.at('blade', h.x, h.z, 0.5); return false; }
                 x += dx / d * st; z += dz / d * st;
               }
               for (const u of G.units) {
                 if (!u.alive || u.struct || u.team === h.team || hit.has(u.id)) continue; const rr = 1.5 + u.radius, dx = u.x - x, dz = u.z - z; if (dx * dx + dz * dz > rr * rr) continue;
-                hit.add(u.id); damage(h, u, dmg, 0); rmpBleed(h, u, tick, 6); if (out) slow(h, u, 0.35, 1.5); rmpBlood(u.x, 1.3, u.z, 8, out ? dir : dir + Math.PI); FX.hit(u.x, 1.3, u.z, RMP.c, true); SFX.at('slash', u.x, u.z, 0.8);
+                hit.add(u.id); damage(h, u, dmg, 0); rmpBleed(h, u, tick, 6); if (out) slow(h, u, 0.35, 1.5); rmpBlood(u.x, 1.3, u.z, 8, out ? dir : dir + Math.PI); FX.hit(u.x, 1.3, u.z, RMP.c, true); SFX.at('flesh', u.x, u.z, 0.7);
               }
               m.position.set(x, 1.3, z); m.rotation.y -= dt * 26; rib.add(x, 1.3, z); acc += dt;
               if (acc > 0.04 && FX.near(x, z, 50)) { acc = 0; FX.burst(x, 1.2, z, { n: 1, color: 0xd8121e, color2: 0x4a0408, speed: [0.5, 2.5], life: [0.3, 0.6], size: [0.3, 0.05], grav: -12 }); FX.sparks(x, 1.3, z, { n: 1, color: RMP.hot, color2: RMP.deep, speed: [3, 8], life: [0.15, 0.35], w: 0.09 }); }
@@ -1416,19 +1416,19 @@ HEROES.push(
         desc: 'Стоит не маны, а 7% текущего здоровья. Рассыпается алым туманом и проносится сквозь врагов, нанося урон. За ним на 3 сек остаётся кровавая полоса: враги на ней замедлены на 25% и дважды в секунду получают урон.',
         cast(h, p) {
           const dmg = D(h, 40, 7, 0.4), tick = D(h, 9, 1.5, 0.08), pts = [{ x: h.x, z: h.z }], L = 3; let lx = h.x, lz = h.z, el = 0, acc = 0.25, shown = false;
-          h.hp = Math.max(1, h.hp * 0.93); SFX.at('dash', h.x, h.z, 1); SFX.at('poison', h.x, h.z, 0.6); rmpBlood(h.x, 1.4, h.z, 14); rmpPool(h.x, h.z, 1.6, L); h.rig.root.visible = false;
+          h.hp = Math.max(1, h.hp * 0.93); SFX.at('blood', h.x, h.z, 0.85); SFX.at('dash', h.x, h.z, 0.6); rmpBlood(h.x, 1.4, h.z, 14); rmpPool(h.x, h.z, 1.6, L); h.rig.root.visible = false;
           dashTo(h, p.x, p.z, 36, {
             w: 1.5, ribbon: RMP.mid,
             trail: u => {
               if (FX.near(u.x, u.z, 50)) { FX.burst(u.x, 1.2, u.z, { smoke: true, n: 2, color: 0x8a0c16, color2: RMP.dark, speed: [0.3, 1.6], life: [0.35, 0.7], size: [1.2, 2.4], up: 0.5, a: 0.6 }); FX.flame(u.x, 1.2, u.z, { n: 1, color: RMP.mid, color2: RMP.dark, size: [0.9, 1.8], life: [0.2, 0.45], up: 0.3, a: 0.35 }); FX.burst(u.x, 1.4, u.z, { n: 2, color: 0xd8121e, color2: 0x4a0408, speed: [1, 4], life: [0.3, 0.6], size: [0.3, 0.05], grav: -12 }); }
               if (dist(u.x, u.z, lx, lz) > 1.0) { lx = u.x; lz = u.z; pts.push({ x: lx, z: lz }); rmpPool(lx, lz, 1.6, L); }
             },
-            onHit: (e, u) => { damage(u, e, dmg, 0); rmpBlood(e.x, 1.3, e.z, 10, u.facing); FX.hit(e.x, 1.3, e.z, RMP.c, false); rmpArc(e.x, e.z, u.facing, 2.2, 1.2, 0.2, RMP.mid, 1.3); SFX.at('slash', e.x, e.z, 0.7); }
+            onHit: (e, u) => { damage(u, e, dmg, 0); rmpBlood(e.x, 1.3, e.z, 10, u.facing); FX.hit(e.x, 1.3, e.z, RMP.c, false); rmpArc(e.x, e.z, u.facing, 2.2, 1.2, 0.2, RMP.mid, 1.3); SFX.at('flesh', e.x, e.z, 0.7); }
           });
           G.actors.push({
             update(dt) {
               el += dt;
-              if (!shown && !h.dash) { shown = true; h.rig.root.visible = true; pts.push({ x: h.x, z: h.z }); rmpPool(h.x, h.z, 1.6, L); if (h.alive) { rmpBlood(h.x, 1.4, h.z, 12); FX.ring(h.x, h.z, { r1: 2.6, color: RMP.c, life: 0.3, tex: 'shock', op: 0.8 }); } }
+              if (!shown && !h.dash) { shown = true; h.rig.root.visible = true; pts.push({ x: h.x, z: h.z }); rmpPool(h.x, h.z, 1.6, L); if (h.alive) { rmpBlood(h.x, 1.4, h.z, 12); SFX.at('blood', h.x, h.z, 0.4); FX.ring(h.x, h.z, { r1: 2.6, color: RMP.c, life: 0.3, tex: 'shock', op: 0.8 }); } }
               acc += dt; if (acc < 0.5) return el < L + 0.6; acc -= 0.5; if (el > L) return false;
               const done = new Set(); for (const q of pts) for (const u of enemiesIn(h, q.x, q.z, 1.5)) if (!done.has(u.id)) { done.add(u.id); damage(h, u, tick, 0, { dot: true }); slow(h, u, 0.25, 0.7, 'bloodtrail'); rmpBlood(u.x, 0.8, u.z, 3); }
               return true;
@@ -1441,7 +1441,7 @@ HEROES.push(
         desc: 'Взмывает над землёй под кровавой луной: 0.9 сек враги в радиусе 7.5 замедлены на 35%, а сам он получает вдвое меньше урона. Затем исполинская коса описывает полный круг: огромный урон и кровотечение всем вокруг, а герои, у которых после удара осталось меньше 14 / 18 / 22% здоровья, казнены. За каждого задетого героя — лечение на 6% максимального здоровья. Если жатва убила героя, её перезарядка сокращается вдвое.',
         cast(h) {
           const R = 7.5, T = 0.9, lv = Math.max(1, h.al[3]), dmg = D(h, 110, 20, 0.8), tick = D(h, 8, 1.4, 0.08), thr = 0.1 + 0.04 * lv; let el = 0, acc = 0, a0 = h.facing, struck = false;
-          addBuff(h, { id: 'bloodmoon', dur: T + 0.4, dmgIn: 0.5, air: 1.7 }); h.order = null; h.path = null; SFX.at('dark', h.x, h.z, 1); SFX.at('overload', h.x, h.z, 0.7);
+          addBuff(h, { id: 'bloodmoon', dur: T + 0.4, dmgIn: 0.5, air: 1.7 }); h.order = null; h.path = null; SFX.at('ultcue', h.x, h.z, 0.85); SFX.at('heartbeat', h.x, h.z, 0.8); SFX.at('necro', h.x, h.z, 0.5); SFX.at('charge', h.x, h.z, 0.6);
           // the moon: a dark disc on the ground with a sigil, an eclipsed sphere overhead
           const disc = new THREE.Mesh(FX.geo.flat, FX.mat('fill', 0x2a0206, 0.5, false)); disc.position.set(h.x, 0.07, h.z); disc.renderOrder = 4; disc.scale.set(R * 2 * RK, 1, R * 2 * RK);
           FX.add(disc, T + 0.5, (k, me, dt, en) => { me.material.opacity = 0.55 * Math.min(1, en.t / 0.2, (T + 0.5 - en.t) / 0.3); });
@@ -1465,7 +1465,7 @@ HEROES.push(
               }
               if (!struck) {
                 struck = true; h.spinning = true; const x = h.x, z = h.z, before = G.heroes.filter(o => o.alive && o.team !== h.team); let fed = 0;
-                SFX.at('bigboom', x, z, 1); SFX.at('slash', x, z, 1); FX.shake(0.9); FX.punch(1.2); FX.hitstop(0.06); FX.shock(x, z, R * 1.5, 1.2, 0.5); FX.light(x, 4, z, RMP.c, 3.5, 40, 0.6);
+                SFX.at('bigboom', x, z, 0.9); SFX.at('scythe', x, z, 1); SFX.at('flesh', x, z, 0.7); FX.shake(0.9); FX.punch(1.2); FX.hitstop(0.06); FX.shock(x, z, R * 1.5, 1.2, 0.5); FX.light(x, 4, z, RMP.c, 3.5, 40, 0.6);
                 for (let i = 0; i < 3; i++) after(i * 0.09, () => { rmpArc(x, z, a0 + i * 2.1, R + 0.4 - i * 0.9, 6, 0.42, i === 1 ? RMP.mid : 0x8a0a14, 1.1 + i * 0.3, i === 1, i === 1 ? 0.55 : 0.8); FX.ring(x, z, { r0: 1, r1: R + i, color: i === 2 ? RMP.hot : RMP.mid, life: 0.5, tex: i ? 'ringThin' : 'shock' }); });
                 FX.burst(x, 1.2, z, { n: 70, ring: true, color: 0xd8121e, color2: 0x3a0206, speed: [8, 20], life: [0.4, 0.9], size: [0.42, 0.06], grav: -10, up: 4 }); FX.sparks(x, 1.2, z, { n: 50, color: RMP.hot, color2: RMP.deep, speed: [12, 30], life: [0.25, 0.6], ring: true, w: 0.15, stretch: 0.1 });
                 FX.flame(x, 1, z, { n: 16, color: RMP.mid, color2: RMP.dark, size: [2, 4.2], life: [0.5, 1.1], rad: R * 0.6, up: 2, a: 0.35 }); rmpPool(x, z, R * 0.85, 3.5); FX.scorch(x, z, R * 0.8, RMP.mid, 8);
@@ -1473,7 +1473,7 @@ HEROES.push(
                   damage(h, e, dmg, 0); rmpBleed(h, e, tick, 6); FX.hit(e.x, 1.3, e.z, RMP.c, false); rmpBlood(e.x, 1.4, e.z, 12, angTo(x, z, e.x, e.z));
                   if (e.kind !== 'hero') continue; fed++;
                   if (e.alive && e.hp / e.maxHp < thr) {   // execution
-                    damage(h, e, (e.hp + (e.shield || 0)) * 3 + 500, 2); FX.pillar(e.x, e.z, { r: 1, h: 14, color: RMP.c, life: 0.6, op: 0.6 }); FX.explosion(e.x, e.z, 2, RMP.mid, { smoke: false }); rmpBlood(e.x, 1.6, e.z, 20);
+                    damage(h, e, (e.hp + (e.shield || 0)) * 3 + 500, 2); FX.pillar(e.x, e.z, { r: 1, h: 14, color: RMP.c, life: 0.6, op: 0.6 }); FX.explosion(e.x, e.z, 2, RMP.mid, { smoke: false }); rmpBlood(e.x, 1.6, e.z, 20); SFX.at('heavy', e.x, e.z, 0.75); SFX.at('blood', e.x, e.z, 0.6);
                     if (FX.near(e.x, e.z, 45)) FX.text(e.x, e.height + 1.6, e.z, 'КАЗНЬ', '#ff3a3a', 22);
                   }
                 }
@@ -1549,8 +1549,8 @@ HEROES.push(
     innate: { name: 'Дух-хранитель', icon: 'stand', desc: 'Вместо Дзина бьёт Астра: она подлетает к цели сама, пока он стоит в стороне. Каждый четвёртый её удар — тяжёлый: дополнительный урон (растёт с уровнем и силой атаки) и замедление на 25% на 1 сек.' },
     tick(h) { if (!h.stand) jinStand(h); },
     onDeal(h, t, d, o) {
-      if (!o.basic || t.struct) return; SFX.at('hit', t.x, t.z, 0.5); jinStar(t.x, t.height * 0.6, t.z, 0.6); h.oraN = (h.oraN || 0) + 1; if (h.oraN < 4) return; h.oraN = 0;
-      damage(h, t, 18 + 6 * h.level + 0.35 * h.ad, 0, { dot: true }); if (t.alive) slow(h, t, 0.25, 1, 'ora'); jinStar(t.x, t.height * 0.6, t.z, 1.3); jinOra(t.x, t.height + 0.8, t.z); FX.shake(0.15);
+      if (!o.basic || t.struct) return; SFX.at('punch', t.x, t.z, 0.5); jinStar(t.x, t.height * 0.6, t.z, 0.6); h.oraN = (h.oraN || 0) + 1; if (h.oraN < 4) return; h.oraN = 0;
+      damage(h, t, 18 + 6 * h.level + 0.35 * h.ad, 0, { dot: true }); if (t.alive) slow(h, t, 0.25, 1, 'ora'); SFX.at('impact', t.x, t.z, 0.6); jinStar(t.x, t.height * 0.6, t.z, 1.3); jinOra(t.x, t.height + 0.8, t.z); FX.shake(0.15);
     },
     abilities: [
       {
@@ -1558,19 +1558,19 @@ HEROES.push(
         desc: 'Астра 1.2 сек осыпает кулаками всё перед собой: девять быстрых ударов и десятый, тяжёлый, с отбрасыванием. Оглушение Дзина прерывает шквал.',
         cast(h, p) {
           const hit = D(h, 11, 1.8, 0.13), fin = D(h, 42, 6.5, 0.4), dir = p.dir, R = 4.8, sx = Math.sin(dir), cz = Math.cos(dir); let el = 0, nx = 0.1, n = 0; h.order = null; h.path = null;
-          jinHold(h, h.x + sx * 1.5, h.z + cz * 1.5, dir, 0.3, 'flurry', 1.3);
+          jinHold(h, h.x + sx * 1.5, h.z + cz * 1.5, dir, 0.3, 'flurry', 1.3); SFX.at('spirit', h.x, h.z, 0.4);
           G.actors.push({
             update(dt) {
               el += dt; if (!h.alive || h.stunned) { h.castLock = 0; h.anim.castT = 0; if (h.stand) { h.stand.hold = 0; h.stand.S.anim.castT = 0; } return false; }
               const fx = h.x + sx * 1.5, fz = h.z + cz * 1.5, foes = () => enemiesIn(h, h.x, h.z, R + 1).filter(e => inCone(h, e, dir, 0.62, R)); jinHold(h, fx, fz, dir, 0.25);
               if (el < nx) return true;
               if (n < 9) {
-                nx += 0.125; n++; SFX.at('hit', fx, fz, 0.55); if (n % 2) jinOra(fx + sx * 1.6, 2.5, fz + cz * 1.6);
+                nx += 0.125; n++; SFX.at('punch', fx, fz, 0.45); if (n % 2) jinOra(fx + sx * 1.6, 2.5, fz + cz * 1.6);
                 for (let k = 0; k < 2; k++) { const o = rand(-0.9, 0.9); jinFist(fx + cz * o, rand(1.1, 2.5), fz - sx * o, dir + rand(-0.22, 0.22), rand(2, 3.3)); }
                 for (const e of foes()) { damage(h, e, hit, 0); if (FX.near(e.x, e.z, 50)) { FX.sparks(e.x + rand(-0.5, 0.5), rand(0.9, 2), e.z + rand(-0.5, 0.5), { n: 4, color: JIN.pale, color2: JIN.deep, speed: [5, 13], life: [0.15, 0.35], w: 0.12, dir, spread: 1.1 }); if (n % 3 === 0) FX.glow(e.x, 1.4, e.z, 1.8, JIN.c, 0.15, 'star'); } }
                 return true;
               }
-              SFX.at('boom', fx, fz, 0.6); SFX.at('hit', fx, fz, 1); FX.shake(0.4); FX.punch(0.6); FX.shock(fx + sx * 1.5, fz + cz * 1.5, 5, 0.9, 0.35); jinOra(fx + sx * 1.6, 3, fz + cz * 1.6, true);
+              SFX.at('heavy', fx, fz, 0.8); SFX.at('punch', fx, fz, 1); FX.shake(0.4); FX.punch(0.6); FX.shock(fx + sx * 1.5, fz + cz * 1.5, 5, 0.9, 0.35); jinOra(fx + sx * 1.6, 3, fz + cz * 1.6, true);
               jinFist(fx, 1.7, fz, dir, 4); FX.ring(fx + sx * 1.6, fz + cz * 1.6, { r0: 0.4, r1: 3.2, color: JIN.c, life: 0.35, tex: 'shock' });
               for (const e of foes()) { damage(h, e, fin, 0); knock(e, h.x, h.z, 3.5, 0.25); jinStar(e.x, 1.4, e.z, 1.4); }
               const a = h.stand.S.anim; a.castT = 0; a.atkT = a.atkDur = 0.3; h.stand.hold = G.time + 0.25; return false;
@@ -1582,10 +1582,10 @@ HEROES.push(
         key: 'W', name: 'Звёздный удар', icon: 'starfist', cd: 11, cost: 55, range: 8.5, ind: { type: 'circle', r: 2.8 }, anim: 'point', animDur: 0.5, lock: 0.3, ai: { t: 'point', rad: 2.8, delay: 0.42 },
         desc: 'Астра бросается в указанную точку и через 0.4 сек бьёт в землю: урон и оглушение на 0.8 сек всем врагам рядом.',
         cast(h, p) {
-          const x = p.x, z = p.z, R = 2.8, dmg = D(h, 70, 11, 0.6); telegraph(h, x, z, R, 0.42, JIN.c); SFX.at('dash', h.x, h.z, 0.8);
+          const x = p.x, z = p.z, R = 2.8, dmg = D(h, 70, 11, 0.6); telegraph(h, x, z, R, 0.42, JIN.c); SFX.at('dash', h.x, h.z, 0.6); SFX.at('spirit', h.x, h.z, 0.4);
           jinHold(h, x - Math.sin(p.dir) * 1.1, z - Math.cos(p.dir) * 1.1, p.dir, 0.8, 'slam', 0.62); FX.beam(h.x, h.z, x, z, { color: JIN.vio, w: 0.9, life: 0.3, y: 1.6, op: 0.6 });
           after(0.42, () => {
-            if (!h.alive) return; SFX.at('boom', x, z, 0.8); SFX.at('hit', x, z, 1); FX.explosion(x, z, 2.2, JIN.c, { el: 'earth', rock: 0x4a4640, smoke: false }); FX.ring(x, z, { r0: 0.5, r1: R + 0.3, color: JIN.c, life: 0.4, tex: 'shock' });
+            if (!h.alive) return; SFX.at('heavy', x, z, 0.9); SFX.at('stone', x, z, 0.6); SFX.at('punch', x, z, 0.8); FX.explosion(x, z, 2.2, JIN.c, { el: 'earth', rock: 0x4a4640, smoke: false }); FX.ring(x, z, { r0: 0.5, r1: R + 0.3, color: JIN.c, life: 0.4, tex: 'shock' });
             FX.ring(x, z, { r0: R * 0.8, r1: R, color: JIN.c, life: 1.6, tex: 'crack', op: 0.8 }); FX.shock(x, z, 5, 0.9, 0.4); jinStar(x, 1, z, 1.7); jinOra(x, 3, z, true);
             for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 0); stun(h, e, 0.8); FX.hit(e.x, 1.2, e.z, JIN.c, false); }
           });
@@ -1595,11 +1595,11 @@ HEROES.push(
         key: 'E', name: 'Толчок духа', icon: 'standleap', cd: 12, cost: 45, range: 8, ind: { type: 'circle', r: 3 }, lock: 0, ai: { t: 'gap', escape: true, rad: 2.5 },
         desc: 'Астра бьёт в землю под ногами, и Дзина подбрасывает в указанную точку, в том числе через стены. При приземлении — урон и замедление на 35% на 1.5 сек всем врагам рядом.',
         cast(h, p) {
-          const dmg = D(h, 45, 7.5, 0.45); jinHold(h, h.x, h.z, p.dir, 0.32, 'slam', 0.3); FX.explosion(h.x, h.z, 1.8, JIN.c, { el: 'earth', rock: 0x4a4640, smoke: false }); jinStar(h.x, 0.6, h.z, 1.2); SFX.at('boom', h.x, h.z, 0.5); SFX.at('dash', h.x, h.z, 1);
+          const dmg = D(h, 45, 7.5, 0.45); jinHold(h, h.x, h.z, p.dir, 0.32, 'slam', 0.3); FX.explosion(h.x, h.z, 1.8, JIN.c, { el: 'earth', rock: 0x4a4640, smoke: false }); jinStar(h.x, 0.6, h.z, 1.2); SFX.at('stone', h.x, h.z, 0.6); SFX.at('gust', h.x, h.z, 0.8);
           dashTo(h, p.x, p.z, 28, {
             fly: true, arc: 3, ribbon: JIN.c, trail: u => { if (FX.near(u.x, u.z, 50)) FX.sparks(u.x, 1 + (u.yOff || 0), u.z, { n: 1, color: 0xffffff, color2: JIN.c, speed: [1, 4], life: [0.2, 0.4], w: 0.09 }); },
             onEnd: u => {
-              FX.ring(u.x, u.z, { r0: 0.4, r1: 3.2, color: JIN.c, life: 0.35, tex: 'shock' }); FX.shock(u.x, u.z, 4.5, 0.7, 0.3); FX.debris(u.x, 0.3, u.z, { n: 6, color: 0x4a4640, speed: [3, 7], up: 7, size: [0.15, 0.4] }); SFX.at('hit', u.x, u.z, 1); jinStar(u.x, 0.8, u.z, 1.2);
+              FX.ring(u.x, u.z, { r0: 0.4, r1: 3.2, color: JIN.c, life: 0.35, tex: 'shock' }); FX.shock(u.x, u.z, 4.5, 0.7, 0.3); FX.debris(u.x, 0.3, u.z, { n: 6, color: 0x4a4640, speed: [3, 7], up: 7, size: [0.15, 0.4] }); SFX.at('impact', u.x, u.z, 0.9); SFX.at('rubble', u.x, u.z, 0.4); jinStar(u.x, 0.8, u.z, 1.2);
               for (const e of enemiesIn(u, u.x, u.z, 3)) { damage(u, e, dmg, 0); slow(u, e, 0.35, 1.5); FX.hit(e.x, 1.2, e.z, JIN.c, false); }
             }
           });
@@ -1609,12 +1609,12 @@ HEROES.push(
         key: 'R', name: 'Остановка времени', icon: 'timestop', cd: 110, cost: 120, range: 0, ind: { type: 'self', r: 9 }, anim: 'cap', animDur: 0.9, lock: 0.45, ai: { t: 'nova', r: 6.5, ult: true, hp: 0.6, rad: 7 },
         desc: 'Через 0.4 сек время вокруг замирает: все враги в радиусе 9 застывают на 1.8 / 2.2 / 2.6 сек и получают на 15% больше урона, а вражеские снаряды в этой области повисают в воздухе. Дзин и его союзники двигаются свободно.',
         cast(h) {
-          const R = 9, lv = Math.max(1, h.al[3]), dur = 1.4 + 0.4 * lv, T = 0.4; SFX.at('overload', h.x, h.z, 0.8); SFX.at('dark', h.x, h.z, 0.7);
+          const R = 9, lv = Math.max(1, h.al[3]), dur = 1.4 + 0.4 * lv, T = 0.4; SFX.at('ultcue', h.x, h.z, 0.9); SFX.at('tick', h.x, h.z, 0.6);
           jinHold(h, h.x + Math.sin(h.facing) * 1.3, h.z + Math.cos(h.facing) * 1.3, h.facing, T + 0.5, 'cast', T + 0.5);
           FX.ring(h.x, h.z, { r0: R + 3, r1: 0.6, color: JIN.c, life: T, tex: 'ringThin' }); FX.ring(h.x, h.z, { r0: R, r1: 0.6, color: JIN.pale, life: T, tex: 'ringThin', op: 0.6 }); FX.implode(h.x, 1.8, h.z, R, { n: 26, color: JIN.c, color2: 0xffffff, life: T, streak: true });
           after(T, () => {
             if (!h.alive) return; const x = h.x, z = h.z; G.tstop = { x, z, r: R, team: h.team, until: G.time + dur };
-            SFX.at('bigboom', x, z, 0.7); SFX.at('void', x, z, 1); FX.shock(x, z, R * 1.6, 1.3, 0.6); FX.punch(1.2); FX.shake(0.5); FX.ring(x, z, { r0: 0.6, r1: R + 1, color: JIN.c, life: 0.45, tex: 'shock' }); jinStar(x, 2.2, z, 2.2);
+            SFX.at('bell', x, z, 1); SFX.at('void', x, z, 0.8); SFX.at('bigboom', x, z, 0.4); FX.shock(x, z, R * 1.6, 1.3, 0.6); FX.punch(1.2); FX.shake(0.5); FX.ring(x, z, { r0: 0.6, r1: R + 1, color: JIN.c, life: 0.45, tex: 'shock' }); jinStar(x, 2.2, z, 2.2);
             if (FX.near(x, z, R + 24)) G.tinv = 1;
             jinClock(x, z, R, dur);
             for (const e of enemiesIn(h, x, z, R)) {
@@ -1622,7 +1622,7 @@ HEROES.push(
               if (FX.near(e.x, e.z, 50)) FX.glow(e.x, e.height * 0.6, e.z, 2.6, 0xb8c4d8, 0.3, 'star');
             }
             if (G.player && G.player.team !== h.team && G.player.alive && dist(G.player.x, G.player.z, x, z) < R + G.player.radius && typeof UI !== 'undefined') UI.announce('ВРЕМЯ ОСТАНОВЛЕНО', '#ffd84a');
-            after(dur, () => { FX.ring(x, z, { r0: R * 0.3, r1: R + 2, color: JIN.pale, life: 0.5, tex: 'ringThin' }); FX.shock(x, z, R, 0.6, 0.4); SFX.at('shield', x, z, 0.8); if (h === G.player && h.alive) FX.text(h.x, h.height + 1.4, h.z, 'время пошло', '#ffe9a0', 15); });
+            after(dur, () => { FX.ring(x, z, { r0: R * 0.3, r1: R + 2, color: JIN.pale, life: 0.5, tex: 'ringThin' }); FX.shock(x, z, R, 0.6, 0.4); SFX.at('tick', x, z, 0.6); SFX.at('warp', x, z, 0.5); if (h === G.player && h.alive) FX.text(h.x, h.height + 1.4, h.z, 'время пошло', '#ffe9a0', 15); });
           });
         }
       }
@@ -1694,7 +1694,7 @@ function hikLetter(h, e, n) {
   if (!e.alive || e.kind !== 'hero') return; const was = hikKnown(h, e), now = Math.min(4, was + (n || 1)), b = addBuff(e, { id: 'hk' + h.id, dur: 15, src: h }); if (!b) return; b.stacks = now;
   if (now >= 4) b.fx = FX.aura(e, HIK.mid, 15, e.radius + 0.55, 'ringThin', -2.5);
   if (now > was && G.player && (h === G.player || e === G.player)) { const nm = e.name, k = Math.max(1, Math.ceil(nm.length * now / 4)); FX.text(e.x, e.height + 1.5, e.z, now >= 4 ? '«' + nm + '»' : nm.slice(0, k) + '…', now >= 4 ? '#ff5a6a' : '#e8e2d0', now >= 4 ? 17 : 13); }
-  if (now >= 4 && was < 4) { FX.ring(e.x, e.z, { r0: 2.6, r1: 0.7, color: HIK.c, life: 0.4, tex: 'ringThin' }); SFX.at('dark', e.x, e.z, 0.4); }
+  if (now >= 4 && was < 4) { FX.ring(e.x, e.z, { r0: 2.6, r1: 0.7, color: HIK.c, life: 0.4, tex: 'ringThin' }); SFX.at('quill', e.x, e.z, 0.45); SFX.at('hex', e.x, e.z, 0.3); }
 }
 // the entry: a name is written, ten seconds to wait. Any wound to the writer before then tears the page out
 function hikWrite(h, tgt, dmg) {
@@ -1715,7 +1715,7 @@ function hikWrite(h, tgt, dmg) {
       if (N.done) return false; el += dt; const left = T - el; if (mk) { mk.x = h.x; mk.z = h.z; }
       if (!h.alive || N.broken) { stop(); hikTear(h, tgt); return false; }
       if (!tgt.alive) { stop(); h.cd[3] *= 0.5; if (h === P) UI.msg('Цель погибла раньше срока: половина перезарядки возвращена'); hikPages(h.x, h.height + 1.4, h.z, 4, 4, 0.8); return false; }
-      beat -= dt; if (beat <= 0) { beat = lerp(1.0, 0.26, el / T); FX.ring(tgt.x, tgt.z, { r0: 0.4, r1: 1.6 + el * 0.12, color: HIK.c, life: 0.3, tex: 'ringThin', op: 0.85 }); if (P && (tgt === P || h === P)) SFX.at('hit', tgt.x, tgt.z, 0.18 + el * 0.03); }
+      beat -= dt; if (beat <= 0) { beat = lerp(1.0, 0.26, el / T); FX.ring(tgt.x, tgt.z, { r0: 0.4, r1: 1.6 + el * 0.12, color: HIK.c, life: 0.3, tex: 'ringThin', op: 0.85 }); if (P && (tgt === P || h === P)) SFX.at('heartbeat', tgt.x, tgt.z, 0.18 + el * 0.03); }
       const sec = Math.ceil(left); if (sec < last && sec > 0) { last = sec; FX.text(tgt.x, tgt.height + 2.3, tgt.z, String(sec), sec <= 3 ? '#ff3a4a' : '#e8e2d0', sec <= 3 ? 26 : 17); if (sec <= 3 && FX.near(tgt.x, tgt.z, 50)) FX.pillar(tgt.x, tgt.z, { r: 0.7, h: 6 + (3 - sec) * 3, color: HIK.mid, life: 0.4, op: 0.4 }); }
       if (left > 0) return true;
       stop(); hikVerdict(h, tgt, dmg); return false;
@@ -1723,7 +1723,7 @@ function hikWrite(h, tgt, dmg) {
   });
 }
 function hikTear(h, tgt) {
-  const P = G.player; h.cd[3] *= 0.65; SFX.at('slash', h.x, h.z, 0.8);
+  const P = G.player; h.cd[3] *= 0.65; SFX.at('card', h.x, h.z, 0.8); SFX.at('rip', h.x, h.z, 0.4);
   hikPages(h.x, h.height + 1.4, h.z, 12, 7, 1.2); FX.ring(h.x, h.z, { r0: 0.5, r1: 3.4, color: HIK.c, life: 0.35, tex: 'ringThin' }); FX.sparks(h.x, h.height + 1.2, h.z, { n: 16, color: HIK.hot, color2: HIK.deep, speed: [4, 11], life: [0.2, 0.5], w: 0.11 });
   FX.text(h.x, h.height + 2, h.z, 'запись сорвана', '#cfc8d8', 16);
   if (!P) return;
@@ -1733,7 +1733,7 @@ function hikTear(h, tgt) {
 }
 function hikVerdict(h, tgt, dmg) {
   const n = hikKnown(h, tgt), x = tgt.x, z = tgt.z, P = G.player, near = P && (h === P || tgt === P);
-  SFX.at('dark', x, z, 1); SFX.at('bigboom', x, z, 0.8); if (near) FX.hitstop(0.08);
+  SFX.at('heartbeat', x, z, 1); SFX.at('necro', x, z, 0.8); SFX.at('bigboom', x, z, 0.6); if (near) FX.hitstop(0.08);
   // the heart stops: two hard beats, a black column, feathers, the page burns away
   FX.ring(x, z, { r0: 0.3, r1: 3.2, color: HIK.c, life: 0.25, tex: 'shock' }); after(0.16, () => FX.ring(tgt.x, tgt.z, { r0: 0.3, r1: 4.6, color: HIK.c, life: 0.4, tex: 'shock' }));
   FX.pillar(x, z, { r: 1.5, h: 16, color: HIK.mid, life: 0.8, op: 0.6 }); FX.pillar(x, z, { r: 0.45, h: 20, color: HIK.c, life: 0.5, op: 0.35 });
@@ -1761,12 +1761,12 @@ HEROES.push(
         key: 'Q', name: 'Росчерк', icon: 'penstroke', cd: 5.5, cost: 40, range: 11, ind: { type: 'line', w: 1.8 }, anim: 'cut', animDur: 0.4, lock: 0.2, ai: { t: 'shot', sp: 32, farm: true },
         desc: 'Взмах пера: чернильный росчерк летит по прямой, ранит первого врага и замедляет его на 30% на 1.5 сек. Герою открывает букву имени.',
         cast(h, p) {
-          const dmg = D(h, 68, 11, 0, 0.6), dir = p.dir; let acc = 0; SFX.at('slash', h.x, h.z, 0.7); SFX.at('arrow', h.x, h.z, 0.6);
+          const dmg = D(h, 68, 11, 0, 0.6), dir = p.dir; let acc = 0; SFX.at('quill', h.x, h.z, 0.7); SFX.at('whip', h.x, h.z, 0.5);
           rmpArc(h.x + Math.sin(dir) * 1.1, h.z + Math.cos(dir) * 1.1, dir, 2.3, 1.7, 0.2, HIK.mid, 1.5);
           shot(h, {
             dir, speed: 32, range: 11, w: 0.9, color: HIK.c, mesh: 'blade', size: 1.15, ribbon: 1.2,
             trail: q => { acc++; FX.sparks(q.x, 1.5, q.z, { n: 1, color: HIK.hot, color2: HIK.deep, speed: [1, 4], life: [0.15, 0.35], w: 0.08, dir: dir + Math.PI, spread: 0.8 }); if (acc % 2 === 0) FX.burst(q.x, 1.4, q.z, { smoke: true, n: 1, color: 0x0a080e, color2: 0x000000, speed: [0.2, 1.2], life: [0.3, 0.6], size: [0.45, 0.1], up: -1.5, a: 0.85 }); },
-            onHit: e => { damage(h, e, dmg, 1); slow(h, e, 0.3, 1.5); hikLetter(h, e); hikInk(e.x, e.z, 1.3, 2.5); FX.hit(e.x, 1.3, e.z, HIK.c, true); rmpArc(e.x, e.z, dir + 1.2, 1.8, 1.4, 0.18, HIK.mid, 1.4); SFX.at('hit', e.x, e.z, 0.7); }
+            onHit: e => { damage(h, e, dmg, 1); slow(h, e, 0.3, 1.5); hikLetter(h, e); hikInk(e.x, e.z, 1.3, 2.5); FX.hit(e.x, 1.3, e.z, HIK.c, true); rmpArc(e.x, e.z, dir + 1.2, 1.8, 1.4, 0.18, HIK.mid, 1.4); SFX.at('hex', e.x, e.z, 0.6); }
           });
         }
       },
@@ -1775,12 +1775,12 @@ HEROES.push(
         desc: 'Бросает яблоко в указанную точку. Через 0.7 сек за ним с неба падает Курай: урон и безмолвие на 1.2 / 1.4 / 1.6 / 1.8 сек всем врагам в радиусе 3. Каждому задетому герою открывается буква имени.',
         cast(h, p) {
           const x = p.x, z = p.z, R = 3, T = 0.7, lv = Math.max(1, h.al[1]), dmg = D(h, 82, 13, 0, 0.7), sil = 1.0 + 0.2 * lv, sx = Math.sin(p.dir), cz = Math.cos(p.dir), x0 = h.x + sx * 0.8, z0 = h.z + cz * 0.8;
-          telegraph(h, x, z, R, T, HIK.c); SFX.at('arrow', h.x, h.z, 0.5);
+          telegraph(h, x, z, R, T, HIK.c); SFX.at('whoosh', h.x, h.z, 0.4); SFX.at('flap', h.x, h.z, 0.5);
           FX.add(hikProp('apple'), 0.5, (k, me, dt) => { me.position.set(lerp(x0, x, k), 1.7 + Math.sin(Math.PI * k) * 3 - k * 1.3, lerp(z0, z, k)); me.rotation.x += dt * 9; });
           hikSend(h, x - sx * 0.5, z - cz * 0.5, p.dir, T - 0.15, 8.5);
           after(T - 0.16, () => { if (h.alive) hikSend(h, x - sx * 0.4, z - cz * 0.4, p.dir, 1.0, 0.1, 'slam', 0.36); });
           after(T, () => {
-            if (!h.alive) return; SFX.at('dark', x, z, 0.9); SFX.at('boom', x, z, 0.7); FX.shake(0.4); FX.shock(x, z, 5, 0.9, 0.4);
+            if (!h.alive) return; SFX.at('heavy', x, z, 0.8); SFX.at('necro', x, z, 0.6); SFX.at('munch', x, z, 0.35); FX.shake(0.4); FX.shock(x, z, 5, 0.9, 0.4);
             for (let i = -1; i <= 1; i++) { rmpArc(x + cz * i * 0.8, z - sx * i * 0.8, p.dir + 0.5, R + 0.2, 2.2, 0.3, i ? HIK.mid : HIK.c, 1.1 + (i + 1) * 0.25, false, i ? 0.6 : 0.9); }
             FX.ring(x, z, { r0: 0.5, r1: R + 0.4, color: HIK.c, life: 0.4, tex: 'shock' }); FX.scorch(x, z, R * 0.8, HIK.mid, 7); hikInk(x, z, R * 0.7, 4); hikFeathers(x, 1.5, z, 14);
             FX.sparks(x, 1, z, { n: 22, color: HIK.hot, color2: HIK.deep, speed: [5, 15], life: [0.25, 0.6], ring: true, w: 0.13 }); FX.pillar(x, z, { r: 1.2, h: 9, color: HIK.mid, life: 0.45, op: 0.45 });
@@ -1794,7 +1794,7 @@ HEROES.push(
         desc: 'Вихрь вырванных страниц: щит на 3 сек и +35% скорости на 2.5 сек, а враги в радиусе 4.5 замедлены на 40% на 1.5 сек. Урон, целиком принятый щитом, не срывает запись в тетради.',
         cast(h) {
           const R = 4.5, amt = D(h, 85, 15, 0, 0.55), g = new THREE.Group(), e = FX.add(g, 3.2, null); let a = rand(TAU), el = 0;
-          shield(h, h, amt, 3, 0x8a5a66); addBuff(h, { id: 'alibi', dur: 2.5, ms: 0.35 }); SFX.at('dash', h.x, h.z, 0.8); SFX.at('cast', h.x, h.z, 0.6);
+          shield(h, h, amt, 3, 0x8a5a66); addBuff(h, { id: 'alibi', dur: 2.5, ms: 0.35 }); SFX.at('card', h.x, h.z, 0.7); SFX.at('gust', h.x, h.z, 0.6);
           hikPages(h.x, 1.7, h.z, 16, 9, 1.1); FX.ring(h.x, h.z, { r0: 0.5, r1: R, color: HIK.c, life: 0.4, tex: 'ringThin' }); FX.ring(h.x, h.z, { r0: 0.5, r1: R * 0.8, color: 0x8a8490, life: 0.5, tex: 'swirl', spin: 9, op: 0.4 });
           for (const u of enemiesIn(h, h.x, h.z, R)) { slow(h, u, 0.4, 1.5, 'alibi'); FX.hit(u.x, 1.3, u.z, 0xd8d2c8, false); hikPages(u.x, 1.6, u.z, 2, 3, 0.7); }
           for (let i = 0; i < 7; i++) { const c = hikProp('page'); c.scale.setScalar(0.8); g.add(c); }
@@ -1813,11 +1813,11 @@ HEROES.push(
         desc: 'Открывает тетрадь: выберите в ней любого живого вражеского героя, где бы он ни был. Через 10 сек он получит огромный чистый урон. Но если до этого Хикару потеряет хоть каплю здоровья — запись сорвана (возвращается 35% перезарядки). Враги видят отсчёт и место, где стоит Хикару.',
         cast(h, p) {
           const tgt = p.unit; if (!tgt || tgt.kind !== 'hero' || tgt.team === h.team || !tgt.alive || h.note) return false;
-          const dmg = D(h, 195, 42, 0, 1.0), P = G.player, f = h.facing; SFX.at('dark', h.x, h.z, 0.9); SFX.at('cast', h.x, h.z, 0.7);
+          const dmg = D(h, 195, 42, 0, 1.0), P = G.player, f = h.facing; SFX.at('ultcue', h.x, h.z, 0.9); SFX.at('quill', h.x, h.z, 0.8);
           hikWrite(h, tgt, dmg); hikSend(h, h.x - Math.sin(f) * 0.9 - Math.cos(f) * 0.9, h.z - Math.cos(f) * 0.9 + Math.sin(f) * 0.9, f, 1.2, 1.7);
           FX.ring(h.x, h.z, { r0: 4, r1: 0.6, color: HIK.c, life: 0.5, tex: 'ringThin' }); FX.pillar(h.x, h.z, { r: 1.1, h: 9, color: HIK.mid, life: 0.7, op: 0.4, grow: true });
           let t = 0; G.actors.push({ update(dt) { t += dt; if (t > 0.85 || !h.alive) return false; if (Math.random() < dt * 30) FX.sparks(h.x + Math.sin(f) * 0.6, 2.1, h.z + Math.cos(f) * 0.6, { n: 1, color: HIK.hot, color2: HIK.deep, speed: [1, 4], life: [0.15, 0.3], w: 0.07 }); return true; } });
-          FX.pillar(tgt.x, tgt.z, { r: 1.3, h: 12, color: HIK.mid, life: 0.7, op: 0.5 }); FX.ring(tgt.x, tgt.z, { r0: 5, r1: 1, color: HIK.c, life: 0.5, tex: 'shock' }); SFX.at('dark', tgt.x, tgt.z, 0.8);
+          FX.pillar(tgt.x, tgt.z, { r: 1.3, h: 12, color: HIK.mid, life: 0.7, op: 0.5 }); FX.ring(tgt.x, tgt.z, { r0: 5, r1: 1, color: HIK.c, life: 0.5, tex: 'shock' }); SFX.at('necro', tgt.x, tgt.z, 0.8);
           if (FX.near(tgt.x, tgt.z, 45)) FX.text(tgt.x, tgt.height + 2.6, tgt.z, '«' + tgt.name + '»', '#ff4a5a', 20);
           if (P) {
             if (P === tgt) { UI.announce('Ваше имя в тетради! Раньте Хикару за 10 сек', '#ff3a4a'); SFX.play('warn'); }
@@ -1851,7 +1851,7 @@ function dshPsycho(h) {
   h.psyT = G.time + 6; h.strain = 6; h.strainT = h.psyT; h.madT = h.psyT;   // madT: for these six seconds he and everyone else are enemies (see hostile() in game.js)
   const b = addBuff(h, { id: 'chrome', dur: 6, as: 0.4, ms: 0.15, dmgOut: 1.25, dmgIn: 1.15, ls: 0.15, every: 0.5, onTick: u => { u.hp = Math.max(1, u.hp - u.maxHp * 0.0075); dshGlitch(u.x + rand(-0.6, 0.6), rand(1, 2.4), u.z + rand(-0.6, 0.6), DSH.red, 4); }, onEnd: u => { u.strain = 0; } });
   if (b) b.fx = FX.aura(h, DSH.red, 6, 1.8, 'swirl', 9);
-  SFX.at('overload', h.x, h.z, 0.8); SFX.at('dark', h.x, h.z, 0.5); FX.ring(h.x, h.z, { r0: 0.5, r1: 4, color: DSH.red, life: 0.4, tex: 'shock' }); dshGlitch(h.x, 1.8, h.z, DSH.red, 18); FX.pillar(h.x, h.z, { r: 0.9, h: 8, color: DSH.red, life: 0.5, op: 0.45 });
+  SFX.at('overload', h.x, h.z, 0.7); SFX.at('heartbeat', h.x, h.z, 0.7); SFX.at('glitch', h.x, h.z, 0.6); FX.ring(h.x, h.z, { r0: 0.5, r1: 4, color: DSH.red, life: 0.4, tex: 'shock' }); dshGlitch(h.x, 1.8, h.z, DSH.red, 18); FX.pillar(h.x, h.z, { r: 0.9, h: 8, color: DSH.red, life: 0.5, op: 0.45 });
   if (FX.near(h.x, h.z, 45)) FX.text(h.x, h.height + 1.5, h.z, 'КИБЕРПСИХОЗ', '#ff4a55', 18);
   if (h === G.player) UI.msg('Киберпсихоз: все вокруг — враги, и свои тоже');
   else if (G.player && h.team === G.player.team && FX.near(h.x, h.z, 40)) UI.msg('Дэш в киберпсихозе: он бьёт и своих — держитесь подальше');
@@ -1863,14 +1863,14 @@ function dshSandy(h, dur, lv) {
     id: 'sandy', dur, ms: 0.4, as: 0.4 + 0.1 * lv,
     onHit: (u, t) => { const col = DSH_HUES[hue % 4]; after(0.13, () => { if (!t.alive || !u.alive) return; damage(u, t, u.ad * 0.3, 0, { dot: true }); FX.hit(t.x, t.height * 0.55, t.z, col, false); rmpArc(t.x, t.z, rand(TAU), 1.8, 1.3, 0.16, col, 1.3, false, 0.8); }); return 0; }
   });
-  SFX.at('overload', h.x, h.z, 0.7); SFX.at('dash', h.x, h.z, 1); FX.shock(h.x, h.z, R, 0.9, 0.45); if (h === G.player) FX.punch(0.9);
+  SFX.at('warp', h.x, h.z, 0.9); SFX.at('charge', h.x, h.z, 0.6); SFX.at('servo', h.x, h.z, 0.4); FX.shock(h.x, h.z, R, 0.9, 0.45); if (h === G.player) FX.punch(0.9);
   FX.ring(h.x, h.z, { r0: 0.5, r1: R, color: DSH.c, life: 0.45, tex: 'ringThin' }); FX.ring(h.x, h.z, { r0: 0.3, r1: R * 0.7, color: DSH.blu, life: 0.6, tex: 'ringThin', op: 0.7 }); FX.implode(h.x, 1.6, h.z, 4, { n: 18, color: DSH.c, color2: 0xffffff, life: 0.25, streak: true });
   FX.zone(h.x, h.z, R, DSH.deep, dur, { tex: 'ringThin', follow: h, spin: 0, op: 0.9 }); FX.zone(h.x, h.z, R, DSH.deep, dur, { tex: 'rune2', follow: h, spin: -0.25, op: 0.35 });
   for (let i = 0; i < 3; i++) after(i * 0.05, () => { if (h.alive) dshGhost(h, DSH_HUES[i], 0.5, 0.55); });
   G.actors.push({
     update(dt) {
       if (gen !== h.sandyGen) return false;
-      if (!h.alive || G.time >= h.sandyT) { h.sandyT = 0; if (h.alive) { FX.ring(h.x, h.z, { r0: R * 0.6, r1: 0.5, color: DSH.c, life: 0.3, tex: 'ringThin' }); SFX.at('dash', h.x, h.z, 0.4); } return false; }
+      if (!h.alive || G.time >= h.sandyT) { h.sandyT = 0; if (h.alive) { FX.ring(h.x, h.z, { r0: R * 0.6, r1: 0.5, color: DSH.c, life: 0.3, tex: 'ringThin' }); SFX.at('blink', h.x, h.z, 0.4); } return false; }
       acc += dt; sl += dt;
       if (acc > 0.055 && (dist(h.x, h.z, lx, lz) > 0.55 || (h.anim.atkT > 0 && acc > 0.12))) { acc = 0; lx = h.x; lz = h.z; dshGhost(h, DSH_HUES[hue++ % 4], 0.45, 0.5); }
       if (sl > 0.25) { sl = 0; for (const e of enemiesIn(h, h.x, h.z, R)) { addBuff(e, { id: 'dilate' + h.id, dur: 0.45, slow: 0.3, as: -0.3, src: h }); if (Math.random() < 0.5 && FX.near(e.x, e.z, 50)) FX.burst(e.x, rand(0.6, 2.2), e.z, { n: 1, color: DSH.c, color2: DSH.deep, speed: [0, 0.3], life: [0.5, 0.8], size: [0.22, 0.02], rad: 0.9, a: 0.8 }); } }
@@ -1895,14 +1895,14 @@ HEROES.push(
         free: h => !!(h.phan && G.time < h.phan.until),
         cast(h, p) {
           const full = this.cd * 100 / (100 + h.haste), dmg = D(h, 58, 9.5, 0.55); let lx = h.x, lz = h.z, hue = 0;
-          const strike = (e, u, k) => { damage(u, e, dmg * k, 0); FX.hit(e.x, 1.3, e.z, DSH.c, false); rmpArc(e.x, e.z, u.facing + 1.57, 2.3, 1.5, 0.2, k < 1 ? DSH.mag : DSH.c, 1.3, false, 0.85); dshGlitch(e.x, 1.4, e.z, DSH.pale, 5); SFX.at('slash', e.x, e.z, 0.6); };
+          const strike = (e, u, k) => { damage(u, e, dmg * k, 0); FX.hit(e.x, 1.3, e.z, DSH.c, false); rmpArc(e.x, e.z, u.facing + 1.57, 2.3, 1.5, 0.2, k < 1 ? DSH.mag : DSH.c, 1.3, false, 0.85); dshGlitch(e.x, 1.4, e.z, DSH.pale, 5); SFX.at('thunderblade', e.x, e.z, 0.55); };
           const trail = u => { if (dist(u.x, u.z, lx, lz) > 1.3) { lx = u.x; lz = u.z; dshGhost(u, DSH_HUES[hue++ % 4], 0.4, 0.5); } };
           if (h.phan && G.time < h.phan.until) {   // back to the phantom
-            const ph = h.phan; h.phan = null; ph.fx.dead = true; ph.mark.dead = true; SFX.at('dash', h.x, h.z, 1); FX.ring(h.x, h.z, { r0: 0.4, r1: 2.4, color: DSH.mag, life: 0.3, tex: 'ringThin' });
+            const ph = h.phan; h.phan = null; ph.fx.dead = true; ph.mark.dead = true; SFX.at('blink', h.x, h.z, 0.8); SFX.at('dash', h.x, h.z, 0.6); FX.ring(h.x, h.z, { r0: 0.4, r1: 2.4, color: DSH.mag, life: 0.3, tex: 'ringThin' });
             dashTo(h, ph.x, ph.z, 54, { fly: true, w: 1.5, ribbon: DSH.mag, trail, onHit: (e, u) => { strike(e, u, 0.7); }, onEnd: u => { FX.ring(u.x, u.z, { r0: 0.4, r1: 2.8, color: DSH.c, life: 0.3, tex: 'shock' }); dshGlitch(u.x, 1.4, u.z, DSH.c, 10); } });
             return { cd: Math.max(0.5, full - (G.time - ph.t0)) };
           }
-          dshStrain(h, 1); SFX.at('dash', h.x, h.z, 1); SFX.at('zap', h.x, h.z, 0.4); FX.ring(h.x, h.z, { r0: 0.4, r1: 2.6, color: DSH.c, life: 0.3, tex: 'ringThin' });
+          dshStrain(h, 1); SFX.at('dash', h.x, h.z, 0.8); SFX.at('zap', h.x, h.z, 0.5); FX.ring(h.x, h.z, { r0: 0.4, r1: 2.6, color: DSH.c, life: 0.3, tex: 'ringThin' });
           const ph = h.phan = { x: h.x, z: h.z, until: G.time + 3.5, t0: G.time, fx: dshGhost(h, DSH.c, 3.5, 0.6, true) || { dead: false }, mark: FX.zone(h.x, h.z, 1.3, DSH.c, 3.5, { tex: 'ringThin', spin: 3, op: 0.9 }) };
           dashTo(h, p.x, p.z, 46, { w: 1.5, ribbon: DSH.c, trail, onHit: (e, u) => { strike(e, u, 1); }, onEnd: u => { FX.ring(u.x, u.z, { r0: 0.4, r1: 2.4, color: DSH.c, life: 0.3, tex: 'shock' }); } });
           G.actors.push({ update() { if (h.phan !== ph) return false; if (h.alive && G.time < ph.until) return true; h.phan = null; ph.fx.dead = true; ph.mark.dead = true; if (h.alive) h.cd[0] = Math.max(0, full - 3.5); return false; } });
@@ -1913,13 +1913,13 @@ HEROES.push(
         key: 'W', name: 'Удар гориллы', icon: 'gorilla', cd: 10, cost: 50, range: 5.5, ind: { type: 'line', w: 2.4, fixed: true }, anim: 'piston', animDur: 0.6, lock: 0, noReach: true, ai: { t: 'shot', sp: 30 },
         desc: 'Выпад с поршневым ударом хромированной руки: первый враг на пути получает урон, отлетает на 5 и оглушён на 0.7 сек, а ударная волна наносит половину урона врагам за его спиной. Под сандевистаном удар сильнее на 40%. +1 нагрузка.',
         cast(h, p) {
-          const fast = h.sandyT > G.time, dmg = D(h, 78, 12.5, 0.75) * (fast ? 1.4 : 1), dir = p.dir, sx = Math.sin(dir), cz = Math.cos(dir); dshStrain(h, 1); SFX.at('dash', h.x, h.z, 0.9);
+          const fast = h.sandyT > G.time, dmg = D(h, 78, 12.5, 0.75) * (fast ? 1.4 : 1), dir = p.dir, sx = Math.sin(dir), cz = Math.cos(dir); dshStrain(h, 1); SFX.at('servo', h.x, h.z, 0.7); SFX.at('dash', h.x, h.z, 0.6);
           FX.glow(h.x + sx, 1.6, h.z + cz, 2.4, DSH.yel, 0.25, 'star');
           dashTo(h, h.x + sx * 5.5, h.z + cz * 5.5, 36, {
             w: 1.4, ribbon: DSH.yel, trail: u => { if (fast && Math.random() < 0.5) dshGhost(u, DSH.yel, 0.3, 0.45); FX.sparks(u.x, 1.4, u.z, { n: 1, color: DSH.yel, color2: DSH.ydeep, speed: [2, 6], life: [0.15, 0.3], w: 0.09, dir: dir + Math.PI, spread: 0.6 }); },
             onHit: (e, u) => {
               const x = e.x, z = e.z; damage(u, e, dmg, 0); stun(u, e, 0.7); knock(e, u.x, u.z, 5, 0.28);
-              SFX.at('boom', x, z, 0.7); SFX.at('hit', x, z, 1); FX.shake(0.45); FX.punch(0.6); FX.hitstop(u === G.player ? 0.05 : 0); FX.shock(x, z, 5, 1, 0.35);
+              SFX.at('punch', x, z, 1); SFX.at('heavy', x, z, 0.8); FX.shake(0.45); FX.punch(0.6); FX.hitstop(u === G.player ? 0.05 : 0); FX.shock(x, z, 5, 1, 0.35);
               FX.glow(x, 1.5, z, 4.2, DSH.yel, 0.2, 'star'); FX.ring(x, z, { r0: 0.4, r1: 3.4, color: DSH.yel, life: 0.3, tex: 'shock' }); FX.sparks(x, 1.4, z, { n: 22, color: 0xffffff, color2: DSH.yel, speed: [8, 22], life: [0.15, 0.4], dir, spread: 0.7, w: 0.14 });
               FX.debris(x, 0.4, z, { n: 6, color: 0x4a4640, speed: [3, 8], up: 7, size: [0.15, 0.4] });
               // the shock wave: a cone thrown past the target
@@ -1940,7 +1940,7 @@ HEROES.push(
         desc: 'За 0.65 сек вокруг Дэша смыкается экзорама, и гравитационный пресс вдавливает в землю врагов в радиусе 6.5: урон и оглушение на 0.9 / 1.1 / 1.3 сек. Затем 10 сек он огромен: щит, +25 / 40 / 55 силы атаки, удары бьют по области, сандевистан сразу перезаряжен. Когда рама отключается, нервы не выдерживают — мгновенный киберпсихоз.',
         cast(h) {
           const R = 6.5, T = 0.65, DUR = 10, lv = Math.max(1, h.al[3]), dmg = D(h, 115, 20, 0.8), sh = D(h, 150, 28, 0.6), st = 0.7 + 0.2 * lv; h.order = null; h.path = null;
-          addBuff(h, { id: 'exoUp', dur: T + 0.2, dmgIn: 0.6 }); telegraph(h, h.x, h.z, R, T, DSH.yel); SFX.at('overload', h.x, h.z, 1); SFX.at('drone', h.x, h.z, 0.6);
+          addBuff(h, { id: 'exoUp', dur: T + 0.2, dmgIn: 0.6 }); telegraph(h, h.x, h.z, R, T, DSH.yel); SFX.at('ultcue', h.x, h.z, 0.9); SFX.at('servo', h.x, h.z, 0.8); SFX.at('charge', h.x, h.z, 0.6);
           FX.pillar(h.x, h.z, { r: 1.4, h: 11, color: DSH.ydeep, life: T, op: 0.5, grow: true }); FX.ring(h.x, h.z, { r0: R, r1: 1, color: DSH.yel, life: T, tex: 'ringThin' });
           for (let i = 0; i < 4; i++) after(i * 0.13, () => { if (h.alive) { FX.implode(h.x, 2, h.z, 4.5, { n: 9, color: DSH.yel, color2: 0xffffff, life: 0.22, streak: true }); dshGlitch(h.x + rand(-1, 1), rand(1, 3), h.z + rand(-1, 1), DSH.yel, 5); } });
           after(T, () => {
@@ -1949,10 +1949,10 @@ HEROES.push(
             addBuff(h, {
               id: 'exo', dur: DUR, ad: 10 + 15 * lv, ms: 0.1,
               onHit: (u, t) => { for (const e of enemiesIn(u, t.x, t.z, 2.8)) if (e !== t) damage(u, e, u.ad * 0.5, 0, { dot: true }); FX.ring(t.x, t.z, { r0: 0.4, r1: 2.8, color: DSH.yel, life: 0.25, tex: 'shock', op: 0.8 }); FX.debris(t.x, 0.3, t.z, { n: 2, color: 0x4a4640, speed: [2, 5], up: 5, size: [0.12, 0.28] }); return 0; },
-              onEnd: u => { u.exoT = 0; if (!u.alive) return; FX.ring(u.x, u.z, { r0: 3, r1: 0.5, color: DSH.yel, life: 0.35, tex: 'ringThin' }); FX.debris(u.x, 1.4, u.z, { n: 8, color: 0x3a3d45, speed: [2, 6], up: 5, size: [0.15, 0.35] }); u.strain = 0; dshPsycho(u); }
+              onEnd: u => { u.exoT = 0; if (!u.alive) return; FX.ring(u.x, u.z, { r0: 3, r1: 0.5, color: DSH.yel, life: 0.35, tex: 'ringThin' }); FX.debris(u.x, 1.4, u.z, { n: 8, color: 0x3a3d45, speed: [2, 6], up: 5, size: [0.15, 0.35] }); SFX.at('servo', u.x, u.z, 0.6); u.strain = 0; dshPsycho(u); }
             });
             // the press: everything inside the circle is driven into the ground
-            SFX.at('bigboom', x, z, 1); SFX.at('boom', x, z, 0.8); FX.shake(0.9); FX.punch(1); FX.shock(x, z, R * 1.5, -1.2, 0.5); FX.light(x, 3, z, DSH.yel, 1.8, 30, 0.5);
+            SFX.at('bigboom', x, z, 1); SFX.at('quake', x, z, 0.8); FX.shake(0.9); FX.punch(1); FX.shock(x, z, R * 1.5, -1.2, 0.5); FX.light(x, 3, z, DSH.yel, 1.8, 30, 0.5);
             const disc = new THREE.Mesh(FX.geo.flat, FX.mat('fill', 0x0c0a02, 0.6, false)); disc.position.set(x, 0.07, z); disc.renderOrder = 4; disc.scale.set(R * 2 * RK, 1, R * 2 * RK); FX.add(disc, 0.8, (k, me) => { me.material.opacity = 0.6 * (1 - k); });
             for (let i = 0; i < 3; i++) after(i * 0.07, () => FX.ring(x, z, { r0: R + 1 - i, r1: 0.6 + i, color: i ? DSH.yel : DSH.ydeep, life: 0.35, tex: i ? 'ringThin' : 'shock', op: i ? 0.8 : 0.9 }));
             FX.ring(x, z, { r0: R * 0.85, r1: R, color: DSH.yel, life: 2, tex: 'crack', op: 0.8 }); FX.scorch(x, z, R * 0.7, undefined, 7); FX.debris(x, 0.3, z, { n: 16, color: 0x4a4640, speed: [3, 9], up: 9, size: [0.2, 0.5], rad: R * 0.6 }); FX.smoke(x, z, R * 0.6, 8, 0x3a3428);
@@ -2014,7 +2014,7 @@ HEROES.push(
     },
     onDeal(h, t, d, o) {
       if (!o.basic || t.struct) return; const need = h.hasteT > G.time ? 2 : 3; h.tokN = (h.tokN || 0) + 1; if (h.tokN < need) return; h.tokN = 0;
-      damage(h, t, 12 + 4 * h.level + 0.3 * h.ad, 0, { dot: true }); for (let i = 0; i < 3; i++) if (h.cd[i] > 0) h.cd[i] = Math.max(0, h.cd[i] - 0.5); if (t.alive && t.kind === 'hero') slow(h, t, 0.2, 1, 'tokslow');
+      damage(h, t, 12 + 4 * h.level + 0.3 * h.ad, 0, { dot: true }); SFX.at('tick', t.x, t.z, 0.4); for (let i = 0; i < 3; i++) if (h.cd[i] > 0) h.cd[i] = Math.max(0, h.cd[i] - 0.5); if (t.alive && t.kind === 'hero') slow(h, t, 0.2, 1, 'tokslow');
       if (FX.near(t.x, t.z, 50)) { FX.ring(t.x, t.z, { r0: 1.9, r1: 0.5, color: TOK.c, life: 0.3, tex: 'ringThin', y: t.height * 0.55 }); FX.glow(t.x, t.height * 0.55, t.z, 2.6, TOK.c, 0.18, 'star'); FX.beam(t.x, t.z, h.x, h.z, { color: TOK.deep, w: 0.35, life: 0.22, y: 1.5, op: 0.8 }); }
     },
     abilities: [
@@ -2022,10 +2022,10 @@ HEROES.push(
         key: 'Q', name: 'Первая пуля: Разгон', icon: 'bulletfast', cd: 15, cost: 50, range: 0, ind: { type: 'self', r: 2.5 }, anim: 'temple', animDur: 0.55, lock: 0.28, ai: { t: 'buff' },
         desc: 'Стреляет себе в висок пулей ускоренного времени: на 4.5 сек +40 / 50 / 60 / 70% скорости атаки и +25% скорости передвижения, а «Украденное время» срабатывает на каждой второй атаке.',
         cast(h) {
-          const lv = Math.max(1, h.al[0]), dur = 4.5; SFX.at('cast', h.x, h.z, 0.5);
+          const lv = Math.max(1, h.al[0]), dur = 4.5; SFX.at('tick', h.x, h.z, 0.5);
           after(0.24, () => {
             if (!h.alive) return; h.hasteT = G.time + dur; addBuff(h, { id: 'tokfast', dur, as: 0.3 + 0.1 * lv, ms: 0.25 });
-            SFX.at('shoot', h.x, h.z, 1); SFX.at('dash', h.x, h.z, 0.6); tokFlash(h.x, h.height * 0.82, h.z, 1.2); FX.ring(h.x, h.z, { r0: 0.4, r1: 3.2, color: TOK.c, life: 0.35, tex: 'shock' });
+            SFX.at('gunshot', h.x, h.z, 0.9); SFX.at('charge', h.x, h.z, 0.5); tokFlash(h.x, h.height * 0.82, h.z, 1.2); FX.ring(h.x, h.z, { r0: 0.4, r1: 3.2, color: TOK.c, life: 0.35, tex: 'shock' });
             tokClock(h.x, h.z, 1.9, dur, 14, TOK.c, 0.75, h); FX.sparks(h.x, 1.4, h.z, { n: 16, color: TOK.pale, color2: TOK.deep, speed: [4, 12], life: [0.2, 0.5], ring: true, w: 0.1 });
             let acc = 0; G.actors.push({ update(dt) { if (!h.alive || G.time >= h.hasteT) return false; acc += dt; if (acc > 0.07 && h.moving && FX.near(h.x, h.z, 50)) { acc = 0; FX.sparks(h.x, rand(0.5, 2), h.z, { n: 1, color: TOK.c, color2: TOK.deep, speed: [3, 7], life: [0.2, 0.4], dir: h.facing + Math.PI, spread: 0.4, w: 0.08, grav: 0 }); } return true; } });
           });
@@ -2037,12 +2037,12 @@ HEROES.push(
         cast(h, p) {
           const lv = Math.max(1, h.al[1]), dmg = D(h, 72, 11.5, 0.6), dur = 0.8 + 0.2 * lv, dir = p.dir, sx = Math.sin(dir), cz = Math.cos(dir); let n = 0; FX.lineDecal(h.x, h.z, dir, p.range, 0.5, TOK.c, 0.3);
           after(0.3, () => {
-            if (!h.alive || h.stunned) return; SFX.at('shoot', h.x, h.z, 1); SFX.at('boom', h.x, h.z, 0.35); tokFlash(h.x + sx * 2, 1.7, h.z + cz * 2, 1.5); FX.ring(h.x + sx * 2, h.z + cz * 2, { r0: 0.3, r1: 1.8, color: TOK.c, life: 0.25, tex: 'ringThin', y: 1.7 }); if (h === G.player) FX.shake(0.2);
+            if (!h.alive || h.stunned) return; SFX.at('rifle', h.x, h.z, 1); SFX.at('tick', h.x, h.z, 0.4); tokFlash(h.x + sx * 2, 1.7, h.z + cz * 2, 1.5); FX.ring(h.x + sx * 2, h.z + cz * 2, { r0: 0.3, r1: 1.8, color: TOK.c, life: 0.25, tex: 'ringThin', y: 1.7 }); if (h === G.player) FX.shake(0.2);
             shot(h, {
               dir, x: h.x + sx * 1.8, z: h.z + cz * 1.8, speed: 44, range: 12, w: 0.8, color: TOK.c, mesh: 'bolt', size: 0.9, ribbon: 0.9, y: 1.7,
               trail: q => { n++; if (n % 3 === 0 && FX.near(q.x, q.z, 50)) FX.ring(q.x, q.z, { r0: 0.2, r1: 0.9, color: TOK.c, life: 0.3, tex: 'ringThin', y: 1.7, op: 0.7 }); FX.trail(q.x, 1.7, q.z, TOK.c, 0.5, 1); },
               onHit: e => {
-                damage(h, e, dmg, 0); FX.hit(e.x, 1.4, e.z, TOK.c, true); SFX.at('hit', e.x, e.z, 0.8); if (!e.alive) return;
+                damage(h, e, dmg, 0); FX.hit(e.x, 1.4, e.z, TOK.c, true); SFX.at('impact', e.x, e.z, 0.7); SFX.at('tick', e.x, e.z, 0.5); if (!e.alive) return;
                 const b = addBuff(e, { id: 'tokstop', dur, stun: true, dmgIn: 1.15, src: h }); if (!b) return; e.tstopT = G.time + b.dur;
                 tokClock(e.x, e.z, e.radius + 1.5, b.dur, 0, 0x9a6a1a, 0.9, e); b.fx = FX.bubble(e, 0x4a5468, b.dur, e.radius + 0.9); FX.ring(e.x, e.z, { r0: 3.4, r1: e.radius + 1.2, color: TOK.c, life: 0.3, tex: 'ringThin' });
                 if (FX.near(e.x, e.z, 45) && G.player && (h === G.player || e === G.player)) FX.text(e.x, e.height + 1.3, e.z, 'стоп', '#ffe2a8', 15);
@@ -2056,12 +2056,12 @@ HEROES.push(
         desc: 'Пуля, отматывающая время назад: Токико мгновенно возвращается туда, где была 3 сек назад, и восстанавливает 50 / 60 / 70 / 80% здоровья, потерянного за эти 3 сек. Снимает замедления и обездвиживание. Место возврата отмечено на земле кольцом, которое видите только вы.',
         cast(h) {
           const p = tokPast(h); if (!p) return false; const lv = Math.max(1, h.al[2]), x0 = h.x, z0 = h.z, back = Math.max(0, p.hp - h.hp) * (0.4 + 0.1 * lv);
-          SFX.at('shoot', x0, z0, 0.8); SFX.at('dark', x0, z0, 0.5); tokFlash(x0, h.height * 0.82, z0, 1); dshGhost(h, TOK.c, 0.6, 0.55); tokClock(x0, z0, 1.8, 0.7, -16, TOK.c, 0.8);
+          SFX.at('gunshot', x0, z0, 0.8); SFX.at('tick', x0, z0, 0.5); tokFlash(x0, h.height * 0.82, z0, 1); dshGhost(h, TOK.c, 0.6, 0.55); tokClock(x0, z0, 1.8, 0.7, -16, TOK.c, 0.8);
           for (const b of h.buffs) if (b.slow || b.root) b.dead = true;
           blink(h, p.x, p.z); h.order = null; h.hist = [{ t: G.time, x: h.x, z: h.z, hp: h.hp }]; if (back > 0) heal(h, h, back);
           FX.beam(x0, z0, h.x, h.z, { color: TOK.deep, w: 1.1, life: 0.4, y: 1.4, op: 0.8 }); FX.beam(x0, z0, h.x, h.z, { color: TOK.c, w: 0.3, life: 0.3, y: 1.4 });
           tokClock(h.x, h.z, 2.2, 0.8, -18, TOK.c, 0.85); FX.implode(h.x, 1.5, h.z, 3.4, { n: 22, color: TOK.c, color2: 0xffffff, life: 0.3, streak: true }); FX.ring(h.x, h.z, { r0: 3.6, r1: 0.6, color: TOK.c, life: 0.35, tex: 'ringThin' }); FX.pillar(h.x, h.z, { r: 0.9, h: 8, color: TOK.deep, life: 0.45, op: 0.5 });
-          if (back > 0) FX.heal(h, TOK.c); SFX.at('heal', h.x, h.z, 0.5);
+          if (back > 0) FX.heal(h, TOK.c); SFX.at('blink', h.x, h.z, 0.6); SFX.at('warp', h.x, h.z, 0.5); SFX.at('heal', h.x, h.z, 0.35);
           if (h === G.player && dist(x0, z0, h.x, h.z) > 16) G.camSnap = true;
         }
       },
@@ -2070,10 +2070,10 @@ HEROES.push(
         desc: 'Через 0.5 сек на 6 сек накрывает область радиусом 7 живой тенью под огромным циферблатом. Враги внутри замедлены на 30% и дважды в секунду теряют здоровье — тень пожирает их время, а 35% этого урона возвращается Токико здоровьем. Из тени встают четыре её копии из прошлого и расстреливают врагов внутри.',
         cast(h, p) {
           const x = p.x, z = p.z, R = 7, T = 0.5, DUR = 6, tick = D(h, 15, 2.6, 0.1), sd = D(h, 12, 2.2, 0.2), C = tokClones(h), L = DUR + 0.9; h.zafT = G.time + T + DUR;
-          telegraph(h, x, z, R, T, TOK.red); SFX.at('dark', x, z, 1); SFX.at('overload', h.x, h.z, 0.5); FX.ring(x, z, { r0: R + 3, r1: R, color: TOK.c, life: T, tex: 'ringThin' });
+          telegraph(h, x, z, R, T, TOK.red); SFX.at('ultcue', h.x, h.z, 0.9); SFX.at('tick', x, z, 0.7); SFX.at('dark', x, z, 0.6); FX.ring(x, z, { r0: R + 3, r1: R, color: TOK.c, life: T, tex: 'ringThin' });
           after(T, () => {
             if (!h.alive) { h.zafT = 0; return; }
-            G.dangers.push({ x, z, r: R, team: h.team, until: G.time + DUR }); SFX.at('bigboom', x, z, 0.6); FX.shock(x, z, R * 1.3, 0.8, 0.5); FX.shake(0.35);
+            G.dangers.push({ x, z, r: R, team: h.team, until: G.time + DUR }); SFX.at('bell', x, z, 0.9); SFX.at('necro', x, z, 0.8); SFX.at('bigboom', x, z, 0.4); FX.shock(x, z, R * 1.3, 0.8, 0.5); FX.shake(0.35);
             // the shadow: a black pool with a crimson rim, the great clock turning over it
             const pool = new THREE.Mesh(FX.geo.flat, FX.mat('fill', 0x070406, 0.82, false)); pool.position.set(x, 0.07, z); pool.renderOrder = 4;
             FX.add(pool, DUR + 0.4, (k, me, dt, en) => { const g = easeOut(Math.min(1, en.t / 0.3)); me.scale.set(R * 2.12 * g, 1, R * 2.12 * g); me.material.opacity = 0.82 * Math.min(1, (DUR + 0.4 - en.t) / 0.4); });
@@ -2100,7 +2100,7 @@ HEROES.push(
                   a2 += 0.75; vol++; if (!foes.length) return true; foes.sort(byHeroDist({ x, z, radius: 0 }));
                   C.forEach((S, i) => {
                     const e = foes[(i + vol) % Math.min(foes.length, 3)]; S.facing = angTo(S.x, S.z, e.x, e.z); S.anim.atkT = S.anim.atkDur = 0.5; S.anim.alt = !S.anim.alt;
-                    after(0.2 + i * 0.05, () => { if (!e.alive || !h.alive) return; damage(h, e, sd, 0, { dot: true }); FX.beam(S.x, S.z, e.x, e.z, { color: TOK.c, w: 0.22, life: 0.1, y: 1.6 }); tokFlash(S.x + Math.sin(S.facing) * 1.4, 1.6, S.z + Math.cos(S.facing) * 1.4, 0.6); FX.hit(e.x, 1.3, e.z, TOK.c, false); SFX.at('shoot', S.x, S.z, 0.35); });
+                    after(0.2 + i * 0.05, () => { if (!e.alive || !h.alive) return; damage(h, e, sd, 0, { dot: true }); FX.beam(S.x, S.z, e.x, e.z, { color: TOK.c, w: 0.22, life: 0.1, y: 1.6 }); tokFlash(S.x + Math.sin(S.facing) * 1.4, 1.6, S.z + Math.cos(S.facing) * 1.4, 0.6); FX.hit(e.x, 1.3, e.z, TOK.c, false); SFX.at('gunshot', S.x, S.z, 0.3); });
                   });
                 }
                 return true;
@@ -2134,7 +2134,7 @@ function rikSign(h, s) {
   const J = h.jk || (h.jk = { seen: [], until: 0 }); if (G.time > J.until || J.seen.includes(s)) J.seen = [];
   J.seen.push(s); J.until = G.time + 6; const n = J.seen.length, k = n === 3 ? 1.5 : (n === 2 ? 1.2 : 1);
   if (FX.near(h.x, h.z, 45)) FX.text(h.x, h.height + 1 + n * 0.3, h.z, n === 3 ? 'ДЗЯН-КЭН-ПОН!' : RIK_SIGN[s] + '!', n === 3 ? '#fff0c0' : '#ffc24a', n === 3 ? 20 : 13 + n * 2);
-  if (n === 3) { J.seen = []; J.until = 0; SFX.at('crit', h.x, h.z, 0.6); FX.ring(h.x, h.z, { r0: 0.5, r1: 3.6, color: RIK.pale, life: 0.4, tex: 'shock' }); rikAura(h, 8); }
+  if (n === 3) { J.seen = []; J.until = 0; SFX.at('chime', h.x, h.z, 0.6); FX.ring(h.x, h.z, { r0: 0.5, r1: 3.6, color: RIK.pale, life: 0.4, tex: 'shock' }); rikAura(h, 8); }
   return { k, n, cd: (n === 3 ? 0.6 : 1) * (h.vowT > G.time ? 0.5 : 1) };
 }
 
@@ -2154,7 +2154,7 @@ HEROES.push(
         cast(h, p) {
           const T = 0.58, vow = h.vowT > G.time, sg = rikSign(h, 0), dmg = D(h, 125, 23, 1.0) * sg.k, dir = p.dir, sx = Math.sin(dir), cz = Math.cos(dir), full = this.cd * 100 / (100 + h.haste), R = vow ? 5.8 : 4.8;
           h.chargeT = G.time + T; addBuff(h, { id: 'rockUp', dur: T + 0.1, dmgIn: 0.8 });
-          SFX.at('cue', h.x, h.z, 0.9); SFX.at('overload', h.x, h.z, 0.3);
+          SFX.at('charge', h.x, h.z, 0.8); SFX.at('cue', h.x, h.z, 0.4);
           FX.lineDecal(h.x, h.z, dir, R, 3, RIK.c, T); G.dangers.push({ x: h.x + sx * 2.6, z: h.z + cz * 2.6, r: 3, team: h.team, until: G.time + T });
           // the gathering: streaks rush into the fist, rings close on him, the air bends
           for (let i = 0; i < 5; i++) after(i * 0.11, () => { if (!h.alive || !(h.chargeT > G.time)) return; FX.implode(h.x, 1.3, h.z, 3.4 - i * 0.35, { n: 8, color: RIK.c, color2: 0xffffff, life: 0.2, streak: true }); FX.ring(h.x, h.z, { r0: 2.8 - i * 0.35, r1: 0.5, color: i % 2 ? RIK.c : RIK.grn, life: 0.22, tex: 'ringThin' }); rikAura(h, 2); if (vow) rikDark(h, 2); });
@@ -2164,7 +2164,7 @@ HEROES.push(
             h.chargeT = 0; const x0 = h.x, z0 = h.z, ix = x0 + sx * 2.4, iz = z0 + cz * 2.4, hit = stripHits(h, x0, z0, dir, R, 1.5);
             let first = null, bd = 1e9; for (const e of hit) { const d0 = udist(h, e) - (e.kind === 'hero' ? 3 : 0); if (d0 < bd) { bd = d0; first = e; } }
             for (const e of hit) { damage(h, e, e === first ? dmg : dmg * 0.6, 0); if (e === first) { stun(h, e, 0.6); knock(e, x0, z0, vow ? 7 : 5, 0.3); } else knock(e, x0, z0, 2.5, 0.25); FX.hit(e.x, 1.3, e.z, RIK.c, true); }
-            SFX.at(hit.length ? 'bigboom' : 'boom', ix, iz, hit.length ? 0.9 : 0.6); SFX.at('heavy', ix, iz, 1); FX.shake(hit.length ? 0.8 : 0.4); FX.punch(0.8); if (hit.length && (h === G.player || first === G.player)) FX.hitstop(0.08);
+            SFX.at(hit.length ? 'bigboom' : 'boom', ix, iz, hit.length ? 0.9 : 0.6); SFX.at('punch', ix, iz, 1); SFX.at('stone', ix, iz, 0.5); FX.shake(hit.length ? 0.8 : 0.4); FX.punch(0.8); if (hit.length && (h === G.player || first === G.player)) FX.hitstop(0.08);
             FX.glow(ix, 1.4, iz, 7, RIK.c, 0.2, 'star'); FX.glow(ix, 1.4, iz, 9, 0xffffff, 0.1, 'flare');
             FX.explosion(ix, iz, vow ? 3.4 : 2.6, RIK.c, { el: 'earth', color2: RIK.deep, rock: 0x4a4640 }); FX.shock(ix, iz, 7.5, 1.3, 0.45);
             // the force goes on past the fist: a cone and a lance of light
@@ -2182,9 +2182,9 @@ HEROES.push(
         desc: 'Аура вытягивается из двух пальцев в клинок, и Рику одним взмахом рассекает всё на 8 перед собой: урон и «рассечение» — −10 / 14 / 18 / 22 защиты на 4 сек.',
         cast(h, p) {
           const sg = rikSign(h, 1), dmg = D(h, 82, 13.5, 0.65) * sg.k, cut = 6 + 4 * Math.max(1, h.al[1]), dir = p.dir, sx = Math.sin(dir), cz = Math.cos(dir), L = 8, full = this.cd * 100 / (100 + h.haste), vow = h.vowT > G.time;
-          SFX.at('whoosh', h.x, h.z, 1); FX.glow(h.x + sx * 0.8, 1.4, h.z + cz * 0.8, 2.2, RIK.grn, 0.2, 'star');
+          SFX.at('snip', h.x, h.z, 0.6); SFX.at('whoosh', h.x, h.z, 0.6); FX.glow(h.x + sx * 0.8, 1.4, h.z + cz * 0.8, 2.2, RIK.grn, 0.2, 'star');
           after(0.1, () => {
-            if (!h.alive) return; const x0 = h.x, z0 = h.z; SFX.at('slash', x0, z0, 1);
+            if (!h.alive) return; const x0 = h.x, z0 = h.z; SFX.at('blade', x0, z0, 0.9);
             for (const e of stripHits(h, x0, z0, dir, L, 1.3)) { damage(h, e, dmg, 0); addBuff(e, { id: 'rikcut', dur: 4, def: -cut, src: h }); FX.hit(e.x, 1.3, e.z, RIK.grn, true); rmpArc(e.x, e.z, dir + 1.57, 2, 1.4, 0.2, RIK.grn, 1.3, false, 0.85); FX.sparks(e.x, 1.2, e.z, { n: 6, color: 0xffffff, color2: RIK.grn, speed: [4, 12], life: [0.15, 0.35], dir, spread: 0.5, w: 0.1 }); }
             // the blade: a crescent as long as the reach, a hard bright edge down the middle, a second fainter crescent behind it
             FX.slash(x0, z0, dir, { r: L, sweep: 1.25, color: RIK.grn, life: 0.26, y: 1.3 }); FX.slash(x0, z0, dir, { r: L * 0.7, sweep: 1.0, color: vow ? RIK.vio : RIK.c, life: 0.22, y: 1.25, flip: true });
@@ -2200,13 +2200,13 @@ HEROES.push(
         desc: 'Раскрытая ладонь выпускает сгусток ауры на 15: первый враг на пути получает магический урон и замедлен на 35% на 1.5 сек, враги в радиусе 2.8 вокруг него — половину урона.',
         cast(h, p) {
           const sg = rikSign(h, 2), dmg = D(h, 72, 12, 0.3, 0.5) * sg.k, dir = p.dir, sx = Math.sin(dir), cz = Math.cos(dir), full = this.cd * 100 / (100 + h.haste), vow = h.vowT > G.time, col = vow ? RIK.vio : RIK.c;
-          SFX.at('cast', h.x, h.z, 0.9); SFX.at('shoot', h.x, h.z, 0.7); FX.glow(h.x + sx, 1.5, h.z + cz, 3.2, col, 0.2, 'star'); FX.ring(h.x + sx, h.z + cz, { r0: 0.3, r1: 2, color: col, life: 0.25, tex: 'ringThin', y: 1.2 });
+          SFX.at('arcane', h.x, h.z, 0.8); SFX.at('whoosh', h.x, h.z, 0.5); FX.glow(h.x + sx, 1.5, h.z + cz, 3.2, col, 0.2, 'star'); FX.ring(h.x + sx, h.z + cz, { r0: 0.3, r1: 2, color: col, life: 0.25, tex: 'ringThin', y: 1.2 });
           shot(h, {
             dir, speed: 30, range: 15, w: 1.0, color: col, size: 1.15, mesh: 'orb', y: 1.4, ribbon: 1.6,
             trail: q => { FX.trail(q.x, q.y, q.z, col, 0.75, 2); if (Math.random() < 0.6) FX.sparks(q.x, q.y, q.z, { n: 1, color: RIK.pale, color2: col, speed: [1, 4], life: [0.15, 0.3], w: 0.08, grav: 0 }); },
             onHit: (e, q) => {
               damage(h, e, dmg, 1); slow(h, e, 0.35, 1.5); for (const o of enemiesIn(h, q.x, q.z, 2.8)) if (o !== e) { damage(h, o, dmg * 0.5, 1); FX.hit(o.x, 1.3, o.z, col, false); }
-              SFX.at('boom', q.x, q.z, 0.6); FX.explosion(q.x, q.z, 2.3, col, { color2: RIK.deep, smoke: false }); FX.ring(q.x, q.z, { r0: 0.4, r1: 2.8, color: RIK.pale, life: 0.3, tex: 'ringThin' }); FX.sparks(q.x, 1.3, q.z, { n: 14, color: 0xffffff, color2: col, speed: [5, 14], life: [0.15, 0.4], w: 0.11 });
+              SFX.at('impact', q.x, q.z, 0.6); SFX.at('pop', q.x, q.z, 0.5); FX.explosion(q.x, q.z, 2.3, col, { color2: RIK.deep, smoke: false }); FX.ring(q.x, q.z, { r0: 0.4, r1: 2.8, color: RIK.pale, life: 0.3, tex: 'ringThin' }); FX.sparks(q.x, 1.3, q.z, { n: 14, color: 0xffffff, color2: col, speed: [5, 14], life: [0.15, 0.4], w: 0.11 });
             },
             onEnd: (x, z, q) => { if (!q.n) { FX.ring(x, z, { r0: 0.3, r1: 1.6, color: col, life: 0.25 }); FX.sparks(x, 1.3, z, { n: 6, color: RIK.pale, color2: col, speed: [2, 6], life: [0.15, 0.3], w: 0.09 }); } }
           });
@@ -2218,7 +2218,7 @@ HEROES.push(
         desc: 'Рику отдаёт всё ради силы прямо сейчас. 1 сек он собирает ауру (получая на 40% меньше урона), затем волна бьёт и отбрасывает врагов в радиусе 5.5, а сам он на 9 сек вырастает: +45 / 70 / 95 силы атаки, +30% урона, +25% скорости передвижения и атаки, −20% получаемого урона; знаки сразу готовы и перезаряжаются вдвое быстрее. Когда сила уходит — расплата: потеря 20% текущего здоровья, 4 сек безмолвия и замедления на 30%.',
         cast(h) {
           const T = 1.0, DUR = 9, R = 5.5, lv = Math.max(1, h.al[3]), dmg = D(h, 95, 19, 0.7); h.order = null; h.path = null;
-          addBuff(h, { id: 'vowUp', dur: T + 0.15, dmgIn: 0.6 }); telegraph(h, h.x, h.z, R, T, RIK.vio); SFX.at('dark', h.x, h.z, 1); SFX.at('overload', h.x, h.z, 0.8);
+          addBuff(h, { id: 'vowUp', dur: T + 0.15, dmgIn: 0.6 }); telegraph(h, h.x, h.z, R, T, RIK.vio); SFX.at('ultcue', h.x, h.z, 0.9); SFX.at('charge', h.x, h.z, 0.8); SFX.at('heartbeat', h.x, h.z, 0.6);
           FX.pillar(h.x, h.z, { r: 1.5, h: 14, color: RIK.vio, life: T, op: 0.5, grow: true }); FX.zone(h.x, h.z, R, RIK.vio, T, { tex: 'swirl', spin: -5, op: 0.6 });
           for (let i = 0; i < 8; i++) after(i * 0.12, () => { if (!h.alive) return; FX.implode(h.x, 1.6, h.z, 6 - i * 0.4, { n: 10, color: i % 2 ? RIK.vio : RIK.c, color2: 0xffffff, life: 0.25, streak: true }); rikDark(h, 4); FX.shake(0.12 + i * 0.03); if (i % 2) FX.arcs(h.x, 1.6, h.z, 3, 2, RIK.vio); });
           after(T, () => {
@@ -2227,13 +2227,13 @@ HEROES.push(
               id: 'vow', dur: DUR, ad: 20 + 25 * lv, ms: 0.25, as: 0.25, dmgOut: 1.3, dmgIn: 0.8, every: 0.22, onTick: u => rikDark(u, 2),
               onEnd: u => {   // the price
                 u.vowT = 0; if (!u.alive) return; u.hp = Math.max(1, u.hp * 0.8); addBuff(u, { id: 'price', dur: 4, silence: true, slow: 0.3, src: u });
-                FX.ring(u.x, u.z, { r0: 4, r1: 0.5, color: RIK.vio, life: 0.45, tex: 'shock' }); FX.burst(u.x, 1.4, u.z, { smoke: true, n: 10, color: 0x241438, color2: 0x08040e, speed: [1, 3], life: [0.6, 1.2], size: [1, 2.6], up: 2, a: 0.5 }); SFX.at('dark', u.x, u.z, 0.7);
+                FX.ring(u.x, u.z, { r0: 4, r1: 0.5, color: RIK.vio, life: 0.45, tex: 'shock' }); FX.burst(u.x, 1.4, u.z, { smoke: true, n: 10, color: 0x241438, color2: 0x08040e, speed: [1, 3], life: [0.6, 1.2], size: [1, 2.6], up: 2, a: 0.5 }); SFX.at('heartbeat', u.x, u.z, 0.6); SFX.at('dark', u.x, u.z, 0.5);
                 if (FX.near(u.x, u.z, 45)) FX.text(u.x, u.height + 1.4, u.z, 'РАСПЛАТА', '#b79aff', 17); if (u === G.player) UI.msg('Расплата: умения недоступны 4 сек');
               }
             });
             if (b) b.fx = FX.aura(h, RIK.vio, DUR, 2.3, 'swirl', 6); FX.heat(x, 2.4, z, 2.4, DUR, 0.45, { follow: h, h: 3.2 });
             for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 0); knock(e, x, z, 4.5, 0.3); FX.hit(e.x, 1.3, e.z, RIK.vio, true); }
-            SFX.at('bigboom', x, z, 1); FX.shake(0.9); FX.punch(1); FX.light(x, 3, z, RIK.vio, 2, 30, 0.6);
+            SFX.at('bigboom', x, z, 1); SFX.at('roar', x, z, 0.9); FX.shake(0.9); FX.punch(1); FX.light(x, 3, z, RIK.vio, 2, 30, 0.6);
             FX.explosion(x, z, 4.2, RIK.vio, { el: 'shadow', color2: RIK.vdeep }); FX.shock(x, z, R * 1.7, 1.4, 0.55); FX.pillar(x, z, { r: 2.2, h: 22, color: RIK.vio, life: 0.9, op: 0.5 }); FX.pillar(x, z, { r: 0.8, h: 30, color: RIK.c, life: 0.6, op: 0.6 });
             for (let i = 0; i < 3; i++) after(i * 0.08, () => FX.ring(x, z, { r0: 0.6 + i, r1: R + 1 + i * 1.5, color: i % 2 ? RIK.c : RIK.vio, life: 0.5, tex: i ? 'ringThin' : 'shock' }));
             FX.ring(x, z, { r0: R * 0.8, r1: R * 0.95, color: RIK.vio, life: 2.2, tex: 'crack', op: 0.8 }); FX.scorch(x, z, R * 0.7, RIK.vio, 8); FX.debris(x, 0.3, z, { n: 14, color: 0x4a4640, speed: [3, 10], up: 10, size: [0.2, 0.55], rad: 1.5 });
@@ -2253,7 +2253,7 @@ function ashEmbers(x, y, z, n, rad) { FX.sparks(x, y, z, { n, color: 0xffd0a0, c
 function ashOff(h) {
   const R = h.ride; if (!R) return; h.ride = null; h.phase = false; h.yOff = 0; if (R.fx) R.fx.dead = true; for (const b of h.buffs) if (b.id === 'ride') b.dead = true;
   const q = NAV.nearest(h.x + Math.sin(h.facing + 2.4) * 1.6, h.z + Math.cos(h.facing + 2.4) * 1.6); h.x = q.x; h.z = q.z; h.cd[0] = h.def.abilities[0].cd * 100 / (100 + h.haste);
-  ashSmoke(h.x, 1, h.z, 1.2, 5, 0.5); SFX.at('dash', h.x, h.z, 0.4);
+  ashSmoke(h.x, 1, h.z, 1.2, 5, 0.5); SFX.at('flap', h.x, h.z, 0.4);
 }
 let _ashCig = null;
 function ashCig() {
@@ -2287,18 +2287,18 @@ function chsPlace(h, kind, x, z, dur, R, tick) {
   const base = new THREE.Mesh(FX.geo.flat, FX.mat('glow', 0x021a0e, 0.7, false)); base.userData.own = true; base.scale.set(s * 1.9, 1, s * 1.9); base.position.y = 0.1; base.renderOrder = 5; grp.add(bd, base, core, pc);
   const p = { kind, x: q.x, z: q.z, R, ang, until: G.time + dur, t0: G.time, acc: 0, moving: false, steps: 0, hit: null };
   p.e = FX.add(grp, dur + 60, (k, me, dt, en) => { const dr = Math.min(1, en.t / 0.22), y = (1 - dr * dr) * 7, left = p.until - G.time, f = Math.min(1, left / 0.4); me.position.set(p.x, 0, p.z); pc.position.y = y + Math.sin(en.t * 2.2) * 0.08 + 0.1; core.position.y = pc.position.y - s * 0.03; pc.rotation.y = core.rotation.y += dt * (p.moving ? 9 : 0.7); bd.material.opacity = 0.5 * dr * f * (0.8 + 0.2 * Math.sin(en.t * 3)); pc.material.opacity = core.material.opacity = f; base.material.opacity = 0.7 * dr * f; });
-  h.pcs[kind] = p; after(0.2, () => { if (h.pcs[kind] !== p) return; FX.ring(p.x, p.z, { r0: 0.3, r1: R, color: CHS.c, life: 0.4, tex: 'shock' }); FX.pillar(p.x, p.z, { r: 0.7, h: 9, color: CHS.c, life: 0.4, op: 0.5 }); FX.sparks(p.x, 0.5, p.z, { n: 12, color: CHS.pale, color2: CHS.deep, speed: [2, 8], life: [0.2, 0.5], w: 0.1 }); SFX.at('hit', p.x, p.z, 0.8); SFX.at('ice', p.x, p.z, 0.4); });
+  h.pcs[kind] = p; after(0.2, () => { if (h.pcs[kind] !== p) return; FX.ring(p.x, p.z, { r0: 0.3, r1: R, color: CHS.c, life: 0.4, tex: 'shock' }); FX.pillar(p.x, p.z, { r: 0.7, h: 9, color: CHS.c, life: 0.4, op: 0.5 }); FX.sparks(p.x, 0.5, p.z, { n: 12, color: CHS.pale, color2: CHS.deep, speed: [2, 8], life: [0.2, 0.5], w: 0.1 }); SFX.at('clack', p.x, p.z, 0.8); SFX.at('arcane', p.x, p.z, 0.3); });
   G.actors.push({ update(dt) { if (h.pcs[kind] !== p) return false; if (G.time > p.until) { chsDrop(h, kind); return false; } p.acc += dt; if (p.acc >= 0.5 && G.time - p.t0 > 0.25) { p.acc = 0; tick(p); } return true; } });
   return p;
 }
 // slide a piece in a straight line; `touch(e)` is called once for every enemy it passes over
 function chsSlide(h, p, dir, len, speed, touch, done) {
-  const sx = Math.sin(dir), cz = Math.cos(dir); let left = len; p.moving = true; p.hit = new Set(); const rib = FX.ribbon(CHS.c, 1.3, 12); SFX.at('dash', p.x, p.z, 0.6);
+  const sx = Math.sin(dir), cz = Math.cos(dir); let left = len; p.moving = true; p.hit = new Set(); const rib = FX.ribbon(CHS.c, 1.3, 12); SFX.at('whoosh', p.x, p.z, 0.5);
   G.actors.push({ update(dt) {
     if (h.pcs[p.kind] !== p) { rib.end(); return false; }
     const st = Math.min(left, speed * dt), nx = p.x + sx * st, nz = p.z + cz * st; left -= st; if (Math.abs(nx) > 95 || Math.abs(nz) > 95) left = 0; else { p.x = nx; p.z = nz; }
     rib.add(p.x, 0.9, p.z); if (touch) for (const e of enemiesIn(h, p.x, p.z, 1.5)) if (!p.hit.has(e.id)) { p.hit.add(e.id); touch(e); }
-    if (left <= 0) { rib.end(); p.moving = false; FX.ring(p.x, p.z, { r0: 0.3, r1: 2.2, color: CHS.c, life: 0.3, tex: 'ringThin' }); if (done) done(p); return false; }
+    if (left <= 0) { rib.end(); p.moving = false; FX.ring(p.x, p.z, { r0: 0.3, r1: 2.2, color: CHS.c, life: 0.3, tex: 'ringThin' }); SFX.at('clack', p.x, p.z, 0.6); if (done) done(p); return false; }
     return true;
   } });
 }
@@ -2332,7 +2332,7 @@ HEROES.push(
           if (h.ride) { ashOff(h); return { cd: this.cd * 100 / (100 + h.haste) }; }
           const a = p.unit; if (!a || a === h || a.kind !== 'hero' || a.ride) { if (h === G.player) UI.msg('Наведите на союзного героя'); return false; }
           h.ride = { a, until: G.time + 10, fx: FX.aura(a, ASH.grn, 10, a.radius + 0.7, 'ring', 2) }; addBuff(h, { id: 'ride', dur: 10, invuln: true });
-          ashSmoke(h.x, 1, h.z, 1.3, 6, 0.5); FX.beam(h.x, h.z, a.x, a.z, { color: ASH.c, w: 0.6, life: 0.25 }); h.x = a.x; h.z = a.z; ashSmoke(a.x, a.height, a.z, 1, 5, 0.5); ashEmbers(a.x, a.height + 0.5, a.z, 8); SFX.at('dash', a.x, a.z, 0.7); SFX.at('heal', a.x, a.z, 0.4);
+          ashSmoke(h.x, 1, h.z, 1.3, 6, 0.5); FX.beam(h.x, h.z, a.x, a.z, { color: ASH.c, w: 0.6, life: 0.25 }); h.x = a.x; h.z = a.z; ashSmoke(a.x, a.height, a.z, 1, 5, 0.5); ashEmbers(a.x, a.height + 0.5, a.z, 8); SFX.at('flap', a.x, a.z, 0.6); SFX.at('ember', a.x, a.z, 0.4); SFX.at('heal', a.x, a.z, 0.35);
           return { cd: 0.7 };
         }
       },
@@ -2340,7 +2340,7 @@ HEROES.push(
         key: 'W', name: 'Пепелище', icon: 'ashzone', cd: 13, cost: 60, range: 11, ind: { type: 'circle', r: 5.5 }, ai: { t: 'point', rad: 5.5 },
         desc: 'Засыпает большую область горячим пеплом на 5 сек: враги внутри замедлены на 40% и получают магический урон дважды в секунду.',
         cast(h, p) {
-          const R = 5.5, x = p.x, z = p.z, dmg = D(h, 13, 2.3, 0, 0.09); SFX.at('fire', x, z, 0.6); SFX.at('dark', x, z, 0.4);
+          const R = 5.5, x = p.x, z = p.z, dmg = D(h, 13, 2.3, 0, 0.09); SFX.at('sand', x, z, 0.6); SFX.at('ember', x, z, 0.6); SFX.at('sizzle', x, z, 0.4);
           const disc = new THREE.Mesh(FX.geo.flat, FX.mat('fill', 0x2c2a28, 0.5, false)); disc.position.set(x, 0.07, z); disc.scale.set(R * 2 * RK, 1, R * 2 * RK); disc.renderOrder = 3; FX.add(disc, 5, (k, me, dt, e) => { me.material.opacity = 0.5 * Math.min(1, e.t / 0.3, (5 - e.t) / 0.5); });
           FX.zone(x, z, R, ASH.c, 5, { tex: 'swirl', spin: 0.5, op: 0.45 }); FX.zone(x, z, R, ASH.emb, 5, { tex: 'ringThin', spin: 0, op: 0.7 }); FX.ring(x, z, { r0: 0.5, r1: R, color: ASH.c, life: 0.5, tex: 'shock' }); ashSmoke(x, 0.8, z, R, 14, 0.45);
           zone(h, { x, z, r: R, dur: 5, every: 0.5, first: true, tick: () => {
@@ -2353,7 +2353,7 @@ HEROES.push(
         key: 'E', name: 'Затяжка', icon: 'ashcloud', cd: 8, cost: 50, range: 11, ind: { type: 'line', w: 3.2 }, ai: { t: 'shot', sp: 13, healLine: true },
         desc: 'Выдыхает густое облако дыма, которое плывёт вперёд на 11 сквозь всех: союзных героев лечит, врагам наносит магический урон и замедляет их на 20% на 1.5 сек.',
         cast(h, p) {
-          const dmg = D(h, 68, 11.5, 0, 0.55), hl = D(h, 48, 8, 0, 0.34), y0 = 1.4 + (h.yOff || 0); SFX.at('cast', h.x, h.z, 0.7); SFX.at('poison', h.x, h.z, 0.5); let acc = 0;
+          const dmg = D(h, 68, 11.5, 0, 0.55), hl = D(h, 48, 8, 0, 0.34), y0 = 1.4 + (h.yOff || 0); SFX.at('gust', h.x, h.z, 0.7); SFX.at('poison', h.x, h.z, 0.4); let acc = 0;
           shot(h, { dir: p.dir, speed: 13, range: 11, w: 1.6, color: ASH.c, size: 1.4, mesh: false, ribbon: false, pierce: true, y: y0,
             trail: q => { acc++; if (acc % 2 === 0) { ashSmoke(q.x, 1.3, q.z, 1.7, 3, 0.5); FX.flame(q.x, 1.3, q.z, { n: 1, color: ASH.grn, color2: 0x1a3a1a, size: [1.2, 2.4], life: [0.4, 0.8], up: 0.4, a: 0.18 }); } if (acc % 5 === 0) ashEmbers(q.x, 1.3, q.z, 3, 1); },
             onAlly: a => { heal(h, a, hl); FX.heal(a, ASH.grn); }, onHit: e => { damage(h, e, dmg, 1); slow(h, e, 0.2, 1.5); ashEmbers(e.x, 1.3, e.z, 6); FX.hit(e.x, 1.3, e.z, ASH.emb, false); },
@@ -2365,7 +2365,7 @@ HEROES.push(
         key: 'R', name: 'Пепельница', icon: 'ashtray', cd: 95, cost: 100, range: 0, ind: { type: 'self', r: 8 }, animDur: 0.7, lock: 0.4, ai: { t: 'save', r: 9, hp: 0.5, ult: true, rad: 8 },
         desc: 'Вытряхивает пепельницу: вокруг на 9 сек разлетаются 10 непотушенных сигарет. Союзный герой, наступив на сигарету, лечится сразу и ещё 3 сек; враг получает урон, отравлен на 4 сек и замедлен на 25%.',
         cast(h) {
-          const hl = D(h, 70, 14, 0, 0.4), dmg = D(h, 45, 9, 0, 0.3), dot = D(h, 16, 3.2, 0, 0.1), x0 = h.x, z0 = h.z; SFX.at('boom', x0, z0, 0.5); SFX.at('fire', x0, z0, 0.6);
+          const hl = D(h, 70, 14, 0, 0.4), dmg = D(h, 45, 9, 0, 0.3), dot = D(h, 16, 3.2, 0, 0.1), x0 = h.x, z0 = h.z; SFX.at('ultcue', x0, z0, 0.8); SFX.at('lighter', x0, z0, 0.6); SFX.at('pan', x0, z0, 0.6); SFX.at('ember', x0, z0, 0.7);
           FX.ring(x0, z0, { r0: 0.5, r1: 8, color: ASH.emb, life: 0.6, tex: 'shock' }); FX.shock(x0, z0, 7, 0.7, 0.45); ashSmoke(x0, 1.2, z0, 3, 12, 0.5); ashEmbers(x0, 1.4, z0, 24, 2); if (FX.near(x0, z0, 45)) FX.text(x0, h.height + 2, z0, 'ПЕПЕЛЬНИЦА', '#ffb070', 17);
           for (let i = 0; i < 10; i++) {
             const a = i / 10 * TAU + rand(-0.25, 0.25), d = rand(2.4, 7.6), q = NAV.nearest(x0 + Math.sin(a) * d, z0 + Math.cos(a) * d), c = { x: q.x, z: q.z, live: true, t: 0 }, g = ashCig(), spin = rand(TAU);
@@ -2376,8 +2376,8 @@ HEROES.push(
               if (Math.random() < dt * 4 && FX.near(c.x, c.z, 45)) { ashSmoke(c.x, 0.5, c.z, 0.35, 1, 0.35); if (Math.random() < 0.4) ashEmbers(c.x, 0.3, c.z, 1, 0.2); }
               for (const u of G.heroes) {
                 if (!u.alive || dist(u.x, u.z, c.x, c.z) > 1.3 + u.radius * 0.3 || (u.ride && u !== h)) continue;
-                if (u.team === h.team) { if (u.hp >= u.maxHp * 0.98) continue; heal(h, u, hl); addBuff(u, { id: 'ashcig' + h.id, dur: 3.05, every: 1, onTick: t => heal(h, t, hl * 0.2, true) }); FX.heal(u, ASH.grn); SFX.at('heal', c.x, c.z, 0.5); }
-                else { damage(h, u, dmg, 1); slow(h, u, 0.25, 4, 'ashpoison'); addBuff(u, { id: 'ashtox' + h.id, dur: 4.05, every: 1, onTick: t => { damage(h, t, dot, 1, { dot: true }); FX.burst(t.x, 1.4, t.z, { n: 3, color: 0xb8d070, color2: 0x3a4a10, speed: [0.2, 0.8], life: [0.4, 0.8], size: [0.3, 0.04], up: 1.5, rad: 0.5 }); } }); FX.hit(c.x, 0.8, c.z, ASH.emb, true); SFX.at('poison', c.x, c.z, 0.6); }
+                if (u.team === h.team) { if (u.hp >= u.maxHp * 0.98) continue; heal(h, u, hl); addBuff(u, { id: 'ashcig' + h.id, dur: 3.05, every: 1, onTick: t => heal(h, t, hl * 0.2, true) }); FX.heal(u, ASH.grn); SFX.at('sizzle', c.x, c.z, 0.4); SFX.at('heal', c.x, c.z, 0.5); }
+                else { damage(h, u, dmg, 1); slow(h, u, 0.25, 4, 'ashpoison'); addBuff(u, { id: 'ashtox' + h.id, dur: 4.05, every: 1, onTick: t => { damage(h, t, dot, 1, { dot: true }); FX.burst(t.x, 1.4, t.z, { n: 3, color: 0xb8d070, color2: 0x3a4a10, speed: [0.2, 0.8], life: [0.4, 0.8], size: [0.3, 0.04], up: 1.5, rad: 0.5 }); } }); FX.hit(c.x, 0.8, c.z, ASH.emb, true); SFX.at('sizzle', c.x, c.z, 0.5); SFX.at('poison', c.x, c.z, 0.5); }
                 e.dead = true; mark.dead = true; ashSmoke(c.x, 0.7, c.z, 1, 5, 0.5); ashEmbers(c.x, 0.5, c.z, 8); return false;
               }
               return true;
@@ -2405,7 +2405,7 @@ HEROES.push(
           let pc = h.pcs && h.pcs.pawn;
           if (pc) {
             if (pc.moving) return { cd: 0.3 }; pc.steps++;
-            chsSlide(h, pc, pc.dir, 4.2, 16, null, q => { if (q.steps >= 3) { for (const a of alliesIn(h, q.x, q.z, 5.5, true)) { heal(h, a, q.heal * 4); FX.heal(a, CHS.c); } FX.explosion(q.x, q.z, 3, CHS.c, { el: 'holy', mark: false }); FX.pillar(q.x, q.z, { r: 1.4, h: 14, color: CHS.c, life: 0.7, op: 0.6 }); if (FX.near(q.x, q.z, 45)) FX.text(q.x, 3.4, q.z, 'ПРЕВРАЩЕНИЕ', '#b8ffd6', 16); SFX.at('heal', q.x, q.z, 1); chsDrop(h, 'pawn'); } });
+            chsSlide(h, pc, pc.dir, 4.2, 16, null, q => { if (q.steps >= 3) { for (const a of alliesIn(h, q.x, q.z, 5.5, true)) { heal(h, a, q.heal * 4); FX.heal(a, CHS.c); } FX.explosion(q.x, q.z, 3, CHS.c, { el: 'holy', mark: false }); FX.pillar(q.x, q.z, { r: 1.4, h: 14, color: CHS.c, life: 0.7, op: 0.6 }); if (FX.near(q.x, q.z, 45)) FX.text(q.x, 3.4, q.z, 'ПРЕВРАЩЕНИЕ', '#b8ffd6', 16); SFX.at('holy', q.x, q.z, 0.8); SFX.at('heal', q.x, q.z, 0.6); chsDrop(h, 'pawn'); } });
             return { cd: 0.9 };
           }
           const heal0 = D(h, 9, 1.7, 0, 0.07);
@@ -2421,13 +2421,13 @@ HEROES.push(
           let pc = h.pcs && h.pcs.bishop;
           if (pc) {
             if (pc.moving) return { cd: 0.3 }; const a = angTo(pc.x, pc.z, p.x, p.z), dir = pc.ang + Math.round((a - pc.ang - Math.PI / 4) / (Math.PI / 2)) * (Math.PI / 2) + Math.PI / 4;
-            chsSlide(h, pc, dir, 9, 30, e => { damage(h, e, pc.dmg * 0.8 * chsQ(h), 1); FX.hit(e.x, 1.3, e.z, CHS.c, true); rmpArc(e.x, e.z, dir + 1.57, 2, 1.4, 0.2, CHS.c, 1.3, false, 0.85); });
+            chsSlide(h, pc, dir, 9, 30, e => { damage(h, e, pc.dmg * 0.8 * chsQ(h), 1); FX.hit(e.x, 1.3, e.z, CHS.c, true); SFX.at('arcane', e.x, e.z, 0.45); rmpArc(e.x, e.z, dir + 1.57, 2, 1.4, 0.2, CHS.c, 1.3, false, 0.85); });
             FX.beam(pc.x, pc.z, pc.x + Math.sin(dir) * 9, pc.z + Math.cos(dir) * 9, { color: CHS.c, w: 0.5, life: 0.3, y: 0.3, op: 0.6 }); return { cd: 1.5 };
           }
           const dmg = D(h, 75, 12.5, 0, 0.6), aur = D(h, 14, 2.4, 0, 0.1);
           pc = chsPlace(h, 'bishop', p.x, p.z, 10, 3.2, q => { for (const e of enemiesIn(h, q.x, q.z, q.R)) { damage(h, e, q.aur * chsQ(h), 1, { dot: true }); if (FX.near(e.x, e.z, 45)) FX.sparks(e.x, 1.2, e.z, { n: 2, color: CHS.pale, color2: CHS.deep, speed: [2, 6], life: [0.15, 0.3], w: 0.08 }); } });
           pc.dmg = dmg; pc.aur = aur; telegraph(h, pc.x, pc.z, 3.2, 0.22, CHS.c);
-          after(0.22, () => { if (h.pcs.bishop !== pc) return; for (const e of enemiesIn(h, pc.x, pc.z, 3.2)) { damage(h, e, dmg, 1); FX.hit(e.x, 1.3, e.z, CHS.c, true); } FX.explosion(pc.x, pc.z, 2.4, CHS.c, { color2: CHS.deep }); });
+          after(0.22, () => { if (h.pcs.bishop !== pc) return; for (const e of enemiesIn(h, pc.x, pc.z, 3.2)) { damage(h, e, dmg, 1); FX.hit(e.x, 1.3, e.z, CHS.c, true); } SFX.at('impact', pc.x, pc.z, 0.6); FX.explosion(pc.x, pc.z, 2.4, CHS.c, { color2: CHS.deep }); });
           return { cd: 1.5 };
         }
       },
@@ -2439,12 +2439,12 @@ HEROES.push(
           let pc = h.pcs && h.pcs.rook;
           if (pc) {
             if (pc.moving) return { cd: 0.3 }; const a = angTo(pc.x, pc.z, p.x, p.z), dir = pc.ang + Math.round((a - pc.ang) / (Math.PI / 2)) * (Math.PI / 2);
-            chsSlide(h, pc, dir, 10, 34, e => { damage(h, e, pc.dmg * chsQ(h), 1); stun(h, e, 0.8); knock(e, e.x - Math.sin(dir) * 2, e.z - Math.cos(dir) * 2, 3, 0.25); FX.hit(e.x, 1.3, e.z, CHS.c, true); FX.shock(e.x, e.z, 3, 0.7, 0.3); SFX.at('heavy', e.x, e.z, 0.7); FX.debris(e.x, 0.3, e.z, { n: 3, color: 0x3c3934, speed: [2, 6], up: 6, size: [0.12, 0.3] }); });
+            chsSlide(h, pc, dir, 10, 34, e => { damage(h, e, pc.dmg * chsQ(h), 1); stun(h, e, 0.8); knock(e, e.x - Math.sin(dir) * 2, e.z - Math.cos(dir) * 2, 3, 0.25); FX.hit(e.x, 1.3, e.z, CHS.c, true); FX.shock(e.x, e.z, 3, 0.7, 0.3); SFX.at('stone', e.x, e.z, 0.7); FX.debris(e.x, 0.3, e.z, { n: 3, color: 0x3c3934, speed: [2, 6], up: 6, size: [0.12, 0.3] }); });
             FX.beam(pc.x, pc.z, pc.x + Math.sin(dir) * 10, pc.z + Math.cos(dir) * 10, { color: CHS.c, w: 0.9, life: 0.3, y: 0.3, op: 0.6 }); return { cd: 2 };
           }
           const dmg = D(h, 70, 12, 0, 0.55);
           pc = chsPlace(h, 'rook', p.x, p.z, 10, 4, q => { for (const a of alliesIn(h, q.x, q.z, q.R, true)) addBuff(a, { id: 'rookwall', dur: 0.8, dmgIn: chsQ(h) > 1 ? 0.75 : 0.82, src: h }); for (const e of enemiesIn(h, q.x, q.z, q.R)) slow(h, e, 0.2, 0.8, 'rookslow'); });
-          pc.dmg = dmg; after(0.22, () => { if (h.pcs.rook !== pc) return; for (const e of enemiesIn(h, pc.x, pc.z, 2.4)) { damage(h, e, dmg * 0.5, 1); knock(e, pc.x, pc.z, 2.2, 0.2); } FX.shock(pc.x, pc.z, 4, 0.8, 0.35); FX.debris(pc.x, 0.3, pc.z, { n: 5, color: 0x3c3934, speed: [2, 6], up: 6, size: [0.14, 0.34] }); FX.wall(pc.x, pc.z, 4, CHS.c, 9.6, { h: 2.2, op: 0.22, follow: pc }); });
+          pc.dmg = dmg; after(0.22, () => { if (h.pcs.rook !== pc) return; for (const e of enemiesIn(h, pc.x, pc.z, 2.4)) { damage(h, e, dmg * 0.5, 1); knock(e, pc.x, pc.z, 2.2, 0.2); } SFX.at('stone', pc.x, pc.z, 0.6); SFX.at('shield', pc.x, pc.z, 0.4); FX.shock(pc.x, pc.z, 4, 0.8, 0.35); FX.debris(pc.x, 0.3, pc.z, { n: 5, color: 0x3c3934, speed: [2, 6], up: 6, size: [0.14, 0.34] }); FX.wall(pc.x, pc.z, 4, CHS.c, 9.6, { h: 2.2, op: 0.22, follow: pc }); });
           return { cd: 2 };
         }
       },
@@ -2452,15 +2452,15 @@ HEROES.push(
         key: 'R', name: 'Ферзь', icon: 'chqueen', cd: 100, cost: 100, range: 12, ind: { type: 'circle', r: 4 }, animDur: 0.8, lock: 0.5, ai: { t: 'point', delay: 0.5, ult: true, hp: 0.7, rad: 5 },
         desc: 'Через 0.5 сек на поле обрушивается ферзь: большой магический урон и оглушение на 0.6 сек в радиусе 4. Затем 8 сек она ходит сама — каждые 1.3 сек бросается к ближайшему вражескому герою в 11 клетках и бьёт всех на пути. Пока ферзь на доске, остальные фигуры сильнее на 40%. Уходя, она объявляет мат: ещё один удар по области.',
         cast(h, p) {
-          const x = p.x, z = p.z, dmg = D(h, 150, 28, 0, 0.9), hitD = D(h, 55, 10, 0, 0.35); telegraph(h, x, z, 4, 0.5, CHS.c); SFX.at('cast', h.x, h.z, 1); FX.pillar(x, z, { r: 1, h: 20, color: CHS.c, life: 0.5, op: 0.4, grow: true });
+          const x = p.x, z = p.z, dmg = D(h, 150, 28, 0, 0.9), hitD = D(h, 55, 10, 0, 0.35); telegraph(h, x, z, 4, 0.5, CHS.c); SFX.at('ultcue', h.x, h.z, 0.9); SFX.at('charge', x, z, 0.5); FX.pillar(x, z, { r: 1, h: 20, color: CHS.c, life: 0.5, op: 0.4, grow: true });
           after(0.3, () => {
             if (!h.alive) return; let acc = 0.6;
             const pc = chsPlace(h, 'queen', x, z, 8.2, 4, q => {
               acc += 0.5; if (acc < 1.3 || q.moving) return; let t = null, bd = 11; for (const e of G.heroes) if (e.alive && hostile(h, e) && dist(e.x, e.z, q.x, q.z) < bd) { bd = dist(e.x, e.z, q.x, q.z); t = e; }
-              if (!t) return; acc = 0; const dir = angTo(q.x, q.z, t.x, t.z); chsSlide(h, q, dir, bd + 1.5, 44, e => { damage(h, e, hitD, 1); FX.hit(e.x, 1.3, e.z, CHS.c, true); rmpArc(e.x, e.z, dir + 1.57, 2.4, 1.5, 0.2, CHS.c, 1.3, false, 0.9); SFX.at('slash', e.x, e.z, 0.7); });
+              if (!t) return; acc = 0; const dir = angTo(q.x, q.z, t.x, t.z); chsSlide(h, q, dir, bd + 1.5, 44, e => { damage(h, e, hitD, 1); FX.hit(e.x, 1.3, e.z, CHS.c, true); rmpArc(e.x, e.z, dir + 1.57, 2.4, 1.5, 0.2, CHS.c, 1.3, false, 0.9); SFX.at('blade', e.x, e.z, 0.6); });
             });
-            after(0.22, () => { if (h.pcs.queen !== pc) return; for (const e of enemiesIn(h, x, z, 4)) { damage(h, e, dmg, 1); stun(h, e, 0.6); FX.hit(e.x, 1.3, e.z, CHS.c, true); } SFX.at('bigboom', x, z, 0.9); FX.shake(0.7); FX.punch(0.8); FX.explosion(x, z, 4, CHS.c, { color2: CHS.deep }); FX.shock(x, z, 7, 1.2, 0.5); FX.pillar(x, z, { r: 2, h: 24, color: CHS.c, life: 0.8, op: 0.5 }); FX.light(x, 3, z, CHS.c, 2, 26, 0.5); if (FX.near(x, z, 45)) FX.text(x, 5, z, 'ШАХ', '#b8ffd6', 20); });
-            G.actors.push({ update() { if (h.pcs.queen === pc) return true; const qx = pc.x, qz = pc.z; for (const e of enemiesIn(h, qx, qz, 3.6)) { damage(h, e, hitD * 1.5, 1); FX.hit(e.x, 1.3, e.z, CHS.c, true); } FX.explosion(qx, qz, 3, CHS.c, { color2: CHS.deep }); if (FX.near(qx, qz, 45)) FX.text(qx, 5, qz, 'МАТ', '#b8ffd6', 20); SFX.at('boom', qx, qz, 0.8); return false; } });
+            after(0.22, () => { if (h.pcs.queen !== pc) return; for (const e of enemiesIn(h, x, z, 4)) { damage(h, e, dmg, 1); stun(h, e, 0.6); FX.hit(e.x, 1.3, e.z, CHS.c, true); } SFX.at('bigboom', x, z, 0.9); SFX.at('bell', x, z, 0.6); FX.shake(0.7); FX.punch(0.8); FX.explosion(x, z, 4, CHS.c, { color2: CHS.deep }); FX.shock(x, z, 7, 1.2, 0.5); FX.pillar(x, z, { r: 2, h: 24, color: CHS.c, life: 0.8, op: 0.5 }); FX.light(x, 3, z, CHS.c, 2, 26, 0.5); if (FX.near(x, z, 45)) FX.text(x, 5, z, 'ШАХ', '#b8ffd6', 20); });
+            G.actors.push({ update() { if (h.pcs.queen === pc) return true; const qx = pc.x, qz = pc.z; for (const e of enemiesIn(h, qx, qz, 3.6)) { damage(h, e, hitD * 1.5, 1); FX.hit(e.x, 1.3, e.z, CHS.c, true); } FX.explosion(qx, qz, 3, CHS.c, { color2: CHS.deep }); if (FX.near(qx, qz, 45)) FX.text(qx, 5, qz, 'МАТ', '#b8ffd6', 20); SFX.at('bell', qx, qz, 0.8); SFX.at('boom', qx, qz, 0.7); return false; } });
           });
         }
       }
@@ -2491,7 +2491,7 @@ HEROES.push(
       }
       if (toward && h.moving) addBuff(h, { id: 'huntrun', dur: 0.25, ms: (0.15 + 0.05 * lv) * toward });
       if (fr && !h.frz) {
-        h.frz = FX.aura(h, MEI.red, 999, 1.9, 'swirl', 10); SFX.at('dark', h.x, h.z, 0.8); SFX.at('crit', h.x, h.z, 0.4); FX.ring(h.x, h.z, { r0: 0.5, r1: 5, color: MEI.red, life: 0.45, tex: 'shock' }); FX.glow(h.x, h.height - 0.3, h.z, 3.4, MEI.red, 0.4, 'flare'); FX.burst(h.x, 1, h.z, { n: 14, color: MEI.red, color2: MEI.rdeep, speed: [1, 4], life: [0.4, 0.8], size: [0.4, 0.05], up: 2, ring: true });
+        h.frz = FX.aura(h, MEI.red, 999, 1.9, 'swirl', 10); SFX.at('heartbeat', h.x, h.z, 0.8); SFX.at('bite', h.x, h.z, 0.6); FX.ring(h.x, h.z, { r0: 0.5, r1: 5, color: MEI.red, life: 0.45, tex: 'shock' }); FX.glow(h.x, h.height - 0.3, h.z, 3.4, MEI.red, 0.4, 'flare'); FX.burst(h.x, 1, h.z, { n: 14, color: MEI.red, color2: MEI.rdeep, speed: [1, 4], life: [0.4, 0.8], size: [0.4, 0.05], up: 2, ring: true });
         if (FX.near(h.x, h.z, 45)) FX.text(h.x, h.height + 1.6, h.z, 'БЕШЕНСТВО', '#ff3344', 19); if (h === G.player) FX.punch(0.6);
       } else if (!fr && h.frz) { h.frz.dead = true; h.frz = null; }
       h.frenzy = fr;
@@ -2502,7 +2502,7 @@ HEROES.push(
         key: 'Q', name: 'Ледяной разрез', icon: 'meicut', cd: 6, cost: 35, range: 0, ind: { type: 'self', r: 4.8 }, anim: 'cut', animDur: 0.5, lock: 0.3, ai: { t: 'nova', r: 4.1, farm: true },
         desc: 'Кила распахивает ножницы и, крутанувшись, смыкает их: два ледяных лезвия сходятся перед ней, срезая всё в радиусе 4.8. Физический урон и замедление на 25% на 1.5 сек.',
         cast(h) {
-          const dmg = D(h, 70, 11.5, 0.8), R = 4.8, f0 = h.facing, T = 0.26; h.snip0 = G.time; SFX.at('whoosh', h.x, h.z, 1); after(0.06, () => { if (h.alive) h.spinning = true; }); after(0.34, () => { h.spinning = false; });
+          const dmg = D(h, 70, 11.5, 0.8), R = 4.8, f0 = h.facing, T = 0.26; h.snip0 = G.time; SFX.at('whoosh', h.x, h.z, 0.8); after(0.06, () => { if (h.alive) h.spinning = true; }); after(0.34, () => { h.spinning = false; });
           // two blades of ice as long as the reach, hinged on her: thrown wide open behind her, they swing round from both sides and shut in front like the shears in her hands
           if (FX.near(h.x, h.z, 55)) for (const s of [1, -1]) {
             const g = new THREE.Group(), bl = new THREE.Mesh(FX.geo.blade, FX.mat(null, MEI.c, 0.75)), ed = new THREE.Mesh(FX.geo.blade, FX.mat(null, 0xffffff, 0.9)), rib = FX.ribbon(s > 0 ? MEI.c : MEI.pale, 1.5, 16);
@@ -2514,7 +2514,7 @@ HEROES.push(
             });
           }
           after(T, () => {
-            if (!h.alive) return; const x = h.x, z = h.z, sx = Math.sin(f0), cz = Math.cos(f0), cx = x + sx * R * 0.8, cq = z + cz * R * 0.8; SFX.at('slash', x, z, 1); SFX.at('ice', x, z, 0.8); SFX.at('crit', cx, cq, 0.5);
+            if (!h.alive) return; const x = h.x, z = h.z, sx = Math.sin(f0), cz = Math.cos(f0), cx = x + sx * R * 0.8, cq = z + cz * R * 0.8; SFX.at('snip', x, z, 1); SFX.at('ice', x, z, 0.7); SFX.at('blade', cx, cq, 0.5);
             for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 0); slow(h, e, 0.25, 1.5, 'meichill'); FX.hit(e.x, 1.3, e.z, MEI.c, true); FX.debris(e.x, 1, e.z, { glow: true, n: 3, color: 0xcfefff, speed: [2, 6], up: 5, size: [0.14, 0.3], life: 0.6 }); rmpArc(e.x, e.z, f0 + 1.57, 2, 1.4, 0.2, MEI.pale, 1.3, false, 0.85); }
             // the snap: a flash where the points meet, a cross of light, splinters thrown on ahead, a ring of frost left on the ground
             FX.glow(cx, 1.3, cq, 4.5, MEI.pale, 0.16, 'star'); FX.glow(cx, 1.3, cq, 7, 0xffffff, 0.1, 'flare'); FX.beam(x, z, x + sx * (R + 1.5), z + cz * (R + 1.5), { color: MEI.pale, w: 0.5, life: 0.2, y: 1.25 });
@@ -2527,11 +2527,11 @@ HEROES.push(
         key: 'W', name: 'Нырок', icon: 'meidive', cd: 12, cost: 50, range: 8.5, ind: { type: 'circle', r: 3.6 }, anim: 'slam', animDur: 0.6, lock: 0, ai: { t: 'gap', rad: 3.6, escape: true },
         desc: 'Прыжок в точку. Приземлившись, Кила вбивает ножницы в землю: физический урон и обморожение — враги в радиусе 3.6 обездвижены на 1 сек, а земля ещё 3 сек замедляет их на 30%.',
         cast(h, p) {
-          const dmg = D(h, 75, 12, 0.6), R = 3.6; SFX.at('dash', h.x, h.z, 0.9); FX.ring(h.x, h.z, { r1: 2.4, color: MEI.c, life: 0.3, tex: 'shock' }); telegraph(h, p.x, p.z, R, Math.max(0.15, p.dist / 30), MEI.c);
+          const dmg = D(h, 75, 12, 0.6), R = 3.6; SFX.at('dash', h.x, h.z, 0.7); SFX.at('water', h.x, h.z, 0.5); FX.ring(h.x, h.z, { r1: 2.4, color: MEI.c, life: 0.3, tex: 'shock' }); telegraph(h, p.x, p.z, R, Math.max(0.15, p.dist / 30), MEI.c);
           dashTo(h, p.x, p.z, 30, { fly: true, arc: 3.4, ribbon: MEI.c, trail: u => { if (Math.random() < 0.6) FX.burst(u.x, 1 + (u.yOff || 0), u.z, { n: 1, color: MEI.pale, color2: MEI.deep, speed: [0.2, 1], life: [0.3, 0.6], size: [0.4, 0.05], rad: 0.4 }); },
             onEnd: u => {
               const x = u.x, z = u.z; for (const e of enemiesIn(u, x, z, R)) { damage(u, e, dmg, 0); root(u, e, 1, MEI.c); FX.hit(e.x, 1.3, e.z, MEI.c, true); FX.pillar(e.x, e.z, { r: 0.6, h: 4, color: MEI.pale, life: 0.9, op: 0.5, spin: 0 }); }
-              SFX.at('boom', x, z, 0.7); SFX.at('shatter', x, z, 0.8); FX.shake(0.5); FX.explosion(x, z, 3, MEI.c, { el: 'ice', color2: MEI.deep }); FX.shock(x, z, R * 1.5, 0.9, 0.4);
+              SFX.at('impact', x, z, 0.7); SFX.at('shatter', x, z, 0.8); SFX.at('splash', x, z, 0.5); FX.shake(0.5); FX.explosion(x, z, 3, MEI.c, { el: 'ice', color2: MEI.deep }); FX.shock(x, z, R * 1.5, 0.9, 0.4);
               FX.zone(x, z, R, MEI.c, 3, { tex: 'rune', spin: 0.3, op: 0.5 }); const d = new THREE.Mesh(FX.geo.flat, FX.mat('fill', 0xbfe8ff, 0.22)); d.position.set(x, 0.07, z); d.scale.set(R * 2 * RK, 1, R * 2 * RK); FX.add(d, 3, (k, me) => { me.material.opacity = 0.22 * (1 - k); });
               zone(u, { x, z, r: R, dur: 3, every: 0.5, tick: () => { for (const e of enemiesIn(u, x, z, R)) slow(u, e, 0.3, 0.7, 'meifrost'); if (FX.near(x, z, 45)) FX.burst(x, 0.3, z, { n: 4, color: MEI.pale, color2: MEI.c, speed: [0.1, 0.5], life: [0.6, 1.1], size: [0.2, 0.03], up: 1.2, rad: R }); } });
             } });
@@ -2543,8 +2543,8 @@ HEROES.push(
         desc: 'Пассивно: Кила чует вражеских героев ниже 50% здоровья в 30 клетках — за ними тянется кровавый след. Когда она бежит в сторону такого врага, её скорость выше на 20 / 25 / 30%, а когда бьёт его — скорость атаки выше на 30 / 40 / 50%. Если у него меньше 25% здоровья, она впадает в бешенство, и оба бонуса утраиваются. Применение: на 10 сек нюх охватывает всю карту, а первая атака наносит на 60 / 90 / 120% силы атаки больше урона.',
         cast(h) {
           const lv = Math.max(1, h.al[3]); h.huntT = G.time + 10; h.atkCd = Math.min(h.atkCd, 0.1);
-          addBuff(h, { id: 'hunt', dur: 10, onHit: (u, t, bf) => { if (bf.used) return 0; bf.used = true; FX.explosion(t.x, t.z, 2.2, MEI.red, { color2: MEI.rdeep, smoke: false, mark: false }); FX.slash(t.x, t.z, u.facing, { r: 3, sweep: 2.4, color: MEI.red, life: 0.26, y: 1.3 }); FX.slash(t.x, t.z, u.facing, { r: 2.7, sweep: 2.4, color: MEI.pale, life: 0.22, y: 1.4, flip: true }); FX.burst(t.x, 1.3, t.z, { n: 14, color: MEI.red, color2: MEI.rdeep, speed: [2, 7], life: [0.3, 0.7], size: [0.4, 0.05], grav: -10 }); SFX.at('crit', t.x, t.z, 0.9); FX.shake(0.45); if (u === G.player) FX.hitstop(0.07); if (FX.near(t.x, t.z, 45)) FX.text(t.x, t.height + 1.2, t.z, 'УКУС', '#ff5a66', 17); return u.ad * (0.3 + 0.3 * lv); } });
-          SFX.at('dark', h.x, h.z, 0.8); SFX.at('dash', h.x, h.z, 0.6); FX.ring(h.x, h.z, { r0: 0.5, r1: 6, color: MEI.red, life: 0.5, tex: 'shock' }); FX.ring(h.x, h.z, { r0: 6, r1: 0.6, color: MEI.rdeep, life: 0.45, tex: 'ringThin' }); FX.glow(h.x, h.height - 0.3, h.z, 3, MEI.red, 0.4, 'flare'); FX.burst(h.x, 1, h.z, { n: 16, color: MEI.red, color2: MEI.rdeep, speed: [1, 4], life: [0.4, 0.8], size: [0.4, 0.05], up: 2, ring: true });
+          addBuff(h, { id: 'hunt', dur: 10, onHit: (u, t, bf) => { if (bf.used) return 0; bf.used = true; FX.explosion(t.x, t.z, 2.2, MEI.red, { color2: MEI.rdeep, smoke: false, mark: false }); FX.slash(t.x, t.z, u.facing, { r: 3, sweep: 2.4, color: MEI.red, life: 0.26, y: 1.3 }); FX.slash(t.x, t.z, u.facing, { r: 2.7, sweep: 2.4, color: MEI.pale, life: 0.22, y: 1.4, flip: true }); FX.burst(t.x, 1.3, t.z, { n: 14, color: MEI.red, color2: MEI.rdeep, speed: [2, 7], life: [0.3, 0.7], size: [0.4, 0.05], grav: -10 }); SFX.at('bite', t.x, t.z, 1); SFX.at('flesh', t.x, t.z, 0.6); FX.shake(0.45); if (u === G.player) FX.hitstop(0.07); if (FX.near(t.x, t.z, 45)) FX.text(t.x, t.height + 1.2, t.z, 'УКУС', '#ff5a66', 17); return u.ad * (0.3 + 0.3 * lv); } });
+          SFX.at('ultcue', h.x, h.z, 0.8); SFX.at('heartbeat', h.x, h.z, 0.7); SFX.at('blood', h.x, h.z, 0.6); FX.ring(h.x, h.z, { r0: 0.5, r1: 6, color: MEI.red, life: 0.5, tex: 'shock' }); FX.ring(h.x, h.z, { r0: 6, r1: 0.6, color: MEI.rdeep, life: 0.45, tex: 'ringThin' }); FX.glow(h.x, h.height - 0.3, h.z, 3, MEI.red, 0.4, 'flare'); FX.burst(h.x, 1, h.z, { n: 16, color: MEI.red, color2: MEI.rdeep, speed: [1, 4], life: [0.4, 0.8], size: [0.4, 0.05], up: 2, ring: true });
           if (FX.near(h.x, h.z, 45)) FX.text(h.x, h.height + 1.6, h.z, 'ЗАПАХ КРОВИ', '#ff5a66', 18);
           for (const e of G.heroes) if (e.alive && hostile(h, e) && e.hp <= e.maxHp * 0.5 && FX.near(e.x, e.z, 50)) FX.pillar(e.x, e.z, { r: 0.5, h: 9, color: MEI.red, life: 0.8, op: 0.5 });
         }
@@ -2564,7 +2564,7 @@ function kagMark(h, e, dur) {
 // teeth of the saw: 100 of them turn the first ability into the Serrated Loop
 function kagSaw(h, n) {
   if (h.sawT > G.time) return; const was = h.saw || 0; h.saw = Math.min(100, was + n * (h.convT > G.time ? 2 : 1));
-  if (was < 100 && h.saw >= 100) { SFX.at('cue', h.x, h.z, 0.7); FX.ring(h.x, h.z, { r0: 2.6, r1: 0.5, color: KAG.c, life: 0.35, tex: 'ringThin' }); if (h === G.player) FX.text(h.x, h.height + 1.2, h.z, 'ПИЛА ГОТОВА', '#ff8aa4', 15); }
+  if (was < 100 && h.saw >= 100) { SFX.at('saw', h.x, h.z, 0.6); SFX.at('cue', h.x, h.z, 0.4); FX.ring(h.x, h.z, { r0: 2.6, r1: 0.5, color: KAG.c, life: 0.35, tex: 'ringThin' }); if (h === G.player) FX.text(h.x, h.height + 1.2, h.z, 'ПИЛА ГОТОВА', '#ff8aa4', 15); }
 }
 function kagThreads(x, y, z, n, r) { if (!FX.near(x, z, 55)) return; for (let i = 0; i < n; i++) { const a = rand(TAU), d = rand(r * 0.5, r); FX.bolt(x, y, z, x + Math.sin(a) * d, rand(0.2, 2.2), z + Math.cos(a) * d, { color: KAG.c, w: 0.16, jag: 0.25, life: 0.2, fork: false }); } }
 // the last stroke of the saw: one overhead blow in front of her, shields for the allies around; the saw is spent and the first ability starts its cooldown
@@ -2572,12 +2572,12 @@ function kagErad(h) {
   const E = h.sawE; if (!E) return; h.sawT = 0; h.saw = 0; h.sawE = null; for (const b of h.buffs) if (b.id === 'sawmode') { b.onEnd = null; b.dead = true; }
   h.cd[0] = h.def.abilities[0].cd * 100 / (100 + h.haste); if (!h.alive) return;
   const k = h.convT > G.time ? 1.4 : 1, f = h.facing, cx = h.x + Math.sin(f) * 2.4, cz = h.z + Math.cos(f) * 2.4, R = 4.4;
-  h.anim.castT = h.anim.castDur = 0.5; h.anim.castType = 'slam'; h.anim.atkT = 0; h.castLock = Math.max(h.castLock, 0.3); h.windup = 0; SFX.at('whoosh', h.x, h.z, 1);
+  h.anim.castT = h.anim.castDur = 0.5; h.anim.castType = 'slam'; h.anim.atkT = 0; h.castLock = Math.max(h.castLock, 0.3); h.windup = 0; SFX.at('whoosh', h.x, h.z, 0.8); SFX.at('saw', h.x, h.z, 0.5);
   after(0.22, () => {
     if (!h.alive) return;
     for (const e of enemiesIn(h, cx, cz, R)) { damage(h, e, E.dmg * k, 0); kagMark(h, e, 8); slow(h, e, 0.35, 1.5, 'kagslow'); FX.hit(e.x, 1.3, e.z, KAG.c, true); }
     for (const a of alliesIn(h, h.x, h.z, 7.5, true)) { shield(h, a, E.sh * k, 5, KAG.c); if (a !== h) FX.beam(h.x, h.z, a.x, a.z, { color: KAG.pale, w: 0.2, life: 0.3, y: 1.3 }); }
-    SFX.at('bigboom', cx, cz, 0.8); SFX.at('heavy', cx, cz, 0.9); FX.shake(0.7); FX.punch(0.7);
+    SFX.at('axe', cx, cz, 1); SFX.at('bigboom', cx, cz, 0.6); SFX.at('string', cx, cz, 0.4); FX.shake(0.7); FX.punch(0.7);
     FX.explosion(cx, cz, 2.5, KAG.c, { color2: KAG.deep, el: 'shadow' }); FX.shock(cx, cz, R * 1.5, 1.1, 0.45); FX.ring(cx, cz, { r0: 0.5, r1: R, color: KAG.c, life: 0.4, tex: 'shock' }); FX.ring(cx, cz, { r0: R * 0.8, r1: R, color: KAG.c, tex: 'crack', life: 1.4, op: 0.7 });
     FX.slash(h.x, h.z, f, { r: R + 1.5, sweep: 0.9, color: KAG.c, life: 0.28, y: 1.4 }); FX.pillar(cx, cz, { r: 1.1, h: 12, color: KAG.c, life: 0.5, op: 0.5 }); kagThreads(cx, 1.2, cz, 8, R);
     FX.debris(cx, 0.3, cz, { n: 9, color: 0x3c3238, speed: [3, 9], up: 9, size: [0.16, 0.45] }); if (FX.near(cx, cz, 45)) FX.text(cx, 3.6, cz, 'ИСКОРЕНЕНИЕ', '#ff8aa4', 18);
@@ -2614,13 +2614,13 @@ function linWall(h, x, z, dir, dur, dmg) {
   const grp = new THREE.Group(), cr = new THREE.Mesh(linWallGeo(), new THREE.MeshPhongMaterial({ vertexColors: true, flatShading: true, transparent: true, opacity: 0.9, emissive: 0x072a24, shininess: 70, specular: 0x55998a })), gl = new THREE.Mesh(FX.geo.flat, FX.mat('glow', LIN.deep, 0.5));
   cr.userData.own = gl.userData.own = true; gl.scale.set(LEN + 3.5, 1, 5); gl.position.y = 0.1; grp.add(gl, cr); grp.position.set(x, 0, z); grp.rotation.y = dir; grp.renderOrder = 2;
   FX.add(grp, dur + 0.35, (k, me, dt, en) => { const up = Math.min(1, en.t / 0.22), dn = en.t > dur ? (en.t - dur) / 0.35 : 0; cr.scale.y = Math.max(0.01, (up < 1 ? easeOut(up) * 1.1 : 1 + 0.1 * Math.max(0, 1 - (en.t - 0.22) / 0.15)) * (1 - dn)); cr.material.opacity = 0.88 * (1 - dn * 0.5); gl.material.opacity = 0.5 * up * (1 - dn) * (0.8 + 0.2 * Math.sin(en.t * 4)); });
-  SFX.at('ice', x, z, 1); SFX.at('rubble', x, z, 0.6); FX.shake(0.3); FX.shock(x, z, 6, 0.7, 0.35);
+  SFX.at('stone', x, z, 0.9); SFX.at('chime', x, z, 0.5); SFX.at('rubble', x, z, 0.5); FX.shake(0.3); FX.shock(x, z, 6, 0.7, 0.35);
   for (const c of W.pts) { FX.debris(c.x, 0.3, c.z, { glow: true, n: 2, color: 0xbff5e6, speed: [2, 6], up: 7, size: [0.14, 0.34], life: 0.7 }); FX.burst(c.x, 0.4, c.z, { n: 4, color: LIN.pale, color2: LIN.deep, speed: [0.5, 2.5], life: [0.4, 0.9], size: [0.4, 0.05], up: 3, rad: 0.6 }); }
   let acc = 0;
   G.actors.push({ update(dt) {
     if (G.time < W.until) { acc += dt; if (acc > 0.25) { acc = 0; if (FX.near(x, z, 50)) { const c = W.pts[(Math.random() * N) | 0]; FX.sparks(c.x, rand(0.5, 3), c.z, { n: 1, color: LIN.pale, color2: LIN.c, speed: [0.2, 1], life: [0.4, 0.8], up: 2, grav: -1, w: 0.07, stretch: 0.05 }); } } return true; }
     const i = G.walls.indexOf(W); if (i >= 0) G.walls.splice(i, 1); for (const c of W.pts) NAV.block(c.x, c.z, 1.1, false); linReblock();
-    SFX.at('shatter', x, z, 0.9); for (const c of W.pts) { FX.debris(c.x, 1.4, c.z, { glow: true, n: 4, color: 0xbff5e6, speed: [2, 7], up: 6, size: [0.16, 0.42], life: 0.8 }); FX.burst(c.x, 1.5, c.z, { n: 5, color: LIN.pale, color2: LIN.deep, speed: [0.5, 3], life: [0.4, 0.9], size: [0.5, 0.05], up: 1, rad: 0.7 }); }
+    SFX.at('shatter', x, z, 0.7); SFX.at('rubble', x, z, 0.6); for (const c of W.pts) { FX.debris(c.x, 1.4, c.z, { glow: true, n: 4, color: 0xbff5e6, speed: [2, 7], up: 6, size: [0.16, 0.42], life: 0.8 }); FX.burst(c.x, 1.5, c.z, { n: 5, color: LIN.pale, color2: LIN.deep, speed: [0.5, 3], life: [0.4, 0.9], size: [0.5, 0.05], up: 1, rad: 0.7 }); }
     return false;
   } });
   return W;
@@ -2644,7 +2644,7 @@ HEROES.push(
       if (!o.basic) return; kagSaw(h, t.kind === 'hero' ? 14 : 6);
       if (h.sawT > G.time && h.sawE) {   // the saw mode: every attack grinds through everything round the target
         const sp = (8 + 2.4 * h.level + 0.2 * h.ad) * (h.convT > G.time ? 1.4 : 1); for (const e of enemiesIn(h, t.x, t.z, 2.8)) damage(h, e, e === t ? sp * 0.6 : sp, 1, { dot: true });
-        if (FX.near(t.x, t.z, 50)) { FX.sparks(t.x, 1.3, t.z, { n: 9, color: 0xffffff, color2: KAG.c, speed: [4, 13], life: [0.12, 0.3], w: 0.1 }); FX.ring(t.x, t.z, { r0: 0.4, r1: 2.8, color: KAG.c, life: 0.22, tex: 'ringThin', y: 1.2 }); } SFX.at('sizzle', t.x, t.z, 0.35);
+        if (FX.near(t.x, t.z, 50)) { FX.sparks(t.x, 1.3, t.z, { n: 9, color: 0xffffff, color2: KAG.c, speed: [4, 13], life: [0.12, 0.3], w: 0.1 }); FX.ring(t.x, t.z, { r0: 0.4, r1: 2.8, color: KAG.c, life: 0.22, tex: 'ringThin', y: 1.2 }); } SFX.at('saw', t.x, t.z, 0.35);
       }
     },
     abilities: [
@@ -2657,18 +2657,18 @@ HEROES.push(
           if ((h.saw || 0) >= 100) {   // the Serrated Loop
             const dmg = D(h, 95, 17, 0.9), R = 4.6, DUR = 6.85; h.sawE = { dmg: D(h, 120, 22, 1.1), sh: D(h, 45, 10, 0.35) }; h.sawT = G.time + DUR;
             for (const e of G.units) if (e.alive && !e.struct && hostile(h, e) && udist(h, e) < 11 && hasBuff(e, 'snare' + h.id)) { pullTo(e, h.x, h.z, 30, 2.3); FX.beam(h.x, h.z, e.x, e.z, { color: KAG.c, w: 0.3, life: 0.25, y: 1.2 }); }
-            SFX.at('whoosh', h.x, h.z, 1); SFX.at('overload', h.x, h.z, 0.6); after(0.1, () => { if (h.alive) h.spinning = true; }); after(0.5, () => { h.spinning = false; });
+            SFX.at('whip', h.x, h.z, 0.8); SFX.at('saw', h.x, h.z, 0.8); SFX.at('charge', h.x, h.z, 0.5); after(0.1, () => { if (h.alive) h.spinning = true; }); after(0.5, () => { h.spinning = false; });
             addBuff(h, { id: 'sawmode', dur: DUR, as: 0.5, ms: 0.12, every: 0.12, onTick: u => { if (FX.near(u.x, u.z, 45)) FX.sparks(u.x + Math.sin(u.facing) * 1.2, 1.3, u.z + Math.cos(u.facing) * 1.2, { n: 2, color: 0xffd0d8, color2: KAG.c, speed: [2, 7], life: [0.1, 0.25], dir: u.facing + 2.4, spread: 0.8, w: 0.07 }); }, onEnd: u => kagErad(u) });
             after(0.3, () => {
               if (!h.alive) return; const x = h.x, z = h.z;
               for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 0); kagMark(h, e, 8); FX.hit(e.x, 1.3, e.z, KAG.c, true); rmpArc(e.x, e.z, h.facing + 1.57, 2, 1.4, 0.2, KAG.c, 1.3, false, 0.85); }
-              SFX.at('slash', x, z, 1); SFX.at('heavy', x, z, 0.7); FX.shake(0.5);
+              SFX.at('saw', x, z, 0.9); SFX.at('blade', x, z, 0.7); FX.shake(0.5);
               FX.slash(x, z, h.facing, { r: R, sweep: 5.5, color: KAG.c, life: 0.3, y: 1.3 }); FX.slash(x, z, h.facing + 3.1, { r: R * 0.8, sweep: 5.5, color: KAG.deep, life: 0.34, y: 1.2, flip: true });
               FX.ring(x, z, { r0: 1, r1: R, color: KAG.c, life: 0.35, tex: 'shock' }); FX.shock(x, z, R * 1.3, 0.9, 0.35); kagThreads(x, 1.3, z, 6, R); if (FX.near(x, z, 45)) FX.text(x, h.height + 1.5, z, 'РЕЖИМ ПИЛЫ', '#ff8aa4', 18);
             });
             return { cd: 1.2 };
           }
-          const dmg = D(h, 70, 12, 0.7); SFX.at('slash', h.x, h.z, 0.8); SFX.at('shoot', h.x, h.z, 0.4);
+          const dmg = D(h, 70, 12, 0.7); SFX.at('needle', h.x, h.z, 0.7); SFX.at('whip', h.x, h.z, 0.5);
           shot(h, {
             dir, speed: 46, range: 9, w: 0.9, color: KAG.c, size: 0.8, mesh: 'bolt', y: 1.3, ribbon: 0.7, pierce: true, trail: q => FX.trail(q.x, q.y, q.z, KAG.c, 0.4, 1),
             onHit: e => { damage(h, e, dmg, 0); slow(h, e, 0.25, 1.5, 'kagslow'); kagMark(h, e, 8); kagSaw(h, e.kind === 'hero' ? 12 : 4); FX.hit(e.x, 1.3, e.z, KAG.c, e.kind === 'hero'); rmpArc(e.x, e.z, dir + 1.57, 1.6, 1.2, 0.18, KAG.c, 1.3, false, 0.8); },
@@ -2682,7 +2682,7 @@ HEROES.push(
         desc: 'Бросает в точку призрачные ножницы: физический урон и «нить» всем в радиусе 3.2. Через 0.5 сек ножницы смыкаются — ещё урон, — а сама Кагари и союзные герои в радиусе 7 от неё лечатся: стежок затягивает раны.',
         cast(h, p) {
           const x = p.x, z = p.z, R = 3.2, d1 = D(h, 55, 9.5, 0.5), d2 = D(h, 45, 8, 0.4), hl = D(h, 34, 6.5, 0.25), T = Math.max(0.18, p.dist / 34), x0 = h.x, z0 = h.z, f0 = p.dir;
-          telegraph(h, x, z, R, T + 0.5, KAG.c); SFX.at('whoosh', x0, z0, 0.9);
+          telegraph(h, x, z, R, T + 0.5, KAG.c); SFX.at('whoosh', x0, z0, 0.7);
           if (FX.near(x, z, 55)) {   // two spectral blades spin to the spot, hang open over it, then snap shut
             const g = new THREE.Group(), B = [1, -1].map(s => { const bl = new THREE.Mesh(FX.geo.blade, FX.mat(null, KAG.c, 0.8)), ed = new THREE.Mesh(FX.geo.blade, FX.mat(null, 0xffffff, 0.9)), pv = new THREE.Group(); bl.userData.own = ed.userData.own = true; bl.scale.set(0.6, 1, R / 2.3); bl.position.z = R * 0.45; ed.scale.set(0.12, 1.2, R / 2.4); ed.position.set(-s * 0.3, 0.02, R * 0.45); pv.add(bl, ed); g.add(pv); return { pv, bl, ed, s }; });
             FX.add(g, T + 0.66, (k, me, dt, en) => {
@@ -2691,10 +2691,10 @@ HEROES.push(
               for (const q of B) { q.pv.rotation.y = q.s * open; q.bl.material.opacity = 0.8 * (1 - out); q.ed.material.opacity = 0.9 * (1 - out); }
             });
           }
-          after(T, () => { for (const e of enemiesIn(h, x, z, R)) { damage(h, e, d1, 0); kagMark(h, e, 8); kagSaw(h, e.kind === 'hero' ? 10 : 3); FX.hit(e.x, 1.3, e.z, KAG.c, true); } SFX.at('hit', x, z, 0.8); FX.ring(x, z, { r0: 0.4, r1: R, color: KAG.c, life: 0.3, tex: 'shock' }); kagThreads(x, 1.3, z, 4, R); });
+          after(T, () => { for (const e of enemiesIn(h, x, z, R)) { damage(h, e, d1, 0); kagMark(h, e, 8); kagSaw(h, e.kind === 'hero' ? 10 : 3); FX.hit(e.x, 1.3, e.z, KAG.c, true); } SFX.at('string', x, z, 0.6); SFX.at('impact', x, z, 0.5); FX.ring(x, z, { r0: 0.4, r1: R, color: KAG.c, life: 0.3, tex: 'shock' }); kagThreads(x, 1.3, z, 4, R); });
           after(T + 0.5, () => {
             for (const e of enemiesIn(h, x, z, R)) { damage(h, e, d2, 0); FX.hit(e.x, 1.3, e.z, KAG.c, true); rmpArc(e.x, e.z, f0 + 1.57, 2, 1.4, 0.2, KAG.pale, 1.3, false, 0.85); }
-            SFX.at('slash', x, z, 1); SFX.at('crit', x, z, 0.4); FX.glow(x, 1.4, z, 4, KAG.pale, 0.16, 'star'); FX.sparks(x, 1.4, z, { n: 14, color: 0xffffff, color2: KAG.c, speed: [5, 15], life: [0.15, 0.35], w: 0.1 }); FX.shock(x, z, R, 0.5, 0.3);
+            SFX.at('snip', x, z, 1); SFX.at('heal', x, z, 0.4); FX.glow(x, 1.4, z, 4, KAG.pale, 0.16, 'star'); FX.sparks(x, 1.4, z, { n: 14, color: 0xffffff, color2: KAG.c, speed: [5, 15], life: [0.15, 0.35], w: 0.1 }); FX.shock(x, z, R, 0.5, 0.3);
             if (h.alive) for (const a of alliesIn(h, h.x, h.z, 7, true)) { if (a.hp < a.maxHp) { heal(h, a, hl); FX.heal(a, KAG.pale); } if (a !== h && FX.near(a.x, a.z, 50)) FX.beam(h.x, h.z, a.x, a.z, { color: KAG.pale, w: 0.14, life: 0.3, y: 1.3, op: 0.7 }); }
           });
         }
@@ -2703,7 +2703,7 @@ HEROES.push(
         key: 'E', name: 'По нити', icon: 'kagdash', cd: 12, cost: 45, range: 7.5, ind: { type: 'line', w: 2 }, lock: 0, ai: { t: 'gap', escape: true },
         desc: 'Рывок на 7.5 по натянутой нити: физический урон и «нить» всем, сквозь кого она прошла. Первая атака после рывка наносится без задержки.',
         cast(h, p) {
-          const dmg = D(h, 55, 9, 0.5), x0 = h.x, z0 = h.z; SFX.at('dash', h.x, h.z, 0.9); FX.ring(h.x, h.z, { r1: 2.2, color: KAG.c, life: 0.25, tex: 'shock' });
+          const dmg = D(h, 55, 9, 0.5), x0 = h.x, z0 = h.z; SFX.at('dash', h.x, h.z, 0.7); SFX.at('string', h.x, h.z, 0.6); FX.ring(h.x, h.z, { r1: 2.2, color: KAG.c, life: 0.25, tex: 'shock' });
           dashTo(h, p.x, p.z, 36, { ribbon: KAG.c, w: 1.4, trail: u => { if (Math.random() < 0.5) FX.burst(u.x, 1.1, u.z, { n: 1, color: KAG.pale, color2: KAG.deep, speed: [0.2, 1], life: [0.25, 0.5], size: [0.35, 0.04], rad: 0.4 }); },
             onHit: e => { damage(h, e, dmg, 0); kagMark(h, e, 8); kagSaw(h, e.kind === 'hero' ? 10 : 3); FX.hit(e.x, 1.3, e.z, KAG.c, true); rmpArc(e.x, e.z, h.facing + 1.57, 1.8, 1.3, 0.18, KAG.c, 1.3, false, 0.85); },
             onEnd: u => { u.atkCd = 0; FX.beam(x0, z0, u.x, u.z, { color: KAG.c, w: 0.14, life: 0.5, y: 1.2, op: 0.8 }); FX.ring(u.x, u.z, { r0: 0.3, r1: 1.8, color: KAG.c, life: 0.25, tex: 'ringThin' }); } });
@@ -2714,14 +2714,14 @@ HEROES.push(
         desc: 'Кагари вскидывает клинок, и через 0.55 сек все нити вокруг рвутся разом: большой физический урон врагам в радиусе 6.5, замедление на 40% на 2 сек и «нить» на каждом; сама она и союзные герои в радиусе лечатся. Зубья +40, и на 12 сек «Схождение»: зубья копятся вдвое быстрее, а режим пилы и «Искоренение» сильнее на 40%.',
         cast(h) {
           const T = 0.55, R = 6.5, dmg = D(h, 130, 26, 0.9), hl = D(h, 70, 16, 0.4); h.order = null; h.path = null;
-          telegraph(h, h.x, h.z, R, T, KAG.c); SFX.at('dark', h.x, h.z, 1); FX.pillar(h.x, h.z, { r: 1.2, h: 14, color: KAG.c, life: T, op: 0.45, grow: true }); FX.zone(h.x, h.z, R, KAG.c, T, { tex: 'swirl', spin: -6, op: 0.5 });
+          telegraph(h, h.x, h.z, R, T, KAG.c); SFX.at('ultcue', h.x, h.z, 0.9); SFX.at('string', h.x, h.z, 0.6); SFX.at('charge', h.x, h.z, 0.5); FX.pillar(h.x, h.z, { r: 1.2, h: 14, color: KAG.c, life: T, op: 0.45, grow: true }); FX.zone(h.x, h.z, R, KAG.c, T, { tex: 'swirl', spin: -6, op: 0.5 });
           for (let i = 0; i < 4; i++) after(i * 0.12, () => { if (h.alive) { FX.implode(h.x, 1.6, h.z, 6 - i, { n: 9, color: KAG.c, color2: 0xffffff, life: 0.22, streak: true }); kagThreads(h.x, 2.6, h.z, 3, R); } });
           after(T, () => {
             if (!h.alive) return; const x = h.x, z = h.z;
             for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 0); slow(h, e, 0.4, 2, 'kagslow'); kagMark(h, e, 8); FX.hit(e.x, 1.3, e.z, KAG.c, true); if (FX.near(e.x, e.z, 50)) FX.bolt(x, 2.2, z, e.x, 1.3, e.z, { color: KAG.c, w: 0.3, jag: 0.3, life: 0.3, fork: false }); }
             for (const a of alliesIn(h, x, z, R, true)) { heal(h, a, hl); FX.heal(a, KAG.pale); }
             kagSaw(h, h.convT > G.time ? 20 : 40); h.convT = G.time + 12; const b = addBuff(h, { id: 'conv', dur: 12 }); if (b) b.fx = FX.aura(h, KAG.c, 12, 1.9, 'swirl', 5);
-            SFX.at('bigboom', x, z, 1); SFX.at('shatter', x, z, 0.7); FX.shake(0.9); FX.punch(0.9); FX.light(x, 3, z, KAG.c, 2, 28, 0.5);
+            SFX.at('bigboom', x, z, 0.9); SFX.at('whip', x, z, 0.8); SFX.at('snip', x, z, 0.6); FX.shake(0.9); FX.punch(0.9); FX.light(x, 3, z, KAG.c, 2, 28, 0.5);
             FX.explosion(x, z, 2.5, KAG.c, { el: 'shadow', color2: KAG.deep }); FX.shock(x, z, R * 1.6, 1.3, 0.5); FX.pillar(x, z, { r: 1.6, h: 22, color: KAG.c, life: 0.7, op: 0.5 });
             for (let i = 0; i < 3; i++) after(i * 0.07, () => FX.ring(x, z, { r0: 0.6 + i, r1: R + i * 0.8, color: i % 2 ? KAG.pale : KAG.c, life: 0.45, tex: i ? 'ringThin' : 'shock' }));
             FX.ring(x, z, { r0: R * 0.8, r1: R * 0.95, color: KAG.c, life: 2, tex: 'crack', op: 0.7 }); kagThreads(x, 1.6, z, 10, R);
@@ -2752,16 +2752,16 @@ HEROES.push(
       {
         key: 'Q', name: 'Нефритовая стена', icon: 'linwall', cd: 16, cost: 60, range: 9, ind: { type: 'wall', len: 7.5 }, anim: 'slam', animDur: 0.5, lock: 0.2, ai: { t: 'wall' },
         desc: 'Поднимает из земли стену нефрита длиной 7.5 поперёк направления на 4 / 4.5 / 5 / 5.5 сек. Пройти сквозь неё не может никто — ни враги, ни свои, ни миньоны. Тех, кто стоял на её месте, отбрасывает; враги при этом получают магический урон и замедление на 30% на 1.5 сек.',
-        cast(h, p) { const lv = Math.max(1, h.al[0]); telegraph(h, p.x, p.z, 1.6, 0.18, LIN.c); SFX.at('cast', h.x, h.z, 0.8); const dmg = D(h, 50, 9, 0, 0.4), dir = p.dir, x = p.x, z = p.z; after(0.18, () => linWall(h, x, z, dir, 3.5 + 0.5 * lv, dmg)); }
+        cast(h, p) { const lv = Math.max(1, h.al[0]); telegraph(h, p.x, p.z, 1.6, 0.18, LIN.c); SFX.at('spirit', h.x, h.z, 0.7); const dmg = D(h, 50, 9, 0, 0.4), dir = p.dir, x = p.x, z = p.z; after(0.18, () => linWall(h, x, z, dir, 3.5 + 0.5 * lv, dmg)); }
       },
       {
         key: 'W', name: 'Вяжущая сфера', icon: 'linslow', cd: 12, cost: 55, range: 11, ind: { type: 'circle', r: 4.5 }, lock: 0.2, ai: { t: 'point', rad: 4.5, delay: 0.4, trap: true },
         desc: 'Бросает сферу, которая разбивается о землю и на 5 сек покрывает её нефритовой коркой в радиусе 4.5: враги внутри замедлены на 50% и получают магический урон дважды в секунду.',
         cast(h, p) {
-          const x = p.x, z = p.z, R = 4.5, T = Math.max(0.25, p.dist / 26), tick = D(h, 10, 1.8, 0, 0.07), x0 = h.x, z0 = h.z; SFX.at('cast', x0, z0, 0.8); telegraph(h, x, z, R, T, LIN.c);
+          const x = p.x, z = p.z, R = 4.5, T = Math.max(0.25, p.dist / 26), tick = D(h, 10, 1.8, 0, 0.07), x0 = h.x, z0 = h.z; SFX.at('arcane', x0, z0, 0.6); SFX.at('whoosh', x0, z0, 0.4); telegraph(h, x, z, R, T, LIN.c);
           if (FX.near(x, z, 60)) { const m = FX.projMesh('orb', LIN.c, 1.1), rib = FX.ribbon(LIN.c, 0.9, 12); FX.add(m, T, (k, me) => { me.position.set(lerp(x0, x, k), 1.5 + Math.sin(Math.PI * k) * 3.2, lerp(z0, z, k)); rib.add(me.position.x, me.position.y, me.position.z); if (k > 0.95) rib.end(); }); }
           after(T, () => {
-            SFX.at('ice', x, z, 1); SFX.at('shatter', x, z, 0.5); FX.shock(x, z, R, 0.6, 0.35); FX.ring(x, z, { r0: 0.5, r1: R, color: LIN.c, life: 0.4, tex: 'shock' }); FX.debris(x, 0.4, z, { glow: true, n: 8, color: 0xbff5e6, speed: [2, 7], up: 6, size: [0.14, 0.34], life: 0.7 });
+            SFX.at('shatter', x, z, 0.7); SFX.at('stone', x, z, 0.5); SFX.at('chime', x, z, 0.4); FX.shock(x, z, R, 0.6, 0.35); FX.ring(x, z, { r0: 0.5, r1: R, color: LIN.c, life: 0.4, tex: 'shock' }); FX.debris(x, 0.4, z, { glow: true, n: 8, color: 0xbff5e6, speed: [2, 7], up: 6, size: [0.14, 0.34], life: 0.7 });
             const d = new THREE.Mesh(FX.geo.flat, FX.mat('fill', 0x0b3a34, 0.5, false)); d.position.set(x, 0.07, z); d.scale.set(R * 2 * RK, 1, R * 2 * RK); d.renderOrder = 3; FX.add(d, 5, (k, me, dt, e) => { me.material.opacity = 0.5 * Math.min(1, e.t / 0.25, (5 - e.t) / 0.5); });
             FX.zone(x, z, R, LIN.c, 5, { tex: 'crack', spin: 0, op: 0.9 }); FX.zone(x, z, R, LIN.c, 5, { tex: 'ringThin', spin: 0.6, op: 0.8 });
             zone(h, { x, z, r: R, dur: 5, every: 0.5, first: true, tick: () => { for (const e of enemiesIn(h, x, z, R)) { slow(h, e, 0.5, 0.7, 'linfield'); damage(h, e, tick, 1, { dot: true }); } const a = rand(TAU), dd = rand(R); linMotes(x + Math.sin(a) * dd, 0.3, z + Math.cos(a) * dd, 3, 1.4); } });
@@ -2772,8 +2772,8 @@ HEROES.push(
         key: 'E', name: 'Целебная сфера', icon: 'linheal', cd: 9, cost: 60, range: 9, ind: { type: 'ally' }, lock: 0.15, ai: { t: 'healAlly' }, noCue: true,
         desc: 'Отпускает сферу к союзному герою: 5 сек она восстанавливает ему здоровье. На себя (если не навестись на союзника) действует на 70%. Треть лечения приходит сразу.',
         cast(h, p) {
-          const a = p.unit || h, total = D(h, 110, 22, 0, 0.8) * (a === h ? 0.7 : 1), each = total / 6; SFX.at('heal', h.x, h.z, 0.7);
-          const put = t => { if (!t.alive) return; heal(h, t, each * 2); FX.heal(t, LIN.c); const b = addBuff(t, { id: 'linheal', dur: 4.05, every: 1, src: h, onTick: u => { heal(h, u, each); linMotes(u.x, 1, u.z, 4); } }); if (b) b.fx = FX.aura(t, LIN.c, 4.05, t.radius + 0.6, 'ringThin', 2.5); FX.ring(t.x, t.z, { r0: 2.4, r1: 0.5, color: LIN.c, life: 0.35, tex: 'ringThin' }); };
+          const a = p.unit || h, total = D(h, 110, 22, 0, 0.8) * (a === h ? 0.7 : 1), each = total / 6; SFX.at('spirit', h.x, h.z, 0.6);
+          const put = t => { if (!t.alive) return; heal(h, t, each * 2); FX.heal(t, LIN.c); SFX.at('heal', t.x, t.z, 0.6); SFX.at('water', t.x, t.z, 0.4); const b = addBuff(t, { id: 'linheal', dur: 4.05, every: 1, src: h, onTick: u => { heal(h, u, each); linMotes(u.x, 1, u.z, 4); } }); if (b) b.fx = FX.aura(t, LIN.c, 4.05, t.radius + 0.6, 'ringThin', 2.5); FX.ring(t.x, t.z, { r0: 2.4, r1: 0.5, color: LIN.c, life: 0.35, tex: 'ringThin' }); };
           if (a === h) put(h); else homing(h, a, { speed: 30, color: LIN.c, size: 0.8, mesh: 'orb', y: 1.6, onHit: put });
         }
       },
@@ -2784,14 +2784,14 @@ HEROES.push(
           let t = null, bd = 4.5; for (const o of G.heroes) if (o.dead && o.team === h.team && o !== h && o.respawnT > 1.8 && !(o.reviving > G.time)) { const d = dist(o.x, o.z, p.x, p.z); if (d < bd) { bd = d; t = o; } }
           if (!t) { if (h === G.player) { UI.msg('Укажите место, где пал союзный герой'); SFX.play('deny'); } return false; }
           const T = 1.5, lv = Math.max(1, h.al[3]), hpK = 0.25 + 0.25 * lv, full = this.cd * 100 / (100 + h.haste), x = t.x, z = t.z; t.reviving = G.time + T + 0.1; h.linCh = G.time + T; h.linOk = true; h.order = null; h.path = null; h.facing = angTo(h.x, h.z, x, z);
-          SFX.at('cast', h.x, h.z, 1); SFX.at('heal', x, z, 0.6); FX.pillar(x, z, { r: 1.3, h: 16, color: LIN.c, life: T, op: 0.5, grow: true }); FX.zone(x, z, 3, LIN.c, T, { tex: 'rune', spin: 3, op: 0.8 }); FX.zone(h.x, h.z, 2, LIN.c, T, { tex: 'ringThin', spin: -2, op: 0.7 });
+          SFX.at('ultcue', h.x, h.z, 0.8); SFX.at('spirit', x, z, 0.7); SFX.at('chime', x, z, 0.5); FX.pillar(x, z, { r: 1.3, h: 16, color: LIN.c, life: T, op: 0.5, grow: true }); FX.zone(x, z, 3, LIN.c, T, { tex: 'rune', spin: 3, op: 0.8 }); FX.zone(h.x, h.z, 2, LIN.c, T, { tex: 'ringThin', spin: -2, op: 0.7 });
           const bm = new THREE.Mesh(FX.geo.line, FX.mat('beam', LIN.c, 0.6)); FX.add(bm, T, (k, me, dt, en) => { me.position.set(h.x, 1.7, h.z); me.rotation.y = angTo(h.x, h.z, x, z); me.scale.set(0.3 + Math.sin(en.t * 14) * 0.08, 1, dist(h.x, h.z, x, z)); me.material.opacity = h.linOk && h.alive ? 0.6 : 0; });
           for (let i = 0; i < 6; i++) after(i * 0.24, () => { if (h.alive && h.linOk) { FX.implode(x, 1.4, z, 4, { n: 9, color: LIN.c, color2: 0xffffff, life: 0.25, streak: true }); FX.ring(x, z, { r0: 3.4, r1: 0.5, color: LIN.c, life: 0.3, tex: 'ringThin' }); linMotes(h.x, 1.2, h.z, 3); } });
           if (FX.near(x, z, 45)) FX.text(x, 3.2, z, t.name + ', вернись', '#b8fff0', 15);
           after(T, () => {
             t.reviving = 0; h.linCh = 0;
             if (!h.alive || !h.linOk || !t.dead) { if (h.alive) { h.cd[3] = Math.min(h.cd[3], full * 0.3); if (h === G.player) UI.msg('Зов сорван'); } return; }
-            revive(t, hpK); SFX.at('bigboom', x, z, 0.5); SFX.at('cleanse', x, z, 1); FX.shake(0.4); FX.light(x, 3, z, LIN.c, 2, 26, 0.6);
+            revive(t, hpK); SFX.at('holy', x, z, 1); SFX.at('cleanse', x, z, 0.7); SFX.at('chime', x, z, 0.5); SFX.at('bigboom', x, z, 0.3); FX.shake(0.4); FX.light(x, 3, z, LIN.c, 2, 26, 0.6);
             FX.pillar(x, z, { r: 2, h: 26, color: LIN.c, life: 1.0, op: 0.6 }); FX.pillar(x, z, { r: 0.7, h: 34, color: 0xffffff, life: 0.6, op: 0.6 }); FX.shock(x, z, 8, 0.8, 0.5); FX.explosion(x, z, 2.4, LIN.c, { el: 'holy', mark: false });
             for (let i = 0; i < 3; i++) after(i * 0.1, () => FX.ring(x, z, { r0: 0.5, r1: 4 + i * 1.6, color: i % 2 ? LIN.pale : LIN.c, life: 0.55, tex: i ? 'ringThin' : 'shock' }));
             FX.heal(t, LIN.c); if (FX.near(x, z, 45)) FX.text(x, t.height + 1.6, z, 'ВОЗВРАЩЕНИЕ', '#b8fff0', 19);
@@ -2820,7 +2820,7 @@ HEROES.push(
           const a = p.unit || h, lv = Math.max(1, h.al[0]), as = 0.2 + 0.15 * lv, ad = D(h, 12, 3.2, 0.1);
           const b = addBuff(a, { id: 'kwpump', dur: 6, as, ad, ms: 0.15, src: h, every: 0.3, onTick: u => kwaUp(u, 2) }); if (b) b.fx = FX.aura(a, KWA.c, 6, a.radius + 0.9, 'ringThin', 4);
           if (a !== h) { addBuff(h, { id: 'kwself', dur: 6, as: as * 0.5 }); FX.beam(h.x, h.z, a.x, a.z, { color: KWA.c, w: 0.5, life: 0.3, y: 1.6 }); }
-          SFX.at('horn', h.x, h.z, 0.6); SFX.at('cue', a.x, a.z, 0.7); kwaUp(a, 14); FX.ring(a.x, a.z, { r0: 2.6, r1: 0.6, color: KWA.c, life: 0.3, tex: 'ringThin' }); FX.pillar(a.x, a.z, { r: 0.9, h: 9, color: KWA.c, life: 0.45, op: 0.45 }); FX.glow(a.x, a.height + 0.4, a.z, 3, KWA.c, 0.35, 'star');
+          SFX.at('whistle', h.x, h.z, 0.8); SFX.at('cue', a.x, a.z, 0.5); kwaUp(a, 14); FX.ring(a.x, a.z, { r0: 2.6, r1: 0.6, color: KWA.c, life: 0.3, tex: 'ringThin' }); FX.pillar(a.x, a.z, { r: 0.9, h: 9, color: KWA.c, life: 0.45, op: 0.45 }); FX.glow(a.x, a.height + 0.4, a.z, 3, KWA.c, 0.35, 'star');
           if (FX.near(a.x, a.z, 45)) FX.text(a.x, a.height + 1.2, a.z, 'ДАВАЙ!', '#ffd27a', 17);
         }
       },
@@ -2831,7 +2831,7 @@ HEROES.push(
           const R = 6.5, lv = Math.max(1, h.al[1]), dmg = D(h, 60, 11, 0.5), x = h.x, z = h.z;
           for (const a of alliesIn(h, x, z, R, true)) { const b = addBuff(a, { id: 'kwroar', dur: 5, dmgOut: 1.08 + 0.03 * lv, def: 6 + 4 * lv, amp: h, src: h }); if (b) b.fx = FX.aura(a, KWA.red, 5, a.radius + 0.6, 'ring', 3); kwaUp(a, 8); }
           for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 0); slow(h, e, 0.3, 2, 'kwslow'); FX.hit(e.x, 1.3, e.z, KWA.c, true); }
-          SFX.at('horn', x, z, 1); SFX.at('bigboom', x, z, 0.5); FX.shake(0.6); FX.shock(x, z, R * 1.5, 1.2, 0.5); FX.warp('ring', x, 0, z, { r: R, str: 1, life: 0.5 });
+          SFX.at('roar', x, z, 1); SFX.at('horn', x, z, 0.6); FX.shake(0.6); FX.shock(x, z, R * 1.5, 1.2, 0.5); FX.warp('ring', x, 0, z, { r: R, str: 1, life: 0.5 });
           for (let i = 0; i < 3; i++) after(i * 0.09, () => FX.ring(x, z, { r0: 0.6, r1: R - i * 0.8, color: i % 2 ? KWA.red : KWA.c, life: 0.45, tex: i ? 'ringThin' : 'shock' }));
           FX.debris(x, 0.3, z, { n: 8, color: 0x4a4640, speed: [3, 9], up: 8, size: [0.16, 0.4], rad: 1.5 }); if (FX.near(x, z, 45)) FX.text(x, h.height + 1.8, z, 'ВПЕРЁД!', '#ffd27a', 18);
         }
@@ -2844,9 +2844,9 @@ HEROES.push(
           const land = u => {
             const x = u.x, z = u.z; shield(u, u, sh, 4, KWA.c); if (a !== u && a.alive) { shield(u, a, sh, 4, KWA.c); kwaUp(a, 10); }
             for (const e of enemiesIn(u, x, z, R)) { damage(u, e, dmg, 0); knock(e, x, z, 3, 0.25); FX.hit(e.x, 1.3, e.z, KWA.c, true); }
-            SFX.at('boom', x, z, 0.8); SFX.at('heavy', x, z, 0.8); FX.shake(0.55); FX.shock(x, z, R * 1.6, 1, 0.4); FX.ring(x, z, { r0: 0.4, r1: R, color: KWA.c, life: 0.35, tex: 'shock' }); FX.ring(x, z, { r0: R * 0.8, r1: R, color: KWA.c, tex: 'crack', life: 1.2, op: 0.6 }); FX.debris(x, 0.3, z, { n: 10, color: 0x4a4640, speed: [3, 9], up: 9, size: [0.18, 0.5] });
+            SFX.at('heavy', x, z, 0.9); SFX.at('stone', x, z, 0.6); SFX.at('shield', x, z, 0.5); FX.shake(0.55); FX.shock(x, z, R * 1.6, 1, 0.4); FX.ring(x, z, { r0: 0.4, r1: R, color: KWA.c, life: 0.35, tex: 'shock' }); FX.ring(x, z, { r0: R * 0.8, r1: R, color: KWA.c, tex: 'crack', life: 1.2, op: 0.6 }); FX.debris(x, 0.3, z, { n: 10, color: 0x4a4640, speed: [3, 9], up: 9, size: [0.18, 0.5] });
           };
-          SFX.at('dash', h.x, h.z, 0.9); if (a === h || udist(h, a) < 2.2) { land(h); return; }
+          SFX.at('dash', h.x, h.z, 0.7); SFX.at('gust', h.x, h.z, 0.4); if (a === h || udist(h, a) < 2.2) { land(h); return; }
           const ang = angTo(a.x, a.z, h.x, h.z); telegraph(h, a.x, a.z, R, Math.max(0.15, udist(h, a) / 30), KWA.c);
           dashTo(h, a.x + Math.sin(ang) * 1.7, a.z + Math.cos(ang) * 1.7, 30, { fly: true, arc: 3.6, ribbon: KWA.c, onEnd: land });
         }
@@ -2856,7 +2856,7 @@ HEROES.push(
         desc: 'Через 0.6 сек Кваме и все союзные герои в радиусе 9 на 8 / 9 / 10 сек становятся чемпионами: они вырастают, наносят на 20 / 27 / 34% больше урона, атакуют на 40 / 55 / 70% быстрее, двигаются на 20% быстрее и получают на 10% меньше урона. Враги рядом с Кваме отлетают.',
         cast(h) {
           const T = 0.6, R = 9, lv = Math.max(1, h.al[3]), dur = 7 + lv, dmg = D(h, 70, 14, 0.5); h.order = null; h.path = null;
-          SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('horn', h.x, h.z, 0.8); FX.pillar(h.x, h.z, { r: 1.6, h: 16, color: KWA.c, life: T, op: 0.5, grow: true }); FX.zone(h.x, h.z, R, KWA.c, T, { tex: 'swirl', spin: 5, op: 0.5 });
+          SFX.at('ultcue', h.x, h.z, 0.8); SFX.at('whistle', h.x, h.z, 0.7); SFX.at('charge', h.x, h.z, 0.5); FX.pillar(h.x, h.z, { r: 1.6, h: 16, color: KWA.c, life: T, op: 0.5, grow: true }); FX.zone(h.x, h.z, R, KWA.c, T, { tex: 'swirl', spin: 5, op: 0.5 });
           for (let i = 0; i < 4; i++) after(i * 0.13, () => { if (h.alive) { FX.implode(h.x, 1.8, h.z, 7 - i, { n: 10, color: KWA.c, color2: 0xffffff, life: 0.24, streak: true }); kwaUp(h, 6); } });
           after(T, () => {
             if (!h.alive) return; const x = h.x, z = h.z;
@@ -2866,7 +2866,7 @@ HEROES.push(
               if (a === G.player && a !== h) UI.msg('Чемпионский час: вы сильнее на ' + dur + ' сек');
             }
             for (const e of enemiesIn(h, x, z, 5)) { damage(h, e, dmg, 0); knock(e, x, z, 4, 0.3); FX.hit(e.x, 1.3, e.z, KWA.c, true); }
-            SFX.at('bigboom', x, z, 0.9); SFX.at('mvp', x, z, 0.5); FX.shake(0.8); FX.punch(0.8); FX.light(x, 4, z, KWA.c, 2.2, 30, 0.7); FX.shock(x, z, R * 1.4, 1.3, 0.55);
+            SFX.at('bigboom', x, z, 0.9); SFX.at('horn', x, z, 0.8); SFX.at('mvp', x, z, 0.5); FX.shake(0.8); FX.punch(0.8); FX.light(x, 4, z, KWA.c, 2.2, 30, 0.7); FX.shock(x, z, R * 1.4, 1.3, 0.55);
             FX.pillar(x, z, { r: 2.2, h: 24, color: KWA.c, life: 0.9, op: 0.5 }); FX.explosion(x, z, 2.5, KWA.c, { color2: KWA.deep, smoke: false, mark: false });
             for (let i = 0; i < 3; i++) after(i * 0.08, () => FX.ring(x, z, { r0: 0.6 + i, r1: R - i, color: i % 2 ? KWA.pale : KWA.c, life: 0.55, tex: i ? 'ringThin' : 'shock' }));
             if (FX.near(x, z, 45)) FX.text(x, h.height + 2.6, z, 'ЧЕМПИОНСКИЙ ЧАС', '#ffd27a', 20);
@@ -2932,7 +2932,7 @@ HEROES.push(
       if (FX.near(t.x, t.z, 45)) agfStitchFx(t, n);
       if (n >= 3) {
         b.dead = true; L[h.id] = G.time + 7; root(h, t, 0.9, AGF.c); damage(h, t, 20 + 4 * h.level + 0.2 * h.ap, 1, { dot: true });
-        SFX.at('slash', t.x, t.z, 0.7); FX.ring(t.x, t.z, { r0: 2.2, r1: 0.6, color: AGF.c, life: 0.3, tex: 'ringThin' });
+        SFX.at('needle', t.x, t.z, 0.6); SFX.at('string', t.x, t.z, 0.6); FX.ring(t.x, t.z, { r0: 2.2, r1: 0.6, color: AGF.c, life: 0.3, tex: 'ringThin' });
         for (let i = 0; i < 4; i++) { const a = i / 4 * TAU + 0.4; FX.beam(t.x + Math.sin(a) * 1.4, t.z + Math.cos(a) * 1.4, t.x - Math.sin(a) * 1.4, t.z - Math.cos(a) * 1.4, { color: AGF.c, w: 0.12, life: 0.4, y: 0.6 + i * 0.35 }); }
         if (FX.near(t.x, t.z, 45)) FX.text(t.x, t.height + 1.2, t.z, 'ПРОШИТ', '#e2c6ff', 15);
       }
@@ -2943,14 +2943,14 @@ HEROES.push(
         desc: 'Пускает по земле клубок, утыканный иглами: он катится на 13, разматывая за собой нить, и ранит всех на пути (магический урон, замедление на 25% на 1.5 сек). В конце клубок разлетается иглами — половина урона всем в радиусе 3.5.',
         cast(h, p) {
           const dir = p.dir, sx = Math.sin(dir), cz = Math.cos(dir), SP = 16, L = 13 + (h.castRange || 0), dmg = D(h, 68, 12, 0, 0.55), x0 = h.x + sx * 1.2, z0 = h.z + cz * 1.2; let acc = 0;
-          SFX.at('whoosh', h.x, h.z, 0.8);
+          SFX.at('whoosh', h.x, h.z, 0.6);
           shot(h, {
             dir, x: x0, z: z0, speed: SP, range: 13, w: 1.1, color: AGF.c, mesh: false, ribbon: false, pierce: true, y: 0.7,
             trail: q => { if (++acc % 3 === 0 && FX.near(q.x, q.z, 50)) FX.burst(q.x, 0.3, q.z, { n: 1, color: 0xe88a5a, color2: AGF.yarn, speed: [0.3, 1.2], life: [0.3, 0.6], size: [0.3, 0.04], up: 1.5, rad: 0.4 }); },
-            onHit: e => { damage(h, e, dmg, 1); slow(h, e, 0.25, 1.5, 'agfslow'); FX.hit(e.x, 1.1, e.z, AGF.c, e.kind === 'hero'); FX.sparks(e.x, 1, e.z, { n: 5, color: AGF.steel, color2: AGF.c, speed: [3, 9], life: [0.12, 0.3], dir, spread: 0.6, w: 0.07 }); SFX.at('hit', e.x, e.z, 0.5); },
+            onHit: e => { damage(h, e, dmg, 1); slow(h, e, 0.25, 1.5, 'agfslow'); FX.hit(e.x, 1.1, e.z, AGF.c, e.kind === 'hero'); FX.sparks(e.x, 1, e.z, { n: 5, color: AGF.steel, color2: AGF.c, speed: [3, 9], life: [0.12, 0.3], dir, spread: 0.6, w: 0.07 }); SFX.at('needle', e.x, e.z, 0.4); },
             onEnd: (x, z) => {
               for (const e of enemiesIn(h, x, z, 3.5)) { damage(h, e, dmg * 0.5, 1); FX.hit(e.x, 1.1, e.z, AGF.c, false); }
-              SFX.at('shatter', x, z, 0.7); SFX.at('boom', x, z, 0.4); FX.ring(x, z, { r0: 0.4, r1: 3.5, color: AGF.c, life: 0.35, tex: 'shock' }); FX.shock(x, z, 4, 0.6, 0.3);
+              SFX.at('pop', x, z, 0.6); SFX.at('dagger', x, z, 0.5); FX.ring(x, z, { r0: 0.4, r1: 3.5, color: AGF.c, life: 0.35, tex: 'shock' }); FX.shock(x, z, 4, 0.6, 0.3);
               for (let i = 0; i < 10; i++) { const a = i / 10 * TAU + rand(-0.15, 0.15), r = rand(2.8, 3.8); FX.beam(x + Math.sin(a) * 0.5, z + Math.cos(a) * 0.5, x + Math.sin(a) * r, z + Math.cos(a) * r, { color: AGF.steel, w: 0.14, life: 0.28, y: 0.7 }); }
               FX.burst(x, 0.7, z, { n: 10, color: 0xe88a5a, color2: AGF.yarn, speed: [1, 4], life: [0.4, 0.8], size: [0.35, 0.05], up: 3, grav: -6 }); FX.glow(x, 0.8, z, 3.4, AGF.c, 0.2, 'star');
             }
@@ -2967,7 +2967,7 @@ HEROES.push(
         desc: 'Бросает огромную иглу в точку. Воткнувшись, игла пришивает нитями всех врагов в радиусе 3.6 (магический урон), а через 0.5 сек нити натягиваются и стягивают их к игле, где они обездвижены на 1 / 1.2 / 1.4 / 1.6 сек.',
         cast(h, p) {
           const x = p.x, z = p.z, R = 3.6, T = Math.max(0.2, p.dist / 34), dmg = D(h, 60, 10.5, 0, 0.5), rt = 0.8 + 0.2 * Math.max(1, h.al[1]), x0 = h.x, z0 = h.z, dir = p.dir, HOLD = T + 0.5 + rt + 0.4;
-          telegraph(h, x, z, R, T + 0.5, AGF.c); SFX.at('whoosh', x0, z0, 1);
+          telegraph(h, x, z, R, T + 0.5, AGF.c); SFX.at('whoosh', x0, z0, 0.8);
           if (FX.near(x, z, 60)) {   // the needle arcs over, turning point-down, and stabs into the ground; it stands there until the knot is tied
             const nd = agfNeedle(0.9);
             FX.add(nd, HOLD, (k, me, dt, en) => {
@@ -2977,12 +2977,12 @@ HEROES.push(
             });
           }
           after(T, () => {
-            SFX.at('hit', x, z, 1); SFX.at('rubble', x, z, 0.5); FX.shake(0.25); FX.ring(x, z, { r0: 0.3, r1: R, color: AGF.c, life: 0.35, tex: 'shock' }); FX.shock(x, z, R, 0.6, 0.3); FX.debris(x, 0.3, z, { n: 6, color: 0x4a4640, speed: [2, 6], up: 7, size: [0.14, 0.34] });
+            SFX.at('spear', x, z, 1); SFX.at('rubble', x, z, 0.4); FX.shake(0.25); FX.ring(x, z, { r0: 0.3, r1: R, color: AGF.c, life: 0.35, tex: 'shock' }); FX.shock(x, z, R, 0.6, 0.3); FX.debris(x, 0.3, z, { n: 6, color: 0x4a4640, speed: [2, 6], up: 7, size: [0.14, 0.34] });
             FX.zone(x, z, R, AGF.c, 0.5 + rt, { tex: 'rune', spin: 1.2, op: 0.55 });
             const pin = { x, z, alive: true, yOff: 0.7 }, caught = [];
             for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 1); caught.push(e); FX.hit(e.x, 1.2, e.z, AGF.c, true); agfTie(pin, e, G.time + 0.5 + rt, 0.13); }
             after(0.5, () => {
-              if (caught.length) { SFX.at('whoosh', x, z, 0.8); SFX.at('crit', x, z, 0.4); }
+              if (caught.length) { SFX.at('whip', x, z, 0.7); SFX.at('string', x, z, 0.6); }
               for (const e of caught) {
                 if (!e.alive || dist(e.x, e.z, x, z) > R + 3) continue; const tt = pullTo(e, x, z, 24, 1.0);
                 after(tt, () => { if (!e.alive) return; root(h, e, rt, AGF.c); FX.sparks(e.x, 1.2, e.z, { n: 6, color: AGF.pale, color2: AGF.c, speed: [2, 6], life: [0.15, 0.35], w: 0.08 }); });
@@ -2999,7 +2999,7 @@ HEROES.push(
           const a = p.unit && p.unit.alive ? p.unit : h, sh = D(h, 55, 12, 0, 0.45) + a.maxHp * 0.05, hl = D(h, 48, 9, 0, 0.35);
           for (const b of a.buffs) if (b.slow || b.root) b.dead = true;
           shield(h, a, sh, 4, AGF.c); addBuff(a, { id: 'agfpatch', dur: 3.05, every: 1, dmgIn: 0.9, src: h, onTick: u => { heal(h, u, hl / 3, true); if (FX.near(u.x, u.z, 45)) FX.burst(u.x, 1.2, u.z, { n: 3, color: AGF.pale, color2: AGF.c, speed: [0.1, 0.5], life: [0.5, 0.9], size: [0.3, 0.04], up: 2, rad: 0.7 }); } });
-          SFX.at('heal', a.x, a.z, 0.7); SFX.at('slash', h.x, h.z, 0.3); FX.heal(a, AGF.c);
+          SFX.at('heal', a.x, a.z, 0.6); SFX.at('snip', h.x, h.z, 0.4); FX.heal(a, AGF.c);
           if (a !== h) FX.beam(h.x, h.z, a.x, a.z, { color: AGF.c, w: 0.14, life: 0.4, y: 1.3 });
           if (FX.near(a.x, a.z, 50)) {   // the patch is sewn on: a square of light at the chest, a ring of running stitches round the feet
             for (let i = 0; i < 8; i++) { const q = i / 8 * TAU; after(i * 0.04, () => { if (a.alive) FX.beam(a.x + Math.sin(q) * 1.5, a.z + Math.cos(q) * 1.5, a.x + Math.sin(q + 0.5) * 1.5, a.z + Math.cos(q + 0.5) * 1.5, { color: AGF.c, w: 0.12, life: 0.6, y: 0.25 }); }); }
@@ -3012,12 +3012,12 @@ HEROES.push(
         desc: 'Через 0.5 сек огромная призрачная игла прошивает насквозь всех вражеских героев в радиусе 6.5 — одного за другим: каждому магический урон и стежок. Потом они сшиты одной нитью на 5 / 6 / 7 сек: замедлены на 25%, а 30 / 40 / 50% урона, который получает любой из них, достаётся и всем остальным.',
         cast(h, p) {
           const x = p.x, z = p.z, R = 6.5, T = 0.5, lv = Math.max(1, h.al[3]), dur = 4 + lv, share = 0.2 + 0.1 * lv, dmg = D(h, 110, 22, 0, 0.7);
-          telegraph(h, x, z, R, T, AGF.c); SFX.at('ultcue', h.x, h.z, 0.5); SFX.at('dark', x, z, 0.6); FX.zone(x, z, R, AGF.c, T + 0.4, { tex: 'swirl', spin: 3, op: 0.5 }); FX.pillar(x, z, { r: 1, h: 16, color: AGF.c, life: T, op: 0.4, grow: true });
+          telegraph(h, x, z, R, T, AGF.c); SFX.at('ultcue', h.x, h.z, 0.9); SFX.at('string', x, z, 0.6); FX.zone(x, z, R, AGF.c, T + 0.4, { tex: 'swirl', spin: 3, op: 0.5 }); FX.pillar(x, z, { r: 1, h: 16, color: AGF.c, life: T, op: 0.4, grow: true });
           after(T, () => {
             const foes = G.heroes.filter(e => e.alive && hostile(h, e) && dist(e.x, e.z, x, z) < R + e.radius).sort((a, b) => angTo(x, z, a.x, a.z) - angTo(x, z, b.x, b.z));
             const g = { until: G.time + dur + 0.15 * foes.length, share, list: [], src: h, col: AGF.c }, n = foes.length, SEG = 0.14;
             const last = foes.map(e => ({ x: e.x, z: e.z })), wp = i => i === 0 ? { x: x - 7, y: 7, z: z - 2 } : (i <= n ? (foes[i - 1].alive ? { x: foes[i - 1].x, y: 1.3, z: foes[i - 1].z } : { x: last[i - 1].x, y: 1.3, z: last[i - 1].z }) : (() => { const a = wp(n), b = wp(Math.max(0, n - 1)); const dx = a.x - b.x, dz = a.z - b.z, l = Math.hypot(dx, dz) || 1; return { x: a.x + dx / l * 6, y: 8, z: a.z + dz / l * 6 }; })());
-            SFX.at('whoosh', x, z, 1); FX.shake(0.4);
+            SFX.at('whoosh', x, z, 0.8); SFX.at('needle', x, z, 0.6); FX.shake(0.4);
             const nd = agfNeedle(1.1), rib = FX.ribbon(AGF.c, 0.45, 26), en = FX.add(nd, SEG * (n + 1) + 0.6, null); let t = 0, done = 0, fin = false;
             G.actors.push({ update(dt) {
               t += dt; const s = Math.min(n, Math.floor(t / SEG)), f = Math.min(1, (t - s * SEG) / SEG), A = wp(s), B = wp(s + 1), px = lerp(A.x, B.x, f), py = lerp(A.y, B.y, f), pz = lerp(A.z, B.z, f);
@@ -3027,13 +3027,13 @@ HEROES.push(
                 const e = foes[done++]; if (!e.alive) continue;
                 damage(h, e, dmg, 1); if (!e.alive) continue; e.sewG = g; g.list.push(e);
                 const b = addBuff(e, { id: 'sewn' + h.id, dur: g.until - G.time, slow: 0.25, src: h, onEnd: u => { if (u.sewG === g) u.sewG = null; } }); if (b) b.fx = FX.aura(e, AGF.c, b.dur, e.radius + 0.5, 'ringThin', 3);
-                FX.hit(e.x, 1.3, e.z, AGF.c, true); FX.sparks(e.x, 1.3, e.z, { n: 10, color: 0xffffff, color2: AGF.c, speed: [4, 12], life: [0.15, 0.35], dir: nd.rotation.y, spread: 0.5, w: 0.1 }); SFX.at('slash', e.x, e.z, 0.9); SFX.at('crit', e.x, e.z, 0.4); if (e === G.player || h === G.player) FX.hitstop(0.04);
+                FX.hit(e.x, 1.3, e.z, AGF.c, true); FX.sparks(e.x, 1.3, e.z, { n: 10, color: 0xffffff, color2: AGF.c, speed: [4, 12], life: [0.15, 0.35], dir: nd.rotation.y, spread: 0.5, w: 0.1 }); SFX.at('spear', e.x, e.z, 0.8); SFX.at('needle', e.x, e.z, 0.5); if (e === G.player || h === G.player) FX.hitstop(0.04);
               }
               if (!fin && t >= SEG * (n + 1)) {
                 fin = true; rib.end(); en.dead = true;
                 const L2 = g.list.filter(e => e.alive);
                 for (let i = 0; i + 1 < L2.length; i++) agfTie(L2[i], L2[i + 1], g.until, 0.18); if (L2.length > 2) agfTie(L2[L2.length - 1], L2[0], g.until, 0.18);
-                if (L2.length) { SFX.at('cleanse', x, z, 0.6); if (FX.near(x, z, 45)) FX.text(x, 4, z, L2.length > 1 ? 'СШИТЫ' : 'ПРОШИТ', '#e2c6ff', 19); }
+                if (L2.length) { SFX.at('string', x, z, 0.7); SFX.at('snip', x, z, 0.5); if (FX.near(x, z, 45)) FX.text(x, 4, z, L2.length > 1 ? 'СШИТЫ' : 'ПРОШИТ', '#e2c6ff', 19); }
                 else { FX.ring(x, z, { r0: 0.5, r1: 3, color: AGF.c, life: 0.4, tex: 'shock' }); }
                 return false;
               }
@@ -3105,7 +3105,7 @@ HEROES.push(
     onDodge(h, src) {
       h.dodgeT = G.time + 0.25; const a = angTo(src.x, src.z, h.x, h.z) + (Math.random() < 0.5 ? HPI : -HPI); h.jolt = { a, p: 0.9, t: 0.16 };
       if (FX.near(h.x, h.z, 45)) { dshGhost(h, AKI.fut, 0.35, 0.35); FX.text(h.x, h.height + 0.5, h.z, 'уклон', '#b8e6ff', 13); FX.sparks(h.x, 1.4, h.z, { n: 3, color: 0xffffff, color2: AKI.fut, speed: [1, 3], life: [0.12, 0.25], w: 0.06 }); }
-      SFX.at('whoosh', h.x, h.z, 0.35);
+      SFX.at('blink', h.x, h.z, 0.3);
     },
     abilities: [
       {
@@ -3117,9 +3117,9 @@ HEROES.push(
           h.kat = { n: 4, until: G.time + 8, dmg: D(h, 38, 9, 0.45), big: D(h, 115, 26, 1.25) };
           addBuff(h, { id: 'katana', dur: 8, onHit: (u, t, bf) => {
             const K = u.kat; if (!K) return 0; K.n--; const fin = K.n <= 0, f2 = u.facing;
-            if (!fin) { if (FX.near(t.x, t.z, 50)) { FX.slash(t.x, t.z, f2, { r: 2.4, sweep: 1.5, color: AKI.cur, life: 0.2, y: 1.3, flip: u.anim.alt }); FX.sparks(t.x, 1.3, t.z, { n: 6, color: 0xffffff, color2: AKI.cur, speed: [3, 9], life: [0.12, 0.3], dir: f2, spread: 0.7, w: 0.08 }); } SFX.at('slash', t.x, t.z, 0.8); return K.dmg; }
+            if (!fin) { if (FX.near(t.x, t.z, 50)) { FX.slash(t.x, t.z, f2, { r: 2.4, sweep: 1.5, color: AKI.cur, life: 0.2, y: 1.3, flip: u.anim.alt }); FX.sparks(t.x, 1.3, t.z, { n: 6, color: 0xffffff, color2: AKI.cur, speed: [3, 9], life: [0.12, 0.3], dir: f2, spread: 0.7, w: 0.08 }); } SFX.at('katana', t.x, t.z, 0.7); return K.dmg; }
             // the fourth: the curse takes its due
-            after(0.02, () => { if (!u.alive) return; const lost = u.hp * 0.35; u.hp = Math.max(1, u.hp - lost); u.flash = 1; if (FX.near(u.x, u.z, 50)) { FX.burst(u.x, 1.5, u.z, { n: 14, color: AKI.cur, color2: AKI.cdk, speed: [1, 4], life: [0.4, 0.8], size: [0.4, 0.05], grav: -10, up: 2 }); FX.text(u.x, u.height + 0.9, u.z, '−' + Math.round(lost), '#ff4a5a', 16); } if (u === G.player) FX.punch(0.5); });
+            after(0.02, () => { if (!u.alive) return; const lost = u.hp * 0.35; u.hp = Math.max(1, u.hp - lost); u.flash = 1; SFX.at('blood', u.x, u.z, 0.6); if (FX.near(u.x, u.z, 50)) { FX.burst(u.x, 1.5, u.z, { n: 14, color: AKI.cur, color2: AKI.cdk, speed: [1, 4], life: [0.4, 0.8], size: [0.4, 0.05], grav: -10, up: 2 }); FX.text(u.x, u.height + 0.9, u.z, '−' + Math.round(lost), '#ff4a5a', 16); } if (u === G.player) FX.punch(0.5); });
             after(0.3, () => { if (u.kat === K) akiSheath(u); });
             if (FX.near(t.x, t.z, 55)) {
               FX.slash(t.x, t.z, f2, { r: 3.6, sweep: 2.2, color: AKI.cur, life: 0.3, y: 1.3 }); FX.slash(t.x, t.z, f2 + 0.4, { r: 3.2, sweep: 2.2, color: 0x2a0408, life: 0.34, y: 1.4, flip: true });
@@ -3127,11 +3127,11 @@ HEROES.push(
               for (let i = 0; i < 3; i++) { const a = f2 + (i - 1) * 0.7; FX.beam(t.x - Math.sin(a) * 2.4, t.z - Math.cos(a) * 2.4, t.x + Math.sin(a) * 0.4, t.z + Math.cos(a) * 0.4, { color: 0x1a0204, w: 0.3, life: 0.5, y: 1.2 + i * 0.25 }); }
               FX.burst(t.x, 1.3, t.z, { n: 18, color: AKI.cur, color2: AKI.cdk, speed: [2, 7], life: [0.3, 0.7], size: [0.4, 0.05], grav: -12 }); FX.text(t.x, t.height + 1.3, t.z, 'ПРОКЛЯТИЕ', '#ff5a6a', 17);
             }
-            SFX.at('crit', t.x, t.z, 1); SFX.at('heavy', t.x, t.z, 0.8); SFX.at('dark', t.x, t.z, 0.5); FX.shake(0.5); if (u === G.player || t === G.player) FX.hitstop(0.07);
+            SFX.at('katana', t.x, t.z, 1); SFX.at('flesh', t.x, t.z, 0.7); SFX.at('hex', t.x, t.z, 0.6); FX.shake(0.5); if (u === G.player || t === G.player) FX.hitstop(0.07);
             return K.big;
           } });
           // the draw itself cuts: a flat red arc in front of him
-          SFX.at('slash', h.x, h.z, 1); SFX.at('whoosh', h.x, h.z, 0.6);
+          SFX.at('katana', h.x, h.z, 1); SFX.at('whoosh', h.x, h.z, 0.5);
           for (const e of enemiesIn(h, h.x + Math.sin(f) * 1.6, h.z + Math.cos(f) * 1.6, 1.6)) { damage(h, e, cut, 0); FX.hit(e.x, 1.3, e.z, AKI.cur, true); }
           if (FX.near(h.x, h.z, 50)) { FX.slash(h.x + Math.sin(f) * 0.6, h.z + Math.cos(f) * 0.6, f, { r: 3.2, sweep: 2.4, color: AKI.cur, life: 0.24, y: 1.25 }); FX.sparks(h.x + Math.sin(f) * 1.5, 1.3, h.z + Math.cos(f) * 1.5, { n: 10, color: 0xffffff, color2: AKI.cur, speed: [4, 12], life: [0.12, 0.3], dir: f, spread: 1.2, w: 0.08 }); FX.glow(h.x - Math.sin(f) * 0.2, 1.2, h.z - Math.cos(f) * 0.2, 2, AKI.cur, 0.2, 'flare'); }
         }
@@ -3142,7 +3142,7 @@ HEROES.push(
         cast(h) {
           const total = D(h, 55, 15, 0.25) + h.maxHp * 0.06, per = total / 8; h.smokeT = G.time + 4;
           addBuff(h, { id: 'smoke', dur: 4.02, ms: 0.1, every: 0.5, onTick: u => { heal(u, u, per, true); if (FX.near(u.x, u.z, 45)) { const f = u.facing; akiSmoke(u.x + Math.sin(f) * 0.35, u.height - 0.35, u.z + Math.cos(f) * 0.35, 2, 0.8); FX.burst(u.x, 1.2, u.z, { n: 1, color: 0x9fe08a, color2: 0x9fe08a, speed: [0.1, 0.4], life: [0.5, 0.8], size: [0.26, 0.04], up: 1.8, rad: 0.6 }); } }, onEnd: u => { u.smokeT = 0; if (FX.near(u.x, u.z, 45)) { akiSmoke(u.x, u.height - 0.3, u.z, 4, 1.1); FX.sparks(u.x + Math.sin(u.facing) * 0.4, u.height - 0.4, u.z + Math.cos(u.facing) * 0.4, { n: 4, color: 0xffd0a0, color2: 0xff7a2a, speed: [0.5, 2], life: [0.4, 0.8], up: 1, grav: -6, w: 0.06 }); } } });
-          SFX.at('fire', h.x, h.z, 0.35); after(0.35, () => { if (!h.alive) return; const f = h.facing; FX.glow(h.x + Math.sin(f) * 0.4, h.height - 0.35, h.z + Math.cos(f) * 0.4, 0.9, 0xff8a3a, 0.4, 'star'); FX.sparks(h.x + Math.sin(f) * 0.4, h.height - 0.35, h.z + Math.cos(f) * 0.4, { n: 4, color: 0xffd0a0, color2: 0xff7a2a, speed: [0.3, 1.2], life: [0.2, 0.4], up: 1, w: 0.05 }); });
+          SFX.at('ember', h.x, h.z, 0.5); after(0.35, () => { if (!h.alive) return; const f = h.facing; FX.glow(h.x + Math.sin(f) * 0.4, h.height - 0.35, h.z + Math.cos(f) * 0.4, 0.9, 0xff8a3a, 0.4, 'star'); FX.sparks(h.x + Math.sin(f) * 0.4, h.height - 0.35, h.z + Math.cos(f) * 0.4, { n: 4, color: 0xffd0a0, color2: 0xff7a2a, speed: [0.3, 1.2], life: [0.2, 0.4], up: 1, w: 0.05 }); });
           after(0.75, () => { if (h.alive) akiSmoke(h.x, h.height - 0.3, h.z, 5, 1.2); });
         }
       },
@@ -3150,7 +3150,7 @@ HEROES.push(
         key: 'E', name: 'Шаг в будущее', icon: 'akistep', cd: 13, cost: 45, range: 7, ind: { type: 'line', w: 1.4 }, lock: 0, ai: { t: 'gap', escape: true },
         desc: 'Демон будущего показывает, куда шагнуть: рывок на 7, и следующие 2 сек Акито уклоняется от всех атак без исключения. Первая атака после рывка критическая (+80% урона).',
         cast(h, p) {
-          const x0 = h.x, z0 = h.z; SFX.at('dash', h.x, h.z, 0.8); SFX.at('warp', h.x, h.z, 0.4); dshGhost(h, AKI.fut, 0.5, 0.45); FX.ring(h.x, h.z, { r0: 2, r1: 0.4, color: AKI.fut, life: 0.25, tex: 'ringThin' });
+          const x0 = h.x, z0 = h.z; SFX.at('blink', h.x, h.z, 0.7); SFX.at('dash', h.x, h.z, 0.5); dshGhost(h, AKI.fut, 0.5, 0.45); FX.ring(h.x, h.z, { r0: 2, r1: 0.4, color: AKI.fut, life: 0.25, tex: 'ringThin' });
           let n = 0;
           dashTo(h, p.x, p.z, 40, { ribbon: AKI.fut, trail: u => { if (++n % 3 === 0) dshGhost(u, AKI.fut, 0.3, 0.3); },
             onEnd: u => {
@@ -3164,7 +3164,7 @@ HEROES.push(
         desc: '«Кон». Акито складывает пальцы лисой — и через 0.35 сек под целью разверзается земля: из неё вырывается огромная голова демона-лисы и смыкает пасть на враге. Огромный физический урон и оглушение на 0.8 сек; враги рядом с целью получают треть урона. Потом голова уходит обратно под землю.',
         cast(h, p) {
           const t = p.unit; if (!t || !t.alive) return false; const dmg = D(h, 230, 42, 1.3), T0 = 0.35;
-          SFX.at('ultcue', h.x, h.z, 0.5); if (FX.near(h.x, h.z, 45)) FX.text(h.x, h.height + 1.2, h.z, 'Кон.', '#ffc890', 18);
+          SFX.at('ultcue', h.x, h.z, 0.9); SFX.at('yip', h.x, h.z, 0.6); SFX.at('spirit', h.x, h.z, 0.4); if (FX.near(h.x, h.z, 45)) FX.text(h.x, h.height + 1.2, h.z, 'Кон.', '#ffc890', 18);
           after(0.12, () => { if (!h.alive) return; const f = h.facing; FX.glow(h.x + Math.sin(f) * 1.0, h.height - 0.1, h.z + Math.cos(f) * 1.0, 2.4, AKI.c, 0.5, 'star'); FX.sparks(h.x + Math.sin(f) * 1.0, h.height - 0.1, h.z + Math.cos(f) * 1.0, { n: 8, color: AKI.pale, color2: AKI.c, speed: [0.5, 2], life: [0.3, 0.6], up: 2, w: 0.06 }); });
           // where the fox comes from: always from beyond the target as the camera sees it, facing the viewer, so its face and open jaws are seen as it strikes
           const S = 3.0, tgt = { x: t.x, z: t.z }, sp = q => ({ x: tgt.x, z: tgt.z - q }), yaw = 0;
@@ -3174,7 +3174,7 @@ HEROES.push(
             const s0 = sp(3.9), F = akiFox(), LIFE = 1.55, BITE = 0.55; let bit = false;
             F.root.scale.setScalar(S); F.head.rotation.y = 0;
             // the ground splits under it: a dark rift ringed with fox fire
-            SFX.at('rubble', s0.x, s0.z, 1); SFX.at('bigboom', s0.x, s0.z, 0.4); FX.shake(0.45); FX.shock(s0.x, s0.z, 7, 1.1, 0.4);
+            SFX.at('rubble', s0.x, s0.z, 0.9); SFX.at('quake', s0.x, s0.z, 0.7); FX.shake(0.45); FX.shock(s0.x, s0.z, 7, 1.1, 0.4);
             const rift = new THREE.Mesh(FX.geo.flat, FX.mat('fill', 0x140604, 0.85, false)); rift.position.set(s0.x, 0.08, s0.z); rift.renderOrder = 4;
             FX.add(rift, LIFE + 0.3, (k, me, dt, en) => { const g = easeOut(Math.min(1, en.t / 0.2)), o = en.t > LIFE - 0.1 ? Math.max(0, 1 - (en.t - LIFE + 0.1) / 0.4) : 1; me.scale.set(7.5 * g, 1, 7.5 * g); me.material.opacity = 0.85 * o; });
             FX.ring(s0.x, s0.z, { r0: 0.5, r1: 4.2, color: 0xffe0d8, life: 0.45, tex: 'shock' }); FX.zone(s0.x, s0.z, 3.6, AKI.cur, LIFE, { tex: 'crack', spin: 0, op: 0.9 });
@@ -3195,7 +3195,7 @@ HEROES.push(
               // each phase has its own effects: dust and sparks as it breaks out, rushing streaks as it lunges, eyes flaring, blood as it worries the prey, motes of light peeling off as it sinks
               const bx0 = t.alive ? t.x : tgt.x, bz0 = t.alive ? t.z : tgt.z, near = FX.near(c.x, c.z, 55);
               if (near && !this.out) { this.out = true; FX.burst(c.x, 0.4, c.z, { smoke: true, n: 8, color: 0x5a544c, color2: 0x1a1816, speed: [1, 4], life: [0.5, 1.0], size: [1, 2.2], up: 1.2, rad: 2.4, a: 0.45 }); FX.sparks(c.x, 0.5, c.z, { n: 10, color: 0xffd0c8, color2: AKI.cur, speed: [3, 10], life: [0.3, 0.7], up: 12, grav: -8, w: 0.1, rad: 1.5 }); }
-              if (near && e > 0.4 && !this.lunge) { this.lunge = true; FX.implode(bx0, 1.4, bz0, 5, { n: 18, color: 0xffffff, color2: AKI.cur, life: 0.18, streak: true }); FX.warp('lens', bx0, 1.4, bz0, { r: 4, str: 1, life: 0.3 }); SFX.at('whoosh', bx0, bz0, 1); }
+              if (near && e > 0.4 && !this.lunge) { this.lunge = true; FX.implode(bx0, 1.4, bz0, 5, { n: 18, color: 0xffffff, color2: AKI.cur, life: 0.18, streak: true }); FX.warp('lens', bx0, 1.4, bz0, { r: 4, str: 1, life: 0.3 }); SFX.at('whoosh', bx0, bz0, 0.8); SFX.at('roar', bx0, bz0, 0.9); }
               if (e > 0.25 && e < BITE) for (const s of F.eyes) s.scale.setScalar(0.75 + (e - 0.25) * 4); else if (e >= BITE) for (const s of F.eyes) s.scale.setScalar(Math.max(0.75, 2.2 - (e - BITE) * 4));
               if (bit && e < 1.0 && near && (this.dr = (this.dr || 0) + dt) > 0.07) { this.dr = 0; FX.burst(bx0, 1.3, bz0, { n: 3, color: AKI.cur, color2: AKI.cdk, speed: [1, 4], life: [0.3, 0.6], size: [0.35, 0.05], grav: -12, up: 2 }); }
               if (e > 1.0 && near && Math.random() < dt * 30) FX.sparks(c.x + rand(-1.5, 1.5) * S * sc, Math.max(0.3, y + rand(-1, 2)), c.z + rand(-0.5, 0.5) * S, { n: 1, color: 0xffffff, color2: 0xffb0a0, speed: [0.3, 1.2], life: [0.5, 0.9], up: 5, grav: -1, drag: 1, w: 0.09, stretch: 0.06 });
@@ -3203,7 +3203,7 @@ HEROES.push(
                 bit = true; const bx = t.alive ? t.x : tgt.x, bz = t.alive ? t.z : tgt.z;
                 if (t.alive && targetable(h, t)) { damage(h, t, dmg, 0); if (t.alive) stun(h, t, 0.8); }
                 for (const o of enemiesIn(h, bx, bz, 2.6)) if (o !== t) { damage(h, o, dmg / 3, 0); FX.hit(o.x, 1.3, o.z, AKI.c, false); }
-                SFX.at('bigboom', bx, bz, 1); SFX.at('crit', bx, bz, 1); SFX.at('heavy', bx, bz, 1); FX.shake(1.0); FX.punch(1); if (h === G.player || t === G.player) FX.hitstop(0.1);
+                SFX.at('bite', bx, bz, 1); SFX.at('flesh', bx, bz, 0.8); SFX.at('bigboom', bx, bz, 0.7); FX.shake(1.0); FX.punch(1); if (h === G.player || t === G.player) FX.hitstop(0.1);
                 FX.light(bx, 3, bz, AKI.cur, 1.4, 20, 0.45); FX.shock(bx, bz, 6, 1.3, 0.45); FX.glow(bx, 1.4, bz, 4, AKI.cur, 0.16, 'star');
                 FX.burst(bx, 1.4, bz, { n: 26, color: AKI.cur, color2: AKI.cdk, speed: [2, 9], life: [0.3, 0.8], size: [0.5, 0.06], grav: -12, up: 4 }); FX.sparks(bx, 1.4, bz, { n: 14, color: 0xffd0c8, color2: AKI.cur, speed: [6, 18], life: [0.15, 0.4], w: 0.1 });
                 FX.scorch(bx, bz, 2.2, AKI.cur, 6);

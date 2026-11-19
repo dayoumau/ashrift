@@ -231,19 +231,19 @@ function seInit(h) { const B = h.def; h.def = Object.create(B); h.mech = null; h
 // he takes 40% less damage, moves 40% faster and slips a third of all attacks; on foot it also hands him back his leap and his wall-run
 function seLive(h) {
   if (G.time < (h.liveCd || 0) || !h.alive) return; h.liveCd = G.time + 60; h.liveT = G.time + 2.5;
-  addBuff(h, { id: 'live', dur: 2.5, dmgIn: 0.6, ms: 0.4 }); FX.text(h.x, h.height + 1.2, h.z, 'Живи!', '#ff4a5a', 20); SFX.at('cue', h.x, h.z, 0.8);
+  addBuff(h, { id: 'live', dur: 2.5, dmgIn: 0.6, ms: 0.4 }); FX.text(h.x, h.height + 1.2, h.z, 'Живи!', '#ff4a5a', 20); SFX.at('heartbeat', h.x, h.z, 0.8); SFX.at('charge', h.x, h.z, 0.45);
   if (!h.mech) { h.cd[0] = Math.min(h.cd[0], 0); h.cd[2] = Math.min(h.cd[2], 0); }
   if (FX.near(h.x, h.z, 50)) { FX.ring(h.x, h.z, { r0: 2.2, r1: 0.4, color: 0xff2a3a, life: 0.35, tex: 'ringThin' }); FX.glow(h.x, h.height * 0.8, h.z, 3, 0xff2a3a, 0.3, 'star'); FX.aura(h, 0xff2a3a, 2.5, 1.6, 'ringThin', 3); }
 }
 // the knee: a burst to the target and a knee to the body — damage and a stun
 function seKnee(h, t, dmg) {
   const a = angTo(h.x, h.z, t.x, t.z); h.facing = a; h.anim.castT = h.anim.castDur = 0.4; h.anim.castType = 'thrust';
-  damage(h, t, dmg, 0); if (t.alive) stun(h, t, 0.9); SFX.at('heavy', t.x, t.z, 0.8); SFX.at('impact', t.x, t.z, 0.6);
+  damage(h, t, dmg, 0); if (t.alive) stun(h, t, 0.9); SFX.at('kick', t.x, t.z, 0.9); SFX.at('impact', t.x, t.z, 0.6);
   if (FX.near(t.x, t.z, 50)) { FX.hit(t.x, 1.4, t.z, SEI.c, true); FX.ring(t.x, t.z, { r0: 0.3, r1: 2.2, color: SEI.c, life: 0.28, tex: 'shock', y: 1.3 }); FX.hitstop(0.05); FX.shake(0.15); FX.text(t.x, t.height + 0.8, t.z, 'контрудар', '#9fffd4', 14); }
 }
 // reflexes: while they last, he slips every attack; the first hero (or monster) whose blow he slips gets a counter — he is on him at once with a knee
 function seDodge(h, src) {
-  h.jolt = { a: angTo(src.x, src.z, h.x, h.z) + (Math.random() < 0.5 ? HPI : -HPI), p: 0.9, t: 0.16 }; SFX.at('whoosh', h.x, h.z, 0.4);
+  h.jolt = { a: angTo(src.x, src.z, h.x, h.z) + (Math.random() < 0.5 ? HPI : -HPI), p: 0.9, t: 0.16 }; SFX.at('whoosh', h.x, h.z, 0.35);
   if (FX.near(h.x, h.z, 45)) { dshGhost(h, SEI.c, 0.35, 0.35); FX.text(h.x, h.height + 0.5, h.z, 'уклон', '#b8ffe6', 13); FX.sparks(h.x, 1.4, h.z, { n: 3, color: 0xffffff, color2: SEI.c, speed: [1, 3], life: [0.12, 0.25], w: 0.06 }); }
   if (!h.counter || h.reflexT < G.time || !src.alive || src.struct || (src.kind !== 'hero' && src.kind !== 'monster') || udist(h, src) > 9.5 || h.dash || h.stunned) return;
   const dmg = h.counter; h.counter = 0;
@@ -252,14 +252,14 @@ function seDodge(h, src) {
 }
 // the second flip: a spinning kick in place that throws everyone around him back
 function seWhirl(h, dmg) {
-  h.spinning = true; h.spinEnd = G.time + 0.4; SFX.at('whoosh', h.x, h.z, 0.9); SFX.at('heavy', h.x, h.z, 0.6);
+  h.spinning = true; h.spinEnd = G.time + 0.4; SFX.at('whoosh', h.x, h.z, 0.8); SFX.at('kick', h.x, h.z, 0.85);
   for (const e of enemiesIn(h, h.x, h.z, 3)) { if (e.struct) continue; damage(h, e, dmg, 0); knock(e, h.x, h.z, 3.5, 0.25); }
   if (FX.near(h.x, h.z, 55)) { FX.slash(h.x, h.z, h.facing, { r: 3, color: SEI.c, life: 0.3, sweep: 6.2, y: 0.9 }); FX.ring(h.x, h.z, { r0: 0.5, r1: 3.6, color: SEI.c, life: 0.35, tex: 'shock' }); FX.shock(h.x, h.z, 3.5, 0.7, 0.35); FX.burst(h.x, 0.3, h.z, { smoke: true, n: 8, color: 0xc8c0b0, color2: 0x4a4038, speed: [2, 5], life: [0.4, 0.8], size: [0.7, 1.4], ring: true, a: 0.4 }); }
 }
 let _seHex = null;
 // Blaze Luminous (the mech's own): a hexagonal shield of green light flashes up toward the blow and takes most of it; once every 6 s, abilities only
 function seBlaze(h, src) {
-  h.blazeT = G.time + 6; SFX.at('shield', h.x, h.z, 0.8); SFX.at('zap', h.x, h.z, 0.3); if (!FX.near(h.x, h.z, 50)) return;
+  h.blazeT = G.time + 6; SFX.at('shield', h.x, h.z, 0.8); SFX.at('arcane', h.x, h.z, 0.45); if (!FX.near(h.x, h.z, 50)) return;
   if (!_seHex) _seHex = [new THREE.CircleGeometry(1.45, 6), new THREE.RingGeometry(1.33, 1.48, 6)];
   const a = src ? angTo(h.x, h.z, src.x, src.z) : h.facing, g = new THREE.Mesh(_seHex[0], akMat(null, SEI.c)), w = new THREE.Mesh(_seHex[1], akMat(null, 0xeafff4)); w.userData.own = true; g.add(w);
   FX.add(g, 0.5, (k, me) => { me.position.set(h.x + Math.sin(a) * 2, 2.6, h.z + Math.cos(a) * 2); me.rotation.set(0, a, Math.PI / 6); me.scale.setScalar(0.7 + 0.3 * easeOut(Math.min(1, k * 4))); me.material.opacity = 0.2 * (1 - k); w.material.opacity = 0.9 * (1 - k); });
@@ -288,12 +288,12 @@ function seMechOff(h, broken) {
   if (!FX.near(mx, mz, 60)) return;
   if (broken && h.alive) { const a = face + Math.PI; dashTo(h, h.x + Math.sin(a) * 4, h.z + Math.cos(a) * 4, 18, { arc: 2.6, ribbon: SEI.c }); }
   if (broken) {   // shot down: the knight bursts in green fire and the pilot is thrown clear
-    FX.explosion(mx, mz, 2.5, SEI.c, { color2: 0x0a4a2a }); FX.debris(mx, 2, mz, { n: 14, color: 0xdfe3ea, speed: [3, 9], up: 9, size: [0.2, 0.5] }); SFX.at('boom', mx, mz, 1); FX.text(mx, 4, mz, 'Паладин сбит', '#9fffd4', 16);
+    FX.explosion(mx, mz, 2.5, SEI.c, { color2: 0x0a4a2a }); FX.debris(mx, 2, mz, { n: 14, color: 0xdfe3ea, speed: [3, 9], up: 9, size: [0.2, 0.5] }); SFX.at('bigboom', mx, mz, 1); SFX.at('servo', mx, mz, 0.5); FX.text(mx, 4, mz, 'Паладин сбит', '#9fffd4', 16);
   } else {   // its time is up: the knight spreads its wings and rises away
     const g = twGhost(old, SEI.c, 1.2, 0.5, mx, mz); if (g) { g.mesh.rotation.y = face; const e = g.fn; g.fn = (k, me, dt, en) => { e(k, me, dt, en); me.position.y = 18 * k * k; }; }
-    FX.pillar(mx, mz, { r: 1.2, h: 14, color: SEI.c, life: 0.6, op: 0.35 }); SFX.at('whoosh', mx, mz, 0.8);
+    FX.pillar(mx, mz, { r: 1.2, h: 14, color: SEI.c, life: 0.6, op: 0.35 }); SFX.at('flap', mx, mz, 0.75); SFX.at('gust', mx, mz, 0.5);
   }
-  SFX.at('whoosh', h.x, h.z, 0.5);
+  SFX.at('servo', h.x, h.z, 0.45);
 }
 function seHud(h) {
   if (typeof UI === 'undefined' || !$('abs')) return; const D = h.def, col = h.mech ? SEI.c : D.look.glow;
@@ -302,44 +302,44 @@ function seHud(h) {
 }
 // the Paladin's arrival: it drops from high above with its wings blazing, the ground cracks under it
 function seMechArrive(h, cb) {
-  const x = h.x, z = h.z, T = 0.75; SFX.at('whoosh', x, z, 1); SFX.at('ultcue', x, z, 0.6);
+  const x = h.x, z = h.z, T = 0.75; SFX.at('ultcue', x, z, 0.7); SFX.at('flap', x, z, 0.8); SFX.at('gust', x, z, 0.6);
   if (FX.near(x, z, 70)) {
     if (!h.mechRig) h.mechRig = buildHero(SEI_MECH, h.isPlayer ? 0xeaffea : TEAM_COL[h.team]);
     const g = twGhost(h.mechRig, SEI.c, T, 0.8, x, z); if (g) { const f0 = g.fn; g.fn = (k, me, dt, en) => { f0(k, me, dt, en); me.position.set(h.x, 26 * (1 - easeOut(k)), h.z); me.rotation.y = h.facing; me.scale.setScalar(h.mechRig.sc0); if (Math.random() < 0.6) FX.trail(h.x + rand(-1, 1), me.position.y + 3, h.z + rand(-1, 1), SEI.c, 1.2, 2); }; }
     FX.decal(x, z, 3, SEI.c, T);
   }
-  after(T, () => { if (!h.alive) return; SFX.at('heavy', h.x, h.z, 1); SFX.at('rubble', h.x, h.z, 0.7); if (FX.near(h.x, h.z, 60)) { FX.ring(h.x, h.z, { r0: 0.5, r1: 5, color: SEI.c, life: 0.5, tex: 'shock' }); FX.shock(h.x, h.z, 5, 1.1, 0.45); FX.debris(h.x, 0.3, h.z, { n: 14, color: 0x45423c, speed: [3, 9], up: 9, size: [0.2, 0.5] }); FX.burst(h.x, 0.5, h.z, { smoke: true, n: 12, color: 0xb8c0b8, color2: 0x3a3e3a, speed: [2, 6], life: [0.6, 1.2], size: [1.2, 2.6], ring: true, a: 0.45 }); FX.shake(0.5); FX.scorch(h.x, h.z, 2.2, SEI.c, 6); }
+  after(T, () => { if (!h.alive) return; SFX.at('heavy', h.x, h.z, 1); SFX.at('rubble', h.x, h.z, 0.6); SFX.at('servo', h.x, h.z, 0.7); if (FX.near(h.x, h.z, 60)) { FX.ring(h.x, h.z, { r0: 0.5, r1: 5, color: SEI.c, life: 0.5, tex: 'shock' }); FX.shock(h.x, h.z, 5, 1.1, 0.45); FX.debris(h.x, 0.3, h.z, { n: 14, color: 0x45423c, speed: [3, 9], up: 9, size: [0.2, 0.5] }); FX.burst(h.x, 0.5, h.z, { smoke: true, n: 12, color: 0xb8c0b8, color2: 0x3a3e3a, speed: [2, 6], life: [0.6, 1.2], size: [1.2, 2.6], ring: true, a: 0.45 }); FX.shake(0.5); FX.scorch(h.x, h.z, 2.2, SEI.c, 6); }
     for (const e of enemiesIn(h, h.x, h.z, 3.5)) { if (!e.struct) { damage(h, e, cb.land, 0); if (e.alive) stun(h, e, 0.8, 1); } }
     cb.on();
   });
 }
 // the VARIS: a charged round from the rifle in the knight's arms — a bolt of green-white energy that goes through everything and throws them back
 function seVaris(h, dir, dmg) {
-  SFX.at('laser', h.x, h.z, 0.9); SFX.at('boom', h.x, h.z, 0.4); const sx = h.x + Math.sin(dir) * 2.2, sz = h.z + Math.cos(dir) * 2.2;
+  SFX.at('railgun', h.x, h.z, 0.9); SFX.at('rifle', h.x, h.z, 0.5); const sx = h.x + Math.sin(dir) * 2.2, sz = h.z + Math.cos(dir) * 2.2;
   if (FX.near(sx, sz, 60)) { FX.glow(sx, 3, sz, 4, SEI.c, 0.2, 'star'); FX.ring(sx, sz, { r0: 0.3, r1: 2.2, color: SEI.pale, life: 0.25, tex: 'ringThin', y: 3 }); FX.warp('lens', sx, 3, sz, { r: 2.5, str: 0.8, life: 0.25 }); }
   shot(h, { x: sx, z: sz, y: 3, dir, speed: 55, range: 14, w: 1.0, pierce: true, mesh: 'bolt', size: 2.4, color: SEI.c, ribbon: 1.4,
-    onHit: e => { damage(h, e, dmg, 0); knock(e, h.x, h.z, 2, 0.2); if (FX.near(e.x, e.z, 50)) { FX.sparks(e.x, 1.4, e.z, { n: 12, color: 0xffffff, color2: SEI.c, speed: [4, 11], life: [0.15, 0.35], w: 0.09, dir, spread: 0.5 }); FX.hit(e.x, 1.4, e.z, SEI.c, true); } } });
+    onHit: e => { damage(h, e, dmg, 0); knock(e, h.x, h.z, 2, 0.2); SFX.at('impact', e.x, e.z, 0.5); if (FX.near(e.x, e.z, 50)) { FX.sparks(e.x, 1.4, e.z, { n: 12, color: 0xffffff, color2: SEI.c, speed: [4, 11], life: [0.15, 0.35], w: 0.09, dir, spread: 0.5 }); FX.hit(e.x, 1.4, e.z, SEI.c, true); } } });
 }
 // MVS: the knight lunges through the enemy line with both blades out, cutting everyone it passes, and ends the run in one wide spin
 function seMvsDash(h, dir, dmg) {
-  const L = 7.5, tx = h.x + Math.sin(dir) * L, tz = h.z + Math.cos(dir) * L; SFX.at('dash', h.x, h.z, 0.9); SFX.at('slash', h.x, h.z, 0.7);
-  dashTo(h, tx, tz, 34, { ribbon: 0xff4a3a, w: 2, onHit: e => { if (e.struct) return; damage(h, e, dmg, 0); if (e.alive) slow(h, e, 0.3, 1.5, 'semvs'); SFX.at('slash', e.x, e.z, 0.6); if (FX.near(e.x, e.z, 50)) { FX.slash(e.x, e.z, dir + HPI, { r: 2.4, color: 0xff4a3a, life: 0.2, sweep: 1.6, y: 1.6 }); FX.sparks(e.x, 1.6, e.z, { n: 8, color: 0xffffff, color2: 0xff4a3a, speed: [4, 10], life: [0.12, 0.3], w: 0.08, dir, spread: 0.7 }); } },
+  const L = 7.5, tx = h.x + Math.sin(dir) * L, tz = h.z + Math.cos(dir) * L; SFX.at('dash', h.x, h.z, 0.8); SFX.at('blade', h.x, h.z, 0.7); SFX.at('sizzle', h.x, h.z, 0.3);
+  dashTo(h, tx, tz, 34, { ribbon: 0xff4a3a, w: 2, onHit: e => { if (e.struct) return; damage(h, e, dmg, 0); if (e.alive) slow(h, e, 0.3, 1.5, 'semvs'); SFX.at('blade', e.x, e.z, 0.6); if (FX.near(e.x, e.z, 50)) { FX.slash(e.x, e.z, dir + HPI, { r: 2.4, color: 0xff4a3a, life: 0.2, sweep: 1.6, y: 1.6 }); FX.sparks(e.x, 1.6, e.z, { n: 8, color: 0xffffff, color2: 0xff4a3a, speed: [4, 10], life: [0.12, 0.3], w: 0.08, dir, spread: 0.7 }); } },
     onEnd: () => { if (h.alive) seMvs(h, dmg * 0.5); } });
 }
 // the spin at the end of the run: a ring of hot red edges
 function seMvs(h, dmg) {
-  h.spinning = true; h.spinEnd = G.time + 0.45; SFX.at('slash', h.x, h.z, 1); SFX.at('whoosh', h.x, h.z, 0.7);
+  h.spinning = true; h.spinEnd = G.time + 0.45; SFX.at('scythe', h.x, h.z, 0.9); SFX.at('blade', h.x, h.z, 0.6);
   for (const e of enemiesIn(h, h.x, h.z, 4.2)) { if (e.struct) continue; damage(h, e, dmg, 0); if (e.alive) slow(h, e, 0.3, 1.5, 'semvs'); }
   if (FX.near(h.x, h.z, 55)) { FX.slash(h.x, h.z, h.facing, { r: 4.2, color: 0xff4a3a, life: 0.3, sweep: 6.2, y: 2.5 }); FX.slash(h.x, h.z, h.facing + Math.PI, { r: 3.8, color: SEI.c, life: 0.3, sweep: 6.2, y: 2.0, flip: true }); FX.ring(h.x, h.z, { r0: 1, r1: 4.6, color: 0xff4a3a, life: 0.35, tex: 'shock' }); FX.sparks(h.x, 2.5, h.z, { n: 18, color: 0xffffff, color2: 0xff4a3a, speed: [5, 12], life: [0.15, 0.35], w: 0.09, ring: true }); }
 }
 // slash harken: a cable fired from the waist; it bites the first enemy (the knight is hauled to him and he is stunned) or the ground (the knight is hauled there)
 function seHarken(h, x, z, dmg) {
-  const dir = angTo(h.x, h.z, x, z), len = Math.min(11, dist(h.x, h.z, x, z) + 0.5); let hitU = null; SFX.at('dash', h.x, h.z, 0.8);
+  const dir = angTo(h.x, h.z, x, z), len = Math.min(11, dist(h.x, h.z, x, z) + 0.5); let hitU = null; SFX.at('crossbow', h.x, h.z, 0.6); SFX.at('chain', h.x, h.z, 0.7);
   for (const e of stripHits(h, h.x, h.z, dir, len, 0.8)) if (!e.struct && (!hitU || udist(h, e) < udist(h, hitU))) hitU = e;
   const tx = hitU ? hitU.x : h.x + Math.sin(dir) * len, tz = hitU ? hitU.z : h.z + Math.cos(dir) * len;
   if (FX.near(h.x, h.z, 60)) FX.beam(h.x, h.z, tx, tz, { color: SEI.c, w: 0.25, life: 0.35, y: 1.8 });
   const stop = hitU ? hitU.radius + 1.5 : 0;
-  dashTo(h, tx, tz, 34, { stop, ribbon: SEI.c, fly: true, onEnd: () => { if (hitU && hitU.alive) { damage(h, hitU, dmg, 0); stun(h, hitU, 0.6); if (FX.near(hitU.x, hitU.z, 50)) FX.hit(hitU.x, 1.6, hitU.z, SEI.c, true); SFX.at('heavy', hitU.x, hitU.z, 0.7); } } });
+  dashTo(h, tx, tz, 34, { stop, ribbon: SEI.c, fly: true, onEnd: () => { if (hitU && hitU.alive) { damage(h, hitU, dmg, 0); stun(h, hitU, 0.6); if (FX.near(hitU.x, hitU.z, 50)) FX.hit(hitU.x, 1.6, hitU.z, SEI.c, true); SFX.at('mace', hitU.x, hitU.z, 0.8); } } });
 }
 // a bot fires the warhead when it pays: the tank is nearly dry, two heroes stand together, or the target is low
 function seFleijaAI(h, mode, tgt) {
@@ -349,7 +349,7 @@ function seFleijaAI(h, mode, tgt) {
 }
 // FLEIJA: a warhead fired at a point — a sphere of pink light swells, swallowing everything inside, then collapses into nothing
 function seFleija(h, x, z, dmg) {
-  const R = 7, T = 0.7, near = FX.near(x, z, 80); h.fleija = false; SFX.at('ultcue', h.x, h.z, 0.9); globalWarn(h, null, 'ФЛЕЙЯ!');
+  const R = 7, T = 0.7, near = FX.near(x, z, 80); h.fleija = false; SFX.at('ultcue', h.x, h.z, 0.9); SFX.at('rocket', h.x, h.z, 0.7); globalWarn(h, null, 'ФЛЕЙЯ!');
   // the warhead drinks the knight's whole energy filler: the fuller the tank, the bigger the blast — and the Paladin leaves once it is over
   if (h.mech) { const f = h.mech.fuel / h.mech.max; dmg *= 0.55 + 0.75 * f; h.mech.fuel = 0; h.mech.hold = G.time + 2.4; if (FX.near(h.x, h.z, 45)) FX.text(h.x, h.height + 1.2, h.z, 'заряд ' + Math.round(f * 100) + '%', '#ffb0ea', 15); }
   G.dangers.push({ x, z, r: R, team: h.team, until: G.time + T + 1 });
@@ -359,14 +359,14 @@ function seFleija(h, x, z, dmg) {
     FX.add(w, T, (k, me) => { me.position.set(lerp(sx, x, k), 3 + Math.sin(Math.PI * k) * 8, lerp(sz, z, k)); me.scale.setScalar(0.8); FX.trail(me.position.x, me.position.y, me.position.z, SEI.flj, 0.8, 3); });
   }
   after(T, () => {
-    SFX.at('boom', x, z, 1); SFX.at('warp', x, z, 1); SFX.at('heavy', x, z, 0.8); if (FX.near(x, z, 60)) { G.dim = Math.max(G.dim || 0, 0.6); FX.punch(0.8); FX.shake(0.8); FX.hitstop(0.08); }
+    SFX.at('bigboom', x, z, 1); SFX.at('warp', x, z, 1); SFX.at('charge', x, z, 0.6); if (FX.near(x, z, 60)) { G.dim = Math.max(G.dim || 0, 0.6); FX.punch(0.8); FX.shake(0.8); FX.hitstop(0.08); }
     const GROW = 0.7, HOLD = 0.5, FALL = 0.45, TOT = GROW + HOLD + FALL;
     if (FX.near(x, z, 80)) {
       const sh = new THREE.Mesh(FX.geo.sphere, FX.rimMat(SEI.flj, 1.4)), core = new THREE.Mesh(FX.geo.sphere, new THREE.MeshBasicMaterial({ color: 0xffb0ea, transparent: true, opacity: 0.25, blending: THREE.AdditiveBlending, depthWrite: false })); core.userData.own = true; sh.add(core); core.scale.setScalar(0.96);
       FX.add(sh, TOT, (k, me, dt, en) => { const t = en.t, s = t < GROW ? R * easeOut(t / GROW) : (t < GROW + HOLD ? R * (1 + Math.sin(t * 30) * 0.01) : R * Math.max(0.01, 1 - easeOut((t - GROW - HOLD) / FALL))); me.position.set(x, 0, z); me.scale.setScalar(s); me.material.uniforms.o.value = 1.4 * (t < GROW + HOLD ? 1 : Math.max(0, 1 - (t - GROW - HOLD) / FALL)); core.material.opacity = 0.25 * (t < GROW + HOLD ? 1 : 1 - (t - GROW - HOLD) / FALL); });
       FX.warp('lens', x, 2, z, { r: R * 1.2, str: 1.5, life: GROW + HOLD }); FX.light(x, 4, z, SEI.flj, 3, 30, TOT);
       after(GROW + HOLD, () => { FX.warp('lens', x, 2, z, { r: R, str: -1.6, life: FALL }); FX.implode(x, 2, z, R, { color: SEI.fljPale, color2: SEI.flj, n: 40, life: FALL, streak: true }); });
-      after(TOT, () => { FX.glow(x, 2, z, 8, SEI.flj, 0.3, 'star'); FX.ring(x, z, { r0: 0.3, r1: R + 1, color: SEI.flj, life: 0.5, tex: 'shock', op: 0.7 }); FX.scorch(x, z, 3.2, SEI.flj, 8); SFX.at('void', x, z, 0.8); });
+      after(TOT, () => { FX.glow(x, 2, z, 8, SEI.flj, 0.3, 'star'); FX.ring(x, z, { r0: 0.3, r1: R + 1, color: SEI.flj, life: 0.5, tex: 'shock', op: 0.7 }); FX.scorch(x, z, 3.2, SEI.flj, 8); SFX.at('void', x, z, 0.8); SFX.at('blink', x, z, 0.6); });
     }
     let t = 0, ticks = 0; const hit = new Set();
     G.actors.push({ update(dt) { t += dt; const r = t < GROW ? R * t / GROW : R;
@@ -439,11 +439,11 @@ HEROES.push(
         desc: 'Сэйрю в сальто перелетает к точке (до 6) и обрушивает удар ногой: физический урон всем врагам в радиусе 2.2 и оглушение на 0.6 сек. Если удар попал по герою, в течение 3 сек можно ударить ещё раз — «Вихрь»: удар с разворота на месте, урон в радиусе 3 и отбрасывание.',
         cast(h, p) {
           if (h.flipT > G.time) { h.flipT = 0; seWhirl(h, D(h, 60, 16, 0.8, 0)); return; }
-          const dmg = D(h, 70, 18, 0.9, 0), T = Math.max(0.25, p.dist / 20); dashTo(h, p.x, p.z, 20, { arc: 2.4, ribbon: SEI.c });
+          const dmg = D(h, 70, 18, 0.9, 0), T = Math.max(0.25, p.dist / 20); dashTo(h, p.x, p.z, 20, { arc: 2.4, ribbon: SEI.c }); SFX.at('whoosh', h.x, h.z, 0.55);
           after(T, () => {
             if (!h.alive) return; let hero = false;
             for (const e of enemiesIn(h, h.x, h.z, 2.2)) { if (e.struct) continue; damage(h, e, dmg, 0); if (e.alive) stun(h, e, 0.6, 1.4); if (e.kind === 'hero') hero = true; }
-            SFX.at('heavy', h.x, h.z, 0.8);
+            SFX.at('kick', h.x, h.z, 0.9); SFX.at('impact', h.x, h.z, 0.6);
             if (hero && !h.mech) { h.flipT = G.time + 3; h.cd[0] = Math.min(h.cd[0], 0.25); if (FX.near(h.x, h.z, 45)) FX.text(h.x, h.height + 0.9, h.z, 'ещё раз!', '#9fffd4', 14); }
             if (FX.near(h.x, h.z, 55)) { FX.ring(h.x, h.z, { r0: 0.3, r1: 2.8, color: SEI.c, life: 0.35, tex: 'shock' }); FX.burst(h.x, 0.3, h.z, { smoke: true, n: 6, color: 0xc8c0b0, color2: 0x4a4038, speed: [1, 3], life: [0.4, 0.8], size: [0.7, 1.4], ring: true, a: 0.4 }); FX.sparks(h.x, 0.5, h.z, { n: 10, color: 0xffffff, color2: SEI.c, speed: [3, 8], life: [0.2, 0.4], w: 0.07, up: 3 }); }
           });
@@ -453,14 +453,14 @@ HEROES.push(
         key: 'W', name: 'Рефлексы', icon: 'seknee', cd: 11, cost: 50, range: 0, ind: { type: 'self', r: 9.5 }, anim: 'feint', animDur: 0.3, lock: 0, ai: { t: 'parry' },
         desc: 'На 2 сек Сэйрю уклоняется от всех атак (от умений — нет) и бегает на 20% быстрее. Первый вражеский герой или чудовище, от чьей атаки он уклонился, получает контрудар: Сэйрю в рывке (до 9.5) оказывается рядом и бьёт коленом — физический урон и оглушение на 0.9 сек.',
         cast(h) {
-          h.reflexT = G.time + 2; h.counter = D(h, 70, 18, 0.9, 0); addBuff(h, { id: 'sereflex', dur: 2, ms: 0.2 }); SFX.at('cue', h.x, h.z, 0.6); SFX.at('whoosh', h.x, h.z, 0.5);
+          h.reflexT = G.time + 2; h.counter = D(h, 70, 18, 0.9, 0); addBuff(h, { id: 'sereflex', dur: 2, ms: 0.2 }); SFX.at('cue', h.x, h.z, 0.55); SFX.at('blink', h.x, h.z, 0.45);
           if (FX.near(h.x, h.z, 50)) { FX.ring(h.x, h.z, { r0: 2.4, r1: 0.6, color: SEI.c, life: 0.3, tex: 'ringThin', y: 1.2 }); FX.aura(h, SEI.c, 2, 1.3, 'ringThin', 4); FX.glow(h.x, h.height * 0.85, h.z, 2.2, SEI.c, 0.25, 'star'); }
         }
       },
       {
         key: 'E', name: 'Бег по стенам', icon: 'sewall', cd: 12, cost: 45, range: 7, ind: { type: 'circle', r: 0.8 }, anim: 'feint', animDur: 0.35, lock: 0, ai: { t: 'escape' },
         desc: 'Сэйрю одним махом перелетает к точке (до 7), не замечая стен и обрывов, и 2 сек бегает на 30% быстрее.',
-        cast(h, p) { dashTo(h, p.x, p.z, 26, { arc: 3, fly: true, ribbon: SEI.c }); addBuff(h, { id: 'sewall', dur: 2, ms: 0.3 }); SFX.at('whoosh', h.x, h.z, 0.8); }
+        cast(h, p) { dashTo(h, p.x, p.z, 26, { arc: 3, fly: true, ribbon: SEI.c }); addBuff(h, { id: 'sewall', dur: 2, ms: 0.3 }); SFX.at('dash', h.x, h.z, 0.6); SFX.at('whoosh', h.x, h.z, 0.6); }
       },
       {
         key: 'R', name: 'Паладин', icon: 'semech', cd: 90, cost: 100, range: 0, ind: { type: 'self', r: 3.5 }, anim: 'cast', animDur: 0.6, lock: 0.75, ai: { t: 'buff', ult: true, hp: 0.9 },

@@ -97,7 +97,8 @@ function wlSafeMesh() {
 // his attack: a gold coin flicked off the thumb, spinning edge over edge to the target
 function wlFlick(u, t) {
   const A = wlHand(u); let done = false;
-  const p = homing(u, t, { x: A.x, z: A.z, y: A.y, speed: 30, color: WLD.c, size: 0.16, onHit: tt => { done = true; basicHit(u, tt); FX.sparks(tt.x, tt.height * 0.55, tt.z, { n: 5, color: 0xffffff, color2: WLD.c, speed: [3, 8], life: [0.12, 0.3], w: 0.08 }); FX.glow(tt.x, tt.height * 0.55, tt.z, 1.6, WLD.c, 0.12, 'star'); SFX.at('coin', tt.x, tt.z, 0.22); } });
+  const p = homing(u, t, { x: A.x, z: A.z, y: A.y, speed: 30, color: WLD.c, size: 0.16, onHit: tt => { done = true; basicHit(u, tt); FX.sparks(tt.x, tt.height * 0.55, tt.z, { n: 5, color: 0xffffff, color2: WLD.c, speed: [3, 8], life: [0.12, 0.3], w: 0.08 }); FX.glow(tt.x, tt.height * 0.55, tt.z, 1.6, WLD.c, 0.12, 'star'); SFX.at('pop', tt.x, tt.z, 0.25); } });
+  SFX.at('coin', u.x, u.z, 0.35);
   if (!FX.near(u.x, u.z, 55)) return;
   const g = new THREE.Group(), m = new THREE.Mesh(wlCoinGeo(), wlCoinMat()); g.add(m); m.scale.setScalar(1.25);
   FX.add(g, 2, (k, me, dt, en) => { if (done || !G.proj.includes(p)) { en.dead = true; return; } me.position.set(p.x, p.y, p.z); m.rotation.x += dt * 34; me.rotation.y = u.facing; });
@@ -105,7 +106,7 @@ function wlFlick(u, t) {
 // the wad bursts: a cloud of notes, gold glitter, magic damage and a slow on everyone in the radius
 function wlCashBurst(h, x, z, R, dmg) {
   for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 1); if (e.alive) slow(h, e, 0.3, 1.5, 'wlq'); FX.hit(e.x, 1.2, e.z, WLD.c, false); }
-  SFX.at('coin', x, z, 0.9); SFX.at('hit', x, z, 0.5);
+  SFX.at('cash', x, z, 0.9); SFX.at('pop', x, z, 0.5); SFX.at('flap', x, z, 0.3);
   if (!FX.near(x, z, 55)) return;
   FX.glow(x, 1.3, z, 4.2, WLD.pale, 0.22, 'flare'); FX.glow(x, 1.3, z, 3, WLD.c, 0.3); FX.ring(x, z, { r0: 0.4, r1: R + 0.4, color: WLD.c, life: 0.4, tex: 'shock' }); FX.ring(x, z, { r0: R * 0.8, r1: R, color: 0x8ad08a, life: 0.6, tex: 'ringThin', op: 0.7 });
   FX.sparks(x, 1.3, z, { n: 14, color: 0xffffff, color2: WLD.c, speed: [4, 10], life: [0.2, 0.5], w: 0.1, up: 2 });
@@ -116,7 +117,7 @@ function wlCashBurst(h, x, z, R, dmg) {
 function wlCoinNova(h, dmg) {
   if (!h.alive) return; const R = 3.5;
   for (const e of enemiesIn(h, h.x, h.z, R)) { damage(h, e, dmg, 1); FX.hit(e.x, 1.2, e.z, WLD.c, true); }
-  SFX.at('coin', h.x, h.z, 1); SFX.at('impact', h.x, h.z, 0.5);
+  SFX.at('coin', h.x, h.z, 0.8); SFX.at('chime', h.x, h.z, 0.5); SFX.at('impact', h.x, h.z, 0.4);
   if (!FX.near(h.x, h.z, 55)) return;
   FX.ring(h.x, h.z, { r0: 0.6, r1: R + 0.3, color: WLD.c, life: 0.4, tex: 'shock' }); FX.glow(h.x, 1.3, h.z, 3.4, WLD.c, 0.25, 'star');
   FX.sparks(h.x, 1.3, h.z, { n: 18, color: 0xffffff, color2: WLD.c, speed: [6, 13], life: [0.2, 0.45], w: 0.1, up: 1 });
@@ -183,10 +184,10 @@ function wlSafeDrop(h, x, z, R, T, face, dmg) {
       door.position.set(0, dv.y, dv.z); door.rotation.x = dv.r;
     }
   });
-  after(T - 0.35, () => SFX.at('whoosh', x, z, 1));
+  after(T - 0.75, () => SFX.at('falling', x, z, 0.9)); after(T - 0.35, () => SFX.at('whoosh', x, z, 1));
   after(T, () => {
     for (const e of enemiesIn(h, x, z, R)) { damage(h, e, dmg, 1); if (e.alive) stun(h, e, 1.25); FX.hit(e.x, 1.3, e.z, WLD.c, true); }
-    SFX.at('heavy', x, z, 1); SFX.at('rubble', x, z, 1); SFX.at('boom', x, z, 0.7); SFX.at('coin', x, z, 1); FX.shake(0.9); if (FX.near(x, z, 36)) { FX.hitstop(0.09); FX.punch(0.9); }
+    SFX.at('mace', x, z, 1); SFX.at('heavy', x, z, 0.8); SFX.at('rubble', x, z, 0.9); SFX.at('coin', x, z, 0.6); FX.shake(0.9); if (FX.near(x, z, 36)) { FX.hitstop(0.09); FX.punch(0.9); }
     if (near) {
       FX.ring(x, z, { r0: 0.8, r1: R + 0.8, color: WLD.c, life: 0.5, tex: 'shock' }); FX.ring(x, z, { r0: 2.6, r1: 3.4, color: 0x8a6a40, life: 2.6, tex: 'crack', op: 0.9 }); FX.shock(x, z, R * 1.5, 1.2, 0.45);
       FX.burst(x, 0.4, z, { smoke: true, n: 18, color: 0xb0a080, color2: 0x4a4030, speed: [3, 8], life: [0.6, 1.4], size: [1.2, 2.8], ring: true, a: 0.55, drag: 1.5 });
@@ -196,7 +197,7 @@ function wlSafeDrop(h, x, z, R, T, face, dmg) {
   });
   // the door pops: gold light from inside, a fountain of coins and notes for a second, the ground around littered with gold
   after(T + 0.32, () => {
-    SFX.at('coin', x, z, 1); SFX.at('impact', x, z, 0.6); if (!h) return;
+    SFX.at('cash', x, z, 1); SFX.at('pop', x, z, 0.6); if (!h) return;
     const fx = Math.sin(face), fz = Math.cos(face), ox = x + fx * 1.2, oz = z + fz * 1.2;
     if (near) { FX.light(ox, 1.4, oz, WLD.c, 3.5, 14, 1.4); FX.glow(ox, 1.3, oz, 4, WLD.c, 0.5); }
     for (let i = 0; i < 20; i++) after(i * 0.05, () => {
@@ -242,7 +243,7 @@ function wlBuyback(h) {
     const n = FX.cnt(26); for (let i = 0; i < n; i++) { const a = rand(TAU), r = rand(0.5, 4); wlBill(h.x + Math.sin(a) * r, rand(5, 9), h.z + Math.cos(a) * r, rand(-1, 1), rand(-1, 0), rand(-1, 1), rand(2.4, 3.4)); }
     wlCoins(h.x, 1.4, h.z, 14, 6, 9, 1.8);
   }
-  SFX.at('coin', h.x, h.z, 1); if (h === G.player) { SFX.play('buy'); G.camSnap = true; UI.announce('Жизнь выкуплена: −' + WL_BUY + ' золота', '#ffd86a'); }
+  SFX.at('cash', h.x, h.z, 1); SFX.at('chime', h.x, h.z, 0.5); if (h === G.player) { SFX.play('buy'); G.camSnap = true; UI.announce('Жизнь выкуплена: −' + WL_BUY + ' золота', '#ffd86a'); }
   else if (G.player) UI.announce(h.name + (h.team === G.player.team ? ' (союзник)' : ' (враг)') + ' выкупил жизнь', '#ffd86a');
   return true;
 }
@@ -270,7 +271,7 @@ HEROES.push(
         key: 'Q', name: 'Пачка налички', icon: 'wlwad', cd: 7, cost: 55, range: 10, ind: { type: 'line', w: 1.4 }, anim: 'cashthrow', animDur: 0.5, lock: 0.25, ai: { t: 'shot', sp: 24, farm: true },
         desc: 'Wлад швыряет перетянутую золотой лентой пачку купюр (до 10). Она лопается на первом задетом враге или в конце пути: деньги разлетаются облаком — магический урон всем врагам в радиусе 2.8 и замедление на 30% на 1.5 сек. Сквозь летящие купюры не разглядеть дороги.',
         cast(h, p) {
-          const dir = p.dir, dmg = D(h, 85, 18, 0, 0.6), R = 2.8; SFX.at('whoosh', h.x, h.z, 0.6);
+          const dir = p.dir, dmg = D(h, 85, 18, 0, 0.6), R = 2.8; SFX.at('card', h.x, h.z, 0.5); SFX.at('whoosh', h.x, h.z, 0.5);
           after(0.17, () => {
             if (!h.alive) return; let done = false, acc = 0; const wad = wlWadMesh(), P = { x: h.x, y: 1.6, z: h.z };
             const e = FX.add(wad, 2, (k, me, dt) => { me.position.set(P.x, P.y, P.z); me.rotation.set(dt ? me.rotation.x + dt * 14 : 0, dir, 0); });
@@ -287,7 +288,7 @@ HEROES.push(
         cast(h) {
           const amt = D(h, 80, 14, 0, 0.5) + Math.min(200, h.gold * 0.03), dmg = D(h, 50, 11, 0, 0.35);
           const b = addBuff(h, { id: 'wlcush', dur: 4, shield: amt, src: h, onEnd: () => wlCoinNova(h, dmg) }); if (b) b.fx = wlCoinOrbit(h, 4);
-          SFX.at('coin', h.x, h.z, 0.9); SFX.at('shield', h.x, h.z, 0.6);
+          SFX.at('coin', h.x, h.z, 0.8); SFX.at('chime', h.x, h.z, 0.5); SFX.at('shield', h.x, h.z, 0.4);
           if (FX.near(h.x, h.z, 50)) { const A = wlHand(h); FX.sparks(A.x, A.y, A.z, { n: 12, color: 0xffffff, color2: WLD.c, speed: [1, 3], up: 7, life: [0.25, 0.5], w: 0.08 }); wlCoins(h.x, 2.2, h.z, 6, 2, 6, 0.9); }
         }
       },
@@ -298,13 +299,13 @@ HEROES.push(
           const t = p.unit; if (!t || t.kind !== 'hero' || !hostile(h, t)) return false;
           if (h.gold < 100) { if (h === G.player) { UI.msg('Не хватает золота на взятку: нужно 100'); SFX.play('deny'); } return false; }
           h.gold -= 100; const lv = Math.max(1, h.al[2]), dur = 1.1 + 0.15 * lv, from = wlHand(h);
-          SFX.at('coin', h.x, h.z, 0.8); SFX.at('whoosh', h.x, h.z, 0.4);
+          SFX.at('card', h.x, h.z, 0.7); SFX.at('whoosh', h.x, h.z, 0.3);
           if (FX.near(h.x, h.z, 55)) for (let i = 0; i < 5; i++) after(i * 0.05, () => wlBillTo(from, t, 0.3));
           after(0.3, () => {
             if (!t.alive || !h.alive) return;
             const b = addBuff(t, { id: 'bribe', dur, silence: true, blind: true, dmgIn: 1.15, slow: 0.3, src: h }); if (!b) return;
             b.fx = wlBribeFx(t, b.dur); t.tauntT = G.time + b.dur; t.tauntBy = null; t.bribeT = t.tauntT; t.windup = 0; if (t.recall > 0) breakRecall(t);
-            SFX.at('coin', t.x, t.z, 1); if (FX.near(t.x, t.z, 50)) { FX.glow(t.x, 1.6, t.z, 2.6, WLD.c, 0.25, 'star'); if (t === G.player || h === G.player) FX.text(t.x, t.height + 0.9, t.z, 'подкуплен!', '#ffd86a', 16); }
+            SFX.at('cash', t.x, t.z, 1); if (FX.near(t.x, t.z, 50)) { FX.glow(t.x, 1.6, t.z, 2.6, WLD.c, 0.25, 'star'); if (t === G.player || h === G.player) FX.text(t.x, t.height + 0.9, t.z, 'подкуплен!', '#ffd86a', 16); }
             let rp = 0;
             G.actors.push({ update(dt) {
               if (!t.alive || G.time > t.bribeT || b.dead || !t.buffs.includes(b)) { t.tauntT = 0; t.bribeT = 0; if (t.order && t.order.type === 'move') { t.order = null; t.path = null; } return false; }
@@ -322,8 +323,8 @@ HEROES.push(
         desc: 'Wлад щёлкает пальцами — и с неба падает огромный золотой сейф (до 12). Через секунду он врезается в землю: магический урон всем врагам в радиусе 4 (сверху +3% золота в кошельке, не больше +300) и оглушение на 1.25 сек. Дверца слетает, из сейфа фонтаном бьют монеты и купюры, и 3 сек земля вокруг усыпана золотом: враги на нём замедлены на 40%, а союзные герои подбирают до 30 золота.',
         cast(h, p) {
           const x = p.x, z = p.z, R = 4, T = 1.0, dmg = D(h, 170, 38, 0, 0.8) + Math.min(300, h.gold * 0.03), face = angTo(x, z, h.x, h.z);
-          G.dangers.push({ x, z, r: R, team: h.team, until: G.time + T }); SFX.at('ultcue', h.x, h.z, 0.5);
-          after(0.3, () => { if (!h.alive) return; SFX.at('coin', h.x, h.z, 0.7); if (FX.near(h.x, h.z, 50)) { const A = wlHand(h); FX.glow(A.x, A.y, A.z, 1.6, WLD.c, 0.2, 'star'); FX.sparks(A.x, A.y, A.z, { n: 6, color: 0xffffff, color2: WLD.c, speed: [2, 5], life: [0.15, 0.3], w: 0.06 }); FX.ring(A.x, A.z, { r0: 0.2, r1: 1.4, color: WLD.c, life: 0.3, tex: 'ringThin', y: A.y }); } });
+          G.dangers.push({ x, z, r: R, team: h.team, until: G.time + T }); SFX.at('ultcue', h.x, h.z, 0.6);
+          after(0.3, () => { if (!h.alive) return; SFX.at('pop', h.x, h.z, 0.6); SFX.at('coin', h.x, h.z, 0.4); if (FX.near(h.x, h.z, 50)) { const A = wlHand(h); FX.glow(A.x, A.y, A.z, 1.6, WLD.c, 0.2, 'star'); FX.sparks(A.x, A.y, A.z, { n: 6, color: 0xffffff, color2: WLD.c, speed: [2, 5], life: [0.15, 0.3], w: 0.06 }); FX.ring(A.x, A.z, { r0: 0.2, r1: 1.4, color: WLD.c, life: 0.3, tex: 'ringThin', y: A.y }); } });
           wlSafeDrop(h, x, z, R, T, face, dmg);
         }
       }

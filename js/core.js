@@ -172,6 +172,155 @@ const SFX = {
       case 'bigcut': N('highpass', 7600, 1300, 0.17, 0.42); N('bandpass', 1900, 280, 0.22, 0.24, 0, 1.2); T('sawtooth', 2300, 280, 0.13, 0.1); T('sine', 120, 36, 0.28, 0.55); T('sine', 3300, 3240, 0.45, 0.05, 0.02); break;
       // a temple bell struck once over a low drone
       case 'shrine': T('sine', 98, 96, 2.2, 0.36); T('sine', 196, 192, 1.8, 0.16); T('sine', 294, 288, 1.4, 0.09, 0.01); T('sawtooth', 49, 44, 1.7, 0.12); N('lowpass', 800, 60, 1.2, 0.34); N('bandpass', 2400, 600, 0.3, 0.12, 0, 2); break;
+      /* ---- blows: one per kind of weapon ---- */
+      // a sword: a swish, a steel ring that hangs a moment, a small thud
+      case 'blade': N('highpass', 6000, 1800, 0.1, 0.3, 0, 0.9); T('triangle', 2350, 2280, 0.32, 0.06, 0.01); T('triangle', 3520, 3400, 0.22, 0.035, 0.01); T('sine', 180, 70, 0.1, 0.25); break;
+      // a katana: thinner and brighter than a sword, a long clean ring
+      case 'katana': N('highpass', 9500, 3000, 0.06, 0.32, 0, 0.7); N('bandpass', 4200, 1500, 0.09, 0.14, 0.01, 2); T('sine', 3900, 3850, 0.35, 0.04, 0.02); T('sine', 5200, 5150, 0.25, 0.025, 0.02); T('sine', 150, 60, 0.08, 0.2); break;
+      // daggers: two quick light stabs
+      case 'dagger': N('highpass', 7000, 2500, 0.045, 0.28); N('highpass', 7500, 2800, 0.045, 0.22, 0.06); T('triangle', 2900, 2700, 0.12, 0.04, 0.01); T('sine', 200, 90, 0.06, 0.16); break;
+      // a mace or an anchor: a heavy thud and a clang of iron
+      case 'mace': T('sine', 130, 45, 0.25, 0.55); N('bandpass', 1400, 400, 0.12, 0.35, 0, 1.5); T('triangle', 820, 790, 0.4, 0.07, 0.005); T('triangle', 1230, 1190, 0.3, 0.05, 0.005); N('lowpass', 700, 100, 0.2, 0.25); break;
+      // an axe: a swish and a chop that bites in
+      case 'axe': N('bandpass', 2400, 600, 0.08, 0.3, 0, 1.2); T('sine', 120, 40, 0.22, 0.5, 0.04); N('lowpass', 1200, 150, 0.15, 0.35, 0.04); N('bandpass', 3000, 1200, 0.05, 0.2, 0.04, 3); break;
+      // a fist: a meaty thump
+      case 'punch': T('sine', 160, 45, 0.16, 0.6); N('lowpass', 1500, 200, 0.08, 0.4); N('bandpass', 2600, 1200, 0.03, 0.18, 0, 2); break;
+      // a kick: lower and duller than a punch
+      case 'kick': N('bandpass', 400, 1600, 0.06, 0.12, 0, 1); T('sine', 120, 40, 0.18, 0.55, 0.03); N('lowpass', 1000, 150, 0.1, 0.35, 0.03); break;
+      // claws: three quick rakes
+      case 'claw': N('bandpass', 3800, 1500, 0.07, 0.22, 0, 2.5); N('bandpass', 3500, 1400, 0.07, 0.2, 0.035, 2.5); N('bandpass', 3200, 1300, 0.07, 0.18, 0.07, 2.5); T('sine', 140, 60, 0.1, 0.25, 0.04); break;
+      // flesh tearing: a wet rip
+      case 'flesh': N('bandpass', 900, 300, 0.18, 0.35, 0, 1.5); N('lowpass', 500, 120, 0.2, 0.3, 0.02); T('sawtooth', 140, 70, 0.12, 0.08); N('bandpass', 2200, 800, 0.08, 0.15, 0.05, 4); break;
+      // chains: a rattle of iron links and a thud
+      case 'chain': T('triangle', 2600, 2550, 0.08, 0.08); T('triangle', 3300, 3200, 0.07, 0.07, 0.04); T('triangle', 2900, 2850, 0.09, 0.07, 0.08); T('triangle', 3700, 3650, 0.06, 0.05, 0.11); N('highpass', 5000, 3000, 0.14, 0.12); T('sine', 150, 60, 0.12, 0.3, 0.02); break;
+      // a scythe: a long rising swoosh, then the slice
+      case 'scythe': N('bandpass', 400, 3200, 0.16, 0.25, 0, 1.3); N('highpass', 8000, 2500, 0.08, 0.3, 0.13, 0.8); T('triangle', 1900, 1850, 0.3, 0.05, 0.14); T('sine', 120, 45, 0.15, 0.3, 0.13); break;
+      // a bone: a hollow knock
+      case 'bone': T('square', 600, 380, 0.05, 0.12); T('sine', 420, 300, 0.12, 0.3); N('bandpass', 1800, 900, 0.05, 0.25, 0, 3); break;
+      // a frying pan or a ladle: a comic «bonk» that rings
+      case 'pan': T('triangle', 520, 500, 0.5, 0.25); T('sine', 1310, 1290, 0.45, 0.1); T('sine', 2100, 2080, 0.3, 0.06); T('sine', 140, 60, 0.12, 0.35); N('bandpass', 2000, 1000, 0.04, 0.2); break;
+      // a saw blade: a buzz that bites
+      case 'saw': T('sawtooth', 900, 1100, 0.18, 0.1); T('sawtooth', 1350, 1500, 0.18, 0.06); N('bandpass', 3000, 3500, 0.18, 0.2, 0, 4); T('sine', 160, 70, 0.1, 0.25, 0.05); break;
+      // shears: snip-snip
+      case 'snip': N('highpass', 6000, 4000, 0.03, 0.3); T('triangle', 3200, 3000, 0.05, 0.08); N('highpass', 6500, 4000, 0.03, 0.3, 0.07); T('triangle', 3400, 3100, 0.05, 0.08, 0.07); T('sine', 180, 80, 0.07, 0.2, 0.07); break;
+      // a needle: a tiny bright prick
+      case 'needle': T('sine', 3800, 4800, 0.07, 0.1); N('highpass', 8000, 5000, 0.04, 0.2); T('triangle', 6000, 5900, 0.12, 0.03, 0.02); break;
+      // a spear: a thrust and a thunk
+      case 'spear': N('bandpass', 600, 2400, 0.09, 0.25, 0, 1.4); T('sine', 140, 50, 0.16, 0.45, 0.07); N('bandpass', 1700, 600, 0.06, 0.25, 0.07, 1.5); T('triangle', 1500, 1450, 0.2, 0.04, 0.07); break;
+      // a blade of shadow: a dark rush and a low crack
+      case 'shadowblade': N('bandpass', 300, 1800, 0.12, 0.28, 0, 1.5); T('sawtooth', 220, 60, 0.18, 0.14); N('highpass', 6000, 1500, 0.08, 0.25, 0.04); T('sine', 90, 35, 0.2, 0.35, 0.04); break;
+      // a blade of lightning: a slice wrapped in a crackle
+      case 'thunderblade': N('highpass', 9000, 3000, 0.06, 0.3); T('sawtooth', 2400, 300, 0.1, 0.12); N('highpass', 5000, 1500, 0.15, 0.18, 0.01); T('square', 80, 50, 0.08, 0.12); break;
+      // a stone fist: a crunch of rock
+      case 'stone': N('lowpass', 1200, 200, 0.3, 0.5); N('bandpass', 2000, 700, 0.08, 0.3, 0, 2); N('bandpass', 1500, 600, 0.06, 0.2, 0.07, 2); T('sine', 90, 40, 0.25, 0.4); break;
+      // jaws: a snap and a crunch
+      case 'bite': N('bandpass', 1200, 500, 0.06, 0.4, 0, 2); T('sine', 200, 70, 0.1, 0.4); T('square', 300, 150, 0.04, 0.1); N('highpass', 3000, 1500, 0.04, 0.2, 0.02); break;
+      // a whip or a cracking thread
+      case 'whip': N('bandpass', 800, 5000, 0.08, 0.25, 0, 1.5); N('highpass', 7000, 4000, 0.03, 0.35, 0.07); T('sine', 2200, 1800, 0.04, 0.06, 0.07); break;
+      /* ---- shots ---- */
+      // a pistol: a sharp crack and a short echo
+      case 'gunshot': N('highpass', 4000, 1200, 0.05, 0.5); N('lowpass', 2000, 120, 0.22, 0.55); T('sine', 150, 40, 0.15, 0.45); N('bandpass', 1500, 400, 0.4, 0.08, 0.05, 1); break;
+      // a rifle: heavier, a long rolling echo
+      case 'rifle': N('highpass', 6000, 1500, 0.06, 0.5); N('lowpass', 2600, 90, 0.35, 0.6); T('sine', 110, 32, 0.25, 0.5); N('bandpass', 1200, 300, 0.6, 0.1, 0.08, 0.8); break;
+      // a bow: the twang of the string and the whiz of the arrow
+      case 'bow': T('triangle', 210, 160, 0.14, 0.22); T('sine', 420, 330, 0.1, 0.08); N('bandpass', 3200, 1200, 0.12, 0.2, 0.01, 2.5); break;
+      // a crossbow: a hard clack and a whiz
+      case 'crossbow': T('square', 300, 120, 0.05, 0.2); N('bandpass', 1400, 400, 0.05, 0.3, 0, 2); N('bandpass', 3500, 1800, 0.16, 0.16, 0.02, 3); T('triangle', 260, 200, 0.12, 0.12); break;
+      // a blaster: a falling «pew»
+      case 'blaster': T('square', 1800, 220, 0.14, 0.12); T('sine', 2600, 300, 0.12, 0.1); N('highpass', 4000, 2000, 0.05, 0.12); break;
+      // a railgun: a rising whine, then a crack like the sky splitting
+      case 'railgun': T('sawtooth', 300, 3000, 0.2, 0.12); N('highpass', 3000, 9000, 0.2, 0.15); N('highpass', 5000, 1500, 0.12, 0.5, 0.2); T('sine', 120, 35, 0.3, 0.5, 0.2); T('sawtooth', 2400, 400, 0.15, 0.12, 0.2); break;
+      /* ---- spells ---- */
+      // a bolt of fire: a roar of flame with a crackle
+      case 'firebolt': N('lowpass', 2400, 300, 0.25, 0.4); N('bandpass', 600, 2400, 0.16, 0.2, 0, 1.2); T('sawtooth', 180, 90, 0.18, 0.08); N('highpass', 4000, 2500, 0.3, 0.06, 0.05); break;
+      // a small flame: a puff and sparks
+      case 'ember': N('lowpass', 1600, 400, 0.15, 0.3); N('highpass', 5000, 3000, 0.12, 0.08, 0.03); T('sine', 300, 150, 0.1, 0.1); break;
+      // a witch's curse: a low hiss and a falling note
+      case 'hex': N('lowpass', 1200, 200, 0.3, 0.3); T('triangle', 440, 220, 0.25, 0.08); N('bandpass', 1800, 700, 0.2, 0.12, 0.05, 3); break;
+      // holy light: a bright major chord
+      case 'holy': T('sine', 1047, 1047, 0.4, 0.12); T('sine', 1568, 1568, 0.35, 0.08, 0.02); T('sine', 2093, 2093, 0.3, 0.05, 0.04); N('highpass', 6000, 8000, 0.25, 0.06); break;
+      // pure magic: a rising ping with a shimmer
+      case 'arcane': T('sine', 660, 1320, 0.14, 0.14); T('triangle', 1320, 2640, 0.12, 0.06, 0.02); N('bandpass', 2000, 5000, 0.15, 0.08, 0, 3); T('sine', 220, 110, 0.12, 0.1); break;
+      // a spirit: a soft airy bell
+      case 'spirit': T('sine', 880, 1175, 0.25, 0.1); T('sine', 1760, 2350, 0.2, 0.05, 0.03); N('bandpass', 1200, 3000, 0.25, 0.1, 0, 2); break;
+      // a gust of wind
+      case 'gust': N('bandpass', 400, 1600, 0.25, 0.3, 0, 0.8); N('bandpass', 1600, 600, 0.2, 0.2, 0.12, 0.8); T('sine', 500, 900, 0.15, 0.04); break;
+      // water: a bloop and a splash
+      case 'water': T('sine', 300, 900, 0.07, 0.25); T('sine', 500, 1300, 0.06, 0.15, 0.05); N('lowpass', 1800, 300, 0.25, 0.3, 0.02); N('bandpass', 2400, 900, 0.2, 0.12, 0.04, 2); break;
+      // a big wave crashing
+      case 'splash': N('lowpass', 2500, 200, 0.6, 0.6); N('bandpass', 3000, 800, 0.5, 0.25, 0.05, 1); T('sine', 200, 60, 0.3, 0.4); T('sine', 400, 1100, 0.06, 0.12, 0.15); T('sine', 350, 1000, 0.06, 0.1, 0.25); break;
+      // a magic chime: three bright bells
+      case 'chime': T('sine', 1760, 1760, 0.3, 0.08); T('sine', 2637, 2637, 0.25, 0.06, 0.05); T('sine', 3520, 3520, 0.2, 0.05, 0.1); break;
+      // the dead: a low chord with a moan in it
+      case 'necro': T('sawtooth', 110, 90, 0.4, 0.12); T('sawtooth', 165, 135, 0.4, 0.08); N('bandpass', 600, 300, 0.35, 0.2, 0, 3); T('sine', 55, 40, 0.4, 0.3); break;
+      // a ghost: two near notes beating against each other
+      case 'ghost': T('sine', 400, 600, 0.5, 0.08); T('sine', 410, 620, 0.5, 0.08); N('bandpass', 900, 1500, 0.5, 0.06, 0, 4); break;
+      // a short teleport: down and up again
+      case 'blink': T('sine', 1200, 300, 0.15, 0.14); N('bandpass', 4000, 800, 0.15, 0.16, 0, 2); T('sine', 300, 1200, 0.12, 0.08, 0.1); break;
+      // a build-up: a rising charge
+      case 'charge': T('sawtooth', 120, 600, 0.6, 0.12); N('bandpass', 400, 3000, 0.6, 0.12, 0, 2); T('sine', 240, 1200, 0.6, 0.08); break;
+      // a small pop
+      case 'pop': T('sine', 600, 120, 0.08, 0.3); N('bandpass', 2000, 500, 0.06, 0.2); break;
+      // thunder: a crack and a long rumble
+      case 'thunder': N('highpass', 6000, 1500, 0.15, 0.5); N('lowpass', 3000, 60, 1.2, 0.8); T('sine', 70, 30, 0.9, 0.5); N('bandpass', 1200, 300, 0.4, 0.3, 0.15, 1); break;
+      // a bell struck once
+      case 'bell': T('sine', 523, 520, 1.2, 0.2); T('sine', 1308, 1300, 0.9, 0.1); T('sine', 2093, 2090, 0.6, 0.06); T('sine', 3140, 3130, 0.4, 0.03); break;
+      // a beast's roar
+      case 'roar': T('sawtooth', 140, 70, 0.7, 0.25); T('sawtooth', 210, 100, 0.7, 0.15, 0.02); N('bandpass', 800, 300, 0.7, 0.3, 0, 1.2); N('lowpass', 500, 80, 0.7, 0.25); break;
+      // a wolf's howl
+      case 'howl': T('sine', 380, 700, 0.35, 0.14); T('sine', 700, 520, 0.7, 0.14, 0.3); T('sine', 760, 1400, 0.35, 0.04); N('bandpass', 900, 700, 0.9, 0.05, 0, 2); break;
+      // a heartbeat
+      case 'heartbeat': T('sine', 60, 45, 0.12, 0.6); N('lowpass', 300, 80, 0.1, 0.3); T('sine', 55, 40, 0.15, 0.5, 0.18); N('lowpass', 300, 80, 0.1, 0.25, 0.18); break;
+      // blood drawn out: a wet pull
+      case 'blood': N('bandpass', 700, 250, 0.3, 0.3, 0, 3); T('sine', 180, 90, 0.3, 0.12); N('lowpass', 400, 100, 0.3, 0.2, 0.05); break;
+      // sand: a hissing rush
+      case 'sand': N('bandpass', 3000, 1500, 0.4, 0.2, 0, 0.6); N('highpass', 6000, 4000, 0.4, 0.08); break;
+      // a plucked string or thread
+      case 'string': T('triangle', 880, 860, 0.4, 0.1); T('triangle', 1320, 1300, 0.3, 0.05); N('highpass', 5000, 3000, 0.05, 0.12); break;
+      // wings or a cloak: two heavy flaps
+      case 'flap': N('lowpass', 900, 300, 0.08, 0.35); N('lowpass', 900, 300, 0.08, 0.3, 0.1); break;
+      // machinery: a servo whine and a clunk
+      case 'servo': T('sawtooth', 120, 240, 0.25, 0.1); N('bandpass', 1500, 2500, 0.2, 0.1, 0, 5); T('square', 60, 80, 0.25, 0.08); T('sine', 140, 60, 0.1, 0.25, 0.22); break;
+      // a phone: a notification blip
+      case 'blip': T('sine', 1320, 1320, 0.06, 0.12); T('sine', 1760, 1760, 0.1, 0.12, 0.07); T('square', 880, 880, 0.04, 0.03); break;
+      // a clock: tick-tock
+      case 'tick': T('square', 3000, 3000, 0.02, 0.08); N('highpass', 6000, 6000, 0.02, 0.1); T('square', 2400, 2400, 0.02, 0.08, 0.12); N('highpass', 5000, 5000, 0.02, 0.1, 0.12); break;
+      // playing cards: a riffle and a flick
+      case 'card': N('highpass', 5000, 3000, 0.04, 0.2); N('highpass', 5000, 3000, 0.03, 0.15, 0.025); N('bandpass', 2600, 4500, 0.1, 0.16, 0.04, 3); T('triangle', 1600, 1200, 0.04, 0.06, 0.04); break;
+      // a chess piece set down on wood
+      case 'clack': T('sine', 1400, 900, 0.05, 0.3); T('square', 700, 500, 0.03, 0.08); N('bandpass', 2500, 1500, 0.04, 0.25, 0, 4); T('sine', 220, 180, 0.08, 0.1); break;
+      // a pen scratching
+      case 'quill': N('bandpass', 3500, 2500, 0.08, 0.2, 0, 6); N('bandpass', 3000, 4500, 0.1, 0.18, 0.08, 6); T('sine', 600, 300, 0.1, 0.06, 0.12); break;
+      // money: coins and a register bell
+      case 'cash': T('sine', 2400, 2400, 0.06, 0.1); T('sine', 3200, 3200, 0.15, 0.1, 0.05); N('highpass', 7000, 5000, 0.1, 0.12); T('triangle', 1800, 1800, 0.25, 0.06, 0.1); break;
+      // eating: three crunchy bites
+      case 'munch': N('bandpass', 1800, 900, 0.05, 0.25, 0, 3); N('bandpass', 1600, 800, 0.05, 0.22, 0.09, 3); N('bandpass', 1900, 900, 0.05, 0.2, 0.18, 3); T('sine', 300, 200, 0.05, 0.1); break;
+      // a whistle
+      case 'whistle': T('sine', 2800, 2800, 0.12, 0.16); T('sine', 2800, 3100, 0.25, 0.16, 0.14); break;
+      // a skateboard: wheels rolling and a clack
+      case 'skate': N('bandpass', 900, 700, 0.4, 0.15, 0, 1); T('square', 90, 90, 0.3, 0.05); T('sine', 900, 600, 0.04, 0.2, 0.3); N('bandpass', 2400, 1200, 0.04, 0.2, 0.3, 3); break;
+      // something heavy falling from the sky: a long falling whistle
+      case 'falling': T('sine', 2300, 520, 0.7, 0.13); T('sine', 2340, 530, 0.7, 0.05); break;
+      // a panicked yelp: a voice-like cry that cracks upward and falls
+      case 'yelp': T('sawtooth', 700, 1500, 0.14, 0.12); T('sawtooth', 1500, 1050, 0.4, 0.11, 0.12); N('bandpass', 2200, 1600, 0.5, 0.12, 0, 2.5); T('sine', 1400, 2100, 0.14, 0.05); break;
+      // a digital glitch: a stuttering burst of square noise
+      case 'glitch': T('square', 1200, 1200, 0.03, 0.08); T('square', 300, 300, 0.03, 0.1, 0.04); T('square', 2400, 2400, 0.025, 0.07, 0.075); N('highpass', 3000, 3000, 0.03, 0.15, 0.1); T('square', 600, 150, 0.06, 0.1, 0.12); break;
+      // a lighter: a flint flick and a small whoomph of flame
+      case 'lighter': N('highpass', 6000, 4000, 0.025, 0.3); T('square', 2200, 1800, 0.02, 0.06); N('lowpass', 1400, 400, 0.18, 0.22, 0.05); break;
+      // a fox's yip: a short rising bark
+      case 'yip': T('sawtooth', 700, 1250, 0.06, 0.12); T('sine', 1250, 900, 0.1, 0.12, 0.05); N('bandpass', 1800, 1200, 0.08, 0.1, 0, 3); break;
+      // paper tearing
+      case 'rip': N('bandpass', 2600, 1800, 0.22, 0.25, 0, 4); N('bandpass', 3600, 2400, 0.12, 0.15, 0.08, 5); N('highpass', 5000, 4000, 0.2, 0.08, 0.02); break;
+      // a snake's hiss
+      case 'hiss': N('highpass', 5200, 4200, 0.5, 0.2); N('bandpass', 7000, 6000, 0.45, 0.1, 0.04, 3); break;
+      // fingers snapped
+      case 'snap': N('highpass', 3500, 2500, 0.03, 0.45); T('sine', 1600, 900, 0.03, 0.15); N('bandpass', 1200, 900, 0.05, 0.12, 0.01, 2); break;
+      // glasses touching: a high clean clink and its ring
+      case 'clink': T('sine', 3100, 3090, 0.5, 0.1); T('sine', 4650, 4630, 0.35, 0.05); T('sine', 3300, 3290, 0.45, 0.06, 0.06); T('sine', 4950, 4930, 0.3, 0.03, 0.06); break;
+      // food landing: a soft wet splat
+      case 'splat': N('lowpass', 900, 150, 0.14, 0.45); T('sine', 220, 70, 0.1, 0.3); N('bandpass', 1400, 500, 0.08, 0.15, 0.02, 2); break;
+      // a rifle bolt worked: two metal clicks
+      case 'bolt': T('square', 1800, 1500, 0.025, 0.1); N('highpass', 5000, 3000, 0.03, 0.18); T('square', 1300, 1100, 0.03, 0.1, 0.11); N('highpass', 4500, 2500, 0.035, 0.2, 0.11); break;
       case 'slash': N('highpass', 2600, 700, 0.13, 0.22); T('triangle', 620, 180, 0.1, 0.1); N('bandpass', 700, 2800, 0.07, 0.1, 0, 1.2); break;
       case 'shoot': T('triangle', 880, 260, 0.09, 0.16); N('highpass', 3000, 1500, 0.05, 0.1); T('sine', 160, 70, 0.07, 0.12); break;
       case 'arrow': N('bandpass', 2600, 900, 0.12, 0.22, 0, 2); break;
@@ -216,6 +365,25 @@ const SFX = {
 };
 // interface sounds keep their exact pitch
 const SFX_FLAT = { ui: 1, buy: 1, deny: 1, warn: 1, coin: 1, level: 1, kill: 1, victory: 1, defeat: 1, mvp: 1, recall: 1 };
+// the sound of each hero's basic attack: hit — a melee blow (played on the target), atk — a shot (played at the shooter), imp — a shot landing.
+// A hero's own def.hitSfx wins over this table (false = the hero plays it himself in onDeal)
+const HERO_SFX = {
+  brand: { hit: 'mace' }, keira: { hit: 'dagger' }, mora: { atk: 'hex', imp: 'ember' }, vale: { atk: 'crossbow' }, oriel: { atk: 'holy' }, groh: { hit: 'stone' },
+  nox: { atk: 'zap' }, silva: { atk: 'bow' }, morg: { atk: 'poison' }, aisa: { atk: 'ice' }, cassius: { hit: 'blade' }, zar: { atk: 'void' }, grimm: { hit: 'chain' },
+  ragna: { hit: 'axe' }, yuki: { atk: 'spirit' }, virr: { atk: 'rifle' }, lira: { atk: 'gust' }, hald: { hit: 'spear' }, nisa: { atk: 'needle' }, shaya: { hit: 'dagger' },
+  fenris: { hit: 'claw' }, reiji: { hit: 'katana' }, vint: { atk: 'blaster' }, toplak: { hit: 'mace' }, kolomba: { atk: 'card' }, kostyan: { hit: 'bone' }, shiro: { hit: 'flesh' },
+  kaisei: { atk: 'arcane' }, umbra: { hit: 'shadowblade' }, rampage: { hit: 'scythe' }, hikaru: { atk: 'quill' }, dash: { hit: 'punch' }, tokiko: { atk: 'gunshot' },
+  riku: { hit: 'punch' }, ashen: { atk: 'ember' }, chess: { atk: 'clack' }, mei: { hit: 'snip' }, kagari: { hit: 'saw' }, lin: { atk: 'chime' }, kwame: { hit: 'punch' },
+  agafya: { hit: 'needle' }, akito: { hit: 'katana' }, frieren: { atk: 'arcane' }, lelouch: { atk: 'clack' }, raul: { hit: 'shadowblade' }, setsuna: { hit: 'katana' },
+  reiner: { hit: 'stone' }, jinwoo: { hit: 'dagger' }, megumin: { atk: 'firebolt', imp: 'ember' }, levi: { hit: 'blade' }, zenitsu: { hit: 'thunderblade' }, nereya: { atk: 'water' },
+  gubert: { hit: 'pan' }, reisei: { hit: 'kick' }, azzar: { atk: 'necro' }, seiryu: { hit: 'punch' }, marfa: { hit: 'pan' }, anselm: { atk: 'holy' }
+};
+function heroSfx(u, k) {
+  const d = u.def, s = HERO_SFX[d.id];
+  if (k === 'hit') { if (d.hitSfx === false) return null; return d.hitSfx || (s && s.hit) || (d.noSlash ? 'impact' : 'slash'); }
+  if (k === 'atk') return (s && s.atk) || d.atkSfx || 'shoot';
+  return s ? s[k] : null;
+}
 loadGfx();
 
 /* ===== the player's profile: last choices in the menu and career figures. Everything that must survive a restart (profile, key bindings, graphics, volume)
