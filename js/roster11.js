@@ -357,12 +357,19 @@ function rsPawn(h, m, dmg) {
   };
   G.actors.push({ update(dt) {
     if (P.done) return false; P.t += dt; if (P.t < 0.25) return true;
-    let tg = null, bd = 12; for (const e of G.heroes) if (e.alive && hostile(h, e) && !e.invuln) { const d = dist(P.x, P.z, e.x, e.z); if (d < bd) { bd = d; tg = e; } }
-    if (!tg) { let b2 = 6; for (const u of G.units) if (u.alive && !u.struct && hostile(h, u) && u.kind !== 'hero') { const d = dist(P.x, P.z, u.x, u.z); if (d < b2) { b2 = d; tg = u; } } }
-    if (P.walked > 14 || P.t > 4) { boom(); return false; }
-    if (!tg) { if (P.free === undefined) P.free = h.facing; if (P.walked >= 3) { boom(); return false; } const s2 = 12 * dt; P.face = P.free; P.x += Math.sin(P.free) * s2; P.z += Math.cos(P.free) * s2; P.walked += s2; rib.add(P.x, 0.6, P.z); return true; }   // nobody near: a few steps ahead, then it bursts
-    const d = dist(P.x, P.z, tg.x, tg.z); if (d < 1.2 + (tg.radius || 0.6) * 0.5) { boom(); return false; }
-    const st = Math.min(d, 15 * dt); P.face = angTo(P.x, P.z, tg.x, tg.z); P.x += Math.sin(P.face) * st; P.z += Math.cos(P.face) * st; P.walked += st; rib.add(P.x, 0.6, P.z);
+    // it marches only on enemy heroes (creeps do not stop it — it walks through them); the chosen one is kept until he dies or vanishes
+    if (!P.tg || !P.tg.alive || P.tg.invuln || dist(P.x, P.z, P.tg.x, P.tg.z) > 18) { P.tg = null; let bd = 16; for (const e of G.heroes) if (e.alive && hostile(h, e) && !e.invuln) { const d = dist(P.x, P.z, e.x, e.z); if (d < bd) { bd = d; P.tg = e; } } }
+    const tg = P.tg;
+    if (P.walked > 18 || P.t > 5) { boom(); return false; }
+    if (!tg) {   // no hero near: straight on, away from Reisei through the spot where the victim stood, nine steps — then it bursts
+      if (P.free === undefined) P.free = dist(h.x, h.z, x0, z0) > 0.5 ? angTo(h.x, h.z, x0, z0) : h.facing;
+      if (P.walked >= 9) { boom(); return false; }
+      const s2 = 13 * dt, nx = P.x + Math.sin(P.free) * s2, nz = P.z + Math.cos(P.free) * s2; if (!NAV.ok(nx, nz)) { boom(); return false; }
+      P.face = P.free; P.x = nx; P.z = nz; P.walked += s2; rib.add(P.x, 0.6, P.z);
+    } else {
+      const d = dist(P.x, P.z, tg.x, tg.z); if (d < 1.2 + (tg.radius || 0.6) * 0.5) { boom(); return false; }
+      const st = Math.min(d, 15 * dt); P.face = angTo(P.x, P.z, tg.x, tg.z); P.x += Math.sin(P.face) * st; P.z += Math.cos(P.face) * st; P.walked += st; rib.add(P.x, 0.6, P.z);
+    }
     if (!P.queen && P.walked >= 6) { P.queen = true; if (mesh) { const q = rsPawnMesh('queen'); mesh.remove(...mesh.children); mesh.add(...q.children); mesh.userData = q.userData; } FX.text(P.x, 2.6, P.z, 'превращение', '#cfeeff', 14); SFX.at('cue', P.x, P.z, 0.5); if (FX.near(P.x, P.z, 50)) { FX.pillar(P.x, P.z, { r: 0.9, h: 7, color: RSE.c, life: 0.35, op: 0.5 }); FX.glow(P.x, 1.5, P.z, 3, RSE.c, 0.25, 'star'); } }
     return true;
   } });
