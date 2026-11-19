@@ -299,6 +299,8 @@ const SFX = {
       case 'whistle': T('sine', 2800, 2800, 0.12, 0.16); T('sine', 2800, 3100, 0.25, 0.16, 0.14); break;
       // a skateboard: wheels rolling and a clack
       case 'skate': N('bandpass', 900, 700, 0.4, 0.15, 0, 1); T('square', 90, 90, 0.3, 0.05); T('sine', 900, 600, 0.04, 0.2, 0.3); N('bandpass', 2400, 1200, 0.04, 0.2, 0.3, 3); break;
+      // a police siren: a two-tone wail, up and down
+      case 'siren': T('sawtooth', 660, 990, 0.42, 0.06); T('sine', 660, 990, 0.42, 0.1); T('sawtooth', 990, 660, 0.42, 0.06, 0.42); T('sine', 990, 660, 0.42, 0.1, 0.42); break;
       // something heavy falling from the sky: a long falling whistle
       case 'falling': T('sine', 2300, 520, 0.7, 0.13); T('sine', 2340, 530, 0.7, 0.05); break;
       // a panicked yelp: a voice-like cry that cracks upward and falls

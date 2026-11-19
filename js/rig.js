@@ -799,6 +799,20 @@ const HEADS = {
       .b(0.06, 0.2, 0.52, 0x5a0a14, 0, 0.32, -0.04).b(0.04, 0.12, 0.4, 0x8a1420, 0, 0.44, -0.08).y(0.2, 0.24, 0.1, 8, dk, 0, -0.27, 0);
     for (let i = 0; i < 5; i++) k.c(0.022, 0.07, 3, 0xe8e0cc, -0.12 + i * 0.06, -0.21, 0.25, Math.PI);
     for (const s of [-1, 1]) k.c(0.085, 0.38, 5, bone, s * 0.29, 0.24, 0, 0, 0, -s * 1.05).c(0.055, 0.26, 5, bone, s * 0.43, 0.46, 0.02, 0.2, 0, -s * 0.25);
+  },
+  xueying(k, C) { // a police captain: silver hair in a high ponytail tied with a red band, a side-swept fringe, cool blue eyes under sharp dark brows, a small mole
+    // under the left eye; a comm earpiece with a red light and a thin mic on the right ear
+    const hair = C.hair || 0xd8dce6, hs = 0xa4aaba, iris = 0x3a7ad8, wh = 0xf2eee8;
+    k.b(0.41, 0.46, 0.4, C.skin, 0, -0.01, 0);
+    for (const sd of [-1, 1]) k.b(0.115, 0.052, 0.03, wh, sd * 0.093, 0.025, 0.203).b(0.058, 0.052, 0.03, iris, sd * 0.09, 0.023, 0.211).b(0.022, 0.036, 0.02, 0x0a1428, sd * 0.09, 0.023, 0.219).b(0.014, 0.014, 0.02, 0xffffff, sd * 0.09 + 0.014, 0.04, 0.223)
+      .b(0.13, 0.026, 0.035, 0x2a2a34, sd * 0.093, 0.058, 0.212, 0, 0, sd * 0.1).b(0.12, 0.02, 0.03, 0x3a3a44, sd * 0.095, 0.094, 0.212, 0, 0, sd * 0.2);
+    k.b(0.016, 0.016, 0.02, 0x3a2a2a, -0.125, -0.035, 0.206).b(0.025, 0.05, 0.035, C.skin, 0, -0.05, 0.205).b(0.075, 0.016, 0.02, 0xb04a50, 0, -0.135, 0.2)
+      .t(0.46, 0.44, 0.49, 0.47, 0.12, hair, 0, 0.22, -0.01).b(0.47, 0.34, 0.14, hair, 0, 0.04, -0.2).b(0.06, 0.3, 0.3, hair, -0.226, 0.03, -0.03).b(0.06, 0.3, 0.3, hair, 0.226, 0.03, -0.03)
+      .b(0.05, 0.26, 0.06, hair, -0.205, -0.1, 0.13).b(0.05, 0.22, 0.06, hair, 0.205, -0.08, 0.13)
+      .y(0.19, 0.21, 0.08, 7, C.skin, 0, -0.27, 0).y(0.23, 0.26, 0.1, 8, C.shirt || 0xf2f0ec, 0, -0.31, 0)
+      .y(0.075, 0.085, 0.09, 8, 0xc82a36, 0, 0.27, -0.21, 0.7).t(0.15, 0.12, 0.1, 0.06, 0.7, hair, 0, -0.1, -0.36, 0.22).t(0.09, 0.055, 0.03, 0.02, 0.24, hs, 0, -0.55, -0.45, 0.22)   // the high ponytail
+      .y(0.05, 0.05, 0.05, 8, 0x1a1c22, 0.235, 0.0, 0.02, 0, 0, HPI).b(0.022, 0.022, 0.022, C.GL, 0.265, 0.0, 0.02).b(0.012, 0.012, 0.17, 0x1a1c22, 0.225, -0.07, 0.1, 0.55);
+    for (const [x, h, rz] of [[-0.18, 0.22, 0.45], [-0.1, 0.25, 0.35], [-0.02, 0.23, 0.25], [0.06, 0.19, 0.12], [0.14, 0.15, -0.05], [0.2, 0.12, -0.2]]) k.c(0.06, h, 4, hair, x, 0.24 - h * 0.3, 0.212, Math.PI - 0.14, 0, rz);   // the fringe swept to one side
   }
 };
 
@@ -1092,6 +1106,16 @@ function buildHero(L, teamColor) {
       kb.b(0.3 * b, 0.86, 0.05, nv, 0, 0.62, 0.24 * b).b(0.02, 0.86, 0.055, gold, -0.15 * b, 0.62, 0.244 * b).b(0.02, 0.86, 0.055, gold, 0.15 * b, 0.62, 0.244 * b)
         .o(0.06, GL, 0, 0.84, 0.27 * b, 1, 1.3, 0.4).b(0.6 * b, 0.03, 0.05, gold, 0, 1.0, 0.25 * b).b(0.78 * b, 0.09, 0.52 * b, 0x22262e, 0, 0.18, 0).b(0.13, 0.11, 0.05, gold, 0, 0.18, 0.27 * b)
         .b(0.5 * b, 0.3, 0.05, nv, 0, 0.72, -0.245 * b); break; }
+    // a police captain's uniform: a dark navy jacket under a grey tactical vest with a gold stripe and a glowing badge, a radio on the strap,
+    // a heavy belt with a row of red shotgun shells
+    case 'police': { const vest = 0x3a3e48, gold = met, red = 0xc82a36;
+      kb.b(0.6 * b, 0.48, 0.06, vest, 0, 0.67, 0.24 * b).b(0.58 * b, 0.48, 0.06, vest, 0, 0.67, -0.24 * b).b(0.06, 0.48, 0.5 * b, vest, -0.3 * b, 0.67, 0).b(0.06, 0.48, 0.5 * b, vest, 0.3 * b, 0.67, 0)
+        .b(0.61 * b, 0.035, 0.065, gold, 0, 0.55, 0.25 * b).b(0.59 * b, 0.035, 0.065, gold, 0, 0.55, -0.25 * b)
+        .y(0.055, 0.055, 0.03, 6, gold, -0.14 * b, 0.8, 0.275 * b, HPI).o(0.03, GL, -0.14 * b, 0.8, 0.292 * b, 1, 1, 0.5)
+        .b(0.1, 0.15, 0.06, 0x1a1c22, 0.15 * b, 0.84, 0.275 * b).b(0.012, 0.12, 0.012, 0x1a1c22, 0.18 * b, 0.97, 0.275 * b).b(0.025, 0.025, 0.02, { g: 0xff3040 }, 0.15 * b, 0.9, 0.31 * b)
+        .b(0.8 * b, 0.1, 0.54 * b, 0x1a1c22, 0, 0.22, 0).b(0.12, 0.1, 0.05, gold, 0, 0.22, 0.28 * b);
+      for (let i = 0; i < 8; i++) { const x = (-0.36 + i * 0.1) * b; if (Math.abs(x) < 0.09) continue; kb.y(0.026, 0.026, 0.11, 6, red, x, 0.23, 0.285 * b).y(0.028, 0.028, 0.03, 6, gold, x, 0.165, 0.285 * b); }
+      break; }
     // the mech's body: white plates edged in gold over a dark frame, a green energy core in the chest (rig.mCore), a dark round sensor on the waist, the cockpit hump and two thrusters on the back
     case 'paladin': { const gold = met, dk = c2;
       kb.t(0.86 * b, 0.14, 0.62 * b, 0.12, 0.46, c1, 0, 0.82, 0.22 * b).b(0.04, 0.46, 0.06, gold, -0.2 * b, 0.82, 0.29 * b, 0, 0, 0.2).b(0.04, 0.46, 0.06, gold, 0.2 * b, 0.82, 0.29 * b, 0, 0, -0.2)
@@ -1353,6 +1377,19 @@ function buildHero(L, teamColor) {
       const fw = new THREE.Vector3(Math.sin(-GUN_YAW), 0, Math.cos(-GUN_YAW)), gp = gun.position;
       aimArm(armR, foreR, new THREE.Vector3(gp.x + 0.03, gp.y - 0.1, gp.z), new THREE.Vector3(0.9, -1, -0.4));
       aimArm(armL, foreL, new THREE.Vector3(gp.x, gp.y - 0.1, gp.z).addScaledVector(fw, rf ? 0.3 : 0.26), new THREE.Vector3(-0.5, -1, 0.1));
+      break;
+    }
+    // a combat shotgun: a black receiver with a red stripe and a lit sight, a heavy barrel over a magazine tube, a ribbed pump, a skeleton stock; braced on the body like the rifles
+    case 'shotgun': {
+      const gk = kit(), bl = 0x1c1d22, gr = 0x3a3c44, red = 0xc82a36, gun = grp(body, 0.13 * b + 0.03, 0.74, 0.3 * b + 0.3); gun.rotation.y = -GUN_YAW;
+      gk.b(0.1, 0.17, 0.42, bl, 0, 0, 0.1).b(0.106, 0.035, 0.42, red, 0, 0.04, 0.1).y(0.05, 0.05, 1.1, 8, bl, 0, 0.05, 0.86, HPI).y(0.036, 0.036, 0.85, 6, gr, 0, -0.045, 0.73, HPI)
+        .b(0.11, 0.1, 0.3, gr, 0, -0.03, 0.48).b(0.116, 0.014, 0.3, bl, 0, 0.0, 0.48).b(0.116, 0.014, 0.3, bl, 0, -0.06, 0.48)
+        .y(0.06, 0.06, 0.05, 8, gr, 0, 0.05, 1.4, HPI).b(0.03, 0.05, 0.03, GL, 0, 0.12, 0.22).b(0.07, 0.05, 0.12, bl, 0, 0.1, 0.24).b(0.106, 0.02, 0.2, GL, 0, -0.005, 0.1)
+        .b(0.06, 0.18, 0.08, bl, 0, -0.14, 0.0, 0.3).b(0.05, 0.05, 0.42, gr, 0, 0.02, -0.3).b(0.05, 0.05, 0.36, gr, 0, -0.1, -0.28, 0.2).b(0.08, 0.2, 0.05, bl, 0, -0.04, -0.5);
+      gk.into(gun, mat, gmat); rig.gun = gun; rig.gunZ = gun.position.z; rig.hold = true;
+      const fw = new THREE.Vector3(Math.sin(-GUN_YAW), 0, Math.cos(-GUN_YAW)), gp = gun.position;
+      aimArm(armR, foreR, new THREE.Vector3(gp.x + 0.03, gp.y - 0.1, gp.z), new THREE.Vector3(0.9, -1, -0.4));
+      aimArm(armL, foreL, new THREE.Vector3(gp.x, gp.y - 0.08, gp.z).addScaledVector(fw, 0.46), new THREE.Vector3(-0.5, -1, 0.1));
       break;
     }
     // a bolt-action service rifle with a long bayonet: wooden stock and fore-end, a dark barrel, the bolt handle, a lit sight; braced on the body like the other rifles
