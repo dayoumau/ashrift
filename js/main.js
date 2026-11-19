@@ -115,7 +115,7 @@ function playerMove(x, z) {
 function command(marker) {
   const P = G.player; if (!P || P.dead || G.over || G.paused) return;
   if (P.geass && G.time < P.geass.until) { UI.msg('Вами управляет Гиас'); return; }
-  if (P.tauntT > G.time) { UI.msg('Вас спровоцировали'); return; }
+  if (P.tauntT > G.time) { UI.msg(P.bribeT > G.time ? 'Вас подкупили' : 'Вас спровоцировали'); return; }
   const t = pickUnit(u => hostile(P, u));
   if (t) {
     if (!targetable(P, t)) { UI.msg('Цель защищена: сначала разрушьте внешние башни'); SFX.play('deny'); return; }
@@ -128,7 +128,7 @@ function command(marker) {
 function canCast(i, quiet) {
   const P = G.player, ab = P.def.abilities[i]; if (!ab) return false; let why = null;
   if (ab.passive) why = 'Пассивная способность: действует сама'; else if (P.dead) why = 'Вы мертвы'; else if (!P.al[i]) why = i === 3 && P.level < 6 ? 'Ультимейт изучается с 6 уровня' : (P.sp > 0 ? 'Способность не изучена: Shift+' + kl('qwer'[i]) + ' или кнопка «+»' : 'Способность не изучена'); else if (P.cd[i] > 0) why = 'Способность перезаряжается';
-  else if (!(ab.free && ab.free(P)) && P.mana < ab.cost) why = 'Недостаточно маны'; else if (P.silenced) why = 'Безмолвие'; else if (P.stunned) why = 'Вы оглушены'; else if (P.geass && G.time < P.geass.until) why = 'Вами управляет Гиас'; else if (P.tauntT > G.time) why = 'Вас спровоцировали';
+  else if (!(ab.free && ab.free(P)) && P.mana < ab.cost) why = 'Недостаточно маны'; else if (P.silenced) why = 'Безмолвие'; else if (P.stunned) why = 'Вы оглушены'; else if (P.geass && G.time < P.geass.until) why = 'Вами управляет Гиас'; else if (P.tauntT > G.time) why = P.bribeT > G.time ? 'Вас подкупили' : 'Вас спровоцировали';
   if (why && !quiet) { UI.msg(why); SFX.play('deny'); }
   return !why;
 }

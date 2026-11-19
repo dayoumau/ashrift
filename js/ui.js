@@ -391,7 +391,8 @@ const UI = {
   ateClick() { return performance.now() - (this.dragEnd || 0) < 250; },
   // the recall key or its HUD slot
   recall() {
-    const P = G.player; if (!P || P.dead || G.paused || G.over) return;
+    const P = G.player; if (P && P.dead && P.def.buyback && !G.paused && !G.over) { P.def.buyback(P); return; }   // Wлад: the same key buys his life back
+    if (!P || P.dead || G.paused || G.over) return;
     if (P.inBase) this.msg('Вы уже на базе'); else if (P.recallCd > G.time) { this.msg('Телепорт перезаряжается: ' + Math.ceil(P.recallCd - G.time) + ' сек'); SFX.play('deny'); } else startRecall(P);
   },
   // use the item in HUD slot i (number key or a click on the slot)
@@ -508,6 +509,8 @@ const UI = {
     const rb = $('abB'), rcd = Math.max(0, (P.recallCd || 0) - G.time); rb.children[1].style.height = (P.recall > 0 ? P.recall / 4.5 * 100 : rcd / RECALL_CD * 100) + '%'; rb.children[2].textContent = P.recall > 0 ? P.recall.toFixed(1) : (rcd > 0 ? Math.ceil(rcd) : ''); rb.classList.toggle('nomana', rcd > 0 && !(P.recall > 0));
     $('st').innerHTML = `<span>Атака <b>${Math.round(P.ad)}</b></span><span>Умения <b>${Math.round(P.ap)}</b></span><span>Защита <b>${Math.round(P.arm)}</b></span><span>Ск.атаки <b>${P.as.toFixed(2)}</b></span><span>Скорость <b>${P.ms.toFixed(1)}</b></span><span>Ускор. <b>${P.haste}</b></span>`;
     $('dead').hidden = !P.dead || G.over; if (P.dead) $('deadt').textContent = 'Возрождение через ' + Math.ceil(P.respawnT) + ' сек · можно открыть магазин (' + kl('shop') + ')';
+    { const bb = $('buyb'), on = P.dead && !!P.def.buyInfo; if (bb.hidden !== !on) bb.hidden = !on;
+      if (on) { const s = P.def.buyInfo(P); if (bb.textContent !== s.text) bb.textContent = s.text; bb.disabled = !s.ok; if (!bb.onclick) bb.onclick = () => { const Q = G.player; if (Q && Q.dead && Q.def.buyback) Q.def.buyback(Q); }; } }
     if (this.shopOpen) { this.shopT -= dt; if (this.shopT <= 0) { this.shopT = 0.2; this.refreshShop(); } }
     this.drawOverlay(); this.drawMinimap();
   },

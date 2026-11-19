@@ -625,6 +625,22 @@ const HEADS = {
       .y(0.62, 0.64, 0.035, 18, hat, 0, 0.22, -0.01).b(0.3, 0.04, 0.6, hat, -0.5, 0.27, -0.01, 0, 0, 0.45).b(0.3, 0.04, 0.6, hat, 0.5, 0.27, -0.01, 0, 0, -0.45)
       .t(0.38, 0.34, 0.47, 0.44, 0.28, hat, 0, 0.37, -0.02).b(0.06, 0.05, 0.3, hd, 0, 0.5, -0.02).b(0.2, 0.04, 0.04, hd, 0, 0.47, 0.19, 0.5).y(0.245, 0.26, 0.07, 12, band, 0, 0.27, -0.02).y(0.035, 0.035, 0.015, 8, 0xd8dce4, 0.15, 0.27, 0.2, HPI)
       .y(0.22, 0.26, 0.1, 8, red, 0, -0.3, 0).c(0.13, 0.22, 3, red, 0, -0.4, 0.17, Math.PI);
+  },
+  wlad(k, C) { // a tycoon: a broad fleshy face with full cheeks and a red bulb of a nose; round black sunglasses in thin gold rims (their glints are rig.shades) under thick brows; dark hair swept back off the brow into a mane that falls to the shoulders; a great bushy beard spreading over the chest under a heavy moustache
+    const hair = C.hair || 0x24160e, gold = 0xe8c050, lens = 0x0e1014;
+    k.b(0.5, 0.46, 0.44, C.skin, 0, 0, 0).i(0.14, C.skin, -0.18, -0.09, 0.12, 1).i(0.14, C.skin, 0.18, -0.09, 0.12, 1)
+      .b(0.08, 0.11, 0.08, C.skin, 0, -0.02, 0.235).i(0.058, 0xe08f78, 0, -0.075, 0.262, 1)
+      .y(0.09, 0.09, 0.03, 14, gold, -0.11, 0.045, 0.236, HPI).y(0.09, 0.09, 0.03, 14, gold, 0.11, 0.045, 0.236, HPI)
+      .y(0.077, 0.077, 0.04, 14, lens, -0.11, 0.045, 0.245, HPI).y(0.077, 0.077, 0.04, 14, lens, 0.11, 0.045, 0.245, HPI)
+      .b(0.05, 0.016, 0.02, gold, 0, 0.075, 0.25).b(0.016, 0.016, 0.3, gold, -0.256, 0.06, 0.1).b(0.016, 0.016, 0.3, gold, 0.256, 0.06, 0.1)
+      .b(0.032, 0.012, 0.01, 0xd8e0ee, -0.135, 0.075, 0.267, 0, 0, 0.6).b(0.032, 0.012, 0.01, 0xd8e0ee, 0.085, 0.075, 0.267, 0, 0, 0.6)
+      .b(0.18, 0.055, 0.05, hair, -0.11, 0.155, 0.22, 0, 0, -0.14).b(0.18, 0.055, 0.05, hair, 0.11, 0.155, 0.22, 0, 0, 0.14)
+      .b(0.3, 0.065, 0.08, hair, 0, -0.125, 0.235).c(0.04, 0.13, 5, hair, -0.17, -0.15, 0.235, 0, 0, -2.3).c(0.04, 0.13, 5, hair, 0.17, -0.15, 0.235, 0, 0, 2.3)
+      .b(0.11, 0.024, 0.02, 0x8a3a30, 0, -0.168, 0.236)
+      .t(0.58, 0.42, 0.42, 0.28, 0.44, hair, 0, -0.4, 0.07).c(0.2, 0.26, 6, hair, 0, -0.74, 0.12, Math.PI).b(0.07, 0.38, 0.34, hair, -0.255, -0.12, 0).b(0.07, 0.38, 0.34, hair, 0.255, -0.12, 0)
+      .b(0.54, 0.14, 0.5, hair, 0, 0.27, -0.02).b(0.48, 0.12, 0.17, hair, 0, 0.31, 0.2, -0.5).b(0.4, 0.08, 0.12, 0x3a2416, 0, 0.36, 0.13, -0.3).b(0.6, 0.6, 0.2, hair, 0, -0.06, -0.21).b(0.07, 0.3, 0.36, hair, -0.272, 0.12, -0.04).b(0.07, 0.3, 0.36, hair, 0.272, 0.12, -0.04);
+    for (let i = 0; i < 5; i++) k.c(0.075, 0.26, 4, hair, -0.22 + i * 0.11, -0.46, -0.23 - (i % 2) * 0.03, -0.25, 0, (i - 2) * 0.12 + Math.PI);
+    for (const [x, y] of [[-0.14, -0.28], [0.12, -0.32], [-0.05, -0.45], [0.16, -0.5], [-0.17, -0.55], [0.03, -0.6]]) k.b(0.06, 0.1, 0.03, 0x3a2416, x, y, 0.285 + (y + 0.18) * 0.16, 0.3, 0, x * 2);   // curls in the beard
   }
 };
 
@@ -683,6 +699,13 @@ function buildHero(L, teamColor) {
       if (L.legs === 'titan') {   // a titan's legs: red muscle under bone-white plates on the thighs and shins, plated feet
         kt.t(0.34 * b, 0.36 * b, 0.28 * b, 0.3 * b, 0.54 * H, skin, 0, -0.25 * H, 0).b(0.3 * b, 0.4 * H, 0.1, c1, 0, -0.22 * H, 0.16 * b).b(0.36 * b, 0.12, 0.36 * b, c1, 0, -0.52 * H, 0); kt.into(leg, mat, gmat);
         const ks = kit(); ks.t(0.27 * b, 0.29 * b, 0.22 * b, 0.24 * b, 0.5 * H, skin, 0, -0.25 * H, 0).b(0.28 * b, 0.44 * H, 0.12, c1, 0, -0.24 * H, 0.12 * b).b(0.3 * b, 0.16, 0.5 * b, c1, 0, -0.5 * H + 0.035, 0.08); ks.into(shin, mat, gmat);
+        continue;
+      }
+      if (L.legs === 'suit') {   // full pressed trousers to the ankle with a crease, polished shoes with a gold toe cap
+        const crease = new THREE.Color(c2).multiplyScalar(0.78).getHex();
+        kt.t(0.32 * b, 0.34 * b, 0.27 * b, 0.29 * b, 0.54 * H, c2, 0, -0.25 * H, 0).b(0.02, 0.5 * H, 0.02, crease, 0, -0.25 * H, 0.15 * b); kt.into(leg, mat, gmat);
+        const ks = kit(); ks.t(0.26 * b, 0.28 * b, 0.25 * b, 0.27 * b, 0.48 * H, c2, 0, -0.24 * H, 0).b(0.02, 0.44 * H, 0.02, crease, 0, -0.24 * H, 0.135 * b)
+          .b(0.25 * b, 0.12, 0.42 * b, c3, 0, -0.5 * H + 0.03, 0.08).b(0.26 * b, 0.035, 0.44 * b, 0x2a1c10, 0, -0.5 * H - 0.035, 0.08).b(0.2 * b, 0.07, 0.08, 0xf2d070, 0, -0.5 * H + 0.03, 0.08 + 0.2 * b); ks.into(shin, mat, gmat);
         continue;
       }
       if (L.legs === 'socks') {   // bare legs, loose white socks, brown loafers
@@ -921,6 +944,20 @@ function buildHero(L, teamColor) {
       for (let i = 0; i < 9; i++) kb.b(0.03, 0.065, 0.03, brass, -0.32 * b + i * 0.075 * b, 0.135 + i * 0.0075 * b, 0.29 * b);
       for (let i = 0; i < 10; i++) { const a = i / 10 * TAU; kb.b(0.055, 0.055, 0.13, i % 2 ? 0xb08a52 : 0x9a7444, -0.47 * b, -0.04 + Math.cos(a) * 0.17, 0.02 + Math.sin(a) * 0.17, a); }
       break; }
+    // a tycoon's white suit: a great belly under an open purple silk shirt, a hairy chest in the open collar, black satin lapels,
+    // a thick gold chain with a medallion lying on the belly, gold buttons, a red pocket square, a gold buckle half hidden under the overhang
+    case 'tycoon': { const sh = L.shirt || 0x6a1e8a, gold = 0xe8c050, lap = L.lin || 0x18161c, hc = L.hair || 0x24160e, bz = 0.17 * b, br = 0.33 * b, by0 = 0.42;
+      const zb = y => bz + Math.sqrt(Math.max(0, br * br - (y - by0) * (y - by0)));   // the front of the belly at height y
+      kb.i(br, sh, 0, by0, bz, 2).b(0.46 * b, 0.36, 0.05, sh, 0, 0.9, 0.24 * b).t(0.34, 0.03, 0.03, 0.03, 0.36, skin, 0, 0.93, 0.255 * b)
+        .b(0.24, 0.05, 0.2, sh, -0.17, 1.07, 0.2 * b, 0.35, 0, -0.45).b(0.24, 0.05, 0.2, sh, 0.17, 1.07, 0.2 * b, 0.35, 0, 0.45)
+        .b(0.15, 0.56, 0.05, lap, -0.3, 0.84, 0.255 * b, 0, 0, -0.3).b(0.15, 0.56, 0.05, lap, 0.3, 0.84, 0.255 * b, 0, 0, 0.3)
+        .t(0.1, 0.16, 0.16, 0.22, 0.74, c1, -0.42 * b, 0.5, 0.27 * b, 0, -0.85, -0.06).t(0.1, 0.16, 0.16, 0.22, 0.74, c1, 0.42 * b, 0.5, 0.27 * b, 0, 0.85, 0.06)
+        .b(0.11, 0.07, 0.03, 0xd8243a, -0.42 * b, 0.95, 0.24 * b).b(0.86 * b, 0.1, 0.6 * b, 0x2a1a10, 0, 0.02, 0.02).b(0.17, 0.11, 0.05, gold, 0, 0.0, zb(0.0) - 0.02);
+      for (const [x, y] of [[-0.05, 1.04], [0.04, 0.99], [-0.02, 0.93], [0.06, 0.92], [-0.06, 0.88], [0.01, 0.85], [0.0, 0.79]]) kb.b(0.035, 0.05, 0.02, hc, x, y, 0.272 * b, 0, 0, x * 8);
+      for (const y of [0.72, 0.54, 0.36, 0.18]) kb.i(0.024, gold, 0, y, zb(y) + 0.005);
+      for (const s of [-1, 1]) for (let i = 0; i < 9; i++) { const f = i / 8, y = 1.07 - 0.33 * f; kb.b(0.055, 0.035, 0.04, gold, s * 0.21 * (1 - f), y, Math.max(0.27 * b, zb(y)) + 0.015, 0, 0, s * (i % 2 ? 0.9 : -0.3)); }
+      kb.y(0.1, 0.1, 0.035, 14, gold, 0, 0.7, zb(0.7) + 0.02, HPI - 0.55).y(0.065, 0.065, 0.04, 14, GL, 0, 0.7, zb(0.7) + 0.03, HPI - 0.55);
+      break; }
     case 'bare': kb.b(0.1, 1.02, 0.05, c3, 0, 0.62, 0.25 * b, 0, 0, 0.62).b(0.035, 0.34, 0.03, GL, -0.24 * b, 0.82, 0.255 * b, 0, 0, -0.3).b(0.035, 0.34, 0.03, GL, 0.24 * b, 0.82, 0.255 * b, 0, 0, 0.3).b(0.035, 0.2, 0.03, GL, 0, 0.44, 0.215 * b); break;
   }
   /* --- back --- */
@@ -1087,6 +1124,16 @@ function buildHero(L, teamColor) {
     case 'revolver': { const st = 0x2a2c32, wd = 0x6a4224, br = 0xc8a050; wiR = 0.5;
       kwR.b(0.07, 0.2, 0.1, wd, 0, HY - 0.05, -0.04, 0.45).b(0.075, 0.1, 0.2, st, 0, HY + 0.06, 0.08).b(0.02, 0.07, 0.1, br, 0, HY - 0.01, 0.1).b(0.03, 0.06, 0.05, st, 0, HY + 0.13, -0.02, -0.4)
         .y(0.026, 0.026, 0.46, 6, st, 0, HY + 0.085, 0.42, HPI).y(0.032, 0.032, 0.04, 6, 0x15161a, 0, HY + 0.085, 0.65, HPI).b(0.012, 0.035, 0.02, br, 0, HY + 0.12, 0.62).b(0.016, 0.016, 0.3, 0x15161a, 0, HY + 0.05, 0.36); break; }
+    // a tycoon's hands: a fan of banknotes in the right, a black briefcase with gold fittings hanging from the left, gold rings with a ruby and a gold watch
+    case 'cash': { rig.hangL = true; const gold = 0xe8c050, bill = 0x4c9858, bd = 0x3a7a46, pale = 0xd4f0c4, cs = 0x16161a;
+      for (let i = 0; i < 5; i++) { const a = -0.55 + i * 0.27, r = 0.15; kwR.b(0.16, 0.012, 0.34, i % 2 ? bill : bd, Math.sin(a) * r, HY + 0.02 + i * 0.008, 0.08 + Math.cos(a) * r, 0, a).b(0.07, 0.014, 0.07, pale, Math.sin(a) * (r + 0.04), HY + 0.022 + i * 0.008, 0.08 + Math.cos(a) * (r + 0.04), 0, a); }
+      kwR.b(0.06, 0.03, 0.08, { g: 0xffd040 }, 0, HY + 0.03, 0.06);
+      kwL.b(0.03, 0.03, 0.2, gold, 0, HY - 0.07, 0).b(0.03, 0.07, 0.03, gold, 0, HY - 0.1, -0.09).b(0.03, 0.07, 0.03, gold, 0, HY - 0.1, 0.09)
+        .b(0.13, 0.4, 0.58, cs, 0, HY - 0.33, 0).b(0.135, 0.03, 0.59, gold, 0, HY - 0.15, 0).b(0.14, 0.07, 0.07, gold, 0, HY - 0.2, -0.17).b(0.14, 0.07, 0.07, gold, 0, HY - 0.2, 0.17)
+        .b(0.14, 0.05, 0.05, gold, 0, HY - 0.51, -0.27).b(0.14, 0.05, 0.05, gold, 0, HY - 0.51, 0.27).b(0.136, 0.02, 0.4, 0x2a2a30, 0, HY - 0.33, 0);
+      for (const k of [kfL, kfR]) k.b(0.19 * ab, 0.035, 0.05, gold, 0, HY - 0.05, 0.085 * ab);
+      kfR.i(0.035, 0xd8203a, 0.05, HY - 0.05, 0.11 * ab); kfL.y(0.14 * ab, 0.14 * ab, 0.05, 10, gold, 0, -0.37, 0).y(0.05, 0.05, 0.03, 10, 0xf6f2ea, 0, -0.37, 0.14 * ab, HPI);
+      break; }
     // a game-centre coin between the fingers (its spark is rig.pmz)
     case 'coin': wiR = 0.5; kwR.y(0.065, 0.065, 0.014, 10, 0xd8a050, 0, HY + 0.06, 0.1, 0, 0, HPI).y(0.045, 0.045, 0.016, 10, 0xf0c070, 0, HY + 0.06, 0.1, 0, 0, HPI); break;
     case 'bow': kwL.b(0.07, 0.08, 0.36, dk, 0, HY, 0).b(0.014, 0.014, 2.0, GL, 0, HY + 0.42, 0);
@@ -1253,6 +1300,7 @@ function buildHero(L, teamColor) {
     k.into(cy, mat, gmat); rig.cyl = cy; const s = glowSprite(L.glow, 0.25); s.position.set(0, 0.085, 0.72); handR.add(s); rig.pmz = s;
   }
   if (L.head === 'cowboy') { const s = glowSprite(0xff6a20, 0.12); s.position.set(0.1, -0.2, 0.42); head.add(s); rig.cig = s; }
+  if (L.head === 'wlad') { const e = []; for (const sd of [-1, 1]) { const s = glowSprite(0xffffff, 0.01); s.position.set(sd * 0.11 - 0.03, 0.075, 0.275); head.add(s); e.push(s); } rig.shades = e; }
   if (L.weapon === 'mstaff') { const s = glowSprite(L.glow, 0.9); s.position.set(0, 1.98, 0.14); rig.wpn.add(s); rig.gem = s; }
   if (L.head === 'megumin') { const s = glowSprite(0xff3040, 0.01); s.position.set(0.09, 0.015, 0.24); head.add(s); rig.mEye = s; }
   if (L.head === 'blind') { const e = []; for (const sd of [-1, 1]) { const sp = glowSprite(0x7ad0ff, 0.01); sp.position.set(sd * 0.095, 0.065, 0.24); head.add(sp); e.push(sp); } rig.kEyes = e; }
@@ -1427,6 +1475,7 @@ function animHero(u, dt) {
   else if (wc === 'scribe') { aL = -0.5; eL = -1.5; aR = 0.06; eR = -0.5; }                    // the open notebook is carried at the chest, the pen hand hangs ready
   else if (wc === 'pistol') { aR = -0.25; eR = -2.0; aL = 0.12; eL = -0.4; }                    // the pistol carried muzzle-up at the shoulder, the other hand loose
   else if (wc === 'ghoul') { aL = aR = 0.1; eL = eR = -0.75; hx = 0.12; }           // a death god hangs in the air hunched, long arms dangling
+  else if (wc === 'toss') { aR = -0.35; eR = -1.0; aL = 0.04; eL = -0.1; }           // the fan of notes held at the belly, the briefcase hanging from the other hand
   if (u.moving) {
     a.walk += dt * (u.ms || 8) * 1.25; const w = a.walk, s = Math.sin(w), c = Math.cos(w);
     lL = s * 0.8; lR = -s * 0.8; kL = 0.1 + Math.max(0, -c) * 1.05; kR = 0.1 + Math.max(0, c) * 1.05;
@@ -1437,6 +1486,7 @@ function animHero(u, dt) {
     if (wc === 'scribe') { aL = -0.5 + s * 0.05; eL = -1.5; }
     if (wc === 'twin') { aR = -0.25; eR = -2.0; aL = 0.1 - s * 0.08; eL = -0.25; }
     if (wc === 'pistol') { aR = -0.25; eR = -2.0; }
+    if (wc === 'toss') { aR = -0.35 + s * 0.12; eR = -1.0; bry = s * 0.16; }   // a heavy man's waddle: the shoulders roll with every step
     if (wc === 'ghoul') { lL = lR = 0.35; kL = kR = 0.5; aL = aR = 0.5; eL = eR = -0.4; brx = 0.25; by = 0; }   // it does not walk, it glides
   } else { by = Math.sin(t * 2 + u.id) * 0.03; aL += Math.sin(t * 1.6 + u.id) * 0.05; aR -= Math.sin(t * 1.6 + u.id) * 0.05; hy = Math.sin(t * 0.7 + u.id * 1.3) * 0.14; brx = Math.sin(t * 2 + u.id) * 0.015; }
   if (u.spinning) { aL = -1.5; aR = -1.5; eL = eR = -0.1; brx = 0.1; }
@@ -1477,6 +1527,8 @@ function animHero(u, dt) {
       // a stroke of the pen: the hand whips up across the body and snaps out toward the target
       case 'scribe': { const up = p < 0.42 ? easeOut(q1) : 1 - q3, out = p < 0.42 ? 0 : (p < 0.62 ? q2 : 1 - q3); aR = -1.0 * up - 0.7 * out; eR = lerp(-0.5, -1.9, up) + 1.75 * out; bry = -0.3 * up + 0.65 * out; wR = lerp(-0.3, 0.9, out); hx = 0.08 * up; break; }
       case 'ghoul': { const s = Math.sin(Math.PI * p); aL = aR = -1.9 * s; eL = eR = -0.75 + 0.6 * s; brx = 0.22 + 0.3 * s; break; }
+      // a coin flicked off the thumb: the hand comes up to the chest, the thumb snaps, the arm follows through at the target
+      case 'toss': { const up = p < 0.42 ? easeOut(q1) : 1 - q3, out = p < 0.42 ? 0 : (p < 0.62 ? q2 : 1 - q3); aR = -0.35 - 0.55 * up - 0.6 * out; eR = lerp(-1.0, -1.7, up) + 1.5 * out; wR = -0.5 * up + 0.8 * out; bry = -0.2 * up + 0.35 * out; break; }
       // scythe: level it, wind the whole body back, mow across in one stroke; the side alternates
       case 'reap': {
         const on = (p < 0.38 ? easeOut(p / 0.38) : 1) * (p > 0.7 ? 1 - (p - 0.7) / 0.3 : 1), sw = p < 0.38 ? -1 : (p < 0.7 ? lerp(-1, 1, easeOut((p - 0.38) / 0.32)) : 1); mowS = a.alt ? -1 : 1; mowK = on;
@@ -1648,6 +1700,16 @@ function animHero(u, dt) {
         kL = kR = 0.06 + 0.9 * q * (1 - o); lL = -0.7 * q * (1 - o); lR = 0.45 * q * (1 - o); by -= 0.36 * q * (1 - o); break; }
       // the shriek: arms flailing over the head, the head thrown back
       case 'shriek': { const w = Math.sin(t * 34); aL = -2.5 + w * 0.5; aR = -2.5 - w * 0.5; eL = eR = -0.6; hx = -0.45; brx = -0.15; by += 0.1 * Math.abs(w); bry = w * 0.15; break; }
+      // a wad of cash wound back over the shoulder and hurled overarm
+      case 'cashthrow': { const wu = p < 0.35 ? easeOut(p / 0.35) : 1, th = p >= 0.35 ? Math.min(1, (p - 0.35) / 0.15) : 0, o = p > 0.7 ? (p - 0.7) / 0.3 : 0;
+        aR = lerp(lerp(-0.35, -2.7, wu), -1.2, th) * (1 - o) - 0.35 * o; eR = lerp(lerp(-1.0, -1.4, wu), -0.1, th) * (1 - o) - 1.0 * o; wR = 0.6 * th * (1 - o); bry = lerp(-0.45 * wu, 0.45, th) * (1 - o); brx = 0.22 * th * (1 - o); kL = kR = 0.06 + 0.2 * th * (1 - o); lL = -0.2 * th * (1 - o); break; }
+      // making it rain: both hands thrown up over the head, the wrists flicking coins into the air, the chin lifted
+      case 'cushion': { const q = Math.min(1, p / 0.2) * (p > 0.8 ? 1 - (p - 0.8) / 0.2 : 1), w = Math.sin(t * 30); aR = -2.5 * q + w * 0.12 * q; aL = -2.3 * q - w * 0.12 * q; eR = eL = -0.5 * q - 0.1; wR = (0.6 + w * 0.5) * q; brx = -0.12 * q; hx = -0.3 * q; by += 0.05 * q; break; }
+      // the bribe: leaning in with the fan of notes held out, the other hand patting the belly
+      case 'bribe': { const k2 = (p < 0.3 ? easeOut(p / 0.3) : 1) * (p > 0.75 ? 1 - (p - 0.75) / 0.25 : 1); aR = lerp(-0.35, -1.45, k2); eR = lerp(-1.0, -0.15, k2); wR = 0.3 * k2; aL = -0.4 * k2; eL = -1.4 * k2; brx = 0.2 * k2; bry = 0.15 * k2; hx = 0.12 * k2; break; }
+      // the snap: the right hand thrown up high, the fingers snap, the arm drops to point at the spot
+      case 'wlsnap': { const up = Math.min(1, p / 0.3), dn = p > 0.4 ? Math.min(1, (p - 0.4) / 0.1) : 0, o = p > 0.8 ? (p - 0.8) / 0.2 : 0;
+        aR = lerp(-2.8 * easeOut(up), -1.5, dn) * (1 - o) - 0.35 * o; eR = lerp(-0.4, -0.1, dn) * (1 - o) - 1.0 * o; wR = 0.4 * (1 - dn); hx = lerp(-0.35 * up, 0.05, dn) * (1 - o); brx = lerp(-0.15 * up, 0.12, dn) * (1 - o); bry = 0.2 * dn * (1 - o); break; }
       // two fingers raised before the face
       case 'sign': aR = -0.95; eR = -1.9; aL = 0.25; eL = -0.35; hx = 0.08; wR = -0.2; break;
       // hands drawn apart, brought together in front of the chest, then the right hand drives the sphere forward

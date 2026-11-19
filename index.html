@@ -140,6 +140,7 @@ button:focus-visible,.card:focus-visible{outline:2px solid var(--ember);outline-
 #dead{position:absolute;top:30%;left:0;right:0;text-align:center;pointer-events:none}
 #dead b{font-family:var(--display);font-weight:400;font-size:30px;letter-spacing:.14em;color:#ff8f86;display:block;text-shadow:0 2px 0 #000}
 #dead span{color:var(--fg);font-size:15px;text-shadow:0 1px 2px #000}
+#dead button{pointer-events:auto;display:block;margin:12px auto 0;padding:8px 20px;background:#241c0c;border:1px solid #d8b04a;color:#ffd86a;font-size:14px;letter-spacing:.03em;cursor:pointer;box-shadow:0 0 18px rgba(255,200,60,.25)}#dead button:hover:not(:disabled){background:#3a2c10}#dead button:disabled{opacity:.55;cursor:default;box-shadow:none}#dead button[hidden]{display:none}
 #warn{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 120px 30px rgba(255,40,30,.55);opacity:0;transition:opacity .5s}
 #warn.on{opacity:1;transition:none}
 #tip{position:fixed;max-width:290px;background:#0d1016;border:1px solid var(--line2);padding:9px 11px;font-size:12.5px;line-height:1.45;pointer-events:none;z-index:50;color:#c5cbd6}
@@ -520,10 +521,10 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
   <button id="ver" type="button" title="Что нового в этой версии"></button>
   <section id="home">
     <div class="hm-main">
-      <div class="hm-brand"><h1>ПЕПЕЛЬНЫЙ <span>РАЗЛОМ</span></h1><p>MOBA 5 на 5 · три линии · лес · 57 героев</p></div>
+      <div class="hm-brand"><h1>ПЕПЕЛЬНЫЙ <span>РАЗЛОМ</span></h1><p>MOBA 5 на 5 · три линии · лес · 58 героев</p></div>
       <nav class="hm-nav">
         <button type="button" class="hm-play" data-go="modes">Играть<small>бой с ботами · рейтинг · полигон</small></button>
-        <button type="button" data-go="heroes">Герои<small>57 героев, их умения и сборки</small></button>
+        <button type="button" data-go="heroes">Герои<small>58 героев, их умения и сборки</small></button>
         <button type="button" data-go="items">Предметы<small>магазин и сборки</small></button>
         <button type="button" data-go="map">Карта и цели<small>башни, лес, Страж Разлома</small></button>
         <button type="button" data-go="profile">Профиль<small>ник, аватар, избранные герои, достижения</small></button>
@@ -626,7 +627,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
   <div id="top"><div class="tb"><small id="twb">0 башен</small><span id="kb" class="num">0</span></div><div class="tm num" id="tm">00:00</div><div class="tr"><span id="kr" class="num">0</span><small id="twr">0 башен</small></div></div>
   <div id="feed"></div>
   <div id="ann"></div>
-  <div id="dead" hidden><b>ВЫ ПАЛИ</b><span id="deadt"></span></div>
+  <div id="dead" hidden><b>ВЫ ПАЛИ</b><span id="deadt"></span><button type="button" id="buyb" hidden></button></div>
   <div id="msg"></div>
   <div id="sbx" hidden><b>ПОЛИГОН</b><span id="sbx-num" class="num"></span><button type="button" id="sbx-cd">Без перезарядок</button><button type="button" id="sbx-full">Восстановить всё</button><button type="button" id="sbx-out">Выйти</button></div>
   <div id="note" hidden><h4>Чёрная тетрадь <small>Esc — закрыть</small></h4><p>Впишите имя. Через 10 секунд — приговор, если до тех пор вас никто не ранит.</p><div id="noterows"></div></div>
@@ -701,6 +702,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
 <script src="js/roster5.js"></script>
 <script src="js/roster6.js"></script>
 <script src="js/roster7.js"></script>
+<script src="js/roster8.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/ranked.js"></script>
 <script src="js/profile.js"></script>
