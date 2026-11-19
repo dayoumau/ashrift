@@ -658,6 +658,24 @@ const HEADS = {
     for (let i = 0; i < 7; i++) { const a = -1.1 + i * 0.37; k.i(i === 3 ? 0.038 : 0.026, pearl, Math.sin(a) * 0.2, 0.28 + Math.cos(a) * 0.05, 0.13 + Math.cos(a) * 0.06); }
     k.b(0.025, 0.16, 0.025, coral, -0.12, 0.36, 0.08, 0, 0, 0.35).b(0.022, 0.1, 0.022, coral, -0.17, 0.42, 0.08, 0, 0, -0.5).b(0.022, 0.09, 0.022, coral, -0.08, 0.43, 0.08, 0, 0, 0.9)
       .c(0.07, 0.2, 3, fin, -0.235, 0.02, -0.02, 0, 0, 1.1).c(0.07, 0.2, 3, fin, 0.235, 0.02, -0.02, 0, 0, -1.1);
+  },
+  gubert(k, C) { // a sea sponge: the "head" is the whole square yellow body (it hides the torso), pocked with darker pores on every side; two huge round eyes with
+    // blue irises and three lashes each, a long nose, a wide grin with two front teeth, freckles; a cook's apron over the lower half; a tall white toque
+    const Y = C.skin || 0xf2d84a, pore = 0xb89a28, wh = 0xffffff, iris = 0x4ab85a, red = C.tie || 0xd8302a, cy = -0.42, fz = 0.31;
+    k.b(1.12, 1.25, 0.62, Y, 0, cy, 0).b(1.16, 0.06, 0.66, 0xe0c43a, 0, cy - 0.6, 0);
+    for (const [x, y, r] of [[-0.42, 0.1, 0.06], [0.44, 0.0, 0.05], [-0.36, -0.42, 0.045], [0.4, -0.4, 0.07], [0.0, 0.12, 0.035], [-0.45, -0.18, 0.035], [0.47, 0.13, 0.035]]) k.y(r, r, 0.02, 8, pore, x, y, fz + 0.005, HPI);
+    for (const sd of [-1, 1]) for (const [z, y, r] of [[-0.15, 0.0, 0.07], [0.12, -0.3, 0.05], [-0.05, -0.62, 0.06], [0.18, 0.1, 0.04], [-0.2, -0.85, 0.045]]) k.y(r, r, 0.02, 8, pore, sd * 0.565, cy + 0.42 + y, z, 0, 0, HPI);
+    for (const [x, y, r] of [[-0.3, 0.05, 0.07], [0.25, -0.2, 0.06], [-0.1, -0.55, 0.05], [0.35, -0.75, 0.065], [-0.38, -0.8, 0.04], [0.05, 0.12, 0.045]]) k.y(r, r, 0.02, 8, pore, x, y, -fz - 0.005, HPI);
+    for (const sd of [-1, 1]) {   // round eyes with green irises under heavy happy lids, thick brown brows
+      k.y(0.15, 0.15, 0.03, 16, wh, sd * 0.2, 0.0, fz + 0.01, HPI).y(0.075, 0.075, 0.03, 14, iris, sd * 0.19, -0.02, fz + 0.025, HPI).y(0.036, 0.036, 0.03, 10, 0x0c0c10, sd * 0.19, -0.02, fz + 0.035, HPI).b(0.03, 0.03, 0.02, wh, sd * 0.19 - 0.025, 0.01, fz + 0.05)
+        .b(0.3, 0.045, 0.04, 0xe0c43a, sd * 0.2, 0.14, fz + 0.03).b(0.24, 0.05, 0.04, 0x6a4a24, sd * 0.2, 0.23, fz + 0.03, 0, 0, -sd * 0.22);
+    }
+    k.i(0.065, 0xe8b830, 0, -0.14, fz + 0.04, 1).b(0.16, 0.045, 0.04, 0x6a4a24, -0.09, -0.21, fz + 0.03, 0, 0, 0.3).b(0.16, 0.045, 0.04, 0x6a4a24, 0.09, -0.21, fz + 0.03, 0, 0, -0.3);   // a button nose and a cook's moustache
+    k.b(0.44, 0.13, 0.02, 0x5a1414, 0, -0.33, fz + 0.01).b(0.42, 0.04, 0.025, wh, 0, -0.285, fz + 0.015).b(0.18, 0.04, 0.025, 0xe06a7a, 0, -0.375, fz + 0.015).b(0.06, 0.1, 0.02, 0x5a1414, -0.24, -0.29, fz + 0.01, 0, 0, -0.6).b(0.06, 0.1, 0.02, 0x5a1414, 0.24, -0.29, fz + 0.01, 0, 0, 0.6);   // a wide grin full of teeth
+    // the apron: a white bib over the lower half with a red stripe and a pocket, ties round the sides
+    k.b(0.86, 0.44, 0.03, wh, 0, -0.84, fz + 0.02).b(0.86, 0.035, 0.035, red, 0, -0.65, fz + 0.025).b(0.24, 0.14, 0.035, 0xe8e4dc, 0.18, -0.92, fz + 0.04).b(1.14, 0.04, 0.64, wh, 0, -0.66, 0);
+    // the toque
+    k.y(0.22, 0.24, 0.3, 10, wh, 0, 0.36, -0.02).y(0.245, 0.245, 0.05, 10, 0xe8e4dc, 0, 0.24, -0.02).i(0.24, wh, -0.1, 0.58, -0.02, 1).i(0.22, wh, 0.1, 0.6, 0.0, 1).i(0.2, wh, 0, 0.62, -0.1, 1);
   }
 };
 
@@ -685,7 +703,7 @@ function buildHero(L, teamColor) {
   const body = grp(tilt, 0, hip, 0); rig.body = body;
   const legL = grp(tilt, -0.2 * b, hip, 0), legR = grp(tilt, 0.2 * b, hip, 0), shinL = grp(legL, 0, -0.5 * H, 0), shinR = grp(legR, 0, -0.5 * H, 0);
   Object.assign(rig, { legL, legR, shinL, shinR });
-  const bareC = L.chest === 'bare' || L.chest === 'champ' || L.chest === 'titan', kb = kit(), torsoC = bareC ? skin : c1;
+  const bareC = L.chest === 'bare' || L.chest === 'champ' || L.chest === 'titan' || L.chest === 'sponge', kb = kit(), torsoC = bareC ? skin : c1;
   /* --- legs / robe --- */
   if (L.robe) {
     kb.y(0.34 * b, 0.68 * b, hip * 0.96, 8, c1, 0, -hip * 0.48, 0, 0, 0.3927).y(0.69 * b, 0.72 * b, 0.09, 8, c2, 0, -hip * 0.93, 0, 0, 0.3927)
@@ -961,6 +979,8 @@ function buildHero(L, teamColor) {
       for (let i = 0; i < 9; i++) kb.b(0.03, 0.065, 0.03, brass, -0.32 * b + i * 0.075 * b, 0.135 + i * 0.0075 * b, 0.29 * b);
       for (let i = 0; i < 10; i++) { const a = i / 10 * TAU; kb.b(0.055, 0.055, 0.13, i % 2 ? 0xb08a52 : 0x9a7444, -0.47 * b, -0.04 + Math.cos(a) * 0.17, 0.02 + Math.sin(a) * 0.17, a); }
       break; }
+    // the sponge's own torso is hidden inside the square body: only a belt shows under it, over the brown shorts
+    case 'sponge': kb.b(0.78 * b, 0.07, 0.52 * b, 0x15141a, 0, 0.22, 0).b(0.12, 0.08, 0.04, 0xd8b04a, 0, 0.22, 0.27 * b); break;
     // a sea priestess's bodice: a teal panel worked with rows of scales, two pearl shells at the breast, a girdle of pearls, a glowing collar of water
     case 'tide': { const sc = L.shirt || 0x0e5a6a, sl = 0x2a8aa0, pearl = 0xf4f0e6;
       kb.b(0.5 * b, 0.62, 0.05, sc, 0, 0.74, 0.235 * b).y(0.17 * b, 0.2 * b, 0.07, 10, GL, 0, 1.06, 0)
@@ -1055,6 +1075,7 @@ function buildHero(L, teamColor) {
       case 'spike': ka.b(0.38 * b, 0.15, 0.44 * b, met, s * 0.05, 0.09, 0).t(0.3 * b, 0.36 * b, 0.4 * b, 0.46 * b, 0.13, met, s * 0.07, -0.04, 0).c(0.09, 0.4, 4, GL, s * 0.14, 0.33, 0, 0, 0, -s * 0.45).c(0.06, 0.26, 4, met, s * 0.02, 0.26, 0.12 * b, 0.3, 0, -s * 0.2); break;
       case 'round': ka.i(0.25 * b, met, s * 0.05, 0.05, 0).b(0.04, 0.2, 0.04, GL, s * 0.2 * b, 0.06, 0); break;
       case 'cloth': ka.t(0.3 * b, 0.36 * b, 0.36 * b, 0.4 * b, 0.16, c2, s * 0.02, 0.08, 0); break;
+      case 'sleeve': ka.t(0.3 * ab, 0.34 * ab, 0.34 * ab, 0.38 * ab, 0.22, L.shirt || 0xf4f2ec, s * 0.02, -0.04, 0); break;   // a short white shirt sleeve
       case 'puff': ka.i(0.25 * b, s < 0 ? c2 : c1, s * 0.04, 0.03, 0, 1).y(0.17 * b, 0.2 * b, 0.07, 8, 0xf0ece0, 0, -0.2, 0); break;
       case 'tatter': ka.t(0.34 * b, 0.4 * b, 0.42 * b, 0.48 * b, 0.17, c2, s * 0.03, 0.09, 0).c(0.11, 0.34, 4, c2, s * 0.15, -0.14, 0.1, Math.PI).c(0.1, 0.28, 4, c2, s * 0.12, -0.12, -0.13, Math.PI).c(0.08, 0.24, 4, c1, s * 0.02, -0.1, 0.18, Math.PI).b(0.04, 0.03, 0.46 * b, met, s * 0.2 * b, 0.17, 0); break;
       case 'feather': ka.c(0.15 * b, 0.56, 4, c2, s * 0.16, 0.2, 0, 0, 0, -s * 1.0).c(0.12 * b, 0.44, 4, 0x1c1a22, s * 0.1, 0.24, 0.12, 0.4, 0, -s * 0.6).c(0.12 * b, 0.44, 4, 0x1c1a22, s * 0.1, 0.24, -0.12, -0.4, 0, -s * 0.6).i(0.17 * b, c1, s * 0.02, 0.04, 0); break;
@@ -1068,7 +1089,7 @@ function buildHero(L, teamColor) {
     ka.into(arm, mat, gmat);
     const kf = s < 0 ? kfL : kfR;
     if (L.bones) kf.b(0.065, 0.42, 0.065, c1, 0.035, -0.22, 0).b(0.05, 0.42, 0.05, c1, -0.04, -0.22, 0).b(0.14, 0.14, 0.12, c1, 0, HY, 0).b(0.17, 0.07, 0.15, c3, 0, -0.38, 0); else
-    kf.t(0.22 * ab, 0.24 * ab, 0.18 * ab, 0.2 * ab, 0.44, armC, 0, -0.2, 0).b(0.25 * ab, 0.22, 0.27 * ab, bareC ? c3 : (L.sh === 'plate' || L.sh === 'spike' ? met : (L.cuff || c3)), 0, -0.24, 0).b(0.18 * ab, 0.16, 0.2 * ab, L.weapon === 'fists' ? c2 : (L.hands || (bareC ? skin : c3)), 0, HY, 0);
+    kf.t(0.22 * ab, 0.24 * ab, 0.18 * ab, 0.2 * ab, 0.44, armC, 0, -0.2, 0).b(0.25 * ab, 0.22, 0.27 * ab, bareC ? (L.cuffBare || c3) : (L.sh === 'plate' || L.sh === 'spike' ? met : (L.cuff || c3)), 0, -0.24, 0).b(0.18 * ab, 0.16, 0.2 * ab, L.weapon === 'fists' ? c2 : (L.hands || (bareC ? skin : c3)), 0, HY, 0);
     if (L.sh === 'plate' || L.sh === 'spike') kf.b(0.03, 0.2, 0.03, GL, s * 0.13 * ab, -0.24, 0);
   }
   /* --- weapons: the blade runs along +z from the hand. Hand-held ones go into wrist groups (kwR / kwL) so the grip can turn;
@@ -1148,6 +1169,12 @@ function buildHero(L, teamColor) {
     case 'revolver': { const st = 0x2a2c32, wd = 0x6a4224, br = 0xc8a050; wiR = 0.5;
       kwR.b(0.07, 0.2, 0.1, wd, 0, HY - 0.05, -0.04, 0.45).b(0.075, 0.1, 0.2, st, 0, HY + 0.06, 0.08).b(0.02, 0.07, 0.1, br, 0, HY - 0.01, 0.1).b(0.03, 0.06, 0.05, st, 0, HY + 0.13, -0.02, -0.4)
         .y(0.026, 0.026, 0.46, 6, st, 0, HY + 0.085, 0.42, HPI).y(0.032, 0.032, 0.04, 6, 0x15161a, 0, HY + 0.085, 0.65, HPI).b(0.012, 0.035, 0.02, br, 0, HY + 0.12, 0.62).b(0.016, 0.016, 0.3, 0x15161a, 0, HY + 0.05, 0.36); break; }
+    // a big kitchen spatula: a wooden handle with a brass ferrule, a steel neck, a broad slotted blade
+    case 'spatula': { wiR = -0.35; const st = 0xc8ccd4;
+      kwR.b(0.07, 0.07, 0.46, 0x6a4224, 0, HY, 0.12).y(0.045, 0.045, 0.06, 6, 0xd8b04a, 0, HY, 0.37, HPI).b(0.04, 0.025, 0.26, st, 0, HY + 0.02, 0.52, -0.25)
+        .b(0.36, 0.025, 0.4, st, 0, HY + 0.07, 0.84, -0.12).b(0.37, 0.03, 0.03, 0x9aa0a8, 0, HY + 0.095, 1.04, -0.12);
+      for (const x of [-0.09, 0, 0.09]) kwR.b(0.035, 0.03, 0.24, 0x2a2c32, x, HY + 0.075, 0.83, -0.12);
+      break; }
     // a staff of pale driftwood wound with red coral, its head a curl of coral and shell holding an orb of water (the orb is rig.orb, added below)
     case 'tidestaff': { const wd = 0xc8b898, coral = 0xe2564a, sh = 0xf4f0e6;
       wpn().y(0.04, 0.055, 2.4, 6, wd, 0, 0.45, 0.14).y(0.06, 0.06, 0.05, 6, coral, 0, 1.5, 0.14).y(0.055, 0.055, 0.04, 6, coral, 0, -0.4, 0.14);
@@ -1339,6 +1366,7 @@ function buildHero(L, teamColor) {
     for (let i = 0; i < 3; i++) { const d = new THREE.Mesh(FX.geo.sphere, nerMat({ f: 0.4, a: 0.9 })); const a = i / 3 * TAU; d.position.set(Math.sin(a) * 0.62 * b, 0, Math.cos(a) * 0.62 * b); d.scale.setScalar(0.07); hg.add(d); }
     hg.rotation.z = 0.18; rig.hoop = hg;
   }
+  if (L.head === 'gubert') rig.sponge = true;
   if (L.head === 'nereya') { const e = []; for (const sd of [-1, 1]) { const sp = glowSprite(0x6ff0ff, 0.09); sp.position.set(sd * 0.088, 0.018, 0.225); head.add(sp); e.push(sp); } rig.nEyes = e; }
   if (L.head === 'wlad') { const e = []; for (const sd of [-1, 1]) { const s = glowSprite(0xffffff, 0.01); s.position.set(sd * 0.11 - 0.03, 0.075, 0.275); head.add(s); e.push(s); } rig.shades = e; }
   if (L.weapon === 'mstaff') { const s = glowSprite(L.glow, 0.9); s.position.set(0, 1.98, 0.14); rig.wpn.add(s); rig.gem = s; }
@@ -1758,6 +1786,10 @@ function animHero(u, dt) {
       case 'surf': { const q = Math.sin(Math.PI * Math.min(1, p * 1.05)); bry = 1.0 * q; brx = 0.25 * q; kL = kR = 0.06 + 0.6 * q; lL = -0.45 * q; lR = 0.35 * q; aL = -1.2 * q; eL = -0.3; aR = 0.6 * q; eR = -0.4; hy = -0.9 * q; by -= 0.12 * q; break; }
       // the maelstrom: both arms lifted and stirring the air in circles, the body turning with them, then flung down at the end
       case 'maelstrom': { const q = Math.min(1, p / 0.2), dn = p > 0.82 ? Math.min(1, (p - 0.82) / 0.1) : 0, w = Math.sin(t * 9); aR = lerp(-2.5 + w * 0.3, -1.1, dn); aL = lerp(-2.4 - w * 0.3, -0.9, dn); eR = eL = -0.35; bry = w * 0.35 * q * (1 - dn); hx = lerp(-0.35 * q, 0.15, dn); brx = lerp(-0.1 * q, 0.3, dn); by += 0.08 * q * (1 - dn); wx = 0.6 * dn; break; }
+      // blowing bubbles: a hand cupped at the mouth, leaning into the breath
+      case 'blow': { const q = Math.min(1, p / 0.2) * (p > 0.85 ? 1 - (p - 0.85) / 0.15 : 1), br = Math.sin(t * 14) * 0.04 * q; aL = -1.25 * q; eL = -1.7 * q; brx = 0.12 * q + br; by += br; aR = -0.3 * q; break; }
+      // wringing himself out: arms crossed hard over the body, crouching as the water bursts out
+      case 'squeeze': { const q = Math.sin(Math.PI * Math.min(1, p * 1.1)); aL = aR = -0.9 * q; eL = eR = -2.3 * q; kL = kR = 0.06 + 0.5 * q; lL = lR = -0.25 * q; by -= 0.12 * q; break; }
       // two fingers raised before the face
       case 'sign': aR = -0.95; eR = -1.9; aL = 0.25; eL = -0.35; hx = 0.08; wR = -0.2; break;
       // hands drawn apart, brought together in front of the chest, then the right hand drives the sphere forward
@@ -1787,6 +1819,9 @@ function animHero(u, dt) {
   }
   // asleep (Zenitsu): the head hangs, the body sinks low with the hand on the hilt — until he strikes
   if (u.sleepT > t && !(a.atkT > 0) && !(a.castT > 0) && !u.stunned) { hx = 0.42; brx += 0.28; kL = kR = 0.55 + (u.moving ? 0.2 : 0); lL = -0.45; lR = 0.25; by -= 0.17; aR = 0.35; eR = -1.75; aL = 0.1; eL = -1.4; bry = -0.3; hy = Math.sin(t * 1.3 + u.id) * 0.1; }
+  // the burger storm (Gubert): both arms windmill, throwing in turn, while the legs keep walking
+  if (u.flingUntil > t && !u.stunned) { const w = Math.sin(t * 19); aR = -1.9 + w * 1.0; aL = -1.9 - w * 1.0; eR = -0.6 - Math.max(0, w) * 0.8; eL = -0.6 - Math.max(0, -w) * 0.8; bry = w * 0.25; }
+  if (r.sponge) { hy *= 0.25; hx *= 0.25; const sq = u.squeezeT > t ? Math.sin(Math.PI * clamp(1 - (u.squeezeT - t) / 0.7, 0, 1)) : 0; r.head.scale.set(1 + sq * 0.28, 1 - sq * 0.38, 1 + sq * 0.2); r.head.position.y = 1.42 - sq * 0.3; }   // the square body only nods; «Отжим» squashes it flat
   const k = Math.min(1, dt * 20), D = (o, v) => { o.rotation.x += (v - o.rotation.x) * k; };
   if (!r.hold) { D(r.armL, aL); D(r.armR, aR); D(r.foreL, eL); D(r.foreR, eR); }
   D(r.handR, wR); D(r.handL, wL); D(r.legL, lL); D(r.legR, lR); D(r.shinL, kL); D(r.shinR, kR); D(r.body, brx);
