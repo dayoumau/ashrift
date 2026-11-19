@@ -813,6 +813,21 @@ const HEADS = {
       .y(0.075, 0.085, 0.09, 8, 0xc82a36, 0, 0.27, -0.21, 0.7).t(0.15, 0.12, 0.1, 0.06, 0.7, hair, 0, -0.1, -0.36, 0.22).t(0.09, 0.055, 0.03, 0.02, 0.24, hs, 0, -0.55, -0.45, 0.22)   // the high ponytail
       .y(0.05, 0.05, 0.05, 8, 0x1a1c22, 0.235, 0.0, 0.02, 0, 0, HPI).b(0.022, 0.022, 0.022, C.GL, 0.265, 0.0, 0.02).b(0.012, 0.012, 0.17, 0x1a1c22, 0.225, -0.07, 0.1, 0.55);
     for (const [x, h, rz] of [[-0.18, 0.22, 0.45], [-0.1, 0.25, 0.35], [-0.02, 0.23, 0.25], [0.06, 0.19, 0.12], [0.14, 0.15, -0.05], [0.2, 0.12, -0.2]]) k.c(0.06, h, 4, hair, x, 0.24 - h * 0.3, 0.212, Math.PI - 0.14, 0, rz);   // the fringe swept to one side
+  },
+  velvet(k, C) { // a stage diva: long wavy cream-gold hair falling to the waist, a soft fringe, violet eyes with long lashes, rosy cheeks, a gold star clip on the right,
+    // a thin headset microphone curving from the left ear to the corner of the mouth
+    const hair = C.hair || 0xf2dca0, hs = 0xd2b06a, iris = 0x9a5ad8, wh = 0xf6f0ee, rose = 0xf0a0b0, gold = C.met || 0xe8c060;
+    k.b(0.41, 0.46, 0.4, C.skin, 0, -0.01, 0).b(0.07, 0.035, 0.02, rose, -0.13, -0.065, 0.204).b(0.07, 0.035, 0.02, rose, 0.13, -0.065, 0.204);
+    for (const sd of [-1, 1]) k.b(0.115, 0.056, 0.03, wh, sd * 0.093, 0.022, 0.203).b(0.06, 0.056, 0.03, iris, sd * 0.09, 0.02, 0.211).b(0.024, 0.038, 0.02, 0x2a0a3a, sd * 0.09, 0.02, 0.219).b(0.016, 0.016, 0.02, 0xffffff, sd * 0.09 + 0.015, 0.038, 0.223)
+      .b(0.13, 0.022, 0.035, 0x3a2414, sd * 0.093, 0.054, 0.212, 0, 0, sd * 0.12).b(0.03, 0.016, 0.03, 0x3a2414, sd * 0.16, 0.05, 0.21, 0, 0, sd * 0.6).b(0.11, 0.016, 0.03, hs, sd * 0.095, 0.098, 0.212, 0, 0, -sd * 0.12);
+    k.b(0.025, 0.045, 0.035, C.skin, 0, -0.05, 0.205).b(0.08, 0.022, 0.02, 0xd8607a, 0, -0.13, 0.203)
+      .t(0.46, 0.44, 0.49, 0.47, 0.12, hair, 0, 0.22, -0.01).b(0.48, 0.5, 0.15, hair, 0, -0.04, -0.2).b(0.07, 0.56, 0.32, hair, -0.228, -0.1, -0.03).b(0.07, 0.56, 0.32, hair, 0.228, -0.1, -0.03)
+      .t(0.48, 0.15, 0.36, 0.1, 0.7, hair, 0, -0.62, -0.24, 0.12).t(0.36, 0.1, 0.16, 0.06, 0.3, hs, 0, -1.1, -0.3, 0.16)   // the long hair down the back
+      .t(0.08, 0.1, 0.05, 0.06, 0.5, hair, -0.215, -0.55, 0.06, -0.08).t(0.08, 0.1, 0.05, 0.06, 0.5, hair, 0.215, -0.55, 0.06, -0.08)   // two locks over the shoulders
+      .y(0.19, 0.21, 0.08, 7, C.skin, 0, -0.27, 0)
+      .o(0.06, gold, 0.18, 0.15, 0.17, 1, 1, 0.45).o(0.035, { g: 0xffe8a0 }, 0.18, 0.15, 0.19, 1, 1, 0.45)   // the star clip
+      .y(0.05, 0.05, 0.05, 8, 0xe8e4f0, -0.235, 0.0, 0.02, 0, 0, HPI).b(0.012, 0.012, 0.16, 0xe8e4f0, -0.2, -0.08, 0.11, 0.6, 0.3).i(0.022, 0x2a2a34, -0.15, -0.13, 0.2).b(0.016, 0.016, 0.016, C.GL, -0.265, 0.0, 0.02);
+    for (const [x, h, rz] of [[-0.17, 0.2, 0.3], [-0.08, 0.24, 0.15], [0.0, 0.22, 0], [0.08, 0.24, -0.15], [0.17, 0.2, -0.3]]) k.c(0.065, h, 4, hair, x, 0.24 - h * 0.3, 0.212, Math.PI - 0.1, 0, rz);   // a soft fringe
   }
 };
 
@@ -1108,6 +1123,15 @@ function buildHero(L, teamColor) {
         .b(0.5 * b, 0.3, 0.05, nv, 0, 0.72, -0.245 * b); break; }
     // a police captain's uniform: a dark navy jacket under a grey tactical vest with a gold stripe and a glowing badge, a radio on the strap,
     // a heavy belt with a row of red shotgun shells
+    // a stage costume: a white bodice with gold piping and buttons, a big pink bow on the breast, gold epaulette fringes, a gold sash and a short layered pink skirt with a white frill
+    case 'idol': { const gold = met, pink = L.lin || 0xff7ac8, wh = 0xf6f2f4;
+      kb.b(0.5 * b, 0.6, 0.05, wh, 0, 0.66, 0.24 * b).b(0.025, 0.6, 0.055, gold, -0.12 * b, 0.66, 0.245 * b).b(0.025, 0.6, 0.055, gold, 0.12 * b, 0.66, 0.245 * b)
+        .o(0.13, pink, -0.1, 0.9, 0.28 * b, 1, 0.7, 0.35, 0, 0, HPI).o(0.13, pink, 0.1, 0.9, 0.28 * b, 1, 0.7, 0.35, 0, 0, HPI).i(0.05, pink, 0, 0.9, 0.29 * b).b(0.04, 0.16, 0.02, pink, -0.04, 0.78, 0.28 * b, 0, 0, 0.3).b(0.04, 0.16, 0.02, pink, 0.04, 0.78, 0.28 * b, 0, 0, -0.3)
+        .o(0.025, { g: 0xffe8a0 }, 0, 0.9, 0.33 * b);
+      for (let i = 0; i < 3; i++) kb.y(0.022, 0.022, 0.02, 8, gold, 0, 0.66 - i * 0.12, 0.27 * b, HPI);
+      for (const sd of [-1, 1]) for (let i = 0; i < 5; i++) kb.b(0.025, 0.12, 0.025, gold, sd * (0.33 + i * 0.012) * b, 0.98, (-0.1 + i * 0.05) * b);
+      kb.b(0.8 * b, 0.07, 0.54 * b, gold, 0, 0.3, 0).y(0.42 * b, 0.68 * b, 0.32, 14, pink, 0, 0.0, 0).y(0.5 * b, 0.78 * b, 0.22, 14, pink, 0, -0.16, 0).y(0.76 * b, 0.8 * b, 0.05, 14, wh, 0, -0.28, 0);
+      break; }
     case 'police': { const vest = 0x3a3e48, gold = met, red = 0xc82a36;
       kb.b(0.6 * b, 0.48, 0.06, vest, 0, 0.67, 0.24 * b).b(0.58 * b, 0.48, 0.06, vest, 0, 0.67, -0.24 * b).b(0.06, 0.48, 0.5 * b, vest, -0.3 * b, 0.67, 0).b(0.06, 0.48, 0.5 * b, vest, 0.3 * b, 0.67, 0)
         .b(0.61 * b, 0.035, 0.065, gold, 0, 0.55, 0.25 * b).b(0.59 * b, 0.035, 0.065, gold, 0, 0.55, -0.25 * b)
@@ -1460,6 +1484,10 @@ function buildHero(L, teamColor) {
       kwR.y(0.025, 0.03, 0.8, 6, met, 0, HY, 0.32, HPI).y(0.13, 0.08, 0.1, 10, met, 0, HY - 0.05, 0.74).y(0.11, 0.11, 0.02, 10, 0x5a3a22, 0, HY - 0.0, 0.74);
       kwL.b(0.05, 0.05, 0.36, 0x3a2414, 0, HY, 0.18).y(0.24, 0.22, 0.06, 14, 0x2a2a30, 0, HY, 0.52).y(0.2, 0.2, 0.02, 14, 0x15151a, 0, HY + 0.03, 0.52); break;
     // a priest's staff: a pale wooden shaft, at its head a gold ring holding a sun-disc with a glowing heart; a wine flask hangs from it on a cord
+    // a stand microphone carried like a staff: a chrome pole, a small gold three-foot base, a capsule mic with a dark grille and a glowing band at the top, a pink ribbon tied under it
+    case 'mic': { const gold = met, cr = 0xd8dce4, w = wpn(); w.y(0.025, 0.03, 2.3, 6, cr, 0, 0.5, 0.14).y(0.045, 0.045, 0.12, 8, gold, 0, 0.2, 0.14).y(0.12, 0.04, 0.08, 6, gold, 0, -0.66, 0.14)
+      .y(0.05, 0.035, 0.18, 8, cr, 0, 1.7, 0.2, 0.35).y(0.075, 0.06, 0.06, 10, gold, 0, 1.8, 0.24, 0.35).i(0.09, 0x3a3a46, 0, 1.88, 0.27, 1).y(0.095, 0.095, 0.025, 12, GL, 0, 1.82, 0.25, 0.35)
+      .b(0.04, 0.3, 0.012, L.lin || 0xff7ac8, 0.05, 1.45, 0.16, 0, 0, 0.25).b(0.04, 0.26, 0.012, L.lin || 0xff7ac8, -0.05, 1.47, 0.16, 0, 0, -0.3); break; }
     case 'priestaff': { const gold = met, w = wpn(); w.y(0.04, 0.05, 2.5, 6, 0xd8c8a8, 0, 0.55, 0.14).y(0.06, 0.06, 0.1, 6, gold, 0, 1.62, 0.14).y(0.2, 0.2, 0.04, 16, gold, 0, 1.92, 0.14, HPI).y(0.15, 0.15, 0.05, 14, 0xf4ecd8, 0, 1.92, 0.14, HPI).i(0.08, GL, 0, 1.92, 0.17)
       .b(0.04, 0.2, 0.04, gold, 0, 2.18, 0.14).b(0.16, 0.04, 0.04, gold, 0, 2.14, 0.14).y(0.06, 0.05, 0.16, 8, 0x6a2a3a, 0.12, 1.4, 0.14).y(0.025, 0.03, 0.05, 6, 0x3a2414, 0.12, 1.5, 0.14); break; }
     // a lens emitter built over the right forearm: a chrome barrel, three glowing rails, a ring and a lens past the hand; a small panel on the left wrist
