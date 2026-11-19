@@ -716,6 +716,30 @@ const HEADS = {
       .y(0.19, 0.21, 0.08, 7, C.skin, 0, -0.27, 0).y(0.23, 0.26, 0.08, 8, C.shirt || 0xf2f0ec, 0, -0.32, -0.01);
     for (const [x, h, rz] of [[-0.18, 0.15, 0.28], [-0.1, 0.18, 0.14], [-0.02, 0.2, 0.02], [0.06, 0.18, -0.08], [0.14, 0.17, -0.18], [0.2, 0.13, -0.3]]) k.c(0.062, h, 4, hair, x, 0.245 - h * 0.3, 0.212, Math.PI - 0.14, 0, rz);   // the fringe
     for (const x of [-0.14, -0.05, 0.05, 0.14]) k.c(0.05, 0.14, 4, hs, x, -0.16, -0.22, Math.PI + 0.25);   // nape
+  },
+  lumen(k, C) { // a war robot: a chrome helm with a dark visor band and one big round lens in the middle (it flares — rig.lens), antenna fins swept back, audio discs at the sides, a vented chin
+    const ch = C.met || 0xd8dce4, dk = 0x15181e, gr = 0x343943;
+    k.b(0.44, 0.4, 0.42, ch, 0, 0.0, 0).b(0.46, 0.07, 0.44, gr, 0, 0.21, 0).b(0.42, 0.17, 0.04, dk, 0, 0.03, 0.21)
+      .y(0.105, 0.105, 0.05, 14, gr, 0, 0.03, 0.228, HPI).y(0.075, 0.075, 0.03, 14, C.GL, 0, 0.03, 0.25, HPI).y(0.03, 0.03, 0.02, 10, { g: 0xffffff }, 0, 0.03, 0.264, HPI)
+      .b(0.3, 0.11, 0.12, gr, 0, -0.17, 0.16).t(0.03, 0.06, 0.04, 0.2, 0.3, ch, -0.16, 0.3, -0.1, -0.7).t(0.03, 0.06, 0.04, 0.2, 0.3, ch, 0.16, 0.3, -0.1, -0.7)
+      .y(0.12, 0.15, 0.1, 8, gr, 0, -0.27, 0);
+    for (const s of [-1, 1]) k.y(0.095, 0.095, 0.06, 10, gr, s * 0.235, 0.0, 0, 0, 0, HPI).y(0.05, 0.05, 0.07, 10, C.GL, s * 0.245, 0.0, 0, 0, 0, HPI);
+    for (let i = 0; i < 4; i++) k.b(0.04, 0.02, 0.02, dk, -0.09 + i * 0.06, -0.17, 0.225);
+  },
+  azzar(k, C) { // an undead overlord: a bare skull of old ivory — a high round crown, deep black sockets with a point of red light in each (rig.oEyes), a nasal hollow, cheekbones, a row of teeth over a long jaw
+    const bone = C.skin || 0xcfc5ac, sh = 0x9a907a, dk = 0x0a080c;
+    k.i(0.25, bone, 0, 0.07, -0.03, 1).b(0.37, 0.2, 0.33, bone, 0, -0.03, 0.03)
+      .y(0.058, 0.05, 0.05, 8, dk, -0.085, 0.012, 0.19, HPI).y(0.058, 0.05, 0.05, 8, dk, 0.085, 0.012, 0.19, HPI).b(0.13, 0.03, 0.05, sh, -0.085, 0.08, 0.19, 0, 0, 0.12).b(0.13, 0.03, 0.05, sh, 0.085, 0.08, 0.19, 0, 0, -0.12)
+      .c(0.035, 0.07, 3, dk, 0, -0.06, 0.19, Math.PI).b(0.07, 0.05, 0.12, sh, -0.17, -0.07, 0.11).b(0.07, 0.05, 0.12, sh, 0.17, -0.07, 0.11)
+      .b(0.26, 0.09, 0.2, bone, 0, -0.17, 0.07).b(0.27, 0.02, 0.18, dk, 0, -0.125, 0.08).y(0.08, 0.1, 0.12, 6, sh, 0, -0.27, -0.02);
+    for (let i = -3; i <= 3; i++) k.b(0.026, 0.04, 0.02, 0xece2cc, i * 0.032, -0.105, 0.177).b(0.026, 0.035, 0.02, 0xece2cc, i * 0.032, -0.15, 0.168);
+  },
+  dknight(k, C) { // a death knight: a blackened great helm shaped like a fanged skull, a narrow slit of red fire, two curling horns of bone, a ragged red crest
+    const ir = C.met || 0x4a4652, dk = 0x0c0a10, bone = 0xb0a48c;
+    k.b(0.46, 0.5, 0.46, ir, 0, 0, 0).b(0.42, 0.06, 0.04, C.GL, 0, 0.04, 0.235).b(0.46, 0.05, 0.05, dk, 0, 0.1, 0.235).b(0.36, 0.16, 0.06, bone, 0, -0.12, 0.22)
+      .b(0.06, 0.2, 0.52, 0x5a0a14, 0, 0.32, -0.04).b(0.04, 0.12, 0.4, 0x8a1420, 0, 0.44, -0.08).y(0.2, 0.24, 0.1, 8, dk, 0, -0.27, 0);
+    for (let i = 0; i < 5; i++) k.c(0.022, 0.07, 3, 0xe8e0cc, -0.12 + i * 0.06, -0.21, 0.25, Math.PI);
+    for (const s of [-1, 1]) k.c(0.085, 0.38, 5, bone, s * 0.29, 0.24, 0, 0, 0, -s * 1.05).c(0.055, 0.26, 5, bone, s * 0.43, 0.46, 0.02, 0.2, 0, -s * 0.25);
   }
 };
 
@@ -796,6 +820,12 @@ function buildHero(L, teamColor) {
           .b(0.25 * b, 0.13, 0.43 * b, c3, 0, -0.5 * H + 0.035, 0.08).b(0.26 * b, 0.045, 0.45 * b, L.sole || 0xeeeeea, 0, -0.5 * H - 0.035, 0.08); ks.into(shin, mat, gmat);
         continue;
       }
+      if (L.legs === 'robot') {   // robot legs: a dark hydraulic thigh under a chrome guard, a ball knee, a chrome shin with a glowing strip, a blocky foot
+        kt.t(0.24 * b, 0.26 * b, 0.2 * b, 0.22 * b, 0.52 * H, c2, 0, -0.25 * H, 0).b(0.29 * b, 0.28 * H, 0.31 * b, c1, 0, -0.18 * H, 0.02).i(0.13, met, 0, -0.5 * H, 0.02); kt.into(leg, mat, gmat);
+        const ks = kit(); ks.t(0.22 * b, 0.24 * b, 0.25 * b, 0.27 * b, 0.46 * H, c1, 0, -0.24 * H, 0).b(0.05, 0.3 * H, 0.03, GL, 0, -0.24 * H, 0.135 * b)
+          .b(0.3 * b, 0.13, 0.5 * b, c2, 0, -0.5 * H + 0.04, 0.08).b(0.31 * b, 0.04, 0.52 * b, met, 0, -0.5 * H - 0.035, 0.08); ks.into(shin, mat, gmat);
+        continue;
+      }
       if (L.legs === 'socks') {   // bare legs, loose white socks, brown loafers
         kt.t(0.25 * b, 0.28 * b, 0.21 * b, 0.23 * b, 0.52 * H, skin, 0, -0.25 * H, 0); kt.into(leg, mat, gmat);
         const ks = kit(); ks.t(0.22 * b, 0.24 * b, 0.18 * b, 0.2 * b, 0.5 * H, skin, 0, -0.25 * H, 0).t(0.235 * b, 0.255 * b, 0.22 * b, 0.24 * b, 0.2 * H, 0xf2f0ec, 0, -0.41 * H, 0).b(0.25 * b, 0.12, 0.42 * b, 0x4a2a1a, 0, -0.5 * H + 0.03, 0.07); ks.into(shin, mat, gmat);
@@ -814,7 +844,7 @@ function buildHero(L, teamColor) {
       if (L.spurs) ks.y(0.075, 0.075, 0.016, 8, 0xc8a050, 0, -0.5 * H + 0.05, -0.22, 0, 0, HPI).b(0.025, 0.03, 0.12, met, 0, -0.5 * H + 0.05, -0.16).b(0.28 * b, 0.05, 0.32 * b, 0x4a2e1a, 0, -0.12 * H, 0);   // spurs on the heels, a turned-down boot top
       ks.into(shin, mat, gmat);
     }
-    kb.t(0.64 * b, 0.42 * b, 0.56 * b, 0.36 * b, 0.26, c2, 0, 0, 0); if (L.legs !== 'jeans') kb.b(0.26 * b, 0.42, 0.04, c1, 0, -0.22, 0.2 * b).b(0.26 * b, 0.36, 0.04, c1, 0, -0.2, -0.2 * b);   // trousers have no flaps
+    kb.t(0.64 * b, 0.42 * b, 0.56 * b, 0.36 * b, 0.26, c2, 0, 0, 0); if (L.legs !== 'jeans' && L.legs !== 'robot') kb.b(0.26 * b, 0.42, 0.04, c1, 0, -0.22, 0.2 * b).b(0.26 * b, 0.36, 0.04, c1, 0, -0.2, -0.2 * b);   // trousers have no flaps
     if (L.chest === 'plate') kb.b(0.06, 0.34, 0.3 * b, met, -0.34 * b, -0.14, 0).b(0.06, 0.34, 0.3 * b, met, 0.34 * b, -0.14, 0);
   }
   /* --- torso --- */
@@ -985,6 +1015,21 @@ function buildHero(L, teamColor) {
         .b(0.52 * b, 0.12, 0.08, pl, 0, 0.62, 0.21 * b).b(0.48 * b, 0.11, 0.08, pl, 0, 0.48, 0.2 * b).b(0.44 * b, 0.1, 0.08, pl, 0, 0.35, 0.19 * b).b(0.03, 0.42, 0.03, sm, 0, 0.5, 0.25 * b)
         .b(0.86 * b, 0.16, 0.56 * b, pl, 0, 0.16, 0).b(0.8 * b, 0.5, 0.08, pl, 0, 0.8, -0.24 * b).b(0.3 * b, 0.12, 0.3 * b, pl, -0.28 * b, 1.06, 0).b(0.3 * b, 0.12, 0.3 * b, pl, 0.28 * b, 1.06, 0); break; }
     // the monarch's black hunting coat worn open over a dark shirt, violet light along the edges, a belt; a hood folded behind the neck (the coat tails come from look.coat)
+    // a war robot's chest: chrome plates, a hexagonal prism core in a dark frame (its light is rig.prism), glowing seams, a segmented belly, a vent block on the back
+    case 'robot': {
+      kb.y(0.2, 0.2, 0.05, 6, c2, 0, 0.72, 0.245 * b, HPI).y(0.13, 0.13, 0.07, 6, GL, 0, 0.72, 0.262 * b, HPI).b(0.02, 0.42, 0.02, GL, -0.24 * b, 0.74, 0.256 * b).b(0.02, 0.42, 0.02, GL, 0.24 * b, 0.74, 0.256 * b)
+        .b(0.5 * b, 0.04, 0.03, c2, 0, 0.98, 0.255 * b).y(0.25, 0.29, 0.1, 8, c2, 0, 1.06, 0).b(0.42 * b, 0.34, 0.06, c2, 0, 0.74, -0.25 * b).b(0.3 * b, 0.03, 0.065, GL, 0, 0.8, -0.27 * b).b(0.3 * b, 0.03, 0.065, GL, 0, 0.7, -0.27 * b);
+      for (let i = 0; i < 3; i++) kb.b(0.62 * b - i * 0.03, 0.05, 0.47 * b - i * 0.02, c2, 0, 0.27 + i * 0.1, 0);
+      break; }
+    // an overlord's robe: black with purple and gold, open over a ribcage of bone with a red orb in it (rig.oOrb), a gold chain across, a tall fan of a collar behind the head
+    case 'lich': { const gold = met, bone = L.skin || 0xcfc5ac;
+      kb.b(0.32 * b, 0.62, 0.04, 0x0a080e, 0, 0.72, 0.238 * b).b(0.045, 0.4, 0.035, bone, 0, 0.76, 0.255 * b);
+      for (let i = 0; i < 4; i++) kb.b(0.28 * b - i * 0.02, 0.03, 0.03, bone, 0, 0.95 - i * 0.1, 0.255 * b);
+      kb.i(0.075, { g: 0xff2030 }, 0, 0.7, 0.215 * b, 1);   // the red orb in the ribs
+      kb.b(0.12, 0.92, 0.06, c2, -0.21 * b, 0.62, 0.25 * b, 0, 0, -0.06).b(0.12, 0.92, 0.06, c2, 0.21 * b, 0.62, 0.25 * b, 0, 0, 0.06).b(0.025, 0.92, 0.065, gold, -0.27 * b, 0.62, 0.252 * b, 0, 0, -0.06).b(0.025, 0.92, 0.065, gold, 0.27 * b, 0.62, 0.252 * b, 0, 0, 0.06)
+        .b(0.38 * b, 0.025, 0.03, gold, 0, 1.0, 0.275 * b).b(0.07, 0.07, 0.04, gold, 0, 1.0, 0.285 * b).b(0.78 * b, 0.1, 0.5 * b, c2, 0, 0.2, 0).b(0.14, 0.12, 0.06, gold, 0, 0.2, 0.26 * b);
+      for (let i = -2; i <= 2; i++) kb.t(0.15, 0.03, 0.2, 0.04, 0.6, i % 2 ? c2 : c1, i * 0.15, 1.38 - Math.abs(i) * 0.06, -0.24 * b, -0.32, 0, -i * 0.3).b(0.03, 0.56, 0.05, gold, i * 0.15 + i * 0.03, 1.38 - Math.abs(i) * 0.06, -0.22 * b, -0.32, 0, -i * 0.3);
+      break; }
     case 'monarch': { const sh = L.shirt || 0x1a1822;
       kb.b(0.3 * b, 0.9, 0.05, sh, 0, 0.62, 0.238 * b).b(0.07, 0.96, 0.06, c2, -0.17 * b, 0.62, 0.25 * b, 0, 0, -0.05).b(0.07, 0.96, 0.06, c2, 0.17 * b, 0.62, 0.25 * b, 0, 0, 0.05)
         .b(0.025, 0.9, 0.03, GL, -0.13 * b, 0.62, 0.282 * b, 0, 0, -0.05).b(0.025, 0.9, 0.03, GL, 0.13 * b, 0.62, 0.282 * b, 0, 0, 0.05)
@@ -1159,6 +1204,7 @@ function buildHero(L, teamColor) {
       case 'delts': ka.i(0.2 * ab, skin, s * 0.02, 0.03, 0, 1).i(0.145 * ab, L.skin2 || skin, 0, -0.22, 0.05 * ab, 1); break;
       case 'fur': ka.b(0.36 * b, 0.22, 0.42 * b, 0x5a4a3a, s * 0.04, 0.08, 0).b(0.3 * b, 0.1, 0.36 * b, 0x6b5a48, s * 0.08, 0.2, 0); break;
       case 'titan': ka.b(0.34 * b, 0.16, 0.4 * b, c1, s * 0.05, 0.1, 0).t(0.26 * b, 0.32 * b, 0.34 * b, 0.42 * b, 0.14, c1, s * 0.07, -0.04, 0).b(0.35 * b, 0.03, 0.41 * b, 0x8a3a30, s * 0.05, 0.02, 0).b(0.22 * ab, 0.26, 0.24 * ab, c1, 0, -0.3, 0.06); break;
+      case 'lich': ka.o(0.3 * b, met, s * 0.06, 0.07, 0, 1.15, 0.65, 1.15).t(0.36 * b, 0.42 * b, 0.44 * b, 0.5 * b, 0.15, c2, s * 0.05, -0.06, 0).c(0.06, 0.34, 4, met, s * 0.2, 0.32, 0.06, 0, 0, -s * 0.45).c(0.05, 0.26, 4, met, s * 0.22, 0.26, -0.1, -0.2, 0, -s * 0.7).i(0.06, GL, s * 0.12, 0.12, 0.22 * b); break;   // gold pauldrons with spikes over purple
       case 'crystal': ka.b(0.44 * b, 0.26, 0.5 * b, c2, s * 0.06, 0.1, 0).o(0.16, GL, s * 0.12, 0.38, 0, 0.6, 2, 0.6, 0, 0, -s * 0.4).o(0.1, GL, s * 0.02, 0.3, 0.14 * b, 0.6, 1.6, 0.6); break;
     }
     if (L.band && s < 0) ka.y(0.155 * ab, 0.155 * ab, 0.1, 8, L.band, 0, -0.17, 0);   // an armband on the left upper arm
@@ -1269,6 +1315,24 @@ function buildHero(L, teamColor) {
       break; }
     // a game-centre coin between the fingers (its spark is rig.pmz)
     // a smartphone held in the palm, its screen lit (the light is rig.scr); two cards ready between the fingers of the other hand
+    // a lens emitter built over the right forearm: a chrome barrel, three glowing rails, a ring and a lens past the hand; a small panel on the left wrist
+    case 'emitter': wiL = -0.2;
+      kfR.y(0.15 * ab, 0.17 * ab, 0.44, 8, c1, 0, -0.26, 0).y(0.19 * ab, 0.19 * ab, 0.05, 8, c2, 0, -0.06, 0).y(0.19 * ab, 0.19 * ab, 0.05, 8, c2, 0, -0.46, 0)
+        .y(0.12, 0.14, 0.3, 8, c2, 0, HY - 0.18, 0).y(0.16, 0.16, 0.05, 10, met, 0, HY - 0.3, 0).y(0.11, 0.11, 0.04, 12, GL, 0, HY - 0.34, 0).y(0.05, 0.05, 0.03, 10, { g: 0xffffff }, 0, HY - 0.36, 0);
+      for (let i = 0; i < 3; i++) { const a = i / 3 * TAU + 0.5; kfR.b(0.03, 0.4, 0.03, GL, Math.sin(a) * 0.17 * ab, -0.26, Math.cos(a) * 0.17 * ab); }
+      kfL.b(0.26 * ab, 0.24, 0.28 * ab, c1, 0, -0.25, 0).b(0.12, 0.1, 0.03, GL, 0, -0.24, 0.15 * ab); break;
+    // the overlord's staff: a gold shaft and, at its head, a ring of seven gold serpents, each holding a gem of a different colour round a dark orb
+    case 'lichstaff': { const gold = met, w = wpn(); w.y(0.04, 0.05, 2.5, 6, gold, 0, 0.55, 0.14).y(0.08, 0.06, 0.12, 6, gold, 0, 1.62, 0.14).i(0.12, 0x1a1024, 0, 1.98, 0.14, 1).i(0.07, GL, 0, 1.98, 0.14);
+      const gems = [0xff3040, 0x3a8aff, 0x3ae070, 0xffd040, 0xc050ff, 0xff8a2a, 0xffffff];
+      for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; w.c(0.035, 0.32, 4, gold, Math.sin(a) * 0.16, 1.9, 0.14 + Math.cos(a) * 0.16, Math.cos(a) * 0.5, 0, -Math.sin(a) * 0.5).i(0.045, { g: gems[i] }, Math.sin(a) * 0.27, 2.08, 0.14 + Math.cos(a) * 0.27); }
+      break; }
+    // a death knight's flamberge — a long wavy blade, darkened, with a red edge — and a tower shield on the left arm
+    case 'flamberge': { wiR = -0.4; const st = 0x5a5862, dk2 = 0x16141a;
+      kwR.b(0.07, 0.07, 0.34, dk2, 0, HY, 0.02).b(0.46, 0.07, 0.08, met, 0, HY, 0.22);
+      for (let i = 0; i < 8; i++) kwR.b(0.24, 0.045, 0.25, st, (i % 2 ? 0.035 : -0.035), HY, 0.36 + i * 0.21, 0, i % 2 ? 0.18 : -0.18).b(0.03, 0.04, 0.22, GL, (i % 2 ? 0.09 : -0.09), HY, 0.36 + i * 0.21, 0, i % 2 ? 0.18 : -0.18);
+      kwR.c(0.07, 0.24, 4, st, 0, HY, 2.1, HPI, 0, Math.PI / 4);
+      kfL.b(0.08, 1.2, 0.72, dk2, -0.14, -0.3, 0.1).b(0.1, 1.12, 0.64, 0x2a2630, -0.17, -0.3, 0.1).i(0.11, 0xb0a48c, -0.23, -0.2, 0.1).b(0.04, 0.05, 0.05, GL, -0.27, -0.18, 0.06).b(0.04, 0.05, 0.05, GL, -0.27, -0.18, 0.14).c(0.05, 0.24, 4, met, -0.24, 0.34, 0.1);
+      rig.tipR = new THREE.Vector3(0, HY, 2.2); break; }
     case 'phone': wiR = 0.25; kwR.b(0.035, 0.26, 0.15, 0x15151a, 0, HY - 0.1, 0.14).b(0.012, 0.22, 0.12, { g: L.glow }, 0.02, HY - 0.1, 0.14);
       kwL.b(0.014, 0.2, 0.14, 0xf4efe6, 0, HY - 0.05, 0.06, 0.25).b(0.014, 0.2, 0.14, 0x9a1e2c, 0.02, HY - 0.04, 0.08, 0.5); break;
     // a white chess king carried in the hand, its cross glowing
@@ -1451,6 +1515,13 @@ function buildHero(L, teamColor) {
   }
   if (L.head === 'gubert') rig.sponge = true;
   if (L.weapon === 'phone') { const s = glowSprite(L.glow, 0.3); s.position.set(0.04, -0.1, 0.16); handR.add(s); rig.scr = s; }   // the phone screen lights his face from below
+  if (L.head === 'lumen') { const s = glowSprite(L.glow, 0.4); s.position.set(0, 0.03, 0.29); head.add(s); rig.lens = s; }
+  if (L.chest === 'robot') { const s = glowSprite(L.glow, 0.6); s.position.set(0, 0.72, 0.3 * b); body.add(s); rig.prism = s; }
+  if (L.back === 'prisms') {   // two triangular prisms floating behind the shoulders, light running inside them (rig.fins — they spread and spin up in a cast)
+    const fins = []; for (const sd of [-1, 1]) { const g = grp(body, sd * 0.42 * b, 1.0, -0.42 * b), k = kit(); k.c(0.13, 0.75, 3, c1, 0, 0, 0).c(0.07, 0.6, 3, GL, 0, 0.02, 0.02); k.into(g, mat, gmat); g.rotation.z = -sd * 0.35; fins.push(g); } rig.fins = fins;
+  }
+  if (L.head === 'azzar') { const e = []; for (const sd of [-1, 1]) { const s = glowSprite(0xff2a2a, 0.12); s.position.set(sd * 0.085, 0.015, 0.2); head.add(s); e.push(s); } rig.oEyes = e; }
+  if (L.chest === 'lich') { const s = glowSprite(0xff2030, 0.5); s.position.set(0, 0.7, 0.2 * b); body.add(s); rig.oOrb = s; }
   if (L.head === 'haku' || L.head === 'reisei') {   // eyes that light up: red for the sister when she calculates, a cold white for the strategist
     const e = []; for (const sd of [-1, 1]) { const s = glowSprite(L.head === 'haku' ? 0xff3a50 : 0xcfeeff, 0.01); s.position.set(sd * (L.head === 'haku' ? 0.088 : 0.09), L.head === 'haku' ? -0.004 : 0.022, 0.23); head.add(s); e.push(s); } rig.gEyes = e;
   }
@@ -1882,6 +1953,10 @@ function animHero(u, dt) {
       case 'blow': { const q = Math.min(1, p / 0.2) * (p > 0.85 ? 1 - (p - 0.85) / 0.15 : 1), br = Math.sin(t * 14) * 0.04 * q; aL = -1.25 * q; eL = -1.7 * q; brx = 0.12 * q + br; by += br; aR = -0.3 * q; break; }
       // wringing himself out: arms crossed hard over the body, crouching as the water bursts out
       case 'squeeze': { const q = Math.sin(Math.PI * Math.min(1, p * 1.1)); aL = aR = -0.9 * q; eL = eR = -2.3 * q; kL = kR = 0.06 + 0.5 * q; lL = lR = -0.25 * q; by -= 0.12 * q; break; }
+      // the supernova: feet braced wide, chest thrown forward at the beam pouring out of the core, arms swept back, the body shaking with the recoil
+      case 'supernova': { const q = Math.min(1, p / 0.08), j = Math.sin(t * 47) * 0.03 * q; aL = aR = 0.65 * q; eL = eR = -0.35; brx = -0.3 * q + j; hx = -0.15 * q; lL = -0.4 * q; lR = 0.35 * q; kL = 0.3 * q; kR = 0.15 * q; by -= 0.1 * q; bry = j; break; }
+      // a heart crushed in the air: the bony hand reaches out, fingers close slowly — then clench
+      case 'crush': { const q = Math.min(1, p / 0.25), cl = p > 0.7 ? Math.min(1, (p - 0.7) / 0.08) : 0; aR = lerp(-0.3, -1.45, q); eR = lerp(-0.55, -0.35, q) - 0.5 * cl; wR = -0.4 * cl; aL = -0.2; eL = -0.6; hx = -0.1 * q + 0.15 * cl; bry = 0.2 * q; brx = 0.1 * cl; break; }
       // a card flung from across the body: the hand winds back to the opposite shoulder, then whips out flat
       case 'deal': { const q = p < 0.35 ? easeOut(p / 0.35) : 1, f = p > 0.35 ? Math.min(1, (p - 0.35) / 0.15) : 0, bk = p > 0.7 ? (p - 0.7) / 0.3 : 0;
         aR = lerp(lerp(-0.35, -1.35, q), -1.5, f) * (1 - bk) + -0.35 * bk; eR = lerp(lerp(-1.0, -1.9, q), -0.08, f) * (1 - bk) + -1.0 * bk; bry = (0.45 * q * (1 - f) - 0.5 * f) * (1 - bk); wR = 0.6 * f * (1 - bk); aL = -0.4 * q * (1 - bk); eL = -0.7; break; }
@@ -1992,6 +2067,11 @@ function animHero(u, dt) {
   if (r.tEyes) { const s = u.prayT > t ? 0.16 + Math.sin(t * 14) * 0.03 : 0.01; for (const e of r.tEyes) e.scale.setScalar(s); }
   if (r.orbG) r.orbG.scale.setScalar(0.35 + Math.sin(t * 3 + (u.id || 0)) * 0.05 + (u.prayT > t ? 0.6 + Math.sin(t * 20) * 0.1 : 0) + (a.castT > 0 ? 0.7 : 0));
   if (r.orbit) r.orbit.rotation.y += dt * 1.6;
+  if (r.lens) r.lens.scale.setScalar(a.castT > 0 || u.beamT > t ? 0.75 + Math.sin(t * 40) * 0.08 : 0.3 + Math.sin(t * 2.5 + (u.id || 0)) * 0.04);
+  if (r.prism) r.prism.scale.setScalar(u.beamT > t ? 1.6 + Math.sin(t * 50) * 0.25 : 0.55 + Math.sin(t * 3 + (u.id || 0)) * 0.08 + (a.castT > 0 ? 0.4 : 0));
+  if (r.fins) { const hot = a.castT > 0 || u.beamT > t; r.fins.forEach((f, i) => { const sd = i ? 1 : -1; f.position.y = 1.0 + Math.sin(t * 2 + i * 1.7) * 0.06; f.rotation.y += dt * (hot ? 9 : 0.8) * sd; f.rotation.z += ((-sd * (hot ? 0.7 : 0.35)) - f.rotation.z) * Math.min(1, dt * 6); }); }
+  if (r.oEyes) { const s = (a.castT > 0 ? 0.22 : 0.12) + Math.sin(t * 7 + (u.id || 0)) * 0.015; for (const e of r.oEyes) e.scale.setScalar(s); }
+  if (r.oOrb) r.oOrb.scale.setScalar(0.45 + Math.sin(t * 2.2 + (u.id || 0)) * 0.06 + (a.castT > 0 ? 0.35 : 0));
   if (r.scr) r.scr.scale.setScalar(0.22 + Math.sin(t * 3.1 + (u.id || 0)) * 0.03 + (a.castT > 0 ? 0.35 : 0));
   if (r.gEyes) { const s = u.eyeT > t ? 0.2 + Math.sin(t * 22) * 0.03 : (u.eyeLow ? 0.06 : 0.01); for (const e of r.gEyes) e.scale.setScalar(s); }
   if (r.orb) r.orb.position.y += (1.05 + Math.sin(t * 2.4) * 0.12 - r.orb.position.y) * 0.2;

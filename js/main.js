@@ -138,14 +138,20 @@ function beginAim(i) {
   if (ab.ind.type === 'self') { castAbility(G.player, i, { x: G.player.x, z: G.player.z }); return; }
   if (ab.ind.type === 'note') { UI.toggleNote(); return; }   // a name is picked from a list, not aimed
   if (ab.global && G.aim !== i) UI.msg((ab.range ? 'Дальнее умение' : 'Глобальное умение') + ': укажите ' + (ab.ind.type === 'line' ? 'направление' : 'точку') + ' на поле или на мини-карте');
+  if (ab.ind.type === 'vector' && G.aim !== i) G.vStart = vecStart(G.player, ab);   // a vector: the key press fixes where the line starts, the mouse then gives its direction
   G.aim = i;
 }
+// the start of a vector-aimed line: the cursor, pulled in to the cast range
+function vecStart(P, ab) { const rng = abRange(P, ab), d = dist(P.x, P.z, G.mx, G.mz); return d <= rng ? { x: G.mx, z: G.mz } : { x: P.x + (G.mx - P.x) / d * rng, z: P.z + (G.mz - P.z) / d * rng }; }
+// its direction: from the start toward the cursor; if the mouse has hardly moved, straight on away from the hero
+function vecDir(P, s) { return dist(s.x, s.z, G.mx, G.mz) > 1.2 ? angTo(s.x, s.z, G.mx, G.mz) : angTo(P.x, P.z, s.x, s.z); }
 // where an ability is being aimed: the ground under the cursor, or, for a global ability with the cursor over the minimap, that spot on the map
 function aimPoint(ab) { return (ab.global && UI.mmAt(mouse.x, mouse.y)) || { x: G.mx, z: G.mz }; }
 function releaseAim(i) {
   if (G.aim !== i) return; G.aim = -1;
   const P = G.player, ab = P.def.abilities[i]; if (!canCast(i)) return;
   const ap = aimPoint(ab), pt = { x: ap.x, z: ap.z, unit: null };
+  if (ab.ind.type === 'vector') { const s = G.vStart || vecStart(P, ab); pt.x = s.x; pt.z = s.z; pt.vdir = vecDir(P, s); G.vStart = null; }
   if (ab.ind.type === 'target') {
     const f = u => hostile(P, u) && !u.struct && (!ab.ind.hero || u.kind === 'hero');
     pt.unit = pickUnit(f, 30);
@@ -283,7 +289,8 @@ function updateIndicators() {
   const set = (m, x, z, sx, sz, ry) => { m.visible = true; m.position.x = x; m.position.z = z; m.scale.set(sx, 1, sz); m.rotation.y = ry || 0; m.material.color.setHex(col); };
   if (rng) set(IND.range, P.x, P.z, rng * 2 * RK, rng * 2 * RK); IND.range.material.color.setHex(0xcfd8e8);
   d = Math.min(d, rng || d);
-  if (ty === 'line') set(IND.line, P.x, P.z, ab.ind.w, ab.ind.fixed ? (rng || ab.ind.len || 60) : Math.max(2, d), a);
+  if (ty === 'vector') { const s = G.vStart || vecStart(P, ab), a2 = vecDir(P, s); set(IND.line, s.x, s.z, ab.ind.w, ab.ind.len, a2); set(IND.circle, s.x, s.z, 1.4 * RK, 1.4 * RK); }   // the start fixed, the line swings with the mouse
+  else if (ty === 'line') set(IND.line, P.x, P.z, ab.ind.w, ab.ind.fixed ? (rng || ab.ind.len || 60) : Math.max(2, d), a);
   else if (ty === 'circle') { const r = ab.ind.r; set(IND.circle, P.x + Math.sin(a) * d, P.z + Math.cos(a) * d, r * 2 * RK, r * 2 * RK); }
   else if (ty === 'wall') { const L = ab.ind.len, cx = P.x + Math.sin(a) * d, cz = P.z + Math.cos(a) * d; set(IND.line, cx - Math.cos(a) * L / 2, cz + Math.sin(a) * L / 2, 2, L, a + Math.PI / 2); }   // a wall across the line of the cast
   else if (ty === 'cone') { const r = ab.ind.r; set(IND.cone, P.x, P.z, r * 2 * RK * (ab.ind.narrow ? 0.42 : 1), r * 2 * RK, a); }

@@ -105,7 +105,7 @@ function twSwap(h, manual) {
 }
 // the swap: a flash of a black-and-white board under both, a red and a violet streak crossing between them, two brackets snapping shut
 function twSwapFx(h, ox, oz) {
-  SFX.at('blink', h.x, h.z, 0.6); SFX.at('cast', h.x, h.z, 0.3); if (!FX.near(h.x, h.z, 55)) return;
+  SFX.at('whoosh', h.x, h.z, 0.6); SFX.at('cast', h.x, h.z, 0.3); if (!FX.near(h.x, h.z, 55)) return;
   const mx = (h.x + ox) / 2, mz = (h.z + oz) / 2, a = angTo(ox, oz, h.x, h.z), cA = h.tw.f ? TWN.h : TWN.t, cB = h.tw.f ? TWN.t : TWN.h;
   const bd = twBoardMesh(4, 4.2, 0xffffff, a); bd.position.set(mx, 0.09, mz); FX.add(bd, 0.45, (k, me) => { me.material.opacity = 0.55 * (1 - k); const s = 4.2 * (0.8 + 0.25 * easeOut(k)); me.scale.set(s, 1, s); });
   FX.beam(ox, oz, h.x, h.z, { color: cA, w: 0.5, life: 0.25, y: 1.2 }); FX.beam(h.x, h.z, ox, oz, { color: cB, w: 0.35, life: 0.3, y: 1.0 });
@@ -367,6 +367,33 @@ function rsPawn(h, m, dmg) {
     return true;
   } });
 }
+// an enemy hero made a pawn: a burst of white light and board squares, the figure is gone and a big white pawn hops in its place —
+// no attacks (blind), no abilities (silence), slowed; when it ends the pawn cracks and he is back
+function rsPawnHero(h, t, dmg, dur) {
+  damage(h, t, dmg * rsMul(h, t), 0); if (!t.alive) return;
+  const b = addBuff(t, { id: 'rspawned', dur, silence: true, blind: true, slow: 0.35, src: h }); if (!b) return;
+  const rig = t.rig; rig.root.visible = false; t.pawnT = G.time + dur;
+  b.onEnd = u => { if (u.rig === rig) rig.root.visible = true; u.pawnT = 0; rsPawnPop(u, false); };
+  SFX.at('cast', t.x, t.z, 0.6); SFX.at('ice', t.x, t.z, 0.5); FX.text(t.x, (t.height || 2) + 1.2, t.z, 'пешка', '#eaf6ff', 16);
+  rsPawnPop(t, true);
+  if (!FX.near(t.x, t.z, 60)) return;
+  const pc = rsPawnMesh('pawn'); pc.scale.setScalar(1.15); const bd = twBoardMesh(3, 3.2, RSE.c, 0);
+  FX.add(bd, dur, (k, me, dt, en) => { me.position.set(t.x, 0.09, t.z); me.material.opacity = 0.4 * Math.min(1, en.t / 0.2, (dur - en.t) / 0.25); });
+  b.fx = FX.add(pc, dur, (k, me, dt, en) => {
+    if (!t.alive) { en.dead = true; if (t.rig === rig) rig.root.visible = true; return; }
+    const hop = Math.abs(Math.sin(en.t * (t.moving ? 9 : 3))) * (t.moving ? 0.35 : 0.08), q = Math.min(1, en.t / 0.15);
+    me.position.set(t.x, hop + (t.yOff || 0), t.z); me.rotation.y = t.facing; me.scale.set(1.15 * (0.6 + 0.4 * q), 1.15 * (1.5 - 0.5 * q), 1.15 * (0.6 + 0.4 * q));
+    if (t.moving && Math.random() < dt * 4) FX.sparks(t.x, 0.15, t.z, { n: 1, color: 0xffffff, color2: RSE.ice, speed: [0.5, 1.5], life: [0.2, 0.4], w: 0.05, up: 2 });
+  });
+}
+// the change into a pawn and back: white light, flying chips of ivory, a ring
+function rsPawnPop(t, into) {
+  if (!FX.near(t.x, t.z, 55)) return; const H = t.height || 2;
+  FX.burst(t.x, H * 0.55, t.z, { n: into ? 16 : 10, color: 0xffffff, color2: RSE.ice, speed: [2, 6], life: [0.25, 0.5], size: [0.35, 0.05], rad: 0.5 });
+  FX.debris(t.x, H * 0.6, t.z, { n: into ? 8 : 10, color: 0xe8eef6, speed: [2, 6], up: 5, size: [0.08, 0.2], glow: true });
+  FX.ring(t.x, t.z, { r0: into ? 2 : 0.4, r1: into ? 0.4 : 2.2, color: RSE.c, life: 0.3, tex: 'ringThin' }); FX.glow(t.x, H * 0.5, t.z, 2.6, RSE.c, 0.2, 'star');
+  if (into) FX.pillar(t.x, t.z, { r: 0.8, h: 6, color: RSE.ice, life: 0.3, op: 0.35 }); else SFX.at('shatter', t.x, t.z, 0.4);
+}
 // shove: knocked back along a line; a wall in the way stops him short — and that hurts
 function rsShove(h, e, dir, len, wallDmg) {
   if (e.boss || e.struct || !e.alive) return; let free = 0; for (let s = 0.25; s <= len + 0.001; s += 0.25) { if (!NAV.ok(e.x + Math.sin(dir) * s, e.z + Math.cos(dir) * s)) break; free = s; }
@@ -400,7 +427,7 @@ function rsCounter(h, src, dmg) {
   if (FX.near(ox, oz, 55)) twGhost(h.rig, 0xeaf6ff, 0.45, 0.55, ox, oz);
   blink(h, bx, bz); h.facing = angTo(h.x, h.z, src.x, src.z); h.anim.castT = h.anim.castDur = 0.4; h.anim.castType = 'palm'; h.eyeT = G.time + 0.8;
   damage(h, src, dmg * rsMul(h, src), 0); if (src.alive) stun(h, src, 0.8);
-  SFX.at('blink', h.x, h.z, 0.6); SFX.at('heavy', src.x, src.z, 0.8); FX.text(src.x, src.height + 1, src.z, 'предсказуемо', '#cfeeff', 14);
+  SFX.at('whoosh', h.x, h.z, 0.6); SFX.at('heavy', src.x, src.z, 0.8); FX.text(src.x, src.height + 1, src.z, 'предсказуемо', '#cfeeff', 14);
   if (FX.near(h.x, h.z, 55)) { FX.beam(ox, oz, h.x, h.z, { color: 0xffffff, w: 0.35, life: 0.25, y: 1.2 }); FX.hit(src.x, 1.3, src.z, RSE.c, true); FX.glow(src.x, 1.4, src.z, 3, RSE.c, 0.2, 'star'); FX.ring(src.x, src.z, { r0: 0.3, r1: 2.4, color: RSE.c, life: 0.3, tex: 'shock' }); FX.hitstop(0.06); }
 }
 // everything according to plan: a board under the target, a black king over his head that cracks with every hit his team takes,
@@ -432,7 +459,7 @@ function rsFinish(h, t, P) {
   if (reach) {
     const ox = h.x, oz = h.z, a = angTo(h.x, h.z, t.x, t.z); if (FX.near(ox, oz, 55)) twGhost(h.rig, 0xeaf6ff, 0.5, 0.5, ox, oz);
     blink(h, t.x - Math.sin(a) * 1.3, t.z - Math.cos(a) * 1.3); h.facing = angTo(h.x, h.z, t.x, t.z); addBuff(h, { id: 'rsfin', dur: 0.45, invuln: true });
-    h.anim.castT = h.anim.castDur = 0.7; h.anim.castType = 'axe'; h.anim.atkT = 0; h.eyeT = G.time + 1; h.castLock = Math.max(h.castLock, 0.45); SFX.at('blink', h.x, h.z, 0.6);
+    h.anim.castT = h.anim.castDur = 0.7; h.anim.castType = 'axe'; h.anim.atkT = 0; h.eyeT = G.time + 1; h.castLock = Math.max(h.castLock, 0.45); SFX.at('whoosh', h.x, h.z, 0.6);
     if (FX.near(h.x, h.z, 55)) { FX.beam(ox, oz, h.x, h.z, { color: 0xffffff, w: 0.4, life: 0.3, y: 1.2 }); G.dim = Math.max(G.dim || 0, 0.5); }
   }
   after(reach ? 0.32 : 0.05, () => {
@@ -445,12 +472,6 @@ function rsFinish(h, t, P) {
     FX.pillar(t.x, t.z, { r: 1.0, h: 14, color: RSE.ice, life: 0.4, op: 0.3 }); FX.glow(t.x, 1.6, t.z, 4.5, RSE.c, 0.25, 'star'); FX.light(t.x, 3, t.z, RSE.c, 3, 22, 0.5);
     FX.sparks(t.x, 1.8, t.z, { n: 24, color: 0xffffff, color2: RSE.ice, speed: [5, 14], life: [0.2, 0.5], w: 0.1 });
   });
-}
-// bot helper for the pawn: a minion or a beast near the hero it is fighting
-function rsPawnAI(h, mode, tgt, nf) {
-  if (mode === 'retreat' || !tgt || tgt.kind !== 'hero' || udist(h, tgt) > 13) return null;
-  let best = null, bs = 1e9; for (const u of G.units) { if (!u.alive || (u.kind !== 'minion' && u.kind !== 'monster') || u.boss || udist(h, u) > 8) continue; const d = dist(u.x, u.z, tgt.x, tgt.z); if (d < 9 && d < bs) { bs = d; best = u; } }
-  return best ? { x: best.x, z: best.z } : null;
 }
 
 HEROES.push(
@@ -554,9 +575,9 @@ HEROES.push(
     },
     abilities: [
       {
-        key: 'Q', name: 'Пешка в жертву', icon: 'rspawn', cd: 7, cost: 45, range: 8, ind: { type: 'circle', r: 2.5 }, anim: 'pawn', animDur: 0.45, lock: 0.15, ai: { t: 'fn', fn: rsPawnAI },
-        desc: 'Рэйсэй жертвует миньоном или лесным зверем рядом с точкой (до 8) — своим или чужим (за чужого — золото). Тот превращается в белую пешку и идёт на ближайшего вражеского героя, а дойдя, взрывается: физический урон (плюс 5% здоровья жертвы) и замедление на 40% всем врагам в радиусе 2.5. Пешка, прошедшая 6 шагов, превращается в ферзя: урон в полтора раза больше и оглушение на 0.8 сек.',
-        cast(h, p) { const m = rsPick(h, p.x, p.z, 2.5); if (!m) { if (h.isPlayer) UI.msg('Рядом с точкой нет миньона или зверя'); return false; } h.eyeT = G.time + 0.4; rsPawn(h, m, D(h, 70, 18, 0.75, 0)); }
+        key: 'Q', name: 'В пешки', icon: 'rspawn', cd: 8, cost: 50, range: 7, ind: { type: 'target' }, anim: 'pawn', animDur: 0.45, lock: 0.15, ai: { t: 'target', farm: true },
+        desc: 'Рэйсэй указывает на врага (до 7) — и тот становится пешкой. Вражеский герой получает физический урон и на 1.4 сек превращается в белую пешку: не может атаковать и применять умения и ползёт на 35% медленнее. Миньон или лесной зверь (за чужого — золото) становится пешкой Рэйсэя: она идёт на ближайшего вражеского героя и взрывается — физический урон (плюс 5% здоровья жертвы) и замедление на 40% в радиусе 2.5; пройдя 6 шагов, она становится ферзём — урон в полтора раза больше и оглушение на 0.8 сек.',
+        cast(h, p) { const t = p.unit; if (!t || !t.alive || t.struct || t.boss) return false; h.eyeT = G.time + 0.4; if (t.kind === 'hero') rsPawnHero(h, t, D(h, 70, 18, 0.8, 0), 1.4); else rsPawn(h, t, D(h, 70, 18, 0.75, 0)); }
       },
       {
         key: 'W', name: 'Без замаха', icon: 'rspalm', cd: 9, cost: 50, range: 5, ind: { type: 'line', w: 1.6, fixed: true }, anim: 'palm', animDur: 0.5, lock: 0, ai: { t: 'gap' },

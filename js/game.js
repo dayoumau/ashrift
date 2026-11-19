@@ -109,7 +109,7 @@ const DMG_K = {
   mora: 1.4, nox: 1.65, morg: 1.4, aisa: 1.65, zar: 1.85, fenris: 1.2, reiji: 1.4, yuki: 1.85, cassius: 1.45, ragna: 1.5,
   toplak: 1.45, groh: 1.55, grimm: 1.45, brand: 1.6, oriel: 1.1, nisa: 1.2, lira: 1.25, hald: 1.25, kolomba: 1.35, kostyan: 1.38,
   shiro: 1.15, kaisei: 1.45, umbra: 1.6, rampage: 1.0, jin: 1.6, hikaru: 1.6, dash: 1.2, tokiko: 1.1, riku: 1.2, ashen: 1.3, chess: 1.7, mei: 1.25,
-  kagari: 1.0, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1, frieren: 1.15, lelouch: 1.3, ichigo: 1.36, carlotta: 1.22, raul: 1.2, tanya: 0.95, setsuna: 1.25, reiner: 1.0, jinwoo: 1.4, misaka: 1.15, megumin: 1.5, levi: 0.85, zenitsu: 0.9, silas: 1.2, wlad: 1.8, nereya: 1.75, gubert: 1.7, blank: 1.7, reisei: 0.85
+  kagari: 1.0, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1, frieren: 1.15, lelouch: 1.3, ichigo: 1.36, carlotta: 1.22, raul: 1.2, tanya: 0.95, setsuna: 1.25, reiner: 1.0, jinwoo: 1.4, misaka: 1.15, megumin: 1.5, levi: 0.85, zenitsu: 0.9, silas: 1.2, wlad: 1.8, nereya: 1.75, gubert: 1.7, blank: 1.7, reisei: 0.95, lumen: 0.75, azzar: 1.15
 };
 const HEAL_K = { blank: 1.5, oriel: 1.9, hald: 1.5, nisa: 2.3, lira: 2.8, kolomba: 2.0, ashen: 2.6, chess: 1.8, kagari: 1.5, lin: 3.0, kwame: 1.6, agafya: 2.2, frieren: 1.6, lelouch: 1.7 };
 function damage(src, tgt, amt, type, o) {
@@ -122,6 +122,7 @@ function damage(src, tgt, amt, type, o) {
   if (src && src.scrit && !o.basic && !o.dot && !o.raw && !tgt.struct && Math.random() < src.scrit) { d *= 1.6; o.crit = true; }   // spell crit from items
   if (type !== 2 && !o.raw) { let ar = Math.max(0, tgt.arm); if (src) { if (type === 0 && src.apen) ar *= 1 - src.apen; else if (type === 1 && src.mpen) ar *= 1 - src.mpen; } d *= 100 / (100 + ar); }
   d *= tgt.dmgIn; if (type === 0 && tgt.physIn && !o.raw) d *= tgt.physIn;   // physical damage only (armour plates)
+  if (tgt.def && tgt.def.preHurt && !o.raw) d = tgt.def.preHurt(tgt, src, d, type, o);   // a hero's own reduction that depends on the blow (Azzar: small spells are halved)
   if (tgt.struct) {
     if (tgt.protected) return 0;
     if (src && src.kind === 'hero' && !G.units.some(m => m.alive && m.kind === 'minion' && m.team === src.team && udist(m, tgt) < 16)) d *= 0.4;
@@ -163,6 +164,7 @@ function damage(src, tgt, amt, type, o) {
   if (tgt.lowShield && tgt.hp > 0 && tgt.hp < tgt.maxHp * 0.3 && G.time > (tgt.lsT || 0)) { tgt.lsT = G.time + 60; shield(tgt, tgt, 250 + tgt.maxHp * 0.12, 4, 0xffe9a0); FX.ring(tgt.x, tgt.z, { r1: 4, color: 0xffe9a0, life: 0.5, tex: 'shock' }); }
   // sewn together (Agafya's ultimate): a share of what one of them takes reaches every other one on the same thread
   const sg = tgt.sewG; if (sg && !o.link && d > 0 && G.time < sg.until) for (const m of sg.list) if (m !== tgt && m.alive && m.sewG === sg) { damage(src || sg.src, m, d * sg.share, 2, { dot: true, link: true, raw: true }); if (FX.near(m.x, m.z, 45) && Math.random() < 0.5) FX.hit(m.x, 1.3, m.z, sg.col, false); }
+  if (tgt.hp <= 0 && tgt.undying) { tgt.undying = false; tgt.hp = 1; if (tgt.onUndying) tgt.onUndying(tgt); }   // survives one killing blow (the death knight)
   if (tgt.hp <= 0) kill(tgt, src);
   return d;
 }
@@ -459,7 +461,7 @@ function castAbility(h, i, pt) {
     x = unit.x; z = unit.z; if (ty === 'note') dir = h.facing; else if (unit !== h) dir = angTo(h.x, h.z, x, z);
   } else if (rng && d > rng) { x = h.x + dx / d * rng; z = h.z + dz / d * rng; d = rng; }
   if (ty !== 'self' && ty !== 'note') h.facing = dir;
-  const pc = DMG_CTX; DMG_CTX = { h, i }; let r; try { r = ab.cast(h, { x, z, dir, dist: d, unit, range: rng }); } finally { DMG_CTX = pc; } if (r === false) return false;
+  const pc = DMG_CTX; DMG_CTX = { h, i }; let r; try { r = ab.cast(h, { x, z, dir, dist: d, unit, range: rng, vdir: pt.vdir === undefined ? dir : pt.vdir }); } finally { DMG_CTX = pc; } if (r === false) return false;
   REP.cast(h, i);
   FX.castCue(h, i, ab);
   if (!free) h.mana -= ab.cost;
