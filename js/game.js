@@ -109,9 +109,9 @@ const DMG_K = {
   mora: 1.4, nox: 1.65, morg: 1.4, aisa: 1.65, zar: 1.85, fenris: 1.2, reiji: 1.4, yuki: 1.85, cassius: 1.45, ragna: 1.5,
   toplak: 1.45, groh: 1.55, grimm: 1.45, brand: 1.6, oriel: 1.1, nisa: 1.2, lira: 1.25, hald: 1.25, kolomba: 1.35, kostyan: 1.38,
   shiro: 1.15, kaisei: 1.45, umbra: 1.6, rampage: 1.0, jin: 1.6, hikaru: 1.6, dash: 1.2, tokiko: 1.1, riku: 1.2, ashen: 1.3, chess: 1.7, mei: 1.25,
-  kagari: 1.0, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1, frieren: 1.15, lelouch: 1.3, ichigo: 1.36, carlotta: 1.22, raul: 1.2, tanya: 0.95, setsuna: 1.25, reiner: 1.0, jinwoo: 1.4, misaka: 1.15, megumin: 1.5, levi: 0.85, zenitsu: 0.9, silas: 1.2, wlad: 1.8, nereya: 1.75, gubert: 1.7
+  kagari: 1.0, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1, frieren: 1.15, lelouch: 1.3, ichigo: 1.36, carlotta: 1.22, raul: 1.2, tanya: 0.95, setsuna: 1.25, reiner: 1.0, jinwoo: 1.4, misaka: 1.15, megumin: 1.5, levi: 0.85, zenitsu: 0.9, silas: 1.2, wlad: 1.8, nereya: 1.75, gubert: 1.7, blank: 1.7, reisei: 0.85
 };
-const HEAL_K = { oriel: 1.9, hald: 1.5, nisa: 2.3, lira: 2.8, kolomba: 2.0, ashen: 2.6, chess: 1.8, kagari: 1.5, lin: 3.0, kwame: 1.6, agafya: 2.2, frieren: 1.6, lelouch: 1.7 };
+const HEAL_K = { blank: 1.5, oriel: 1.9, hald: 1.5, nisa: 2.3, lira: 2.8, kolomba: 2.0, ashen: 2.6, chess: 1.8, kagari: 1.5, lin: 3.0, kwame: 1.6, agafya: 2.2, frieren: 1.6, lelouch: 1.7 };
 function damage(src, tgt, amt, type, o) {
   if (!tgt.alive || tgt.invuln || !(amt > 0)) return 0;
   o = o || {};
@@ -275,6 +275,7 @@ function makeHero(def, team, isPlayer) {
     mana: 0, maxMana: 0, haste: 0, inBase: true, thorns: 0, dmgHero: 0, dmgTower: 0, dmgTaken: 0, healDone: 0, icd: {}
   });
   h.rig = buildHero(def.look, isPlayer ? 0xeaffea : TEAM_COL[team]);
+  if (def.init) def.init(h);   // a hero that needs his own copy of the definition or extra parts (the twins: a second rig and a second kit)
   recalcHero(h); h.hp = h.maxHp; h.mana = h.maxMana; placeRig(h); G.heroes.push(h); return h;
 }
 function recalcHero(h) {
@@ -728,7 +729,7 @@ function aegisUse(h) {
 
 /* ---------- match flow ---------- */
 function clearMatch() {
-  for (const u of G.units) { if (u.rig) G.scene.remove(u.rig.root); if (u.aim) G.scene.remove(u.aim); }
+  for (const u of G.units) { if (u.rig) G.scene.remove(u.rig.root); if (u.rig2) G.scene.remove(u.rig2.root); if (u.aim) G.scene.remove(u.aim); }
   for (const p of G.proj) if (p.mesh) FX.killMesh(p.mesh);
   if (G.rune && G.rune.mesh) G.scene.remove(G.rune.mesh);
   G.units.length = 0; G.heroes.length = 0; G.proj.length = 0; G.actors.length = 0; G.timers.length = 0; G.dangers.length = 0; G.mmFx = []; G.walls = []; G.tstop = null; G.tinv = 0;
@@ -865,6 +866,7 @@ function animateUnits(dt) {
     const r = u.rig; if (!r) continue;
     if (u.struct) { animStruct(u, dt); continue; }
     r.root.position.x = u.x; r.root.position.z = u.z;
+    if (u.def && u.def.anim2) u.def.anim2(u, dt);   // a second figure that walks beside the hero (the twins)
     const near = Math.abs(u.x - G.camX) < 46 && Math.abs(u.z - G.camZ) < 42;
     if (!near && !u.dead) { r.root.rotation.y = u.facing; r.root.position.y = 0; continue; }
     if (r.type === 'hero') { animHero(u, dt); if (r.tipR && u.range < 5) FX.swing(u, r, dt); } else animMinion(u, dt);

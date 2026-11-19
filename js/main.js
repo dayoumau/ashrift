@@ -199,6 +199,7 @@ function actDown(act) {
   if (AB[act] !== undefined) beginAim(AB[act]);
   else if (act === 'grab') grabStart();
   else if (act === 'ping') PING.start();
+  else if (act === 'swap') { if (P.def.swap) P.def.swap(P, true); }
   else if (act === 'recall') UI.recall();
   else if (act === 'stop') { P.order = null; P.path = null; P.moving = false; }
   else if (act === 'shop') UI.toggleShop();

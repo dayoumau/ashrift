@@ -120,6 +120,8 @@ button:focus-visible,.card:focus-visible{outline:2px solid var(--ember);outline-
 .slot .lvlup:hover{background:var(--gold);color:#0a0c11}
 .slot.pas{border-style:dotted}
 .slot.inn{width:44px;height:44px;align-self:flex-end}
+.slot.inn.swp{cursor:pointer;border-color:var(--hc)}.slot.inn.swp kbd{font-size:10px}
+.abhd{font:700 13px/1 "Russo One",sans-serif;letter-spacing:.06em;margin:10px 0 4px;text-transform:uppercase}
 .rolenote{flex-basis:100%;margin:-4px 0 0;color:var(--dim);font-size:12px;min-height:15px}
 .go{gap:10px 12px}.go .seg button{padding:9px 12px}.go #play{padding:12px 30px}
 .seg button:disabled{opacity:.4;cursor:default}
@@ -579,10 +581,10 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
   <button id="ver" type="button" title="Что нового в этой версии"></button>
   <section id="home">
     <div class="hm-main">
-      <div class="hm-brand"><h1>ПЕПЕЛЬНЫЙ <span>РАЗЛОМ</span></h1><p>MOBA 5 на 5 · три линии · лес · 60 героев</p></div>
+      <div class="hm-brand"><h1>ПЕПЕЛЬНЫЙ <span>РАЗЛОМ</span></h1><p>MOBA 5 на 5 · три линии · лес · 62 героя</p></div>
       <nav class="hm-nav">
         <button type="button" class="hm-play" data-go="modes">Играть<small>бой с ботами · рейтинг · полигон</small></button>
-        <button type="button" data-go="heroes">Герои<small>60 героев, их умения и сборки</small></button>
+        <button type="button" data-go="heroes">Герои<small>62 героя, их умения и сборки</small></button>
         <button type="button" data-go="items">Предметы<small>магазин и сборки</small></button>
         <button type="button" data-go="map">Карта и цели<small>башни, лес, Страж Разлома</small></button>
         <button type="button" data-go="profile">Профиль<small>ник, аватар, избранные герои, достижения</small></button>
@@ -706,7 +708,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
       <div id="st"></div>
     </div>
   </div>
-  <div id="help"><h5>УПРАВЛЕНИЕ</h5><b>ПКМ</b> — идти / атаковать<br><b><span data-k="q">Q</span> · <span data-k="w">W</span> · <span data-k="e">E</span> · <span data-k="r">R</span></b> — зажать, навести, отпустить<br><b>Shift + умение</b> — изучить / усилить<br><b data-k="recall">B</b> — на базу · <b data-k="shop">P</b> — магазин<br><b data-k="grab">Колёсико</b> (зажать) — тащить камеру<br><b data-k="center">Пробел</b> — к герою · <b data-k="stop">S</b> — стоп<br><b data-k="ping">L Alt</b> (зажать) — команды союзникам<br><b>1 – 6</b> — применить предмет из ячейки<br><b data-k="help">F1</b> — скрыть подсказку · <b>Esc</b> — пауза, графика, клавиши</div>
+  <div id="help"><h5>УПРАВЛЕНИЕ</h5><b>ПКМ</b> — идти / атаковать<br><b><span data-k="q">Q</span> · <span data-k="w">W</span> · <span data-k="e">E</span> · <span data-k="r">R</span></b> — зажать, навести, отпустить<br><b>Shift + умение</b> — изучить / усилить<br><b data-k="recall">B</b> — на базу · <b data-k="shop">P</b> — магазин<br><b data-k="grab">Колёсико</b> (зажать) — тащить камеру<br><b data-k="center">Пробел</b> — к герою · <b data-k="stop">S</b> — стоп<br><b data-k="ping">L Alt</b> (зажать) — команды союзникам<br><b data-k="swap">D</b> — смена брата и сестры (Тэн и Хаку)<br><b>1 – 6</b> — применить предмет из ячейки<br><b data-k="help">F1</b> — скрыть подсказку · <b>Esc</b> — пауза, графика, клавиши</div>
 </div>
 
 <aside id="shop" hidden>
@@ -764,6 +766,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
 <script src="js/roster8.js"></script>
 <script src="js/roster9.js"></script>
 <script src="js/roster10.js"></script>
+<script src="js/roster11.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/ranked.js"></script>
 <script src="js/report.js"></script>

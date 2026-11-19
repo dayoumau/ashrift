@@ -57,7 +57,7 @@ const REP = {
       const S = C.hs[i], r = sc(h), def = h.def;
       return { id: def.id, n: h.name, t: h.team, p: h.isPlayer ? 1 : 0, lane: h.ai ? h.ai.lane : G.pLane, role: h.lrole || '', lv: h.level, k: h.kills, d: h.deaths, a: h.assists, cs: h.cs, g: r1(h.goldTotal),
         it: h.items.slice(), itT: (h.itemAt || []).map(r1), dh: r1(h.dmgHero), dt: r1(h.dmgTower), tk: r1(h.dmgTaken), hl: r1(h.healDone), sc: +r.score.toFixed(2), rp: Object.fromEntries(Object.entries(r.p).map(([k, v]) => [k, +v.toFixed(2)])),
-        an: def.abilities.map(a => a ? a.name : ''), ab: S.ab.map(r1), abH: S.abH.map(r1), abC: S.abC, atk: r1(S.atk), atkH: r1(S.atkH), item: r1(S.item), itemH: r1(S.itemH), pet: r1(S.pet), petH: r1(S.petH), oth: r1(S.oth), othH: r1(S.othH),
+        an: def.repNames || def.abilities.map(a => a ? a.name : ''), ab: S.ab.map(r1), abH: S.abH.map(r1), abC: S.abC, atk: r1(S.atk), atkH: r1(S.atkH), item: r1(S.item), itemH: r1(S.itemH), pet: r1(S.pet), petH: r1(S.petH), oth: r1(S.oth), othH: r1(S.othH),
         to: S.to.map(r1), from: S.from.map(r1), tw: r1(S.tw), cr: r1(S.cr), mo: r1(S.mo), ft: r1(S.ft) };
     });
     return { v: 1, id: C.t0, at: Date.now(), dur: Math.round(G.time), win: G.winner, me: H.indexOf(P), diff: G.diff, rk: G.ranked ? 1 : 0, sur: G.surrender ? 1 : 0, kills: [G.teams[0].kills, G.teams[1].kills], towers: [G.teams[0].towers, G.teams[1].towers], hs, s: C.s, ev: C.ev, mvp: H.indexOf(R[0].h), worst: H.indexOf(R[R.length - 1].h) };

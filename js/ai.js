@@ -125,6 +125,7 @@ function botCast(h, mode, tgt, nf) {
         else if (ai.farm && mode === 'lane' && mpP > 0.6 && farmPoint(h, rng * 0.9, 3)) pt = { x: h.x, z: h.z };
         break;
       case 'buff': if ((mode === 'fight' || jung) && tgt && dT < h.range + 4) pt = { x: h.x, z: h.z }; break;
+      case 'fn': if (ultOk || ai.fnUlt) pt = ai.fn(h, mode, tgt, nf, ab); break;   // the hero decides for himself (returns a point or null)
       case 'shield': if (G.time - h.lastDamageT < 1.2 && hpP < 0.8 && (nfd < 14 || jung)) pt = { x: h.x, z: h.z }; break;
       case 'parry': if (G.time - h.lastDamageT < 0.6 && nfd < 5.5) pt = { x: h.x, z: h.z }; break;
       case 'panic': if (hpP < ai.hp && nfd < 9 && G.time - h.lastDamageT < 2) pt = { x: h.x, z: h.z }; break;

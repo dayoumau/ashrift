@@ -53,14 +53,15 @@ const UI = {
     const rim = new THREE.DirectionalLight(0xffffff, 0.9); rim.position.set(-4, 3, -5); sc.add(rim);
     const floor = new THREE.Mesh(new THREE.CylinderGeometry(2.3, 2.5, 0.2, 28), new THREE.MeshPhongMaterial({ color: 0x23272f, flatShading: true, shininess: 8 })); floor.position.y = -0.1; floor.visible = false; sc.add(floor);
     const ring = groundRing(0xffffff, 2.15, 0.55); ring.visible = false; sc.add(ring);
-    for (const def of HEROES) {
+    // a hero of two (the twins) gets a second portrait under id + '2' for the HUD after a swap
+    for (const [id, look] of HEROES.flatMap(d => d.palSolid ? [[d.id, d.look], [d.id + '2', d.pal]] : [[d.id, d.look]])) {
       // portraits use the same resting pose as the game, so every weapon is held the way it is in a match
-      const rig = buildHero(def.look, 0xffffff), pu = { rig, id: 2, facing: 0.42, moving: false, ms: 8.5, flash: 0, dead: false, yOff: 0, anim: { walk: 0, atkT: 0, atkDur: 1, castT: 0, castDur: 1, castType: 'cast', deathT: 0, spinA: 0, alt: false } };
+      const rig = buildHero(look, 0xffffff), pu = { rig, id: 2, facing: 0.42, moving: false, ms: 8.5, flash: 0, dead: false, yOff: 0, anim: { walk: 0, atkT: 0, atkDur: 1, castT: 0, castDur: 1, castType: 'cast', deathT: 0, spinA: 0, alt: false } };
       rig.ring.visible = false; rig.root.rotation.y = 0.42; for (let i = 0; i < 4; i++) animHero(pu, 0.05); rig.head.rotation.y = rig.gun ? -GUN_YAW : 0;
       if (rig.board) { rig.tilt.rotation.y = 0.2; rig.head.rotation.y = -0.2; }   // a rider is drawn facing the viewer, not side-on
-      rim.color.setHex(def.look.glow); sc.add(rig.root); const hY = rig.headY - (rig.board ? 0.2 : 0);
+      rim.color.setHex(look.glow); sc.add(rig.root); const hY = rig.headY - (rig.board ? 0.2 : 0);
       cam.position.set(0.5, hY + 0.25, 3.7); cam.lookAt(0.05, hY - 0.22, 0);
-      r.render(sc, cam); this.portraits[def.id] = cv.toDataURL('image/jpeg', 0.9); sc.remove(rig.root);
+      r.render(sc, cam); this.portraits[id] = cv.toDataURL('image/jpeg', 0.9); sc.remove(rig.root);
     }
     floor.visible = ring.visible = true; r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); r.setSize(300, 380, false); cam.aspect = 300 / 380; cam.updateProjectionMatrix();
     cam.position.set(0, 2.1, 7.3); cam.lookAt(0, 1.62, 0);
@@ -69,7 +70,7 @@ const UI = {
   setPreview(def) {
     const pv = this.pv; if (!pv) return; if (pv.unit) pv.sc.remove(pv.unit.rig.root); if (pv.pal) { pv.sc.remove(pv.pal.rig.root); pv.pal = null; }
     if (def.pal) {   // a companion that fights beside the hero (a guardian spirit) is shown with him
-      const r2 = buildHero(def.pal, 0xffffff), m2 = r2.mats[0]; r2.ring.visible = false; m2.transparent = true; m2.opacity = 0.88; m2.emissive = new THREE.Color(def.palTint === undefined ? 0x2a1f66 : def.palTint); if (def.palScale) r2.root.scale.multiplyScalar(def.palScale); pv.sc.add(r2.root);
+      const r2 = buildHero(def.pal, 0xffffff), m2 = r2.mats[0]; r2.ring.visible = false; if (!def.palSolid) { m2.transparent = true; m2.opacity = 0.88; m2.emissive = new THREE.Color(def.palTint === undefined ? 0x2a1f66 : def.palTint); } if (def.palScale) r2.root.scale.multiplyScalar(def.palScale); pv.sc.add(r2.root);
       pv.pal = { rig: r2, id: 3, facing: 0.5, moving: false, ms: 8, flash: 0, dead: false, yOff: 0.45, anim: { walk: 0, atkT: 0, atkDur: 1, castT: 0, castDur: 1, castType: 'cast', deathT: 0, spinA: 0, alt: false } };
     }
     const rig = buildHero(def.look, 0xffffff); rig.ring.visible = false; pv.sc.add(rig.root);
@@ -83,7 +84,7 @@ const UI = {
     if (hit(1.4) || hit(2.3)) { a.atkT = a.atkDur = 0.75; a.alt = !a.alt; }
     if (hit(4.0)) { const abs = pv.def.abilities.filter(a => a && !a.passive && !a.toggle), ab = abs[Math.floor(Math.random() * abs.length)]; a.castT = a.castDur = 0.9; a.castType = ab.anim || 'cast'; }
     animHero(u, dt);
-    if (pv.pal) { const q = pv.pal, f = u.facing; q.facing = f; q.yOff = (pv.def.palY === undefined ? 0.45 : pv.def.palY) + Math.sin(pv.t * 2.4) * 0.1; if (a.atkT > 0) { q.anim.atkT = a.atkT; q.anim.atkDur = a.atkDur; q.anim.alt = a.alt; } animHero(q, dt); q.rig.root.position.x = -Math.sin(f) * 0.7 + Math.cos(f) * 1.15; q.rig.root.position.z = -Math.cos(f) * 0.7 - Math.sin(f) * 1.15; }
+    if (pv.pal) { const q = pv.pal, f = u.facing; q.facing = f; q.moving = u.moving; q.yOff = (pv.def.palY === undefined ? 0.45 : pv.def.palY) + (pv.def.palSolid ? 0 : Math.sin(pv.t * 2.4) * 0.1); if (a.atkT > 0) { q.anim.atkT = a.atkT; q.anim.atkDur = a.atkDur; q.anim.alt = a.alt; } animHero(q, dt); const bk = pv.def.palBack === undefined ? 0.7 : pv.def.palBack, sd = pv.def.palSide === undefined ? 1.15 : pv.def.palSide; q.rig.root.position.x = -Math.sin(f) * bk + Math.cos(f) * sd; q.rig.root.position.z = -Math.cos(f) * bk - Math.sin(f) * sd; }
     pv.ring.rotation.y += dt * 0.4; pv.r.render(pv.sc, pv.cam);
   },
   /* ----- graphics settings: the same list in the menu ('gm-') and in the pause box ('gp-') ----- */
@@ -275,7 +276,9 @@ const UI = {
       <div class="bars">${def.bars.map((v, i) => `<span>${bl[i]}</span><span class="t"><i style="width:${v * 20}%"></i></span>`).join('')}</div>
       <div class="recb"><span>Рекомендуемая сборка (подробно — во вкладке «Предметы»)</span><div>${build.map(b => `<img src="${iconURL(ITEM[b].icon, CAT_COL[ITEM[b].cat])}" alt="${ITEM[b].name}" title="${ITEM[b].name}" style="border-bottom-color:${css(CAT_COL[ITEM[b].cat])}">`).join('')}</div></div>`;
     const inn = def.innate ? `<div class="ab"><img src="${iconURL(def.innate.icon, col)}" alt=""><div><h4><kbd>★</kbd>${def.innate.name}<small>врождённая · действует всегда</small></h4><p>${def.innate.desc}</p></div></div>` : '';
-    $('dabl').innerHTML = inn + def.abilities.map((a, i) => a ? `<div class="ab"><img src="${iconURL(a.icon, a.iconCol || col)}" alt=""><div><h4><kbd data-k="${keys[i]}">${kl(keys[i])}</kbd>${a.name}<small>${i === 3 ? 'ультимейт · с 6 ур. · ' : ''}${a.passive ? 'пассивная' : (a.toggle ? 'включается и выключается' : a.cd + ' сек · ' + (a.costText || a.cost + ' маны'))}</small></h4><p>${a.desc}</p></div></div>` : '').join('');
+    const abl = (list, c) => list.map((a, i) => a ? `<div class="ab"><img src="${iconURL(a.icon, a.iconCol || c)}" alt=""><div><h4><kbd data-k="${keys[i]}">${kl(keys[i])}</kbd>${a.name}<small>${i === 3 ? 'ультимейт · с 6 ур. · ' : ''}${a.passive ? 'пассивная' : (a.toggle ? 'включается и выключается' : a.cd + ' сек · ' + (a.costText || a.cost + ' маны'))}</small></h4><p>${a.desc}</p></div></div>` : '').join('');
+    const sub = (t, c) => `<div class="abhd" style="color:${css(c)}">${t}</div>`;   // a hero of two (the twins): both kits, each under its own name
+    $('dabl').innerHTML = inn + (def.alt ? sub(def.altNames[0], col) + abl(def.abilities, col) + sub(def.altNames[1], def.pal.glow) + abl(def.alt, def.pal.glow) : abl(def.abilities, col));
     $('gohero').innerHTML = `Герой: <b style="color:${css(col)}">${def.name}</b>`;
     for (const it of ITEMS) $('cat-' + it.id).classList.toggle('rec', build.includes(it.id));
     this.renderRec('cat-', def, null); this.setPreview(def); if (typeof PROF !== 'undefined') PROF.syncFav();
@@ -302,6 +305,9 @@ const UI = {
     if (P.def.innate) {   // innate passive: always on, no levels
       const n = P.def.innate, s = document.createElement('div'); s.className = 'slot pas inn'; s.id = 'abI'; s.innerHTML = `<img src="${iconURL(n.icon, P.def.look.glow)}" alt=""><div class="cdt num"></div>`;
       s.onmouseenter = e => this.tip(e, `<b>${n.name}</b><small>врождённая · действует всегда</small>${n.desc}`); s.onmouseleave = () => this.tip(); abs.appendChild(s);
+      if (P.def.swap) {   // the twins: the innate slot is also the swap button (and shows its key)
+        s.classList.add('swp'); s.insertAdjacentHTML('beforeend', `<div class="cdo"></div><kbd data-k="swap">${kl('swap')}</kbd>`); s.onclick = () => { if (!G.paused && G.player) G.player.def.swap(G.player, true); };
+      }
     }
     for (let i = 0; i < 4; i++) {
       const a = P.def.abilities[i], s = document.createElement('div'); s.className = 'slot' + (a ? (a.passive ? ' pas' : '') : ' off'); s.id = 'ab' + i;

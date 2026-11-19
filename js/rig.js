@@ -676,6 +676,46 @@ const HEADS = {
     k.b(0.86, 0.44, 0.03, wh, 0, -0.84, fz + 0.02).b(0.86, 0.035, 0.035, red, 0, -0.65, fz + 0.025).b(0.24, 0.14, 0.035, 0xe8e4dc, 0.18, -0.92, fz + 0.04).b(1.14, 0.04, 0.64, wh, 0, -0.66, 0);
     // the toque
     k.y(0.22, 0.24, 0.3, 10, wh, 0, 0.36, -0.02).y(0.245, 0.245, 0.05, 10, 0xe8e4dc, 0, 0.24, -0.02).i(0.24, wh, -0.1, 0.58, -0.02, 1).i(0.22, wh, 0.1, 0.6, 0.0, 1).i(0.2, wh, 0, 0.62, -0.1, 1);
+  },
+  ten(k, C) { // the gamer brother: black hair sticking out every way with a cowlick on top, tired dark-red eyes with shadows under them, one brow cocked, a wide cocky grin
+    const hair = C.hair || 0x15131a, hs = 0x26222c, iris = 0xa01e2c, wh = 0xf4f0ec, bag = 0x8a6a68;
+    k.b(0.42, 0.46, 0.4, C.skin, 0, -0.01, 0);
+    for (const sd of [-1, 1]) k.b(0.12, 0.062, 0.03, wh, sd * 0.095, 0.02, 0.203).b(0.062, 0.062, 0.03, iris, sd * 0.092, 0.018, 0.211).b(0.026, 0.04, 0.02, 0x1a0608, sd * 0.092, 0.018, 0.219).b(0.016, 0.016, 0.02, 0xffffff, sd * 0.092 + 0.016, 0.036, 0.223)
+      .b(0.12, 0.014, 0.02, bag, sd * 0.095, -0.02, 0.207).b(0.125, 0.02, 0.03, 0x1a1012, sd * 0.095, 0.054, 0.214);
+    k.b(0.13, 0.024, 0.035, hair, -0.095, 0.085, 0.214, 0, 0, 0.1).b(0.13, 0.024, 0.035, hair, 0.095, 0.105, 0.214, 0, 0, -0.28)   // the right brow cocked
+      .b(0.025, 0.045, 0.035, C.skin, 0, -0.05, 0.205)
+      .b(0.16, 0.034, 0.02, 0xf6f4f2, 0.012, -0.128, 0.205, 0, 0, 0.1).b(0.18, 0.014, 0.02, 0x5a2626, 0.012, -0.108, 0.207, 0, 0, 0.1).b(0.14, 0.012, 0.02, 0x5a2626, 0.012, -0.146, 0.207, 0, 0, 0.1).b(0.03, 0.012, 0.02, 0x5a2626, 0.1, -0.1, 0.207, 0, 0, 0.7)
+      .t(0.46, 0.44, 0.49, 0.47, 0.14, hair, 0, 0.22, -0.01).b(0.47, 0.38, 0.14, hair, 0, 0.03, -0.2).b(0.07, 0.3, 0.32, hair, -0.226, 0.03, -0.03).b(0.07, 0.3, 0.32, hair, 0.226, 0.03, -0.03)
+      .y(0.19, 0.21, 0.08, 7, C.skin, 0, -0.27, 0);
+    for (let i = 0; i < 11; i++) { const a = i / 11 * TAU + 0.3, up = i % 3 === 0 ? 0.32 : 0.12, hh = 0.2 + (i % 4) * 0.04; k.c(0.075, hh, 4, i % 2 ? hair : hs, Math.sin(a) * 0.2, 0.2 + up * 0.25, Math.cos(a) * 0.19 - 0.04, Math.cos(a) * (1.25 - up), 0, -Math.sin(a) * (1.25 - up)); }   // spikes out every way
+    for (const [x, h, rz] of [[-0.17, 0.2, 0.35], [-0.08, 0.24, 0.12], [0.02, 0.2, -0.05], [0.1, 0.23, -0.2], [0.18, 0.17, -0.4]]) k.c(0.06, h, 4, hair, x, 0.2 - h * 0.25, 0.215, Math.PI - 0.28, 0, rz);   // a ragged fringe
+    k.c(0.04, 0.2, 4, hair, 0.05, 0.36, 0.0, -0.25, 0, -0.45).c(0.035, 0.12, 4, hair, 0.11, 0.43, -0.04, -0.6, 0, -1.2);   // the cowlick
+  },
+  haku(k, C) { // the little sister: very long straight white hair falling past the knees, long uneven bangs down to large red eyes with an absent half-lidded look, a tiny mouth; a dark hairpin with a small glowing stone
+    const hair = C.hair || 0xcdd0de, hs = 0xa8adc2, iris = 0xd42a3c, wh = 0xeeecec, lid = 0xc8b2ae;
+    k.b(0.4, 0.44, 0.38, C.skin, 0, -0.01, 0);
+    for (const sd of [-1, 1]) k.b(0.13, 0.095, 0.03, wh, sd * 0.09, 0.0, 0.193).b(0.088, 0.088, 0.03, iris, sd * 0.088, -0.004, 0.201).b(0.03, 0.05, 0.02, 0x3a0610, sd * 0.088, -0.004, 0.209)
+      .b(0.022, 0.022, 0.02, 0xffffff, sd * 0.088 + 0.02, 0.018, 0.213).b(0.014, 0.014, 0.02, 0xffd0d8, sd * 0.088 - 0.022, -0.026, 0.213).b(0.145, 0.034, 0.035, lid, sd * 0.09, 0.047, 0.205).b(0.15, 0.014, 0.03, 0x4a3a44, sd * 0.09, 0.03, 0.211);
+    k.b(0.02, 0.03, 0.025, C.skin, 0, -0.065, 0.195).b(0.035, 0.012, 0.02, 0xb06a70, 0, -0.13, 0.19)
+      .t(0.44, 0.42, 0.47, 0.45, 0.14, hair, 0, 0.215, -0.01).b(0.45, 0.46, 0.13, hair, 0, 0.0, -0.19).b(0.06, 0.52, 0.3, hair, -0.215, -0.07, -0.03).b(0.06, 0.52, 0.3, hair, 0.215, -0.07, -0.03)
+      .t(0.48, 0.15, 0.56, 0.12, 1.55, hair, 0, -0.92, -0.25, 0.1).t(0.5, 0.1, 0.3, 0.08, 0.32, hs, 0, -1.84, -0.35, 0.12)   // the long fall down the back
+      .b(0.08, 0.86, 0.07, hair, -0.2, -0.55, 0.09, 0.04, 0, 0.05).b(0.08, 0.86, 0.07, hair, 0.2, -0.55, 0.09, 0.04, 0, -0.05).c(0.045, 0.16, 4, hs, -0.21, -1.05, 0.11, Math.PI).c(0.045, 0.16, 4, hs, 0.21, -1.05, 0.11, Math.PI)
+      .y(0.17, 0.19, 0.08, 7, C.skin, 0, -0.26, 0)
+      .b(0.13, 0.026, 0.03, 0x1c1a2a, -0.165, 0.13, 0.165, 0, 0, 0.55).b(0.13, 0.026, 0.03, 0x1c1a2a, -0.15, 0.1, 0.17, 0, 0, 0.55).i(0.03, C.GL, -0.21, 0.165, 0.16);
+    for (const [x, h, rz] of [[-0.17, 0.2, 0.18], [-0.1, 0.25, 0.06], [-0.03, 0.22, -0.02], [0.04, 0.26, 0.03], [0.11, 0.22, -0.08], [0.18, 0.19, -0.2]]) k.b(0.075, h, 0.04, hair, x, 0.215 - h * 0.48, 0.205, 0.12, 0, rz);   // long uneven bangs
+    for (let i = 0; i < 6; i++) { const x = -0.22 + i * 0.088; k.c(0.05, 0.22, 4, i % 2 ? hs : hair, x, -2.05 + (i % 2) * 0.05, -0.36 - Math.abs(x) * 0.08, Math.PI + 0.12); }
+  },
+  reisei(k, C) { // the calm one: neat light-brown hair with a soft fringe over the brow, a flat expressionless face, half-lidded dull eyes (they flash cold — rig.rEyes), a straight thin mouth; a white shirt collar
+    const hair = C.hair || 0x6a4a32, hs = 0x553a26, iris = 0x6a4a3a, wh = 0xeeeae6;
+    k.b(0.41, 0.46, 0.4, C.skin, 0, -0.01, 0);
+    for (const sd of [-1, 1]) k.b(0.115, 0.046, 0.03, wh, sd * 0.093, 0.024, 0.203).b(0.056, 0.046, 0.03, iris, sd * 0.09, 0.022, 0.211).b(0.024, 0.03, 0.02, 0x1a120c, sd * 0.09, 0.022, 0.219)
+      .b(0.128, 0.03, 0.035, 0x3a2a20, sd * 0.093, 0.052, 0.212).b(0.12, 0.018, 0.03, hs, sd * 0.095, 0.092, 0.212).b(0.1, 0.01, 0.02, 0xb89a8c, sd * 0.093, -0.004, 0.207);
+    k.b(0.025, 0.05, 0.035, C.skin, 0, -0.045, 0.205).b(0.07, 0.012, 0.02, 0x8a5a50, 0, -0.135, 0.2)
+      .t(0.46, 0.44, 0.49, 0.47, 0.13, hair, 0, 0.22, -0.01).b(0.47, 0.12, 0.44, hair, 0, 0.17, -0.02).b(0.46, 0.38, 0.14, hair, 0, 0.02, -0.2).b(0.06, 0.3, 0.3, hair, -0.226, 0.04, -0.03).b(0.06, 0.3, 0.3, hair, 0.226, 0.04, -0.03)
+      .b(0.04, 0.14, 0.06, hair, -0.206, -0.06, 0.12).b(0.04, 0.14, 0.06, hair, 0.206, -0.06, 0.12)
+      .y(0.19, 0.21, 0.08, 7, C.skin, 0, -0.27, 0).y(0.23, 0.26, 0.08, 8, C.shirt || 0xf2f0ec, 0, -0.32, -0.01);
+    for (const [x, h, rz] of [[-0.18, 0.15, 0.28], [-0.1, 0.18, 0.14], [-0.02, 0.2, 0.02], [0.06, 0.18, -0.08], [0.14, 0.17, -0.18], [0.2, 0.13, -0.3]]) k.c(0.062, h, 4, hair, x, 0.245 - h * 0.3, 0.212, Math.PI - 0.14, 0, rz);   // the fringe
+    for (const x of [-0.14, -0.05, 0.05, 0.14]) k.c(0.05, 0.14, 4, hs, x, -0.16, -0.22, Math.PI + 0.25);   // nape
   }
 };
 
@@ -688,6 +728,12 @@ function chessGeo(kind) {
   if (kind === 'pawn') { y(0.13, 0.26, 0.55, 8, 0.53); y(0.22, 0.22, 0.06, 8, 0.82); P.push({ g: new THREE.IcosahedronGeometry(0.22, 1), m: TRS(0, 1.04, 0), c: C }); }
   else if (kind === 'bishop') { y(0.12, 0.27, 0.9, 8, 0.7); y(0.22, 0.22, 0.06, 8, 1.16); P.push({ g: new THREE.OctahedronGeometry(0.24, 0), m: TRS(0, 1.46, 0, 0, 0, 0, 0.85, 1.5, 0.85), c: C }, { g: new THREE.IcosahedronGeometry(0.07, 0), m: TRS(0, 1.86, 0), c: C }); }
   else if (kind === 'rook') { y(0.24, 0.3, 0.85, 8, 0.68); y(0.34, 0.26, 0.16, 8, 1.18); for (let i = 0; i < 4; i++) { const a = i / 4 * TAU + 0.39; P.push({ g: new THREE.BoxGeometry(0.2, 0.2, 0.14), m: TRS(Math.sin(a) * 0.26, 1.36, Math.cos(a) * 0.26, 0, a), c: C }); } }
+  else if (kind === 'knight') {   // a horse's head: a neck leaning forward, a long muzzle, two ears, a mane down the back
+    y(0.16, 0.28, 0.42, 8, 0.45); const B = (w, h, d, x, py, z, rx) => P.push({ g: new THREE.BoxGeometry(w, h, d), m: TRS(x, py, z, rx), c: C });
+    B(0.3, 0.6, 0.36, 0, 0.88, 0.02, -0.22); B(0.24, 0.22, 0.42, 0, 1.12, 0.2, 0.55); B(0.06, 0.48, 0.12, 0, 0.92, -0.18, -0.3);
+    P.push({ g: new THREE.ConeGeometry(0.06, 0.2, 4), m: TRS(-0.08, 1.3, -0.04), c: C }, { g: new THREE.ConeGeometry(0.06, 0.2, 4), m: TRS(0.08, 1.3, -0.04), c: C });
+  }
+  else if (kind === 'king') { y(0.13, 0.31, 1.2, 8, 0.84); y(0.28, 0.2, 0.12, 8, 1.48); y(0.21, 0.27, 0.16, 8, 1.6); P.push({ g: new THREE.BoxGeometry(0.08, 0.34, 0.08), m: TRS(0, 1.86, 0), c: C }, { g: new THREE.BoxGeometry(0.24, 0.08, 0.08), m: TRS(0, 1.9, 0), c: C }); }
   else { y(0.12, 0.3, 1.15, 8, 0.83); y(0.26, 0.2, 0.1, 8, 1.44); for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; P.push({ g: new THREE.ConeGeometry(0.06, 0.3, 4), m: TRS(Math.sin(a) * 0.22, 1.62, Math.cos(a) * 0.22, Math.cos(a) * 0.35, 0, -Math.sin(a) * 0.35), c: C }); } P.push({ g: new THREE.IcosahedronGeometry(0.11, 0), m: TRS(0, 1.74, 0), c: C }); }
   return (_chessG[kind] = mergeParts(P));
 }
@@ -743,6 +789,13 @@ function buildHero(L, teamColor) {
           .b(0.25 * b, 0.12, 0.42 * b, c3, 0, -0.5 * H + 0.03, 0.08).b(0.26 * b, 0.035, 0.44 * b, 0x2a1c10, 0, -0.5 * H - 0.035, 0.08).b(0.2 * b, 0.07, 0.08, 0xf2d070, 0, -0.5 * H + 0.03, 0.08 + 0.2 * b); ks.into(shin, mat, gmat);
         continue;
       }
+      if (L.legs === 'jeans') {   // plain trousers to the ankle (a seam down the front), low shoes or sneakers with a pale sole
+        const seam = new THREE.Color(c2).multiplyScalar(0.8).getHex();
+        kt.t(0.31 * b, 0.33 * b, 0.27 * b, 0.29 * b, 0.54 * H, c2, 0, -0.25 * H, 0).b(0.02, 0.5 * H, 0.02, seam, 0, -0.25 * H, 0.15 * b); kt.into(leg, mat, gmat);
+        const ks = kit(); ks.t(0.26 * b, 0.28 * b, 0.25 * b, 0.27 * b, 0.48 * H, c2, 0, -0.24 * H, 0).b(0.27 * b, 0.05, 0.29 * b, seam, 0, -0.44 * H, 0)
+          .b(0.25 * b, 0.13, 0.43 * b, c3, 0, -0.5 * H + 0.035, 0.08).b(0.26 * b, 0.045, 0.45 * b, L.sole || 0xeeeeea, 0, -0.5 * H - 0.035, 0.08); ks.into(shin, mat, gmat);
+        continue;
+      }
       if (L.legs === 'socks') {   // bare legs, loose white socks, brown loafers
         kt.t(0.25 * b, 0.28 * b, 0.21 * b, 0.23 * b, 0.52 * H, skin, 0, -0.25 * H, 0); kt.into(leg, mat, gmat);
         const ks = kit(); ks.t(0.22 * b, 0.24 * b, 0.18 * b, 0.2 * b, 0.5 * H, skin, 0, -0.25 * H, 0).t(0.235 * b, 0.255 * b, 0.22 * b, 0.24 * b, 0.2 * H, 0xf2f0ec, 0, -0.41 * H, 0).b(0.25 * b, 0.12, 0.42 * b, 0x4a2a1a, 0, -0.5 * H + 0.03, 0.07); ks.into(shin, mat, gmat);
@@ -761,7 +814,7 @@ function buildHero(L, teamColor) {
       if (L.spurs) ks.y(0.075, 0.075, 0.016, 8, 0xc8a050, 0, -0.5 * H + 0.05, -0.22, 0, 0, HPI).b(0.025, 0.03, 0.12, met, 0, -0.5 * H + 0.05, -0.16).b(0.28 * b, 0.05, 0.32 * b, 0x4a2e1a, 0, -0.12 * H, 0);   // spurs on the heels, a turned-down boot top
       ks.into(shin, mat, gmat);
     }
-    kb.t(0.64 * b, 0.42 * b, 0.56 * b, 0.36 * b, 0.26, c2, 0, 0, 0).b(0.26 * b, 0.42, 0.04, c1, 0, -0.22, 0.2 * b).b(0.26 * b, 0.36, 0.04, c1, 0, -0.2, -0.2 * b);
+    kb.t(0.64 * b, 0.42 * b, 0.56 * b, 0.36 * b, 0.26, c2, 0, 0, 0); if (L.legs !== 'jeans') kb.b(0.26 * b, 0.42, 0.04, c1, 0, -0.22, 0.2 * b).b(0.26 * b, 0.36, 0.04, c1, 0, -0.2, -0.2 * b);   // trousers have no flaps
     if (L.chest === 'plate') kb.b(0.06, 0.34, 0.3 * b, met, -0.34 * b, -0.14, 0).b(0.06, 0.34, 0.3 * b, met, 0.34 * b, -0.14, 0);
   }
   /* --- torso --- */
@@ -981,6 +1034,29 @@ function buildHero(L, teamColor) {
       break; }
     // the sponge's own torso is hidden inside the square body: only a belt shows under it, over the brown shorts
     case 'sponge': kb.b(0.78 * b, 0.07, 0.52 * b, 0x15141a, 0, 0.22, 0).b(0.12, 0.08, 0.04, 0xd8b04a, 0, 0.22, 0.27 * b); break;
+    // a gamer's open jacket: a red lining down both edges, a hood lying behind the neck with white drawstrings; under it a white T-shirt printed with a red heart between two black words
+    case 'gamer': { const lin = L.lin || 0xc8283a, wh = L.shirt || 0xf2f0ec, ink = 0x16141a;
+      kb.b(0.34 * b, 0.92, 0.05, wh, 0, 0.62, 0.238 * b).b(0.06, 0.96, 0.06, lin, -0.2 * b, 0.62, 0.25 * b, 0, 0, -0.05).b(0.06, 0.96, 0.06, lin, 0.2 * b, 0.62, 0.25 * b, 0, 0, 0.05)
+        .b(0.075, 0.075, 0.03, lin, 0, 0.775, 0.266 * b, 0, 0, Math.PI / 4).y(0.034, 0.034, 0.03, 8, lin, -0.027, 0.8, 0.266 * b, HPI).y(0.034, 0.034, 0.03, 8, lin, 0.027, 0.8, 0.266 * b, HPI)
+        .b(0.035, 0.07, 0.025, ink, -0.1, 0.79, 0.264 * b).b(0.1, 0.05, 0.025, ink, 0.12, 0.79, 0.264 * b).b(0.06, 0.02, 0.025, ink, 0.12, 0.74, 0.264 * b)
+        .t(0.52 * b, 0.22, 0.62 * b, 0.28, 0.22, c1, 0, 1.04, -0.22 * b, -0.45).b(0.48 * b, 0.05, 0.05, lin, 0, 1.12, -0.12 * b, -0.45)
+        .b(0.02, 0.26, 0.02, 0xf2f2f2, -0.07, 0.9, 0.272 * b).b(0.02, 0.22, 0.02, 0xf2f2f2, 0.07, 0.92, 0.272 * b)
+        .b(0.78 * b, 0.09, 0.52 * b, c1, 0, 0.18, 0).b(0.12, 0.13, 0.05, 0x2a2a30, -0.26 * b, 0.36, 0.25 * b).b(0.12, 0.13, 0.05, 0x2a2a30, 0.26 * b, 0.36, 0.25 * b); break; }
+    // an oversized sailor blouse worn as a dress: a navy collar square on the back with a white stripe, navy lapels in a V, a red scarf knot, the loose hem flaring to mid-thigh with a navy band
+    case 'blank': { const nv = c2, red = L.tie || 0xd0283a, wh = 0xf6f6fa;
+      kb.b(0.64 * b, 0.4, 0.04, nv, 0, 0.86, -0.255 * b, 0.08).b(0.6 * b, 0.025, 0.045, wh, 0, 0.72, -0.27 * b, 0.08).b(0.6 * b, 0.025, 0.045, wh, 0, 0.98, -0.265 * b, 0.08)
+        .b(0.09, 0.44, 0.05, nv, -0.11 * b, 0.86, 0.245 * b, 0, 0, -0.42).b(0.09, 0.44, 0.05, nv, 0.11 * b, 0.86, 0.245 * b, 0, 0, 0.42).b(0.02, 0.4, 0.055, wh, -0.155 * b, 0.86, 0.25 * b, 0, 0, -0.42).b(0.02, 0.4, 0.055, wh, 0.155 * b, 0.86, 0.25 * b, 0, 0, 0.42)
+        .b(0.13, 0.085, 0.06, red, 0, 0.7, 0.275 * b).b(0.05, 0.3, 0.035, red, -0.04, 0.52, 0.272 * b, 0, 0, 0.18).b(0.05, 0.27, 0.035, red, 0.045, 0.53, 0.272 * b, 0, 0, -0.2)
+        .y(0.4 * b, 0.68 * b, 0.56, 12, c1, 0, -0.12, 0).y(0.68 * b, 0.7 * b, 0.06, 12, nv, 0, -0.38, 0).y(0.69 * b, 0.71 * b, 0.02, 12, wh, 0, -0.33, 0);
+      for (let i = 0; i < 12; i++) { const a = (i + 0.5) / 12 * TAU; kb.b(0.025, 0.46, 0.025, 0xd8d8e2, Math.sin(a) * 0.54 * b, -0.12, Math.cos(a) * 0.54 * b, -Math.cos(a) * 0.5, 0, Math.sin(a) * 0.5); }
+      break; }
+    // an academy blazer, buttoned once, its edges, cuffs and hem piped in white; a white shirt open at the throat (no tie), an emblem on the breast pocket
+    case 'academy': { const pipe = L.lin || 0xeae6de, wh = L.shirt || 0xf2f0ec, dkc = new THREE.Color(c1).multiplyScalar(0.72).getHex();
+      kb.b(0.24 * b, 0.9, 0.05, wh, 0, 0.62, 0.238 * b).b(0.1, 0.08, 0.04, wh, -0.05, 1.0, 0.26 * b, 0, 0, 0.5).b(0.1, 0.08, 0.04, wh, 0.05, 1.0, 0.26 * b, 0, 0, -0.5)
+        .b(0.1, 0.62, 0.06, dkc, -0.165 * b, 0.78, 0.25 * b, 0, 0, -0.16).b(0.1, 0.62, 0.06, dkc, 0.165 * b, 0.78, 0.25 * b, 0, 0, 0.16).b(0.02, 0.62, 0.066, pipe, -0.215 * b, 0.78, 0.252 * b, 0, 0, -0.16).b(0.02, 0.62, 0.066, pipe, 0.215 * b, 0.78, 0.252 * b, 0, 0, 0.16)
+        .b(0.02, 0.5, 0.06, pipe, -0.12 * b, 0.25, 0.256 * b).b(0.02, 0.5, 0.06, pipe, 0.12 * b, 0.25, 0.256 * b).y(0.032, 0.032, 0.03, 6, met, 0.08 * b, 0.4, 0.262 * b, HPI)
+        .b(0.15, 0.12, 0.03, c1, -0.27 * b, 0.82, 0.262 * b).b(0.15, 0.02, 0.035, pipe, -0.27 * b, 0.88, 0.264 * b).o(0.03, GL, -0.27 * b, 0.815, 0.28 * b, 1, 1, 0.4)
+        .t(0.66 * b, 0.46 * b, 0.7 * b, 0.5 * b, 0.26, c1, 0, 0.04, 0).b(0.72 * b, 0.03, 0.51 * b, pipe, 0, -0.09, 0); break; }
     // a sea priestess's bodice: a teal panel worked with rows of scales, two pearl shells at the breast, a girdle of pearls, a glowing collar of water
     case 'tide': { const sc = L.shirt || 0x0e5a6a, sl = 0x2a8aa0, pearl = 0xf4f0e6;
       kb.b(0.5 * b, 0.62, 0.05, sc, 0, 0.74, 0.235 * b).y(0.17 * b, 0.2 * b, 0.07, 10, GL, 0, 1.06, 0)
@@ -1192,6 +1268,13 @@ function buildHero(L, teamColor) {
       kfR.i(0.035, 0xd8203a, 0.05, HY - 0.05, 0.11 * ab); kfL.y(0.14 * ab, 0.14 * ab, 0.05, 10, gold, 0, -0.37, 0).y(0.05, 0.05, 0.03, 10, 0xf6f2ea, 0, -0.37, 0.14 * ab, HPI);
       break; }
     // a game-centre coin between the fingers (its spark is rig.pmz)
+    // a smartphone held in the palm, its screen lit (the light is rig.scr); two cards ready between the fingers of the other hand
+    case 'phone': wiR = 0.25; kwR.b(0.035, 0.26, 0.15, 0x15151a, 0, HY - 0.1, 0.14).b(0.012, 0.22, 0.12, { g: L.glow }, 0.02, HY - 0.1, 0.14);
+      kwL.b(0.014, 0.2, 0.14, 0xf4efe6, 0, HY - 0.05, 0.06, 0.25).b(0.014, 0.2, 0.14, 0x9a1e2c, 0.02, HY - 0.04, 0.08, 0.5); break;
+    // a white chess king carried in the hand, its cross glowing
+    case 'kingpc': { wiR = -0.25; const ivo = 0xf2f0f8;
+      kwR.y(0.07, 0.085, 0.04, 8, ivo, 0, HY - 0.16, 0.17).y(0.04, 0.065, 0.2, 8, ivo, 0, HY - 0.04, 0.17).y(0.07, 0.05, 0.04, 8, ivo, 0, HY + 0.08, 0.17).y(0.055, 0.065, 0.05, 8, ivo, 0, HY + 0.12, 0.17)
+        .b(0.025, 0.1, 0.025, { g: L.glow }, 0, HY + 0.2, 0.17).b(0.075, 0.025, 0.025, { g: L.glow }, 0, HY + 0.21, 0.17); break; }
     case 'coin': wiR = 0.5; kwR.y(0.065, 0.065, 0.014, 10, 0xd8a050, 0, HY + 0.06, 0.1, 0, 0, HPI).y(0.045, 0.045, 0.016, 10, 0xf0c070, 0, HY + 0.06, 0.1, 0, 0, HPI); break;
     case 'bow': kwL.b(0.07, 0.08, 0.36, dk, 0, HY, 0).b(0.014, 0.014, 2.0, GL, 0, HY + 0.42, 0);
       for (const s of [-1, 1]) kwL.b(0.055, 0.055, 0.52, 0x5a4630, 0, HY + 0.08, s * 0.42, -s * 0.3).b(0.045, 0.045, 0.48, 0x5a4630, 0, HY + 0.27, s * 0.82, -s * 0.75).o(0.06, GL, 0, HY + 0.42, s * 1.0); break;
@@ -1367,6 +1450,10 @@ function buildHero(L, teamColor) {
     hg.rotation.z = 0.18; rig.hoop = hg;
   }
   if (L.head === 'gubert') rig.sponge = true;
+  if (L.weapon === 'phone') { const s = glowSprite(L.glow, 0.3); s.position.set(0.04, -0.1, 0.16); handR.add(s); rig.scr = s; }   // the phone screen lights his face from below
+  if (L.head === 'haku' || L.head === 'reisei') {   // eyes that light up: red for the sister when she calculates, a cold white for the strategist
+    const e = []; for (const sd of [-1, 1]) { const s = glowSprite(L.head === 'haku' ? 0xff3a50 : 0xcfeeff, 0.01); s.position.set(sd * (L.head === 'haku' ? 0.088 : 0.09), L.head === 'haku' ? -0.004 : 0.022, 0.23); head.add(s); e.push(s); } rig.gEyes = e;
+  }
   if (L.head === 'nereya') { const e = []; for (const sd of [-1, 1]) { const sp = glowSprite(0x6ff0ff, 0.09); sp.position.set(sd * 0.088, 0.018, 0.225); head.add(sp); e.push(sp); } rig.nEyes = e; }
   if (L.head === 'wlad') { const e = []; for (const sd of [-1, 1]) { const s = glowSprite(0xffffff, 0.01); s.position.set(sd * 0.11 - 0.03, 0.075, 0.275); head.add(s); e.push(s); } rig.shades = e; }
   if (L.weapon === 'mstaff') { const s = glowSprite(L.glow, 0.9); s.position.set(0, 1.98, 0.14); rig.wpn.add(s); rig.gem = s; }
@@ -1535,7 +1622,7 @@ function animHero(u, dt) {
   else if (wc === 'thrust' && r.cane) { aR = -0.32; eR = -0.28; aL = 0.4; eL = -1.25; }   // leaning on the needle like a cane, the other hand behind the back
   else if (wc === 'thrust' && !r.upright) { aR = -0.45; eR = -0.9; aL = 0.25; eL = -0.5; }   // en garde
   else if (wc === 'laser') { aR = -0.3; eR = -1.1; aL = 0.05; eL = -0.45; }                    // arm cannon carried level at the hip
-  else if (wc === 'stand') { aL = aR = 0.24; eL = eR = -0.66; }                                // hands in the pockets: the spirit does the fighting
+  else if (wc === 'stand' || wc === 'pocket') { aL = aR = 0.24; eL = eR = -0.66; }                              // hands in the pockets: the spirit does the fighting
   else if (wc === 'spirit') { aL = aR = -0.8; eL = eR = -1.95; }                               // the spirit waits with its arms crossed
   else if (wc === 'reap') { aR = -0.4; eR = -0.8; aL = 0.1; eL = -0.4; }                         // the scythe is carried upright at the side
   else if (wc === 'kagune') { aL = aR = 0.16; eL = eR = -0.5; }                                // hands loose and a little behind: the tentacles are the weapon
@@ -1550,7 +1637,7 @@ function animHero(u, dt) {
     aL += -s * 0.55; aR += s * 0.5; eL -= 0.25 + Math.max(0, s) * 0.3; eR -= 0.2 + Math.max(0, -s) * 0.3; by = Math.abs(c) * 0.1; brx = 0.15; bry = s * 0.08;
     if (wc === 'laser') { aR = -0.3 + s * 0.1; eR = -1.1; }   // the cannon arm stays braced while running
     if (wc === 'reap') { aR = -0.4 + s * 0.12; eR = -0.8; }
-    if (wc === 'stand') { aL = 0.24 - s * 0.1; aR = 0.24 + s * 0.1; eL = eR = -0.66; }
+    if (wc === 'stand' || wc === 'pocket') { aL = 0.24 - s * 0.1; aR = 0.24 + s * 0.1; eL = eR = -0.66; }
     if (wc === 'scribe') { aL = -0.5 + s * 0.05; eL = -1.5; }
     if (wc === 'twin') { aR = -0.25; eR = -2.0; aL = 0.1 - s * 0.08; eL = -0.25; }
     if (wc === 'pistol') { aR = -0.25; eR = -2.0; }
@@ -1580,6 +1667,11 @@ function animHero(u, dt) {
         break;
       }
       case 'stand': { const s = Math.sin(Math.PI * p); bry = 0.16 * s; hx = 0.1 * s; brx = 0.05 * s; break; }   // a nod toward the target, no more
+      // hands stay in the pockets: the knee comes up, the leg snaps out in a front kick and is pulled back; the legs take turns
+      case 'pocket': {
+        const e1 = easeOut(q1), hp = p < 0.42 ? -1.25 * e1 : (p < 0.62 ? lerp(-1.25, -1.75, q2) : lerp(-1.75, 0, q3)), kk = p < 0.42 ? 1.7 * e1 : (p < 0.62 ? lerp(1.7, 0.05, q2) : 0.06), on = p < 0.62 ? e1 : 1 - q3;
+        if (a.alt) { lL = hp; kL = kk; lR = 0.12 * on; kR = 0.22 * on; } else { lR = hp; kR = kk; lL = 0.12 * on; kL = 0.22 * on; }
+        brx = -0.24 * on; bry = (a.alt ? 0.35 : -0.35) * on; hx = 0.14 * on; by -= 0.04 * on; break; }
       case 'spirit': case 'fist': { const sh = p < 0.42 ? 0.5 * q1 : (p < 0.62 ? lerp(0.5, -1.55, q2) : -1.55 * (1 - q3)), el = p < 0.42 ? -1.9 * q1 : (p < 0.62 ? lerp(-1.9, -0.1, q2) : lerp(-0.1, -0.3, q3)); if (a.alt) { aL = sh; eL = el; } else { aR = sh; eR = el; } bry = (a.alt ? -1 : 1) * twist; brx = lean + 0.05; break; }
       case 'bow': aL = -1.5; eL = -0.05; if (p < 0.45) { aR = -1.25; eR = -1.75; } else { aR = -1.0; eR = -0.7; } bry = -0.5; hy = 0.45; break;
       case 'gun': kick = p > 0.4 ? 1 - q3 : 0; by -= kick * 0.04; brx = -0.07 * kick; break;
@@ -1790,6 +1882,27 @@ function animHero(u, dt) {
       case 'blow': { const q = Math.min(1, p / 0.2) * (p > 0.85 ? 1 - (p - 0.85) / 0.15 : 1), br = Math.sin(t * 14) * 0.04 * q; aL = -1.25 * q; eL = -1.7 * q; brx = 0.12 * q + br; by += br; aR = -0.3 * q; break; }
       // wringing himself out: arms crossed hard over the body, crouching as the water bursts out
       case 'squeeze': { const q = Math.sin(Math.PI * Math.min(1, p * 1.1)); aL = aR = -0.9 * q; eL = eR = -2.3 * q; kL = kR = 0.06 + 0.5 * q; lL = lR = -0.25 * q; by -= 0.12 * q; break; }
+      // a card flung from across the body: the hand winds back to the opposite shoulder, then whips out flat
+      case 'deal': { const q = p < 0.35 ? easeOut(p / 0.35) : 1, f = p > 0.35 ? Math.min(1, (p - 0.35) / 0.15) : 0, bk = p > 0.7 ? (p - 0.7) / 0.3 : 0;
+        aR = lerp(lerp(-0.35, -1.35, q), -1.5, f) * (1 - bk) + -0.35 * bk; eR = lerp(lerp(-1.0, -1.9, q), -0.08, f) * (1 - bk) + -1.0 * bk; bry = (0.45 * q * (1 - f) - 0.5 * f) * (1 - bk); wR = 0.6 * f * (1 - bk); aL = -0.4 * q * (1 - bk); eL = -0.7; break; }
+      // a hand held out to shake on a deal
+      case 'pact': { const q = Math.min(1, p / 0.25) * (p > 0.8 ? 1 - (p - 0.8) / 0.2 : 1); aR = lerp(-0.35, -1.35, q); eR = lerp(-1.0, -0.15, q); wR = 0.3 * q; bry = 0.15 * q; hx = 0.08 * q; break; }
+      // a feint: duck low and spring away
+      case 'feint': brx = 0.32 * s; kL = kR = 0.06 + 0.45 * s; lL = lR = -0.25 * s; by -= 0.12 * s; aL = -0.7 * s; aR = -0.35 - 0.3 * s; break;
+      // a piece lifted high and set down ahead
+      case 'move': aR = -0.35 - 1.9 * s; eR = -0.3 - 0.45 * (1 - s); bry = 0.2 * s; brx = 0.1 * s; hx = -0.15 * s; break;
+      // calculating: two fingers at the temple, the other arm levelled at the answer
+      case 'calc': { const q = Math.min(1, p / 0.2) * (p > 0.85 ? 1 - (p - 0.85) / 0.15 : 1); aL = -2.35 * q; eL = -2.2 * q; aR = lerp(-0.35, -1.55, q); eR = lerp(-0.8, -0.06, q); wR = 0.4 * q; hx = 0.1 * q; hy = -0.15 * q; break; }
+      // checkmate: both arms raised high, then the right one brought down at the king
+      case 'mate': { const q = easeOut(Math.min(1, p / 0.3)), dn = p > 0.62 ? Math.min(1, (p - 0.62) / 0.12) : 0; aL = -2.8 * q * (1 - dn * 0.6); aR = lerp(-2.8 * q, -1.45, dn); eL = -0.3; eR = lerp(-0.3, -0.05, dn); brx = -0.15 * q + 0.3 * dn; by += 0.08 * q; hx = -0.25 * q + 0.3 * dn; break; }
+      // a palm strike: one hand leaves its pocket and is driven forward from a low lunge
+      case 'palm': { const q = p < 0.25 ? easeOut(p / 0.25) : 1 - Math.max(0, p - 0.6) / 0.4; aR = lerp(0.24, -1.55, q); eR = lerp(-0.66, -0.04, q); wR = -0.5 * q; aL = 0.24; eL = -0.66; brx = 0.28 * q; bry = 0.35 * q; lL = -0.55 * q; kL = 0.45 * q; lR = 0.4 * q; kR = 0.2 * q; by -= 0.12 * q; break; }
+      // the white room: eyes closed, chin down, perfectly still
+      case 'wroom': hx = 0.2 * s; kL = kR = 0.06 + 0.12 * s; aL = aR = 0.24; eL = eR = -0.66; break;
+      // two fingers flicked forward out of the pocket: "that one"
+      case 'pawn': { const q = Math.sin(Math.PI * Math.min(1, p * 1.3)); aR = lerp(0.24, -1.35, q); eR = lerp(-0.66, -0.3, q); bry = 0.2 * q; aL = 0.24; eL = -0.66; hx = 0.06 * q; break; }
+      // an axe kick: the leg swings straight up past the head and drops like a blade, hands still in the pockets
+      case 'axe': { const up = p < 0.45 ? easeOut(p / 0.45) : 1 - easeOut(Math.min(1, (p - 0.45) / 0.18)); lR = -2.35 * up; kR = 0.05; lL = 0.15 * up; kL = 0.25 * up; brx = -0.4 * up + (p > 0.5 && p < 0.8 ? 0.25 : 0); aL = aR = 0.24; eL = eR = -0.66; hx = 0.2 * up; by += 0.06 * up; break; }
       // two fingers raised before the face
       case 'sign': aR = -0.95; eR = -1.9; aL = 0.25; eL = -0.35; hx = 0.08; wR = -0.2; break;
       // hands drawn apart, brought together in front of the chest, then the right hand drives the sphere forward
@@ -1879,5 +1992,7 @@ function animHero(u, dt) {
   if (r.tEyes) { const s = u.prayT > t ? 0.16 + Math.sin(t * 14) * 0.03 : 0.01; for (const e of r.tEyes) e.scale.setScalar(s); }
   if (r.orbG) r.orbG.scale.setScalar(0.35 + Math.sin(t * 3 + (u.id || 0)) * 0.05 + (u.prayT > t ? 0.6 + Math.sin(t * 20) * 0.1 : 0) + (a.castT > 0 ? 0.7 : 0));
   if (r.orbit) r.orbit.rotation.y += dt * 1.6;
+  if (r.scr) r.scr.scale.setScalar(0.22 + Math.sin(t * 3.1 + (u.id || 0)) * 0.03 + (a.castT > 0 ? 0.35 : 0));
+  if (r.gEyes) { const s = u.eyeT > t ? 0.2 + Math.sin(t * 22) * 0.03 : (u.eyeLow ? 0.06 : 0.01); for (const e of r.gEyes) e.scale.setScalar(s); }
   if (r.orb) r.orb.position.y += (1.05 + Math.sin(t * 2.4) * 0.12 - r.orb.position.y) * 0.2;
 }
