@@ -612,6 +612,19 @@ const HEADS = {
     for (let i = 0; i < 12; i++) { const a = i / 12 * TAU + 0.2, rr = 0.2, len = 0.18 + (i % 3) * 0.05, f = Math.cos(a) > 0.5 ? 1.05 : 1.75; k.c(0.08, len, 4, i % 3 === 1 ? tip : hair, Math.sin(a) * rr, 0.2 + (i % 2) * 0.03, Math.cos(a) * rr - 0.04, Math.cos(a) * f, 0, -Math.sin(a) * f); }
     for (const [x, z, rx, rz] of [[-0.12, -0.08, -1.1, 0.9], [0.12, -0.08, -1.1, -0.9], [0, -0.12, -1.35, 0], [-0.08, 0.04, 0.5, 0.8], [0.08, 0.04, 0.5, -0.8]]) k.c(0.09, 0.2, 4, hair, x, 0.3, z, rx, 0, rz).c(0.05, 0.1, 4, tip, x * 1.8, 0.36, z * 2 - 0.04, rx * 1.15, 0, rz * 1.15);
     for (const [x, h, rz] of [[-0.18, 0.2, 0.35], [-0.1, 0.22, 0.2], [-0.02, 0.18, 0.05], [0.06, 0.22, -0.1], [0.14, 0.2, -0.25], [0.2, 0.16, -0.4]]) k.c(0.05, h, 4, hair, x, 0.27 - h / 2, 0.22, Math.PI - 0.1, 0, rz);
+  },
+  cowboy(k, C) { // a bounty hunter: a weathered face with a heavy jaw, narrowed eyes under thick brows, a drooping moustache and three days of stubble, a cigar clamped in the corner of the mouth (its ember is rig.cig); a wide-brimmed hat with a pinched crown, the brim curled up at the sides, a silver concho on the band; a red bandana knotted at the throat
+    const hat = 0x5a3e26, hd = 0x3a2616, band = 0x1e1610, hair = C.hair || 0x4a3020, stub = 0x8a6a50, red = 0xa8241c, cr = HPI + 0.35;
+    k.b(0.42, 0.46, 0.4, C.skin, 0, -0.01, 0).b(0.44, 0.13, 0.4, C.skin, 0, -0.17, 0.01)
+      .b(0.11, 0.026, 0.03, 0xf0ece4, -0.095, 0.03, 0.203).b(0.11, 0.026, 0.03, 0xf0ece4, 0.095, 0.03, 0.203).b(0.045, 0.026, 0.03, 0x3a5a6a, -0.09, 0.03, 0.211).b(0.045, 0.026, 0.03, 0x3a5a6a, 0.09, 0.03, 0.211)
+      .b(0.14, 0.035, 0.04, hair, -0.095, 0.066, 0.214, 0, 0, -0.08).b(0.14, 0.035, 0.04, hair, 0.095, 0.066, 0.214, 0, 0, 0.08).b(0.04, 0.08, 0.05, C.skin, 0, -0.035, 0.215)
+      .b(0.17, 0.036, 0.03, hair, 0, -0.1, 0.216).b(0.032, 0.085, 0.03, hair, -0.083, -0.135, 0.214).b(0.032, 0.085, 0.03, hair, 0.083, -0.135, 0.214)
+      .b(0.36, 0.09, 0.02, stub, 0, -0.205, 0.2).b(0.02, 0.15, 0.3, stub, -0.221, -0.15, 0.02).b(0.02, 0.15, 0.3, stub, 0.221, -0.15, 0.02).b(0.06, 0.012, 0.02, 0x6a3a30, -0.035, -0.148, 0.214)
+      .y(0.024, 0.026, 0.24, 6, 0x6a3a1a, 0.072, -0.16, 0.3, cr, 0, -0.25).y(0.028, 0.028, 0.03, 6, 0xc8a050, 0.047, -0.128, 0.215, cr, 0, -0.25).y(0.025, 0.025, 0.025, 6, { g: 0xff6a20 }, 0.1, -0.2, 0.415, cr, 0, -0.25)
+      .b(0.46, 0.2, 0.15, hair, 0, -0.02, -0.19).b(0.05, 0.16, 0.25, hair, -0.222, 0.0, -0.06).b(0.05, 0.16, 0.25, hair, 0.222, 0.0, -0.06)
+      .y(0.62, 0.64, 0.035, 18, hat, 0, 0.22, -0.01).b(0.3, 0.04, 0.6, hat, -0.5, 0.27, -0.01, 0, 0, 0.45).b(0.3, 0.04, 0.6, hat, 0.5, 0.27, -0.01, 0, 0, -0.45)
+      .t(0.38, 0.34, 0.47, 0.44, 0.28, hat, 0, 0.37, -0.02).b(0.06, 0.05, 0.3, hd, 0, 0.5, -0.02).b(0.2, 0.04, 0.04, hd, 0, 0.47, 0.19, 0.5).y(0.245, 0.26, 0.07, 12, band, 0, 0.27, -0.02).y(0.035, 0.035, 0.015, 8, 0xd8dce4, 0.15, 0.27, 0.2, HPI)
+      .y(0.22, 0.26, 0.1, 8, red, 0, -0.3, 0).c(0.13, 0.22, 3, red, 0, -0.4, 0.17, Math.PI);
   }
 };
 
@@ -686,7 +699,9 @@ function buildHero(L, teamColor) {
       if (L.coat) kt.b(0.05, 0.62 * H, 0.36 * b, L.coat, sd * 0.19 * b, -0.3 * H, -0.02).b(0.055, 0.04, 0.37 * b, met, sd * 0.19 * b, -0.61 * H, -0.02);   // long coat: a panel on the outside of each thigh
       kt.into(leg, mat, gmat);
       const ks = kit(); ks.t(0.25 * b, 0.27 * b, 0.2 * b, 0.22 * b, 0.5 * H, gr ? met : c3, 0, -0.25 * H, 0).b(0.27 * b, 0.17, 0.46 * b, gr ? 0x33363c : c3, 0, -0.5 * H + 0.035, 0.07).b(0.28 * b, 0.07, 0.3 * b, c2, 0, -0.06 * H, 0);
-      if (gr) ks.b(0.04, 0.3 * H, 0.03, GL, 0, -0.26 * H, 0.14 * b); ks.into(shin, mat, gmat);
+      if (gr) ks.b(0.04, 0.3 * H, 0.03, GL, 0, -0.26 * H, 0.14 * b);
+      if (L.spurs) ks.y(0.075, 0.075, 0.016, 8, 0xc8a050, 0, -0.5 * H + 0.05, -0.22, 0, 0, HPI).b(0.025, 0.03, 0.12, met, 0, -0.5 * H + 0.05, -0.16).b(0.28 * b, 0.05, 0.32 * b, 0x4a2e1a, 0, -0.12 * H, 0);   // spurs on the heels, a turned-down boot top
+      ks.into(shin, mat, gmat);
     }
     kb.t(0.64 * b, 0.42 * b, 0.56 * b, 0.36 * b, 0.26, c2, 0, 0, 0).b(0.26 * b, 0.42, 0.04, c1, 0, -0.22, 0.2 * b).b(0.26 * b, 0.36, 0.04, c1, 0, -0.2, -0.2 * b);
     if (L.chest === 'plate') kb.b(0.06, 0.34, 0.3 * b, met, -0.34 * b, -0.14, 0).b(0.06, 0.34, 0.3 * b, met, 0.34 * b, -0.14, 0);
@@ -895,6 +910,17 @@ function buildHero(L, teamColor) {
       for (let r = 0; r < 3; r++) for (const s of [-1, 1]) kb.y(0.045, 0.045, 0.02, 3, sc, s * 0.22 * b, 0.28 + r * 0.12, 0.286 * b, HPI, r % 2 ? Math.PI : 0);
       for (let r = 0; r < 3; r++) for (let i = 0; i < 5; i++) kb.y(0.05, 0.05, 0.02, 3, sc, (i - 2) * 0.15 * b + (r % 2 ? 0.075 * b : 0), 0.3 + r * 0.13, -0.285 * b, HPI, r % 2 ? Math.PI : 0);
       break; }
+    // a bounty hunter's dress: a dark waistcoat with a silver star over a pale shirt, the fronts of a long open duster with a cape collar, a gun belt slung low with a row of brass cartridges, a holster on the right hip and the coiled lasso on the left
+    case 'duster': { const sh = L.shirt || 0xd8ccb4, vest = 0x2a2018, lt = 0x4a2e1a, brass = 0xd8a84a;
+      kb.b(0.3 * b, 0.9, 0.05, sh, 0, 0.62, 0.238 * b).b(0.36 * b, 0.62, 0.06, vest, 0, 0.66, 0.245 * b).b(0.02, 0.6, 0.03, 0x15100c, 0, 0.66, 0.28 * b)
+        .o(0.055, 0xd8dce4, -0.12 * b, 0.82, 0.285 * b, 1, 1, 0.4).o(0.055, 0xd8dce4, -0.12 * b, 0.82, 0.285 * b, 1, 1, 0.4, 0, 0, Math.PI / 4)
+        .b(0.12, 1.0, 0.06, c1, -0.23 * b, 0.6, 0.25 * b, 0, 0, -0.05).b(0.12, 1.0, 0.06, c1, 0.23 * b, 0.6, 0.25 * b, 0, 0, 0.05)
+        .t(0.62 * b, 0.44 * b, 0.98 * b, 0.56 * b, 0.18, c1, 0, 1.0, -0.02)
+        .b(0.84 * b, 0.09, 0.56 * b, lt, 0, 0.17, 0, 0, 0, 0.1).b(0.1, 0.09, 0.05, brass, 0, 0.17, 0.285 * b)
+        .b(0.14, 0.32, 0.13, lt, 0.46 * b, -0.08, 0.04).b(0.12, 0.08, 0.14, lt, 0.46 * b, 0.09, 0.04).b(0.04, 0.14, 0.04, 0x6a4224, 0.46 * b, 0.13, 0.06);
+      for (let i = 0; i < 9; i++) kb.b(0.03, 0.065, 0.03, brass, -0.32 * b + i * 0.075 * b, 0.135 + i * 0.0075 * b, 0.29 * b);
+      for (let i = 0; i < 10; i++) { const a = i / 10 * TAU; kb.b(0.055, 0.055, 0.13, i % 2 ? 0xb08a52 : 0x9a7444, -0.47 * b, -0.04 + Math.cos(a) * 0.17, 0.02 + Math.sin(a) * 0.17, a); }
+      break; }
     case 'bare': kb.b(0.1, 1.02, 0.05, c3, 0, 0.62, 0.25 * b, 0, 0, 0.62).b(0.035, 0.34, 0.03, GL, -0.24 * b, 0.82, 0.255 * b, 0, 0, -0.3).b(0.035, 0.34, 0.03, GL, 0.24 * b, 0.82, 0.255 * b, 0, 0, 0.3).b(0.035, 0.2, 0.03, GL, 0, 0.44, 0.215 * b); break;
   }
   /* --- back --- */
@@ -1057,6 +1083,10 @@ function buildHero(L, teamColor) {
       wk.c(0.05, 0.16, 5, wd, 0.3, 1.86, 0.14, 0, 0, -2.2); break; }
     // manoeuvre-gear blades: a trigger grip with a cable housing, a short guard, a long thin replaceable blade marked into segments
     case 'odm': wiR = wiL = -0.25; for (const k of [kwL, kwR]) { k.b(0.07, 0.13, 0.28, 0x2a2c30, 0, HY - 0.02, -0.02).b(0.04, 0.06, 0.12, 0x8a9098, 0, HY - 0.1, 0.02).b(0.12, 0.09, 0.05, 0x8a9098, 0, HY, 0.15).b(0.025, 0.09, 1.1, 0xdfe6ee, 0, HY + 0.01, 0.72).b(0.027, 0.02, 1.05, GL, 0, HY - 0.035, 0.72).c(0.03, 0.12, 4, 0xdfe6ee, 0, HY + 0.01, 1.32, HPI, 0, Math.PI / 4); for (let i = 1; i < 4; i++) k.b(0.03, 0.095, 0.012, 0x6a7078, 0, HY + 0.01, 0.17 + i * 0.27); } break;
+    // a long-barrelled single-action revolver: a walnut grip, a dark frame with a brass trigger guard, the hammer, a long barrel with a front sight (the cylinder is its own group, rig.cyl, so it can spin on a reload; the muzzle flash is rig.pmz)
+    case 'revolver': { const st = 0x2a2c32, wd = 0x6a4224, br = 0xc8a050; wiR = 0.5;
+      kwR.b(0.07, 0.2, 0.1, wd, 0, HY - 0.05, -0.04, 0.45).b(0.075, 0.1, 0.2, st, 0, HY + 0.06, 0.08).b(0.02, 0.07, 0.1, br, 0, HY - 0.01, 0.1).b(0.03, 0.06, 0.05, st, 0, HY + 0.13, -0.02, -0.4)
+        .y(0.026, 0.026, 0.46, 6, st, 0, HY + 0.085, 0.42, HPI).y(0.032, 0.032, 0.04, 6, 0x15161a, 0, HY + 0.085, 0.65, HPI).b(0.012, 0.035, 0.02, br, 0, HY + 0.12, 0.62).b(0.016, 0.016, 0.3, 0x15161a, 0, HY + 0.05, 0.36); break; }
     // a game-centre coin between the fingers (its spark is rig.pmz)
     case 'coin': wiR = 0.5; kwR.y(0.065, 0.065, 0.014, 10, 0xd8a050, 0, HY + 0.06, 0.1, 0, 0, HPI).y(0.045, 0.045, 0.016, 10, 0xf0c070, 0, HY + 0.06, 0.1, 0, 0, HPI); break;
     case 'bow': kwL.b(0.07, 0.08, 0.36, dk, 0, HY, 0).b(0.014, 0.014, 2.0, GL, 0, HY + 0.42, 0);
@@ -1218,6 +1248,11 @@ function buildHero(L, teamColor) {
     for (let i = 0; i < 5; i++) kk.b(0.065, 0.075, 0.025, wrap, 0, 0, -0.3 + i * 0.075, 0, 0, i % 2 ? 0.6 : -0.6);
     kk.into(kt, mat, gmat); kt.visible = false; rig.katana = kt; rig.iai = true; rig.tipR = new THREE.Vector3(0, 0.1, 1.8);
   }
+  if (L.weapon === 'revolver') {
+    const cy = grp(handR, 0, 0.085, 0.19), k = kit(); k.y(0.06, 0.06, 0.13, 6, 0x3a3c44, 0, 0, 0, HPI); for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; k.y(0.014, 0.014, 0.135, 5, 0x15161a, Math.cos(a) * 0.036, Math.sin(a) * 0.036, 0, HPI); }
+    k.into(cy, mat, gmat); rig.cyl = cy; const s = glowSprite(L.glow, 0.25); s.position.set(0, 0.085, 0.72); handR.add(s); rig.pmz = s;
+  }
+  if (L.head === 'cowboy') { const s = glowSprite(0xff6a20, 0.12); s.position.set(0.1, -0.2, 0.42); head.add(s); rig.cig = s; }
   if (L.weapon === 'mstaff') { const s = glowSprite(L.glow, 0.9); s.position.set(0, 1.98, 0.14); rig.wpn.add(s); rig.gem = s; }
   if (L.head === 'megumin') { const s = glowSprite(0xff3040, 0.01); s.position.set(0.09, 0.015, 0.24); head.add(s); rig.mEye = s; }
   if (L.head === 'blind') { const e = []; for (const sd of [-1, 1]) { const sp = glowSprite(0x7ad0ff, 0.01); sp.position.set(sd * 0.095, 0.065, 0.24); head.add(sp); e.push(sp); } rig.kEyes = e; }
@@ -1584,6 +1619,14 @@ function animHero(u, dt) {
       case 'whip': { const q = p < 0.25 ? easeOut(p / 0.25) : 1, sw = p < 0.25 ? 0 : Math.min(1, (p - 0.25) / 0.3), o = p > 0.75 ? (p - 0.75) / 0.25 : 0; aR = lerp(-0.4, -1.4, q) * (1 - o); eR = lerp(-1.6, -0.1, sw); bry = lerp(-0.7 * q, 0.8, sw) * (1 - o); wR = 1.0 * sw; brx = 0.15 * sw * (1 - o); break; }
       // a billion volts: both hands thrown up to the clouds, the body arched, sparks shaking it
       case 'storm': { const q = Math.min(1, p / 0.2) * (p > 0.85 ? 1 - (p - 0.85) / 0.15 : 1), sh = Math.sin(t * 46) * 0.04 * q; aL = aR = -2.7 * q + sh; eL = eR = -0.2; wR = 0; brx = -0.18 * q; hx = -0.45 * q; by += 0.1 * q; kick = 0; break; }
+      // fanning the hammer: the revolver held level at the hip, the left palm slapping the hammer again and again, the body jolting with each shot
+      case 'fan': { const q = Math.min(1, p / 0.1) * (p > 0.9 ? 1 - (p - 0.9) / 0.1 : 1), w = Math.sin(t * 44); aR = lerp(-0.25, -1.15, q); eR = lerp(-2.0, -0.35, q); wR = lerp(0.5, 1.15, q); aL = -0.95 * q + w * 0.25 * q; eL = -1.25 * q; bry = 0.3 * q; brx = 0.08 * q - Math.max(0, w) * 0.05 * q; kL = kR = 0.06 + 0.3 * q; lL = -0.25 * q; lR = 0.2 * q; kick = Math.max(0, w) * q; break; }
+      // the lasso: the loop whirled over the head with the left hand, then flung forward
+      case 'lasso': { const up = p < 0.45, q = up ? Math.min(1, p / 0.15) : 1 - Math.max(0, (p - 0.8) / 0.2), th = up ? 0 : Math.min(1, (p - 0.45) / 0.12); aL = lerp(-2.8 + Math.sin(t * 22) * 0.15, -1.45, th) * q; eL = lerp(-0.35, -0.05, th); bry = lerp(-0.35, 0.4, th) * q; brx = 0.15 * th * q; hx = -0.15 * q * (1 - th); kL = kR = 0.06 + 0.2 * q; break; }
+      // the rodeo: braced wide, the left arm high and whirling the rope, the whole body swinging round with the load
+      case 'rodeo': { const q = Math.min(1, p / 0.12) * (p > 0.9 ? 1 - (p - 0.9) / 0.1 : 1), w = Math.sin(t * 9); aL = (-2.9 + Math.sin(t * 18) * 0.12) * q; eL = -0.25; bry = w * 0.5 * q; brx = -0.12 * q; hx = -0.2 * q; kL = kR = 0.06 + 0.4 * q; lL = -0.35 * q; lR = 0.3 * q; by -= 0.08 * q; break; }
+      // a roll: tucked tight, low to the ground
+      case 'roll': { const q = Math.sin(Math.PI * Math.min(1, p * 1.2)); brx = 1.05 * q; hx = 0.4 * q; kL = kR = 0.06 + 1.5 * q; lL = lR = -1.3 * q; aL = -0.7 * q; eL = -1.5 * q; by -= 0.5 * q; break; }
       // domain expansion: the crossed fingers raised before the face, the other hand open at the side, rising a little off the ground
       case 'domain': { const q = Math.min(1, p / 0.25), o = p > 0.85 ? (p - 0.85) / 0.15 : 0; aR = lerp(-0.3, -1.25, q) * (1 - o); eR = lerp(-0.3, -1.95, q) * (1 - o); wR = -0.3 * q; aL = 0.4 * q; eL = -0.2; hx = -0.18 * q; brx = -0.1 * q; by += 0.15 * q * (1 - o); bry = -0.2 * q; break; }
       // the explosion chant: the staff thrust up to the sky with both hands, the body arched and trembling, then levelled at the target
@@ -1675,6 +1718,8 @@ function animHero(u, dt) {
   if (r.pmz) r.pmz.scale.setScalar(0.1 + kick * 2.6);
   if (r.geassEye) r.geassEye.scale.setScalar(u.geassCast > t ? 0.9 + Math.sin(t * 30) * 0.25 : 0.16 + Math.sin(t * 2.6 + (u.id || 0)) * 0.03);
   if (r.hmask) r.hmask.visible = u.hollowT > t;
+  if (r.cyl && u.reloadT > t) r.cyl.rotation.z += dt * 26;   // the cylinder spins while he reloads
+  if (r.cig) r.cig.scale.setScalar(0.11 + 0.03 * Math.sin(t * 2.7 + (u.id || 0)) + (u.cigT > t ? 0.12 : 0));
   if (r.kEyes) { const s = u.domainT > t ? 0.2 + Math.sin(t * 9) * 0.04 : 0.01; for (const e of r.kEyes) e.scale.setScalar(s); }
   if (r.mEye) r.mEye.scale.setScalar(0.05 + (u.meg || 0) * 0.035 + (a.castT > 0 && a.castType === 'chant' ? 0.18 + Math.sin(t * 24) * 0.04 : 0));
   if (r.lids) { const sl = u.sleepT > t; r.lids.visible = sl; if (r.zz) r.zz.scale.setScalar(sl && Math.random() < 0.3 ? rand(0.3, 0.7) : 0.01); }
