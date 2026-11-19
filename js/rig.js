@@ -641,6 +641,23 @@ const HEADS = {
       .b(0.54, 0.14, 0.5, hair, 0, 0.27, -0.02).b(0.48, 0.12, 0.17, hair, 0, 0.31, 0.2, -0.5).b(0.4, 0.08, 0.12, 0x3a2416, 0, 0.36, 0.13, -0.3).b(0.6, 0.6, 0.2, hair, 0, -0.06, -0.21).b(0.07, 0.3, 0.36, hair, -0.272, 0.12, -0.04).b(0.07, 0.3, 0.36, hair, 0.272, 0.12, -0.04);
     for (let i = 0; i < 5; i++) k.c(0.075, 0.26, 4, hair, -0.22 + i * 0.11, -0.46, -0.23 - (i % 2) * 0.03, -0.25, 0, (i - 2) * 0.12 + Math.PI);
     for (const [x, y] of [[-0.14, -0.28], [0.12, -0.32], [-0.05, -0.45], [0.16, -0.5], [-0.17, -0.55], [0.03, -0.6]]) k.b(0.06, 0.1, 0.03, 0x3a2416, x, y, 0.285 + (y + 0.18) * 0.16, 0.3, 0, x * 2);   // curls in the beard
+  },
+  nereya(k, C) { // a sea priestess: a calm pale face, large sea-green eyes (they glow — rig.nEyes), long wavy aquamarine hair falling down the back to the waist with pale tips,
+    // bangs swept to one side, two locks over the shoulders; a tiara of pearls with a branch of red coral, fins of shell at the ears
+    const hair = C.hair || 0x24a4b4, tip = 0x9ff0f4, wh = 0xf6f8f8, iris = 0x18b8c4, coral = 0xe2564a, pearl = 0xf4f0e6, fin = 0x8fdce8;
+    k.b(0.4, 0.45, 0.4, C.skin, 0, -0.01, 0)
+      .b(0.11, 0.075, 0.03, wh, -0.09, 0.02, 0.203).b(0.11, 0.075, 0.03, wh, 0.09, 0.02, 0.203).b(0.065, 0.065, 0.03, iris, -0.088, 0.018, 0.211).b(0.065, 0.065, 0.03, iris, 0.088, 0.018, 0.211)
+      .b(0.024, 0.036, 0.02, 0x0a2a30, -0.088, 0.018, 0.219).b(0.024, 0.036, 0.02, 0x0a2a30, 0.088, 0.018, 0.219).b(0.016, 0.016, 0.02, 0xffffff, -0.072, 0.04, 0.223).b(0.016, 0.016, 0.02, 0xffffff, 0.104, 0.04, 0.223)
+      .b(0.1, 0.016, 0.03, 0x1a6a78, -0.09, 0.085, 0.212, 0, 0, -0.12).b(0.1, 0.016, 0.03, 0x1a6a78, 0.09, 0.085, 0.212, 0, 0, 0.12)
+      .b(0.022, 0.04, 0.03, C.skin, 0, -0.05, 0.205).b(0.06, 0.018, 0.02, 0xc06a78, 0, -0.125, 0.2)
+      .b(0.44, 0.14, 0.44, hair, 0, 0.22, -0.01).b(0.46, 0.5, 0.14, hair, 0, -0.02, -0.2).b(0.06, 0.42, 0.3, hair, -0.225, -0.04, -0.04).b(0.06, 0.42, 0.3, hair, 0.225, -0.04, -0.04)
+      .t(0.46, 0.16, 0.36, 0.08, 0.95, hair, 0, -0.66, -0.26, 0.14).t(0.36, 0.1, 0.22, 0.06, 0.3, tip, 0, -1.22, -0.33, 0.18)
+      .b(0.09, 0.62, 0.09, hair, -0.2, -0.44, 0.08, 0.05, 0, 0.08).b(0.09, 0.62, 0.09, hair, 0.2, -0.44, 0.08, 0.05, 0, -0.08).c(0.06, 0.2, 4, tip, -0.22, -0.84, 0.1, Math.PI).c(0.06, 0.2, 4, tip, 0.22, -0.84, 0.1, Math.PI);
+    for (const [x, rz, len] of [[-0.15, -0.7, 0.17], [-0.06, -0.55, 0.18], [0.04, -0.4, 0.17], [0.13, -0.25, 0.14]]) k.b(0.11, len, 0.05, hair, x, 0.215 - len * 0.2, 0.212, 0.15, 0, rz);   // bangs swept to the right
+    for (let i = 0; i < 7; i++) { const x = -0.21 + i * 0.07; k.c(0.05, 0.24, 4, i % 2 ? tip : hair, x, -1.12 + (i % 2) * 0.05, -0.3 - Math.abs(x) * 0.1, Math.PI + 0.15, 0, x * 0.8); }   // wavy ends
+    for (let i = 0; i < 7; i++) { const a = -1.1 + i * 0.37; k.i(i === 3 ? 0.038 : 0.026, pearl, Math.sin(a) * 0.2, 0.28 + Math.cos(a) * 0.05, 0.13 + Math.cos(a) * 0.06); }
+    k.b(0.025, 0.16, 0.025, coral, -0.12, 0.36, 0.08, 0, 0, 0.35).b(0.022, 0.1, 0.022, coral, -0.17, 0.42, 0.08, 0, 0, -0.5).b(0.022, 0.09, 0.022, coral, -0.08, 0.43, 0.08, 0, 0, 0.9)
+      .c(0.07, 0.2, 3, fin, -0.235, 0.02, -0.02, 0, 0, 1.1).c(0.07, 0.2, 3, fin, 0.235, 0.02, -0.02, 0, 0, -1.1);
   }
 };
 
@@ -944,6 +961,13 @@ function buildHero(L, teamColor) {
       for (let i = 0; i < 9; i++) kb.b(0.03, 0.065, 0.03, brass, -0.32 * b + i * 0.075 * b, 0.135 + i * 0.0075 * b, 0.29 * b);
       for (let i = 0; i < 10; i++) { const a = i / 10 * TAU; kb.b(0.055, 0.055, 0.13, i % 2 ? 0xb08a52 : 0x9a7444, -0.47 * b, -0.04 + Math.cos(a) * 0.17, 0.02 + Math.sin(a) * 0.17, a); }
       break; }
+    // a sea priestess's bodice: a teal panel worked with rows of scales, two pearl shells at the breast, a girdle of pearls, a glowing collar of water
+    case 'tide': { const sc = L.shirt || 0x0e5a6a, sl = 0x2a8aa0, pearl = 0xf4f0e6;
+      kb.b(0.5 * b, 0.62, 0.05, sc, 0, 0.74, 0.235 * b).y(0.17 * b, 0.2 * b, 0.07, 10, GL, 0, 1.06, 0)
+        .o(0.085, pearl, -0.1 * b, 0.9, 0.27 * b, 1.3, 1, 0.45).o(0.085, pearl, 0.1 * b, 0.9, 0.27 * b, 1.3, 1, 0.45).o(0.04, GL, 0, 0.8, 0.27 * b, 1, 1.4, 0.5);
+      for (let r = 0; r < 4; r++) for (let i = 0; i < 4; i++) kb.o(0.04, sl, (i - 1.5) * 0.1 * b + (r % 2 ? 0.05 * b : 0), 0.46 + r * 0.075, 0.262 * b, 1.1, 0.8, 0.4);
+      for (let i = 0; i < 12; i++) { const a = i / 12 * TAU; kb.i(0.03, pearl, Math.sin(a) * 0.4 * b, 0.2, Math.cos(a) * 0.27 * b); }
+      break; }
     // a tycoon's white suit: a great belly under an open purple silk shirt, a hairy chest in the open collar, black satin lapels,
     // a thick gold chain with a medallion lying on the belly, gold buttons, a red pocket square, a gold buckle half hidden under the overhang
     case 'tycoon': { const sh = L.shirt || 0x6a1e8a, gold = 0xe8c050, lap = L.lin || 0x18161c, hc = L.hair || 0x24160e, bz = 0.17 * b, br = 0.33 * b, by0 = 0.42;
@@ -1124,6 +1148,12 @@ function buildHero(L, teamColor) {
     case 'revolver': { const st = 0x2a2c32, wd = 0x6a4224, br = 0xc8a050; wiR = 0.5;
       kwR.b(0.07, 0.2, 0.1, wd, 0, HY - 0.05, -0.04, 0.45).b(0.075, 0.1, 0.2, st, 0, HY + 0.06, 0.08).b(0.02, 0.07, 0.1, br, 0, HY - 0.01, 0.1).b(0.03, 0.06, 0.05, st, 0, HY + 0.13, -0.02, -0.4)
         .y(0.026, 0.026, 0.46, 6, st, 0, HY + 0.085, 0.42, HPI).y(0.032, 0.032, 0.04, 6, 0x15161a, 0, HY + 0.085, 0.65, HPI).b(0.012, 0.035, 0.02, br, 0, HY + 0.12, 0.62).b(0.016, 0.016, 0.3, 0x15161a, 0, HY + 0.05, 0.36); break; }
+    // a staff of pale driftwood wound with red coral, its head a curl of coral and shell holding an orb of water (the orb is rig.orb, added below)
+    case 'tidestaff': { const wd = 0xc8b898, coral = 0xe2564a, sh = 0xf4f0e6;
+      wpn().y(0.04, 0.055, 2.4, 6, wd, 0, 0.45, 0.14).y(0.06, 0.06, 0.05, 6, coral, 0, 1.5, 0.14).y(0.055, 0.055, 0.04, 6, coral, 0, -0.4, 0.14);
+      for (let i = 0; i < 6; i++) wk.b(0.03, 0.2, 0.03, coral, Math.sin(i * 1.3) * 0.05, 0.6 + i * 0.16, 0.14 + Math.cos(i * 1.3) * 0.05, 0, i, 0.6);
+      for (let i = 0; i < 7; i++) { const a = -0.4 + i * 0.75, r = 0.22 + i * 0.01; wk.b(0.05, 0.05, 0.13, i % 2 ? coral : sh, Math.cos(a) * r, 1.98 + Math.sin(a) * r, 0.14, 0, HPI, a); }
+      wk.c(0.05, 0.18, 5, coral, 0.26, 1.8, 0.14, 0, 0, -2.4).o(0.06, sh, -0.2, 2.2, 0.14, 1.2, 1, 0.5); break; }
     // a tycoon's hands: a fan of banknotes in the right, a black briefcase with gold fittings hanging from the left, gold rings with a ruby and a gold watch
     case 'cash': { rig.hangL = true; const gold = 0xe8c050, bill = 0x4c9858, bd = 0x3a7a46, pale = 0xd4f0c4, cs = 0x16161a;
       for (let i = 0; i < 5; i++) { const a = -0.55 + i * 0.27, r = 0.15; kwR.b(0.16, 0.012, 0.34, i % 2 ? bill : bd, Math.sin(a) * r, HY + 0.02 + i * 0.008, 0.08 + Math.cos(a) * r, 0, a).b(0.07, 0.014, 0.07, pale, Math.sin(a) * (r + 0.04), HY + 0.022 + i * 0.008, 0.08 + Math.cos(a) * (r + 0.04), 0, a); }
@@ -1300,6 +1330,16 @@ function buildHero(L, teamColor) {
     k.into(cy, mat, gmat); rig.cyl = cy; const s = glowSprite(L.glow, 0.25); s.position.set(0, 0.085, 0.72); handR.add(s); rig.pmz = s;
   }
   if (L.head === 'cowboy') { const s = glowSprite(0xff6a20, 0.12); s.position.set(0.1, -0.2, 0.42); head.add(s); rig.cig = s; }
+  if (L.weapon === 'tidestaff' && typeof nerMat === 'function') {   // the water orb at the head of the staff (rig.orb) and a glow round it
+    const o = new THREE.Mesh(FX.geo.sphere, nerMat({ f: 0.5, su: 2, sv: 2, a: 0.9 })); o.position.set(0, 1.98, 0.14); o.scale.setScalar(0.17); rig.wpn.add(o); rig.orb = o;
+    const s = glowSprite(L.glow, 0.9); s.position.set(0, 1.98, 0.14); rig.wpn.add(s);
+  }
+  if (L.back === 'hoop' && typeof nerMat === 'function') {   // a ring of water floating round the hips, tilted, turning slowly (rig.hoop), with three drops circling it
+    const hg = grp(body, 0, 0.35, 0), ring = new THREE.Mesh(new THREE.TorusGeometry(0.62 * b, 0.05, 6, 40), nerMat({ f: 1.2, su: 8, sv: 1, a: 0.85 })); ring.rotation.x = HPI; hg.add(ring);
+    for (let i = 0; i < 3; i++) { const d = new THREE.Mesh(FX.geo.sphere, nerMat({ f: 0.4, a: 0.9 })); const a = i / 3 * TAU; d.position.set(Math.sin(a) * 0.62 * b, 0, Math.cos(a) * 0.62 * b); d.scale.setScalar(0.07); hg.add(d); }
+    hg.rotation.z = 0.18; rig.hoop = hg;
+  }
+  if (L.head === 'nereya') { const e = []; for (const sd of [-1, 1]) { const sp = glowSprite(0x6ff0ff, 0.09); sp.position.set(sd * 0.088, 0.018, 0.225); head.add(sp); e.push(sp); } rig.nEyes = e; }
   if (L.head === 'wlad') { const e = []; for (const sd of [-1, 1]) { const s = glowSprite(0xffffff, 0.01); s.position.set(sd * 0.11 - 0.03, 0.075, 0.275); head.add(s); e.push(s); } rig.shades = e; }
   if (L.weapon === 'mstaff') { const s = glowSprite(L.glow, 0.9); s.position.set(0, 1.98, 0.14); rig.wpn.add(s); rig.gem = s; }
   if (L.head === 'megumin') { const s = glowSprite(0xff3040, 0.01); s.position.set(0.09, 0.015, 0.24); head.add(s); rig.mEye = s; }
@@ -1710,6 +1750,14 @@ function animHero(u, dt) {
       // the snap: the right hand thrown up high, the fingers snap, the arm drops to point at the spot
       case 'wlsnap': { const up = Math.min(1, p / 0.3), dn = p > 0.4 ? Math.min(1, (p - 0.4) / 0.1) : 0, o = p > 0.8 ? (p - 0.8) / 0.2 : 0;
         aR = lerp(-2.8 * easeOut(up), -1.5, dn) * (1 - o) - 0.35 * o; eR = lerp(-0.4, -0.1, dn) * (1 - o) - 1.0 * o; wR = 0.4 * (1 - dn); hx = lerp(-0.35 * up, 0.05, dn) * (1 - o); brx = lerp(-0.15 * up, 0.12, dn) * (1 - o); bry = 0.2 * dn * (1 - o); break; }
+      // the jet: the staff levelled at the target with both hands, the body braced back against the pressure, trembling
+      case 'jet': { const q = Math.min(1, p / 0.12) * (p > 0.9 ? 1 - (p - 0.9) / 0.1 : 1), sh = Math.sin(t * 50) * 0.03 * q; aR = -1.45 * q + sh; eR = -0.15; aL = -1.3 * q - sh; eL = -0.35; wx = 1.35 * q; brx = -0.12 * q; bry = 0.15 * q; kL = kR = 0.06 + 0.3 * q; lL = -0.3 * q; lR = 0.2 * q; break; }
+      // the bubble: the free hand cups the water and tosses it underarm
+      case 'bubble': { const q = p < 0.4 ? easeOut(p / 0.4) : 1, th = p > 0.4 ? Math.min(1, (p - 0.4) / 0.2) : 0, o = p > 0.75 ? (p - 0.75) / 0.25 : 0; aL = lerp(0.4 * q, -1.5, th) * (1 - o); eL = lerp(-1.4 * q, -0.2, th) * (1 - o); bry = lerp(0.35 * q, -0.3, th) * (1 - o); aR = -0.6 * q * (1 - o); eR = -0.5; hx = -0.1 * q; break; }
+      // riding the wave: side-on, knees bent, the staff held out behind for balance
+      case 'surf': { const q = Math.sin(Math.PI * Math.min(1, p * 1.05)); bry = 1.0 * q; brx = 0.25 * q; kL = kR = 0.06 + 0.6 * q; lL = -0.45 * q; lR = 0.35 * q; aL = -1.2 * q; eL = -0.3; aR = 0.6 * q; eR = -0.4; hy = -0.9 * q; by -= 0.12 * q; break; }
+      // the maelstrom: both arms lifted and stirring the air in circles, the body turning with them, then flung down at the end
+      case 'maelstrom': { const q = Math.min(1, p / 0.2), dn = p > 0.82 ? Math.min(1, (p - 0.82) / 0.1) : 0, w = Math.sin(t * 9); aR = lerp(-2.5 + w * 0.3, -1.1, dn); aL = lerp(-2.4 - w * 0.3, -0.9, dn); eR = eL = -0.35; bry = w * 0.35 * q * (1 - dn); hx = lerp(-0.35 * q, 0.15, dn); brx = lerp(-0.1 * q, 0.3, dn); by += 0.08 * q * (1 - dn); wx = 0.6 * dn; break; }
       // two fingers raised before the face
       case 'sign': aR = -0.95; eR = -1.9; aL = 0.25; eL = -0.35; hx = 0.08; wR = -0.2; break;
       // hands drawn apart, brought together in front of the chest, then the right hand drives the sphere forward
@@ -1747,6 +1795,8 @@ function animHero(u, dt) {
   r.head.rotation.y += (hy - r.head.rotation.y) * Math.min(1, dt * 6); r.head.rotation.x += (hx - r.head.rotation.x) * Math.min(1, dt * 10);
   if (r.wpn) r.wpn.rotation.x = -(r.armR.rotation.x + r.foreR.rotation.x) * 0.85 + wx;
   if (r.cape) { const tg = u.moving ? 0.5 + Math.sin(a.walk * 2) * 0.1 : 0.1 + Math.sin(t * 1.5 + u.id) * 0.04, q = Math.min(1, dt * 8); r.cape.rotation.x += (tg - r.cape.rotation.x) * q; r.cape2.rotation.x += ((u.moving ? 0.25 + Math.sin(a.walk * 2 + 1) * 0.18 : Math.sin(t * 1.5 + u.id + 1) * 0.06) - r.cape2.rotation.x) * q; }
+  if (r.hoop) { r.hoop.rotation.y += dt * (a.castT > 0 ? 4 : 0.9); r.hoop.position.y = 0.35 + Math.sin(t * 1.7 + (u.id || 0)) * 0.06; }   // the ring of water spins up while she casts
+  if (r.nEyes) { const s = a.castT > 0 ? 0.24 : 0.09 + Math.sin(t * 2 + (u.id || 0)) * 0.015; for (const e of r.nEyes) e.scale.setScalar(s); }
   if (r.tails) { r.tails.rotation.y = Math.sin(t * 2.2 + u.id) * 0.28; r.tails.rotation.x += ((u.moving ? 0.35 : 0) - r.tails.rotation.x) * Math.min(1, dt * 6); }
   if (r.spin) { const hot = u.hot > t; r.spin.rotation.y += dt * (hot ? 16 : 2.4); r.core.scale.setScalar(hot ? 2.6 + Math.sin(t * 30) * 0.5 : 1.5 + Math.sin(t * 3 + u.id) * 0.15); }
   if (r.muzzle) r.muzzle.scale.setScalar(0.9 + kick * 2.6 + (u.hot > t ? 0.5 : 0));

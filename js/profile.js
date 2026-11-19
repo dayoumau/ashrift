@@ -49,9 +49,9 @@ const PROF = {
     return out;
   },
   // the match is over (called from UI.record): a line in the history, then achievements
-  onMatch(P, win, me, R) {
+  onMatch(P, win, me, R, rid) {
     this.ensure(); const p = PROFILE, m = { h: P.def.id, w: win, k: P.kills, d: P.deaths, a: P.assists, mvp: R[0].h === P, sc: me ? +me.score.toFixed(1) : 0, min: +(G.time / 60).toFixed(1), t: Date.now(), rk: !!G.ranked, heal: P.healDone, tower: P.dmgTower };
-    p.hist.unshift({ h: m.h, w: m.w, k: m.k, d: m.d, a: m.a, mvp: m.mvp, sc: m.sc, min: m.min, t: m.t, rk: m.rk }); p.hist.length = Math.min(p.hist.length, 30);
+    p.hist.unshift({ h: m.h, w: m.w, k: m.k, d: m.d, a: m.a, mvp: m.mvp, sc: m.sc, min: m.min, t: m.t, rk: m.rk, rid: rid || 0 }); p.hist.length = Math.min(p.hist.length, 30);
     this.fresh = this.check(m);
   },
   toggleFav(id) {
@@ -100,14 +100,22 @@ const PROF = {
       <section class="pf-box"><h4 class="sech">Достижения <small>${nAch} из ${ACH.length}</small></h4>
         <div class="pf-ach">${ACH.map(a => { const got = p.ach[a.id], pr = a.prog ? a.prog(p) : null; return `<div class="pf-a${got ? ' got' : ''}"><img src="${iconURL(a.icon, got ? 0xecc56f : 0x5d6676)}" alt=""><div><b>${esc(a.name)}</b><span>${esc(a.desc)}</span><small>${got ? 'получено ' + date(got) + ' · титул «' + esc(a.title) + '»' : (pr ? Math.min(pr[0], pr[1]) + ' / ' + pr[1] : 'за один матч')}</small>${!got && pr ? `<i style="--w:${Math.min(100, pr[0] / pr[1] * 100)}%"></i>` : ''}</div></div>`; }).join('')}</div></section>
       <div class="pf-cols">
-        <section class="pf-box"><h4 class="sech">Последние матчи</h4>${p.hist.length ? `<table class="sb num pf-t"><tr><th>Герой</th><th>Итог</th><th>У / С / П</th><th>Рейтинг</th><th>Длит.</th><th>Когда</th></tr>${p.hist.slice(0, 15).map(m => `<tr><td style="color:${hc(m.h)}">${esc(hn(m.h))}${m.rk ? ' <small class="rkm">рейтинг</small>' : ''}</td><td class="${m.w ? 'pw' : 'pl'}">${m.w ? 'Победа' : 'Поражение'}${m.mvp ? ' ★' : ''}</td><td>${m.k} / ${m.d} / ${m.a}</td><td>${m.sc}</td><td>${m.min} мин</td><td>${date(m.t)}</td></tr>`).join('')}</table>` : '<p class="pf-empty">Сыграйте матч — он появится здесь.</p>'}</section>
+        <section class="pf-box pf-hist"><h4 class="sech">История матчей <small>нажмите на матч — откроется полный разбор</small></h4>${p.hist.length ? `<table class="sb num pf-t"><tr><th>Герой</th><th>Итог</th><th>У / С / П</th><th>Рейтинг</th><th>Длит.</th><th>Когда</th><th></th></tr>${p.hist.slice(0, 30).map(m => { const r = m.rid && REP.get(m.rid); return `<tr class="${r ? 'pf-hr' : ''}"${r ? ` data-rep="${m.rid}" title="Открыть разбор матча"` : ''}><td style="color:${hc(m.h)}"><img class="pf-hi" src="${UI.portraits[m.h] || ''}" alt="">${esc(hn(m.h))}${m.rk ? ' <small class="rkm">рейтинг</small>' : ''}</td><td class="${m.w ? 'pw' : 'pl'}">${m.w ? 'Победа' : 'Поражение'}${m.mvp ? ' ★' : ''}</td><td>${m.k} / ${m.d} / ${m.a}</td><td>${m.sc}</td><td>${m.min} мин</td><td>${date(m.t)}</td><td>${r ? '<span class="pf-open">Разбор →</span>' : '<small class="pf-norep">без разбора</small>'}</td></tr>`; }).join('')}</table>` : '<p class="pf-empty">Сыграйте матч — он появится здесь.</p>'}</section>
         <section class="pf-box"><h4 class="sech">По героям</h4>${hstat.length ? `<table class="sb num pf-t"><tr><th>Герой</th><th>Матчей</th><th>Побед</th><th>% побед</th></tr>${hstat.map(id => { const s = p.heroes[id]; return `<tr><td style="color:${hc(id)}">${esc(hn(id))}</td><td>${s.g}</td><td>${s.w}</td><td>${Math.round(s.w / s.g * 100)}%</td></tr>`; }).join('')}</table>` : '<p class="pf-empty">Статистика появится после первого матча.</p>'}</section>
       </div>`;
   },
+  // a match from the history: its full report in a window over the menu
+  openReport(id) {
+    const R = REP.get(id), m = $('repm'); if (!R || !m) return; const b = $('repmb'); b.dataset.tab = 'ov'; delete b.dataset.dh; delete b.dataset.tf; delete b.dataset.gm;
+    m.hidden = false; REP.render(b, R, { head: true }); m.querySelector('.box').scrollTop = 0;
+  },
+  closeReport() { const m = $('repm'); if (m && !m.hidden) { m.hidden = true; $('tip').hidden = true; return true; } return false; },
   init() {
-    this.ensure(); this.check(null);
+    this.ensure(); this.check(null); REP.load();
+    $('repmx').onclick = () => { SFX.play('ui'); this.closeReport(); }; $('repm').addEventListener('mousedown', e => { if (e.target.id === 'repm') this.closeReport(); });
     const box = $('prof');
     box.addEventListener('click', e => {
+      const hr = e.target.closest('tr[data-rep]'); if (hr) { SFX.init(); SFX.play('ui'); this.openReport(+hr.dataset.rep); return; }
       const t = e.target.closest('button'); if (!t) return; const p = PROFILE; SFX.init();
       if (t.dataset.ava) { p.ava = t.dataset.ava; }
       else if (t.dataset.frame) { const f = this.frame(t.dataset.frame); if (!this.frameOk(f)) { SFX.play('deny'); return; } p.frame = f[0]; }

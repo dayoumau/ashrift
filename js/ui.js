@@ -422,7 +422,7 @@ const UI = {
   },
   msg(s) { const m = $('msg'); m.textContent = s; m.classList.add('show'); this.msgT = 1.6; },
   announce(text, color) { const a = $('ann'); a.textContent = text; a.style.color = color || '#fff'; a.classList.remove('show'); void a.offsetWidth; a.classList.add('show'); },
-  feed(html) { const f = $('feed'), d = document.createElement('div'); d.innerHTML = html; f.appendChild(d); while (f.children.length > 5) f.removeChild(f.firstChild); setTimeout(() => { if (d.parentNode) d.parentNode.removeChild(d); }, 6500); },
+  feed(html, cls) { const f = $('feed'), d = document.createElement('div'); d.innerHTML = html; if (cls) d.className = cls; f.appendChild(d); while (f.children.length > 5) f.removeChild(f.firstChild); setTimeout(() => { if (d.parentNode) d.parentNode.removeChild(d); }, 6500); },
   flashWarn() { const w = $('warn'); w.classList.add('on'); setTimeout(() => w.classList.remove('on'), 60); },
   onKill(killer, v, src) {
     const P = G.player, nm = u => `<b style="color:${TEAM_CSS[u.team]}">${u.name}</b>`;
@@ -452,30 +452,20 @@ const UI = {
     const t = $('endt'); t.textContent = win ? 'ПОБЕДА' : 'ПОРАЖЕНИЕ'; t.className = win ? 'win' : 'lose';
     const m = Math.floor(G.time / 60), s = Math.floor(G.time % 60);
     $('endsub').textContent = `Длительность ${m}:${String(s).padStart(2, '0')} · счёт ${G.teams[0].kills} : ${G.teams[1].kills}${G.surrender ? ' · вы сдались' : ''}`;
-    // rating of all ten: the best is the MVP, the last one is named too
-    const R = matchRatings(), best = R[0], worst = R[R.length - 1], P = G.player, k1 = v => v >= 1000 ? (Math.round(v / 100) / 10) + 'к' : Math.round(v), top = k => G.heroes.slice().sort((a, b) => b[k] - a[k])[0];
-    this.record(); const res = G.ranked && G.ranked.res; $('endrk').innerHTML = (PROF.fresh.length ? '<div class="achnew">' + PROF.fresh.map(a => '<span><b>Достижение:</b> ' + esc(a.name) + ' <small>титул «' + esc(a.title) + '»</small></span>').join('') + '</div>' : '') + (res ? RANKED.endHTML(res) + (SAVE.state !== 'cloud' && !SAVE.localOk && !SAVE.idbOk ? '<p class="rolenote" style="color:#ff9a8e">Этот браузер не даёт игре сохранять данные — рейтинг пропадёт при закрытии вкладки. Сохраните «код прогресса» (профиль на главном экране).</p>' : '') : '');
-    const why = r => {   // what the rating mostly came from
-      const h = r.h, c = [['dmg', 2.8, 'больше всех урона по героям'], ['heal', 1.7, 'лучшая поддержка: лечение, щиты, усиления'], ['tower', 1.1, 'главный разрушитель башен'], ['kda', 2.4, 'почти не умирал и много убивал'], ['part', 1.4, 'участвовал почти во всех убийствах команды'], ['tank', 0.6, 'принял на себя больше всех урона']].map(q => [r.p[q[0]] / q[1], q[2]]).sort((a, b) => b[0] - a[0]);
-      return c[0][1] + (c[1][0] > 0.75 ? ' · ' + c[1][1] : '');
-    };
-    const whyBad = r => { const h = r.h, md = Math.max(...G.heroes.map(o => o.deaths)), lowD = G.heroes.every(o => o.dmgHero >= h.dmgHero); return h.deaths >= md && md >= 4 ? h.deaths + ' смертей — больше всех в матче' : (lowD ? 'меньше всех урона по героям' : (h.kills + h.assists <= 2 ? 'почти не участвовал в убийствах' : 'самый скромный вклад в бой')); };
-    const card = (r, cls, tag, text) => { const h = r.h; return `<div class="ecard ${cls}"><img src="${this.portraits[h.def.id] || ''}" alt=""><div class="ebody"><span class="etag">${tag}</span><b class="t${h.team}">${h.name}${h.isPlayer ? ' <i>(' + esc(PROF.name()) + ')</i>' : ''}</b><small>${h.def.roleName} · ${h.team === G.winner ? 'победители' : 'проигравшие'}</small><p>${text}</p>
-      <div class="estats num"><span><b>${h.kills} / ${h.deaths} / ${h.assists}</b>У / С / П</span><span><b>${k1(h.dmgHero)}</b>урон по героям</span><span><b>${k1(h.healDone)}</b>поддержка</span><span><b>${k1(h.goldTotal)}</b>золото</span></div></div><div class="escore num">${r.score.toFixed(1)}<small>рейтинг</small></div></div>`; };
-    $('endcards').innerHTML = card(best, 'mvp', '★ MVP МАТЧА · лучший игрок', why(best)) + card(worst, 'worst', '▼ ХУДШИЙ ИГРОК МАТЧА', whyBad(worst));
-    const aw = [['dmgHero', 'Больше всех урона'], ['healDone', 'Лучшая поддержка'], ['dmgTower', 'Гроза башен'], ['dmgTaken', 'Живой щит'], ['kills', 'Больше всех убийств']].map(([k, t]) => { const h = top(k); return h[k] > 0 ? `<span class="eaw"><small>${t}</small><b class="t${h.team}">${h.name}</b><i class="num">${k === 'kills' ? h[k] : k1(h[k])}</i></span>` : ''; }).join('');
-    $('endaw').innerHTML = aw;
-    const row = r => { const h = r.h; return `<tr class="${h.isPlayer ? 'me' : ''}"><td class="t${h.team}">${r === best ? '★ ' : (r === worst ? '▼ ' : '')}${h.name}${h.isPlayer ? ' (' + esc(PROF.name()) + ')' : ''} <small style="color:#5d6676">${h.def.roleName}</small></td><td><b>${r.score.toFixed(1)}</b></td><td>${h.level}</td><td>${h.kills} / ${h.deaths} / ${h.assists}</td><td>${k1(h.dmgHero)}</td><td>${k1(h.healDone)}</td><td>${k1(h.dmgTower)}</td><td>${k1(h.dmgTaken)}</td><td>${h.cs}</td><td>${k1(h.goldTotal)}</td></tr>`; };
-    $('endb').innerHTML = `<table class="sb num"><tr><th>Герой</th><th>Рейтинг</th><th>Ур.</th><th>У / С / П</th><th>Урон по героям</th><th>Поддержка</th><th>По башням</th><th>Получено</th><th>Миньоны</th><th>Золото</th></tr>${R.slice().sort((a, b) => a.h.team - b.h.team || b.score - a.score).map(row).join('')}</table>`;
-    SFX.play(win ? 'victory' : 'defeat'); if (best.h === P) setTimeout(() => SFX.play('mvp'), 1100);
+    // the rest of the screen is the match report (overview, table, graphs, damage, timeline, «my match»): the same view the profile opens later
+    const P = G.player; this.record(); const res = G.ranked && G.ranked.res; $('endrk').innerHTML = (PROF.fresh.length ? '<div class="achnew">' + PROF.fresh.map(a => '<span><b>Достижение:</b> ' + esc(a.name) + ' <small>титул «' + esc(a.title) + '»</small></span>').join('') + '</div>' : '') + (res ? RANKED.endHTML(res) + (SAVE.state !== 'cloud' && !SAVE.localOk && !SAVE.idbOk ? '<p class="rolenote" style="color:#ff9a8e">Этот браузер не даёт игре сохранять данные — рейтинг пропадёт при закрытии вкладки. Сохраните «код прогресса» (профиль на главном экране).</p>' : '') : '');
+    const box = $('endrep'); box.dataset.tab = 'ov'; delete box.dataset.dh; delete box.dataset.tf; delete box.dataset.gm;
+    if (G.report) REP.render(box, G.report); else box.innerHTML = '';
+    SFX.play(win ? 'victory' : 'defeat'); if (G.report && G.report.mvp === G.report.me) setTimeout(() => SFX.play('mvp'), 1100);
   },
   // the match is over: career figures and the ranked result are written once, at the moment the crystal falls (a match driven by a test bot is not counted)
   record() {
-    const P = G.player; if (!P || G.recorded) return; G.recorded = true; if (P.ai || G.sandbox) return;
+    const P = G.player; if (!P || G.recorded) return; G.recorded = true; G.report = REP.finish(); if (P.ai || G.sandbox) return;
     const win = G.winner === P.team, R = matchRatings(), me = R.find(r => r.h === P), pr = PROFILE, hs = pr.heroes[P.def.id] || (pr.heroes[P.def.id] = { g: 0, w: 0 });
     pr.games++; hs.g++; if (win) { pr.wins++; hs.w++; } if (R[0].h === P) pr.mvp++; pr.kills += P.kills; pr.deaths += P.deaths; pr.assists += P.assists;
     if (G.ranked && typeof RANKED !== 'undefined') RANKED.settle(win, me ? me.score : 5, !!G.surrender);   // settle saves too
-    PROF.onMatch(P, win, me, R);
+    if (G.report) REP.save(G.report);
+    PROF.onMatch(P, win, me, R, G.report ? G.report.id : 0);
     SAVE.touch(); this.showProfile();
   },
   /* ----- per-frame ----- */

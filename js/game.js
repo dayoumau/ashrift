@@ -57,7 +57,10 @@ function alliesIn(src, x, z, r, heroOnly) {
 }
 function inCone(src, u, dir, half, r) { const d = udist(src, u); if (d > r + u.radius) return false; return d < 1.2 || Math.abs(angDiff(dir, angTo(src.x, src.z, u.x, u.z))) <= half; }
 function targetable(src, t) { return t.alive && !(t.struct && t.protected); }
-function after(t, fn) { G.timers.push({ t: G.time + t, fn }); }
+/* DMG_CTX: which hero ability (or item) is running right now, so the match report can split a hero's damage by ability.
+   It is set around ability.cast and item use, and carried into everything started from there: timers, actors, projectiles, dashes, ticking buffs */
+let DMG_CTX = null;
+function after(t, fn) { G.timers.push({ t: G.time + t, fn, ctx: DMG_CTX }); }
 function telegraph(src, x, z, r, delay, color) { FX.decal(x, z, r, color, delay); G.dangers.push({ x, z, r, team: src.team, until: G.time + delay }); }
 
 /* ---------- buffs ---------- */
@@ -66,7 +69,7 @@ function addBuff(u, b) {
   if (u.struct && (b.stun || b.root || b.slow || b.silence || b.blind)) return null;
   if (u.boss) { if (b.stun || b.root || b.blind) b.dur *= 0.35; if (b.slow) b.slow *= 0.5; }
   if (u.ten && (b.stun || b.root || b.silence)) b.dur *= 1 - u.ten;
-  b.max = b.dur; b.acc = 0; if (b.shield) b.shieldMax = b.shield;
+  b.max = b.dur; b.acc = 0; if (b.shield) b.shieldMax = b.shield; if (b.ctx === undefined) b.ctx = DMG_CTX;
   if (b.id) { const i = u.buffs.findIndex(o => o.id === b.id); if (i >= 0) { const o = u.buffs[i]; if (o.fx) o.fx.dead = true; if (b.stackTo) b.stacks = Math.min(b.stackTo, (o.stacks || 1) + 1); u.buffs.splice(i, 1); } }
   u.buffs.push(b);
   if (b.stun) { u.windup = 0; u.dash = null; u.stunned = true; if (u.recall > 0) breakRecall(u); }
@@ -81,8 +84,8 @@ function updateBuffs(u, dt) {
   const B = u.buffs;
   for (let i = B.length - 1; i >= 0; i--) {
     const b = B[i]; b.dur -= dt;
-    if (b.every) { b.acc += dt; while (b.acc >= b.every && u.alive) { b.acc -= b.every; b.onTick(u, b); } if (!u.alive) return; }
-    if (b.dur <= 0 || b.dead || (b.shieldMax && b.shield <= 0)) { B.splice(i, 1); if (b.fx) b.fx.dead = true; if (b.onEnd) b.onEnd(u, b); if (!u.alive) return; continue; }
+    if (b.every) { b.acc += dt; DMG_CTX = b.ctx; while (b.acc >= b.every && u.alive) { b.acc -= b.every; b.onTick(u, b); } DMG_CTX = null; if (!u.alive) return; }
+    if (b.dur <= 0 || b.dead || (b.shieldMax && b.shield <= 0)) { B.splice(i, 1); if (b.fx) b.fx.dead = true; if (b.onEnd) { DMG_CTX = b.ctx; b.onEnd(u, b); DMG_CTX = null; } if (!u.alive) return; continue; }
     if (b.ms) ms += b.ms; if (b.slow && b.slow > slow) slow = b.slow; if (b.as) as += b.as; if (b.ad) ad += b.ad; if (b.ap) ap += b.ap; if (b.def) def += b.def;
     if (b.dmgOut) { dout *= b.dmgOut; if (b.amp) { ampS = b.amp; ampK *= b.dmgOut; } } if (b.dmgIn) din *= b.dmgIn; if (b.ls) ls += b.ls; if (b.shield > 0) sh += b.shield; if (b.healCut > hc) hc = b.healCut;
     if (b.stun) stun = true; if (b.root) root = true; if (b.silence) sil = true; if (b.invuln) inv = true; if (b.blind) blind = true; if (b.air) air = Math.max(air, Math.sin(Math.PI * clamp(1 - b.dur / b.max, 0, 1)) * b.air);
@@ -106,7 +109,7 @@ const DMG_K = {
   mora: 1.4, nox: 1.65, morg: 1.4, aisa: 1.65, zar: 1.85, fenris: 1.2, reiji: 1.4, yuki: 1.85, cassius: 1.45, ragna: 1.5,
   toplak: 1.45, groh: 1.55, grimm: 1.45, brand: 1.6, oriel: 1.1, nisa: 1.2, lira: 1.25, hald: 1.25, kolomba: 1.35, kostyan: 1.38,
   shiro: 1.15, kaisei: 1.45, umbra: 1.6, rampage: 1.0, jin: 1.6, hikaru: 1.6, dash: 1.2, tokiko: 1.1, riku: 1.2, ashen: 1.3, chess: 1.7, mei: 1.25,
-  kagari: 1.0, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1, frieren: 1.15, lelouch: 1.3, ichigo: 1.36, carlotta: 1.22, raul: 1.2, tanya: 0.95, setsuna: 1.25, reiner: 1.0, jinwoo: 1.4, misaka: 1.15, megumin: 1.5, levi: 0.85, zenitsu: 0.9, silas: 1.2, wlad: 1.8
+  kagari: 1.0, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1, frieren: 1.15, lelouch: 1.3, ichigo: 1.36, carlotta: 1.22, raul: 1.2, tanya: 0.95, setsuna: 1.25, reiner: 1.0, jinwoo: 1.4, misaka: 1.15, megumin: 1.5, levi: 0.85, zenitsu: 0.9, silas: 1.2, wlad: 1.8, nereya: 1.75
 };
 const HEAL_K = { oriel: 1.9, hald: 1.5, nisa: 2.3, lira: 2.8, kolomba: 2.0, ashen: 2.6, chess: 1.8, kagari: 1.5, lin: 3.0, kwame: 1.6, agafya: 2.2, frieren: 1.6, lelouch: 1.7 };
 function damage(src, tgt, amt, type, o) {
@@ -134,6 +137,7 @@ function damage(src, tgt, amt, type, o) {
   tgt.lastDamageT = G.time; tgt.flash = 1;
   if (src) {
     tgt.lastHitBy = src;
+    REP.dmg(src, tgt, Math.min(d, tgt.hp), o);
     if (src.kind === 'hero') { const dd = Math.min(d, tgt.hp); src.dmgDealt += d; if (tgt.kind === 'hero') { src.heroAggroT = G.time; tgt.dmgBy[src.id] = G.time; if (src.team !== tgt.team) { src.dmgHero += dd; if (src.ampBy && src.ampBy !== src && src.ampK > 1) src.ampBy.healDone += dd * (1 - 1 / src.ampK); } } else if (tgt.struct) src.dmgTower += dd; }
   }
   if (tgt.kind === 'hero') tgt.dmgTaken += Math.min(d, tgt.hp);
@@ -220,6 +224,7 @@ function heroDeath(u, src) {
     for (const b of killer.buffs) { const s = b.src; if (s && s !== killer && s.kind === 'hero' && s.team === killer.team && !sup.has(s) && !(G.time - (u.dmgBy[s.id] || -99) < 10)) { sup.add(s); s.assists++; addGold(s, 100, true); gainXp(s, 40 + u.level * 12); } }
   } else for (const h of G.heroes) if (h.alive && h.team !== u.team && udist(h, u) < 17) gainXp(h, 40 + u.level * 10);
   for (const o of G.heroes) if (o.team !== u.team && o.def.onHeroDeath && (o === killer || (o.alive && udist(o, u) < 14))) o.def.onHeroDeath(o, u);
+  REP.kill(u, own ? null : killer);
   u.streak = 0; u.feed = (u.feed || 0) + 1; u.dmgBy = {}; u.respawnT = 6 + u.level * 1.9; u.order = null; u.path = null; u.recall = 0; u.castLock = 0;
   FX.explosion(u.x, u.z, 2.6, u.pcol); FX.pillar(u.x, u.z, { r: 1.3, h: 15, color: 0xffffff, life: 0.9 });
   if (G.player && (u === G.player || killer === G.player) && FX.near(u.x, u.z, 40)) { FX.hitstop(0.11); FX.punch(0.9); FX.warp('lens', u.x, 1.4, u.z, { r: 6, str: 1.2, life: 0.5 }); }
@@ -229,6 +234,7 @@ function heroDeath(u, src) {
 }
 function towerDeath(u, src) {
   const et = 1 - u.team; G.teams[et].towers++;
+  REP.ev({ k: "tower", team: u.team, lane: u.lane, tier: u.tier, by: src && src.kind === "hero" ? G.heroes.indexOf(src) : -1 });
   NAV.block(u.x, u.z, u.blockR, false);
   u.rig.crystal.visible = false; u.rig.spr.visible = false; u.rig.body.scale.y = 0.3; u.rig.body.rotation.z = 0.12; if (u.aim) u.aim.visible = false;
   for (const m of u.rig.mats) m.color.setScalar(0.45);
@@ -396,7 +402,7 @@ function updateHero(h, dt) {
   for (let i = 0; i < 4; i++) if (h.cd[i] > 0) h.cd[i] -= dt;
   if (h.atkCd > 0) h.atkCd -= dt;
   if (h.stunned) { h.moving = false; h.windup = 0; return; }
-  if (h.dash) { updateDash(h, dt); h.moving = false; return; }
+  if (h.dash) { updateDash(h, dt); DMG_CTX = null; h.moving = false; return; }
   if (h.forced) { h.moving = false; return; }
   if (h.castLock > 0) { h.castLock -= dt; h.moving = false; return; }
   if (h.recall > 0) {
@@ -451,7 +457,8 @@ function castAbility(h, i, pt) {
     x = unit.x; z = unit.z; if (ty === 'note') dir = h.facing; else if (unit !== h) dir = angTo(h.x, h.z, x, z);
   } else if (rng && d > rng) { x = h.x + dx / d * rng; z = h.z + dz / d * rng; d = rng; }
   if (ty !== 'self' && ty !== 'note') h.facing = dir;
-  const r = ab.cast(h, { x, z, dir, dist: d, unit, range: rng }); if (r === false) return false;
+  const pc = DMG_CTX; DMG_CTX = { h, i }; let r; try { r = ab.cast(h, { x, z, dir, dist: d, unit, range: rng }); } finally { DMG_CTX = pc; } if (r === false) return false;
+  REP.cast(h, i);
   FX.castCue(h, i, ab);
   if (!free) h.mana -= ab.cost;
   h.cd[i] = (r && r.cd !== undefined) ? r.cd : ab.cd * 100 / (100 + h.haste);
@@ -463,7 +470,7 @@ function castAbility(h, i, pt) {
 function D(h, base, perLvl, adR, apR) { return base + perLvl * (abEff(h) - 1) + (adR || 0) * h.ad + (apR || 0) * h.ap; }
 
 function homing(src, tgt, o) {
-  const p = { hom: true, src, tgt, x: src.x + Math.sin(src.facing) * 0.8, y: o.y || 1.6, z: src.z + Math.cos(src.facing) * 0.8, o, mesh: null, rib: null };
+  const p = { hom: true, src, tgt, x: src.x + Math.sin(src.facing) * 0.8, y: o.y || 1.6, z: src.z + Math.cos(src.facing) * 0.8, o, mesh: null, rib: null, ctx: DMG_CTX };
   if (o.x !== undefined) { p.x = o.x; p.z = o.z; }
   if (o.mesh && FX.near(src.x, src.z, 70)) { p.mesh = FX.projMesh(o.mesh, o.color, o.size); p.rib = FX.ribbon(o.color, o.size * 1.2 + 0.3, 10); }
   G.proj.push(p); return p;
@@ -471,7 +478,7 @@ function homing(src, tgt, o) {
 function shot(src, o) {
   const dir = o.dir, p = {
     lin: true, src, team: src.team, x: o.x === undefined ? src.x + Math.sin(dir) * 1.0 : o.x, z: o.z === undefined ? src.z + Math.cos(dir) * 1.0 : o.z, y: o.y || 1.5,
-    vx: Math.sin(dir) * o.speed, vz: Math.cos(dir) * o.speed, left: o.range + (src.castRange || 0), w: o.w || 0.8, hit: new Set(), o, mesh: null, rib: null, dir, n: 0
+    vx: Math.sin(dir) * o.speed, vz: Math.cos(dir) * o.speed, left: o.range + (src.castRange || 0), w: o.w || 0.8, hit: new Set(), o, mesh: null, rib: null, dir, n: 0, ctx: DMG_CTX
   };
   if (o.mesh !== false) { p.mesh = FX.projMesh(o.mesh || 'bolt', o.color, o.size || 1); p.mesh.rotation.y = dir; p.mesh.position.set(p.x, p.y, p.z); }
   if (o.ribbon !== false) p.rib = FX.ribbon(o.color, o.ribbon || ((o.size || 1) * 0.8 + 0.35), 14);
@@ -480,7 +487,7 @@ function shot(src, o) {
 function updateProjectiles(dt) {
   const P = G.proj, ts = G.tstop && G.time < G.tstop.until ? G.tstop : null;
   for (let i = P.length - 1; i >= 0; i--) {
-    const p = P[i], o = p.o; let end = false;
+    const p = P[i], o = p.o; let end = false; DMG_CTX = p.ctx || null;
     if (ts && p.src.team !== ts.team && dist(p.x, p.z, ts.x, ts.z) < ts.r) continue;   // stopped time: enemy projectiles hang in the air
     if (p.hom) {
       const t = p.tgt;
@@ -511,14 +518,15 @@ function updateProjectiles(dt) {
     if (p.rib) { if (end) p.rib.end(); else p.rib.add(p.x, p.y, p.z); }
     if (end) { if (p.mesh) FX.killMesh(p.mesh); P.splice(i, 1); }
   }
+  DMG_CTX = null;
 }
 function dashTo(u, x, z, speed, o) {
   o = o || {}; if (o.fly) { const q = NAV.nearest(x, z); x = q.x; z = q.z; }
-  u.dash = { x, z, speed, o, hit: new Set(), total: Math.max(0.01, dist(u.x, u.z, x, z)), rib: o.ribbon === false ? null : FX.ribbon(o.ribbon || u.pcol || 0xffffff, 1.8, 12) };
+  u.dash = { x, z, speed, o, hit: new Set(), total: Math.max(0.01, dist(u.x, u.z, x, z)), rib: o.ribbon === false ? null : FX.ribbon(o.ribbon || u.pcol || 0xffffff, 1.8, 12), ctx: DMG_CTX };
   u.path = null; u.moving = false; u.windup = 0; u.castLock = 0;
 }
 function updateDash(u, dt) {
-  const D2 = u.dash, o = D2.o; if (o.follow && o.follow.alive) { D2.x = o.follow.x; D2.z = o.follow.z; }
+  const D2 = u.dash, o = D2.o; DMG_CTX = D2.ctx || null; if (o.follow && o.follow.alive) { D2.x = o.follow.x; D2.z = o.follow.z; }
   const dx = D2.x - u.x, dz = D2.z - u.z, d = Math.hypot(dx, dz), stop = o.stop || 0; let st = D2.speed * dt, done = false;
   if (d > 0.01) u.facing = Math.atan2(dx, dz);
   if (d - stop <= st) { st = Math.max(0, d - stop); done = true; }
@@ -669,6 +677,7 @@ function monsterDeath(u, killer) {
       // the Aegis goes to whoever struck the last blow (or, if that was not a hero, to the nearest hero of that side)
       let hold = killer && killer.alive ? killer : null; if (!hold) { let bd = 24; for (const h of G.heroes) if (h.alive && h.team === team && udist(h, u) < bd) { bd = udist(h, u); hold = h; } }
       if (hold) aegisGive(hold);
+      REP.ev({ k: 'boss', team, by: killer && killer.kind === 'hero' ? G.heroes.indexOf(killer) : -1 });
     }
   } else { const c = G.camps[u.camp]; c.alive--; if (c.alive <= 0) c.respawn = G.time + 75; }
 }
@@ -766,6 +775,7 @@ function setupMatch(heroId, diff, lane, role, pre) {
   const rm = new THREE.Mesh(new THREE.OctahedronGeometry(0.7, 0), new THREE.MeshBasicMaterial({ color: 0x7dffc8 })); rm.scale.set(0.7, 1.4, 0.7); rm.position.set(RUNE_POS.x, 1.6, RUNE_POS.z); rm.add(glowSprite(0x7dffc8, 5)); rm.visible = false; G.scene.add(rm);
   G.rune = { mesh: rm, active: false, next: 45 };
   refreshProtection();
+  REP.start(pre); PING.reset();
   G.state = 'play'; G.camX = G.player.x; G.camZ = G.player.z; G.camSnap = true;
 }
 function updateRune(dt) {
@@ -810,7 +820,7 @@ function separate() {
 }
 function updateGame(dt) {
   G.time += dt;
-  for (let i = G.timers.length - 1; i >= 0; i--) if (G.timers[i].t <= G.time) { const t = G.timers[i]; G.timers.splice(i, 1); t.fn(); }
+  for (let i = G.timers.length - 1; i >= 0; i--) if (G.timers[i].t <= G.time) { const t = G.timers[i]; G.timers.splice(i, 1); DMG_CTX = t.ctx || null; t.fn(); DMG_CTX = null; }
   if (G.over) { G.overT += dt; return; }
   // waves
   if (G.time >= G.nextWave) {
@@ -823,6 +833,7 @@ function updateGame(dt) {
   for (let i = 0; i < CAMPS.length; i++) { const c = G.camps[i]; if (c.alive <= 0 && G.time >= c.respawn) { c.respawn = 1e9; spawnCamp(i); } }
   if (!G.boss && G.time >= G.bossRespawn) { G.bossRespawn = 1e9; spawnBoss(); UI.announce('Страж Разлома пробудился', '#b99cff'); }
   updateRune(dt);
+  REP.tick();
   // passive income
   for (const h of G.heroes) { const gr = (2.8 + (h.goldRate || 0)) * dt; h.gold += gr; h.goldTotal += gr; }
   // fountain defence
@@ -844,7 +855,7 @@ function updateGame(dt) {
     switch (u.kind) { case 'hero': updateHero(u, dt); break; case 'minion': updateMinion(u, dt); break; case 'monster': updateMonster(u, dt); break; case 'summon': updateSummon(u, dt); break; default: updateStructure(u, dt); }
   }
   updateProjectiles(dt);
-  for (let i = G.actors.length - 1; i >= 0; i--) if (G.actors[i].update(dt) === false) G.actors.splice(i, 1);
+  for (let i = G.actors.length - 1; i >= 0; i--) { const a = G.actors[i]; DMG_CTX = a._ctx || null; if (a.update(dt) === false) G.actors.splice(G.actors.indexOf(a), 1); } DMG_CTX = null;
   separate();
   for (let i = G.units.length - 1; i >= 0; i--) { const u = G.units[i]; if (u.remove) { G.scene.remove(u.rig.root); G.units.splice(i, 1); } }
 }
@@ -1011,7 +1022,7 @@ function useItem(h, slot, pt) {
   const id = h.items[slot], it = id && ITEM[id]; if (!it || !it.active) return 'none';
   if (h.dead || h.stunned || G.over) return 'no';
   if ((h.icd[id] || 0) > G.time) return 'cd';
-  if (it.active.use(h, pt) === false) return 'tgt';
+  const pc = DMG_CTX; DMG_CTX = { h, item: id }; let ok; try { ok = it.active.use(h, pt); } finally { DMG_CTX = pc; } if (ok === false) return 'tgt';
   h.icd[id] = G.time + it.active.cd; if (h.recall > 0) cancelRecall(h); return 'ok';
 }
 /* ---------- end-of-match rating: every hero gets 0-10 from what he did, relative to the best figure of the match in each column ---------- */

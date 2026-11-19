@@ -234,6 +234,7 @@ function wlBuyback(h) {
   if (!h.dead || G.over) return false; const s = wlBuyState(h);
   if (!s.ok) { if (h === G.player) { UI.msg(s.text); SFX.play('deny'); } return false; }
   h.gold -= WL_BUY; h.buyCd = G.time + WL_BUYCD; const dx = h.x, dz = h.z;
+  REP.ev({ k: 'buy', who: G.heroes.indexOf(h) });
   if (FX.near(dx, dz, 60)) { FX.pillar(dx, dz, { r: 1.1, h: 12, color: WLD.c, life: 0.6 }); wlCoins(dx, 0.6, dz, 8, 4, 7, 1.4); }
   respawn(h);
   if (FX.near(h.x, h.z, 70)) {

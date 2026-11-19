@@ -198,6 +198,7 @@ function actDown(act) {
   const P = G.player;
   if (AB[act] !== undefined) beginAim(AB[act]);
   else if (act === 'grab') grabStart();
+  else if (act === 'ping') PING.start();
   else if (act === 'recall') UI.recall();
   else if (act === 'stop') { P.order = null; P.path = null; P.moving = false; }
   else if (act === 'shop') UI.toggleShop();
@@ -205,7 +206,7 @@ function actDown(act) {
   else if (act === 'center') { G.camLock = true; G.camSnap = true; }
 }
 function actUp(act) {
-  if (act === 'score') UI.showScore(false); else if (act === 'grab') grabEnd();
+  if (act === 'score') UI.showScore(false); else if (act === 'grab') grabEnd(); else if (act === 'ping') PING.end();
   else if (AB[act] !== undefined && G.state === 'play' && !G.paused) releaseAim(AB[act]);
 }
 // full screen: a button in the menu and in the pause box; hidden where the browser does not allow it
@@ -233,7 +234,7 @@ function bindInput(cv) {
   // the launcher starts in full screen if it was left that way
   if (tauriWin()) { let fs = '1'; try { fs = localStorage.getItem('ashrift.fs') || '1'; } catch (e) { } if (fs === '1') setFull(true); }
   addEventListener('keydown', e => { if (e.code === 'F11' && tauriWin()) { e.preventDefault(); toggleFull(); } });
-  addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; if (PING.open) PING.hover(); });
   cv.addEventListener('mousedown', e => {
     SFX.init(); if (G.state !== 'play' || UI.capture) return; mouse.x = e.clientX; mouse.y = e.clientY; const g = groundAt(mouse.x, mouse.y); G.mx = g.x; G.mz = g.z;
     // wheel and side buttons act like keys: whatever action is bound to them (by default the wheel button drags the camera)
@@ -251,7 +252,7 @@ function bindInput(cv) {
   addEventListener('auxclick', e => e.preventDefault());
   addEventListener('contextmenu', e => e.preventDefault());
   document.addEventListener('mouseleave', () => { mouse.rmb = false; });
-  addEventListener('blur', () => { mouse.rmb = false; grabEnd(); for (const k in keys) keys[k] = false; G.aim = -1; UI.showScore(false); });
+  addEventListener('blur', () => { mouse.rmb = false; grabEnd(); PING.cancel(); for (const k in keys) keys[k] = false; G.aim = -1; UI.showScore(false); });
   cv.addEventListener('wheel', e => e.preventDefault(), { passive: false });   // the wheel does not zoom: the camera height is fixed
   addEventListener('keydown', e => {
     const c = e.code;
@@ -259,6 +260,7 @@ function bindInput(cv) {
     if (UI.capture) { e.preventDefault(); e.stopPropagation(); if (c !== 'Escape') { setBind(UI.capture, c); SFX.play('ui'); } UI.endCapture(); return; }
     keys[c] = true;
     // in the menu Esc steps back toward the home screen
+    if (G.state === 'menu' && c === 'Escape' && PROF.closeReport()) return;
     if (G.state === 'menu' && c === 'Escape' && !$('menu').hidden && $('savecode').hidden && UI.scr && UI.scr !== 'home') { SFX.init(); SFX.play('ui'); UI.back(); return; }
     if (G.state !== 'play') return;
     const act = KEYMAP[c]; if (act && !(e.target && e.target.tagName === 'INPUT')) e.preventDefault();
@@ -269,7 +271,7 @@ function bindInput(cv) {
     if (e.shiftKey && AB[act] !== undefined) { if (!e.repeat) learnAbility(AB[act]); return; }   // Shift + ability key spends a skill point
     if (act && !e.repeat) actDown(act);
   });
-  addEventListener('keyup', e => { const c = e.code; keys[c] = false; if (KEYMAP[c]) actUp(KEYMAP[c]); });
+  addEventListener('keyup', e => { const c = e.code; keys[c] = false; if (KEYMAP[c]) { if (G.state === 'play') e.preventDefault(); actUp(KEYMAP[c]); } });
 }
 function updateIndicators() {
   const P = G.player, on = G.state === 'play' && G.aim >= 0 && P && !P.dead;

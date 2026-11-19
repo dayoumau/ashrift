@@ -22,9 +22,9 @@ function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.fl
 
 /* key bindings: action -> KeyboardEvent.code, or 'Mouse1' (wheel button) / 'Mouse3' / 'Mouse4' (side buttons).
    Saved per browser; the game works the same if storage is unavailable */
-const BIND_DEF = { q: 'KeyQ', w: 'KeyW', e: 'KeyE', r: 'KeyR', recall: 'KeyB', shop: 'KeyP', stop: 'KeyS', grab: 'Mouse1', pan: 'KeyC', center: 'Space', lock: 'KeyY', score: 'Tab', help: 'F1' };
+const BIND_DEF = { q: 'KeyQ', w: 'KeyW', e: 'KeyE', r: 'KeyR', recall: 'KeyB', shop: 'KeyP', stop: 'KeyS', grab: 'Mouse1', pan: 'KeyC', center: 'Space', lock: 'KeyY', score: 'Tab', ping: 'AltLeft', help: 'F1' };
 const BIND_LIST = [['q', 'Первая способность'], ['w', 'Вторая способность'], ['e', 'Третья способность'], ['r', 'Ультимейт'], ['recall', 'Возврат на базу'], ['shop', 'Магазин'], ['stop', 'Остановиться'],
-  ['grab', 'Тащить камеру (зажать)'], ['pan', 'Камера идёт за курсором (зажать)'], ['center', 'Камера к герою'], ['lock', 'Свободная / привязанная камера'], ['score', 'Таблица счёта (зажать)'], ['help', 'Показать / скрыть подсказку']];
+  ['grab', 'Тащить камеру (зажать)'], ['pan', 'Камера идёт за курсором (зажать)'], ['center', 'Камера к герою'], ['lock', 'Свободная / привязанная камера'], ['score', 'Таблица счёта (зажать)'], ['ping', 'Команды союзникам (зажать)'], ['help', 'Показать / скрыть подсказку']];
 const BINDS = Object.assign({}, BIND_DEF), KEYMAP = {};
 function mapBinds() { for (const k in KEYMAP) delete KEYMAP[k]; for (const a in BINDS) KEYMAP[BINDS[a]] = a; }
 function loadBinds() { try { const s = JSON.parse(localStorage.getItem('ashrift.binds') || 'null'); if (s) for (const a in BIND_DEF) if (typeof s[a] === 'string' && s[a]) BINDS[a] = s[a]; } catch (e) { } mapBinds(); }

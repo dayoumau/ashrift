@@ -1,9 +1,12 @@
 'use strict';
 /* ===== bot AI: laning, last-hits, trades, tower rules, dodging, jungle, ganks, team objectives, ability usage, shopping ===== */
+/* difficulty: aim spread, aggression, how often abilities are used, dodging, last hits, think interval —
+   and (v0.44) retreat: the health at which a bot goes home; focus: how much it joins the target its allies are hitting;
+   threat: how much it fears enemy ultimates that are ready; secure: going for a kill it can finish; peel: saving an ally under attack */
 const DIFFS = [
-  { name: 'Лёгкая', aim: 3.4, aggro: 0.72, cast: 0.35, dodge: 0, lasthit: 0.3, think: 0.42 },
-  { name: 'Средняя', aim: 1.7, aggro: 1.0, cast: 0.65, dodge: 0.35, lasthit: 0.6, think: 0.28 },
-  { name: 'Сложная', aim: 0.6, aggro: 1.16, cast: 0.95, dodge: 0.8, lasthit: 0.9, think: 0.2 }
+  { name: 'Лёгкая', aim: 3.4, aggro: 0.72, cast: 0.35, dodge: 0.08, lasthit: 0.3, think: 0.42, retreat: 0.2, focus: 0.15, threat: 0, secure: 0, peel: 0 },
+  { name: 'Средняя', aim: 1.7, aggro: 1.0, cast: 0.65, dodge: 0.35, lasthit: 0.6, think: 0.28, retreat: 0.3, focus: 0.55, threat: 0.5, secure: 0.5, peel: 0.4 },
+  { name: 'Сложная', aim: 0.6, aggro: 1.16, cast: 0.95, dodge: 0.8, lasthit: 0.9, think: 0.2, retreat: 0.34, focus: 1, threat: 1, secure: 1, peel: 1 }
 ];
 function botInit(h, lane) {
   const ally = G.player && h.team === G.player.team;
@@ -77,6 +80,11 @@ function farmPoint(h, range, minN) {
     if (n > bn) { bn = n; best = m; }
   }
   return bn >= minN ? best : null;
+}
+// a rough idea of how much damage a bot can put out in the next couple of seconds: a few attacks and whatever abilities are ready
+function botBurst(h) {
+  let n = 0; for (let i = 0; i < 4; i++) { const ab = h.def.abilities[i]; if (ab && !ab.passive && h.al[i] && h.cd[i] <= 0 && h.mana >= ab.cost) n += i === 3 ? 2 : 1; }
+  return (h.ad * 2.2 + (60 + 18 * h.level + h.ap * 0.6) * n) * (DMG_K[h.def.id] || 1) * 0.8;
 }
 function foesNear(h, x, z, r) { let n = 0; for (const o of G.heroes) if (o.alive && o.team !== h.team && dist(o.x, o.z, x, z) < r) n++; return n; }
 
@@ -268,6 +276,7 @@ function pickTask(h) {
 }
 function runTask(h, hpP, nf) {
   const A = h.ai, T = A.task; let done = G.time > T.until;
+  const dz = T.type === 'camp' ? CAMPS[T.i] : T.type === 'gank' ? T.tgt : T.type === 'rune' ? RUNE_POS : null; if (dz && PING.inDanger(h, dz.x, dz.z)) done = true;   // an ally marked that way as dangerous
   if (T.type === 'rune') { if (!G.rune.active) done = true; else botMove(h, RUNE_POS.x, RUNE_POS.z); }
   else if (T.type === 'camp') {
     let m = null, bd = 1e9; for (const u of G.units) if (u.alive && u.kind === 'monster' && u.camp === T.i) { const d = udist(h, u) - (u.mtype === 'big' ? 0 : 3); if (d < bd) { bd = d; m = u; } }
@@ -279,7 +288,7 @@ function runTask(h, hpP, nf) {
 
 function botThink(h, dt) {
   const A = h.ai;
-  if (h.dead) { if (!A.shopped) { botShop(h); A.shopped = true; } A.state = 'lane'; A.shopTrip = false; A.task = null; return; }
+  if (h.dead) { if (!A.shopped) { botShop(h); A.shopped = true; } A.state = 'lane'; A.shopTrip = false; A.task = null; A.cmd = null; return; }
   A.shopped = false;
   if (h.geass && G.time < h.geass.until) { A.task = null; return; }   // under the geass the bot does not think for itself
   if (h.tauntT > G.time) { A.task = null; return; }   // taunted: he can only go for the one who called him
@@ -307,10 +316,13 @@ function botThink(h, dt) {
     }
     if (need && Math.random() < d.dodge && NAV.ok(mx, mz)) { botMove(h, mx, mz, true); A.think = 0.3; return; }
   }
+  // --- the player called a retreat and this bot agreed
+  if (A.cmd && A.cmd.type === 'retreat' && botCmd(h, nf, nfd)) return;
 
-  // --- retreat / recall / shop trips
+  // --- retreat / recall / shop trips. A careful bot also backs off early when it is hurt and outnumbered around it
+  const outnum = d.threat > 0 && hpP < 0.25 + 0.3 * d.threat && foes.filter(f => udist(h, f) < 12).length >= friends.length + 2;
   if (A.state === 'retreat') { if (h.inBase && hpP > 0.85 && mpP > 0.6) { A.state = 'lane'; A.shopTrip = false; } }
-  else if (hpP < 0.3 || (hpP < 0.42 && mpP < 0.12)) A.state = 'retreat';
+  else if (hpP < d.retreat || (hpP < 0.42 && mpP < 0.12) || outnum) { A.state = 'retreat'; if (outnum && Math.random() < 0.3) A.cmd = null; }
   else if (h.items.length < 6 && h.gold >= nextCost(h) + 120 && nfd > 22 && G.time - A.lastShop > 50 && !underTower && !O) { A.state = 'retreat'; A.shopTrip = true; }
   if (A.state === 'retreat') {
     A.task = null; botCast(h, 'retreat', nf, nf);
@@ -341,18 +353,27 @@ function botThink(h, dt) {
     botMove(h, core.x + sgn * 7, core.z - sgn * 7); return;
   }
 
+  // --- calls: an ally bot in trouble asks for help; a call this bot accepted comes before its own plans
+  PING.botAsk(h);
+  if (A.cmd && botCmd(h, nf, nfd)) return;
+
   // --- fight evaluation (joins skirmishes an ally has already started nearby)
   const pw = u => (0.3 + 0.7 * u.hp / u.maxHp) * Math.sqrt(u.maxHp * (u.ad + u.ap * 0.7 + 30)) / 180;
   let tgt = null, best = -1e9;
   for (const f of foes) {
     const dd = udist(h, f), wr = f.noteT > G.time, hot = wr || G.time - f.lastDamageT < 2.5 || G.time - f.heroAggroT < 2.5;   // wr: he is waiting out a notebook entry, any hit breaks it
     if (dd > (hot ? 22 : (h.range > 5 ? 17 : 15))) continue;
-    const sc = (1 - f.hp / f.maxHp) * 8 - dd * 0.35 + (f === A.tgt ? 1.5 : 0) + (wr ? 7 : 0); if (sc > best) { best = sc; tgt = f; }
+    let sc = (1 - f.hp / f.maxHp) * 8 - dd * 0.35 + (f === A.tgt ? 1.5 : 0) + (wr ? 7 : 0);
+    // focus: join the target the allies are already hitting; secure: a kill within reach; peel: whoever is beating up a hurt ally
+    if (d.focus) { let n = 0; for (const a of friends) if ((a.order && a.order.tgt === f) || (a.ai && a.ai.tgt === f) || (a.isPlayer && G.time - (f.dmgBy[a.id] || -99) < 1.5)) n++; sc += n * 2.2 * d.focus; }
+    if (d.secure && dd < h.range + 8 && f.hp < botBurst(h)) sc += 6 * d.secure;
+    if (d.peel) for (const a of friends) if (a.hp / a.maxHp < 0.4 && udist(a, f) < 6 && G.time - a.lastDamageT < 1) { sc += 3.5 * d.peel; break; }
+    if (sc > best) { best = sc; tgt = f; }
   }
   if (tgt) {
     let mine = pw(h), theirs = 0, dive = false;
     for (const a of friends) if (udist(a, tgt) < 15) mine += pw(a);
-    for (const f of foes) if (udist(f, tgt) < 12) theirs += pw(f);
+    for (const f of foes) if (udist(f, tgt) < 12) { theirs += pw(f); if (d.threat && f.al && f.al[3] > 0 && f.cd[3] <= 0 && f.mana >= ((f.def.abilities[3] || {}).cost || 0)) theirs += 0.35 * d.threat; }   // a ready enemy ultimate weighs on a careful bot
     for (const u of G.units) {
       if (!u.struct || !u.alive || udist(u, tgt) > u.range + 2) continue;
       if (u.team === myT) mine += 1.6;
@@ -384,7 +405,10 @@ function botThink(h, dt) {
   }
 
   // --- laning (a team push overrides the assigned lane)
-  const laneName = O && O.type === 'push' ? O.lane : A.lane, L = LANES[laneName]; let frontS = null, noWave = false;
+  // a spot an ally marked as dangerous: step out of it rather than walk around inside
+  const Z = PING.inDanger(h, h.x, h.z);
+  if (Z && !(A.cmd && A.cmd.type === 'attack')) { const a = angTo(Z.x, Z.z, base.fountain.x, base.fountain.z), q = NAV.nearest(Z.x + Math.sin(a) * (Z.r + 3), Z.z + Math.cos(a) * (Z.r + 3)); A.task = null; botMove(h, q.x, q.z); return; }
+  const laneName = A.cmd && A.cmd.type === 'push' && A.cmd.lane ? A.cmd.lane : (O && O.type === 'push' ? O.lane : A.lane), L = LANES[laneName]; let frontS = null, noWave = false;
   for (const m of G.units) if (m.alive && m.kind === 'minion' && m.team === myT && m.lane === laneName) { const s = laneProject(L, m.x, m.z); if (frontS === null || (s - frontS) * sgn > 0) frontS = s; }
   let ownT = null; for (const u of G.units) if (u.kind === 'tower' && u.alive && u.team === myT && u.lane === laneName && (!ownT || (u.laneS - ownT.laneS) * sgn > 0)) ownT = u;
   let et = null; for (const u of G.units) if (u.kind === 'tower' && u.alive && u.team !== myT && u.lane === laneName && (!et || (u.laneS - et.laneS) * sgn < 0)) et = u;
@@ -404,7 +428,7 @@ function botThink(h, dt) {
   }
   // --- quiet lane: pick up a side task instead of idling under the tower
   if (A.task && (siege >= 3 || defend)) { A.task = null; A.taskCd = G.time + 10; }
-  if (!A.task && !O && !defend && G.time > A.taskCd && eMin === 0 && siege === 0 && nfd > 20 && hpP > 0.6) { A.task = pickTask(h); if (!A.task) A.taskCd = G.time + 6; }
+  if (!A.task && !O && !A.cmd && !defend && G.time > A.taskCd && eMin === 0 && siege === 0 && nfd > 20 && hpP > 0.6) { A.task = pickTask(h); if (!A.task) A.taskCd = G.time + 6; }
   if (A.task && runTask(h, hpP, nf)) return;
 
   if (frontS === null) {
