@@ -614,3 +614,27 @@ Object.assign(GLYPH, {
   // a black king with lines converging on it
   rsplan(T) { T.g.fillRect(-6, -4, 12, 18); T.P(-9, -4, 9, -4, 6, -11, -6, -11); T.g.fillRect(-2, -20, 4, 9); T.g.fillRect(-5, -17, 10, 3); T.g.fillRect(-10, 14, 20, 5); T.al(0.45, () => { T.S(2.5, -24, -20, -10, -6); T.S(2.5, 24, -20, 10, -6); T.S(2.5, -24, 22, -11, 15); T.S(2.5, 24, 22, 11, 15); }); }
 });
+
+/* ---------- icon colours: an ability whose effect is not in its hero's colour gets an icon in the colour of the effect itself
+   (null — keep the hero's colour). The twins: the first four are Ten's, the next four Haku's ---------- */
+const ICON_COLS = {
+  aisa: [0x6ac0f0, 0x8fd8ff, 0xa8e4ff, 0x5ab8e8],            // ice: from pale white to clear blue
+  lira: [0x8fbfee, 0x8fbfee, 0x8fbfee, 0x5a9ae0],            // the wind
+  shaya: [null, null, 0xd6c070, null],                       // a curtain of sand
+  vint: [null, null, 0xff8a3a, null],                        // rockets: fire
+  toplak: [null, 0x9fb832, null, null],                      // rotten water
+  dash: [null, 0xf2c81e, null, 0xf2c81e],                    // the gorilla arms and the cyberskeleton are gold
+  riku: [null, 0x58e08a, null, 0x8a56f0],                    // scissors green, the vow violet
+  ashen: [null, null, 0x9fe08a, null],                       // the drag heals: green smoke
+  mei: [null, null, null, 0xd0182a],                         // the scent of blood
+  akito: [0xd0182a, 0x9fe08a, 0x9ad8ff, null],               // the cursed blade red, the smoke break green, the future blue
+  frieren: [null, 0x7ad88a, null, null],                     // a field of flowers
+  lelouch: [null, 0x8a3aff, null, null],                     // Zero's shield
+  ichigo: [null, null, null, 0xff1a2a],                      // the hollow
+  misaka: [0xffa040, null, null, null],                      // the railgun coin burns orange
+  silas: [null, 0xd0a868, 0xff7a2a, 0xd0a868],               // rope, dynamite, rope
+  wlad: [0x5ab86a, null, null, null],                        // banknotes
+  gubert: [null, 0x8fe8ff, 0x8fe8ff, 0xe8963a],              // soap, water, burgers
+  blank: [null, null, 0xffd86a, null, null, null, null, null] // the golden deal
+};
+for (const h of HEROES) { const c = ICON_COLS[h.id]; if (!c) continue; h.abilities.concat(h.alt || []).forEach((a, i) => { if (a && c[i] !== null && c[i] !== undefined) a.iconCol = c[i]; }); }

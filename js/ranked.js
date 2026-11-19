@@ -23,7 +23,9 @@ const DR_TIME = 30;
 const RANKED = {
   d: null, iv: 0, note: '', armed: null,
   // the ranked record inside the saved profile, made sound whatever an old save holds
-  rk() { const p = PROFILE; if (!p.rk || typeof p.rk !== 'object') p.rk = {}; const r = p.rk; r.orp = Math.max(0, Math.round(+r.orp || 0)); r.peak = Math.max(+r.peak || 0, r.orp); r.g = +r.g || 0; r.w = +r.w || 0; if (!Array.isArray(r.hist)) r.hist = []; return r; },
+  rk() { const p = PROFILE; if (!p.rk || typeof p.rk !== 'object') p.rk = {}; const r = p.rk; r.orp = Math.max(0, Math.round(+r.orp || 0)); r.peak = Math.max(+r.peak || 0, r.orp); r.g = +r.g || 0; r.w = +r.w || 0; r.st = Math.max(0, Math.round(+r.st || 0)); if (!Array.isArray(r.hist)) r.hist = []; return r; },
+  // win streak: from the fifth win in a row a win is worth 15 ОРП, then one more for each further win, up to 20
+  winGain(st) { return st >= 5 ? Math.min(20, 15 + (st - 5)) : 10; },
   botDiff(orp) { return orp < 801 ? 0 : (orp < 1401 ? 1 : 2); },
   // "a ranked match is being played in this browser": survives a closed tab, so leaving that way costs the same as giving up
   live(v) { try { if (v === undefined) return localStorage.getItem('ashrift.rklive') === '1'; if (v) localStorage.setItem('ashrift.rklive', '1'); else localStorage.removeItem('ashrift.rklive'); } catch (e) { } return false; },
@@ -35,7 +37,7 @@ const RANKED = {
   show() { const r = this.rk(), c = $('rkchip'), c2 = $('rkchip2'); if (c) c.innerHTML = rankChip(r.orp); if (c2) c2.innerHTML = 'Ваше звание: ' + rankChip(r.orp); const n = $('rknote'); if (n) n.textContent = this.note; },
   checkAbandon() {
     if (!this.live() || G.state === 'play') return; this.live(false);
-    const r = this.rk(), before = r.orp; r.orp = Math.max(0, before - 10); r.g++; r.hist.push(r.orp - before); if (r.hist.length > 10) r.hist.shift(); SAVE.touch();
+    const r = this.rk(), before = r.orp; r.orp = Math.max(0, before - 10); r.g++; r.st = 0; r.hist.push(r.orp - before); if (r.hist.length > 10) r.hist.shift(); SAVE.touch();
     this.note = 'Прошлый рейтинговый матч не был доигран — он засчитан как сдача: −' + (before - r.orp) + ' ОРП'; this.show();
   },
   /* ----- the pause menu: give up (every mode), leave (in a ranked match it costs the same); each asks once more before it acts ----- */
@@ -56,13 +58,13 @@ const RANKED = {
   /* ----- the result of a ranked match ----- */
   settle(win, score, gaveUp) {
     const R = G.ranked; if (!R || R.done) return null; R.done = true; this.live(false);
-    const r = this.rk(), before = r.orp, nominal = win ? 10 : -(gaveUp ? 10 : clamp(Math.round(10 - (score - 3) * 1.25), 5, 10));
+    const r = this.rk(), before = r.orp; r.st = win ? r.st + 1 : 0; const nominal = win ? this.winGain(r.st) : -(gaveUp ? 10 : clamp(Math.round(10 - (score - 3) * 1.25), 5, 10));
     r.orp = Math.max(0, before + nominal); r.peak = Math.max(r.peak, r.orp); r.g++; if (win) r.w++; r.hist.push(r.orp - before); if (r.hist.length > 10) r.hist.shift(); SAVE.touch();
-    return (R.res = { before, after: r.orp, delta: r.orp - before, nominal, win, gaveUp, score });
+    return (R.res = { before, after: r.orp, delta: r.orp - before, nominal, win, gaveUp, score, st: r.st });
   },
   endHTML(res) {
     const a = rankOf(res.after), b = rankOf(res.before), span = a.next === null ? 1 : (res.after - a.min) / (a.next - a.min), sg = v => (v >= 0 ? '+' : '−') + Math.abs(v);
-    const why = res.win ? 'Победа: +10 ОРП' : (res.gaveUp ? 'Сдача: −10 ОРП' : `Поражение: оценка вашей игры ${res.score.toFixed(1)} из 10 — это ${sg(res.nominal)} ОРП (от −5 за сильную игру до −10 за слабую)`) + (res.delta !== res.nominal ? '. Ниже нуля рейтинг не опускается' : '');
+    const why = res.win ? (res.nominal > 10 ? `Победа, серия из ${res.st} подряд: +${res.nominal} ОРП` : 'Победа: +10 ОРП' + (res.st > 1 ? ` · побед подряд: ${res.st}` + (res.st === 4 ? ' — следующая принесёт +15' : '') : '')) : (res.gaveUp ? 'Сдача: −10 ОРП' : `Поражение: оценка вашей игры ${res.score.toFixed(1)} из 10 — это ${sg(res.nominal)} ОРП (от −5 за сильную игру до −10 за слабую)`) + (res.delta !== res.nominal ? '. Ниже нуля рейтинг не опускается' : '');
     const move = a.i > b.i ? `<b class="up">Новое звание: ${a.name}!</b><br>` : (a.i < b.i ? `<b class="dn">Звание понижено: ${a.name}</b><br>` : '');
     return `<div class="erk" style="--rc:${css(a.col)}"><img src="${iconURL(a.icon, a.col)}" alt=""><div class="erkb"><small>РЕЙТИНГОВЫЙ МАТЧ</small><b>${a.name}</b><span class="num">${res.before} → <b>${res.after}</b> ОРП <em class="${res.delta >= 0 ? 'up' : 'dn'}">${sg(res.delta)}</em></span><div class="rkbar"><i style="width:${Math.round(span * 100)}%"></i></div><small>${a.next === null ? 'ВЫСШЕЕ ЗВАНИЕ' : `до звания «${a.nextName}» — ${a.next - res.after} ОРП`}</small></div><p>${move}${why}</p></div>`;
   },
@@ -81,6 +83,7 @@ const RANKED = {
         <ul class="rkrules"><li>Перед матчем — <b>драфт</b>: команды по очереди запрещают по одному герою, затем по очереди берут по одному. Так пять кругов: у каждой команды 5 банов и 5 героев. Вы баните и выбираете за всю свою команду, за соперников это делают боты.</li>
           <li>Когда команды собраны, вы решаете, <b>за кого из своих пяти</b> играете, и выбираете линию и роль. Остальных расставит по линиям игра.</li>
           <li>Победа: <b class="up">+10 ОРП</b>. Поражение: <b class="dn">от −5 до −10 ОРП</b> — чем лучше вы сыграли, тем меньше потеря. Сдача или выход из матча: <b class="dn">−10 ОРП</b>.</li>
+          <li>Серия побед: после четырёх побед подряд каждая следующая приносит <b class="up">+15 ОРП</b>, дальше на 1 больше за каждую, до <b class="up">+20</b>. Поражение обрывает серию.${r.st ? ` Сейчас побед подряд: <b>${r.st}</b>.` : ''}</li>
           <li>Соперники на вашем звании: <b>${diff} боты</b> (до «Игрока» — лёгкие, до «Босса» — средние, дальше — сложные).</li></ul>
         <button class="btn pri" id="dgo" type="button">НАЧАТЬ ДРАФТ</button></div>
         <div class="rkladder"><h4>ЗВАНИЯ</h4>${ladder}</div></div>`;

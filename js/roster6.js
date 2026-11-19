@@ -26,6 +26,7 @@ function kaiInfFx(h) {
 }
 function kaiInfHit(h, src, d) {
   if (h.infCd > G.time || !(d > 0)) return;
+  if (src && (src.kind === 'minion' || src.kind === 'monster')) return;   // creeps do not wear the thick infinity down: only heroes, their summons and towers do
   h.infCd = G.time + 8; h.dmgIn /= 0.3;   // the rest of this frame's blows meet the thin infinity again
   for (const o of h.buffs) if (o.id === 'kinf') { o.dmgIn = 0.88; if (o.fx) { o.fx.dead = true; o.fx = null; } }
   if (src && src.kind === 'hero' && hostile(h, src) && udist(h, src) < 6) slow(h, src, 0.3, 1, 'kinfslow');

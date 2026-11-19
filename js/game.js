@@ -72,7 +72,7 @@ function addBuff(u, b) {
   b.max = b.dur; b.acc = 0; if (b.shield) b.shieldMax = b.shield; if (b.ctx === undefined) b.ctx = DMG_CTX;
   if (b.id) { const i = u.buffs.findIndex(o => o.id === b.id); if (i >= 0) { const o = u.buffs[i]; if (o.fx) o.fx.dead = true; if (b.stackTo) b.stacks = Math.min(b.stackTo, (o.stacks || 1) + 1); u.buffs.splice(i, 1); } }
   u.buffs.push(b);
-  if (b.stun) { u.windup = 0; u.dash = null; u.stunned = true; if (u.recall > 0) breakRecall(u); }
+  if (b.stun) { u.windup = 0; u.dash = null; u.stunned = true; if (u.recall > 0 && !(b.src && (b.src.kind === 'minion' || b.src.kind === 'monster'))) breakRecall(u); }
   if (b.root && u.dash) u.dash = null;
   if (b.shield) u.shield += b.shield;
   return b;
@@ -141,7 +141,7 @@ function damage(src, tgt, amt, type, o) {
     if (src.kind === 'hero') { const dd = Math.min(d, tgt.hp); src.dmgDealt += d; if (tgt.kind === 'hero') { src.heroAggroT = G.time; tgt.dmgBy[src.id] = G.time; if (src.team !== tgt.team) { src.dmgHero += dd; if (src.ampBy && src.ampBy !== src && src.ampK > 1) src.ampBy.healDone += dd * (1 - 1 / src.ampK); } } else if (tgt.struct) src.dmgTower += dd; }
   }
   if (tgt.kind === 'hero') tgt.dmgTaken += Math.min(d, tgt.hp);
-  if (tgt.recall > 0) breakRecall(tgt);
+  if (tgt.recall > 0 && !(src && (src.kind === 'minion' || src.kind === 'monster'))) breakRecall(tgt);   // creeps do not break a teleport, heroes and towers do
   tgt.hp -= d;
   if (!o.dot && !tgt.struct && d >= 1) FX.impact(src, tgt, d, o);
   if (tgt.kind === 'hero' && tgt.def.onHurt) tgt.def.onHurt(tgt, src, d, o);   // per-hero hook: health actually lost
@@ -213,6 +213,7 @@ function heroDeath(u, src) {
   if (!killer) { let bt = 0; for (const id in u.dmgBy) if (G.time - u.dmgBy[id] < 10 && u.dmgBy[id] > bt) { const hh = G.heroes.find(h => h.id === +id); if (hh) { killer = hh; bt = u.dmgBy[id]; } } }
   const own = !!killer && killer.team === u.team;   // killed by his own side (someone was in a cyberpsychosis): nobody is paid for it
   u.deaths++; if (!own) G.teams[1 - u.team].kills++;
+  const lost = Math.floor(u.gold * 0.1); if (lost > 0) { u.gold -= lost; FX.text(u.x, u.height + 1.4, u.z, '−' + lost + ' з', '#ffcf5a', 15); if (u.isPlayer && typeof UI !== 'undefined') UI.msg('Смерть стоила ' + lost + ' золота (10% от того, что было)'); }   // dying costs a tenth of the gold in the pocket
   if (own) { /* no gold, no experience, no streak */ }
   else if (killer) {
     const feed = Math.max(0.45, 1 - 0.14 * (u.feed || 0));

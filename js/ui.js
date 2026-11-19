@@ -90,7 +90,7 @@ const UI = {
   /* ----- graphics settings: the same list in the menu ('gm-') and in the pause box ('gp-') ----- */
   buildGfx(box, pre, list) {
     (list || GFX_LIST).forEach(([k, label, opts, hint]) => {
-      const row = document.createElement('div'); row.className = 'grow' + (k === 'preset' ? ' wide' : ''); if (hint) row.title = hint; row.innerHTML = `<span>${label}${hint ? `<small>${hint}</small>` : ''}</span><div class="seg"></div>`;
+      const row = document.createElement('div'); row.className = 'grow' + (k === 'preset' ? ' wide' : (opts.length > 4 ? ' wide2' : '')); if (hint) row.title = hint; row.innerHTML = `<span>${label}${hint ? `<small>${hint}</small>` : ''}</span><div class="seg"></div>`;
       opts.forEach(([v, text], i) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = text; b.id = pre + k + i; b.onclick = () => { setGfx(k, v); applyGfx(); this.syncGfx(); SFX.init(); SFX.play('ui'); }; row.lastChild.appendChild(b); });
       box.appendChild(row);
     });
@@ -319,7 +319,7 @@ const UI = {
       abs.appendChild(s);
     }
     const rc = document.createElement('div'); rc.className = 'slot'; rc.id = 'abB'; rc.innerHTML = `<img src="${iconURL('pillar', 0x9fb4d8)}" alt=""><div class="cdo"></div><div class="cdt num"></div><kbd data-k="recall">${kl('recall')}</kbd>`;
-    rc.onmouseenter = e => this.tip(e, '<b>Возврат</b><small>4.5 сек подготовки</small>Телепорт на базу. Свой приказ просто отменяет его. Если же его сорвёт урон или оглушение, телепорт уходит на перезарядку: 15 сек.'); rc.onmouseleave = () => this.tip(); rc.onclick = () => this.recall();
+    rc.onmouseenter = e => this.tip(e, '<b>Возврат</b><small>4.5 сек подготовки</small>Телепорт на базу. Свой приказ просто отменяет его. Если же его сорвёт урон или оглушение от героя или башни, телепорт уходит на перезарядку: 15 сек. Миньоны и лесные звери телепорт не срывают.'); rc.onmouseleave = () => this.tip(); rc.onclick = () => this.recall();
     abs.appendChild(rc);
     const build = BUILDS[P.def.build]; for (const it of ITEMS) $('buy-' + it.id).classList.toggle('rec', build.includes(it.id));
     this.shopTab('buy-', 'rec'); this.refreshInv(); this.lastCd = [0, 0, 0, 0]; this.lastAl = [-1, -1, -1, -1]; this.shopOpen = false; $('shop').hidden = true;

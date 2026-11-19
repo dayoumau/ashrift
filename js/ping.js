@@ -27,27 +27,48 @@ const PING = {
   // the wheel: built once, shown at the cursor
   build() {
     if ($('pingw')) return; const w = document.createElement('div'); w.id = 'pingw'; w.hidden = true;
-    w.innerHTML = PING_WHEEL.map((k, i) => { const a = i / 8 * TAU - HPI, R = 92; return `<div class="pw-s" data-i="${i}" style="left:${Math.cos(a) * R}px;top:${Math.sin(a) * R}px;--pc:${PING_T[k].c}">${this.svg(k)}<span>${PING_T[k].n}</span></div>`; }).join('') + '<div class="pw-c"><b></b><small></small></div>';
+    w.innerHTML = PING_WHEEL.map((k, i) => { const a = i / 8 * TAU - HPI, R = 92; return `<div class="pw-s" data-i="${i}" style="left:${Math.cos(a) * R}px;top:${Math.sin(a) * R}px;--pc:${PING_T[k].c}">${this.svg(k)}<span>${PING_T[k].n}</span></div>`; }).join('') + '<div class="pw-c"><b></b><small></small></div><div class="pw-h">отпустите или ЛКМ — отправить · ПКМ — сделать стандартной</div>';
     document.body.appendChild(w);
   },
+  // A short tap of the key sends the default call at once (GFX.pingDef: 'auto' — by what is under the cursor — or one fixed call);
+  // the wheel only opens when the key is held (or the mouse moves off at once). In the wheel: point and let go, or left-click;
+  // right-click a call to make it the default; the centre (no direction) is the default too
   start() {
     const P = G.player; if (!P || G.over || G.paused || G.state !== 'play') return; this.build();
-    this.open = true; this.sx = mouse.x; this.sy = mouse.y; this.sel = -1;
+    this.open = true; this.shown = false; this.sx = mouse.x; this.sy = mouse.y; this.sel = -1;
     const mm = UI.mmAt(mouse.x, mouse.y); this.unit = mm ? null : pickUnit(u => u.alive && (u.kind === 'hero' || u.struct || u.boss) && u !== P);
     this.at = mm || { x: G.mx, z: G.mz }; if (this.unit) this.at = { x: this.unit.x, z: this.unit.z };
-    const w = $('pingw'); w.style.left = this.sx + 'px'; w.style.top = this.sy + 'px'; w.hidden = false; this.hover();
+    clearTimeout(this.tm); this.tm = setTimeout(() => this.show(), 180);
   },
+  show() {
+    if (!this.open || this.shown) return; this.shown = true;
+    // the wheel stays whole on screen: near an edge it opens a little inward (the direction is read from its centre)
+    this.sx = clamp(this.sx, 140, innerWidth - 140); this.sy = clamp(this.sy, 140, innerHeight - 140);
+    const w = $('pingw'); w.style.left = this.sx + 'px'; w.style.top = this.sy + 'px'; w.hidden = false;
+    for (const s of w.querySelectorAll('.pw-s')) s.classList.toggle('def', PING_WHEEL[+s.dataset.i] === GFX.pingDef);
+    this.hover();
+  },
+  def() { const d = GFX.pingDef; return d && PING_T[d] && d !== 'auto' ? d : this.auto(); },
   // which call the mouse points at (nothing near the centre)
   hover() {
     if (!this.open) return; const dx = mouse.x - this.sx, dy = mouse.y - this.sy, d = Math.hypot(dx, dy);
-    this.sel = d < 30 ? -1 : (Math.round(((Math.atan2(dy, dx) + HPI) / TAU) * 8) % 8 + 8) % 8;
+    if (!this.shown) { if (d > 16) this.show(); return; }
+    this.sel = d < 24 ? -1 : (Math.round(((Math.atan2(dy, dx) + HPI) / TAU) * 8) % 8 + 8) % 8;
     const w = $('pingw'); for (const s of w.querySelectorAll('.pw-s')) s.classList.toggle('on', +s.dataset.i === this.sel);
-    const k = this.sel < 0 ? this.auto() : PING_WHEEL[this.sel], c = w.querySelector('.pw-c'); c.querySelector('b').textContent = PING_T[k].n; c.querySelector('small').textContent = this.sel < 0 ? (this.unit ? this.unit.name : 'отпустите — метка') : (this.unit && k === 'attack' ? this.unit.name : ''); c.style.setProperty('--pc', PING_T[k].c);
+    const k = this.sel < 0 ? this.def() : PING_WHEEL[this.sel], c = w.querySelector('.pw-c'); c.querySelector('b').textContent = PING_T[k].n;
+    c.querySelector('small').textContent = this.sel < 0 ? (this.unit ? this.unit.name : 'стандартная') : (this.unit && k === 'attack' ? this.unit.name : (PING_WHEEL[this.sel] === GFX.pingDef ? '★ стандартная' : 'ПКМ — стандартная')); c.style.setProperty('--pc', PING_T[k].c);
+  },
+  // a mouse button while the wheel is open: left sends what is pointed at, right makes it the default call (the wheel stays open)
+  click(b) {
+    if (!this.shown) { if (b === 0) { this.end(); return true; } return false; }
+    if (b === 0) { this.end(); return true; }
+    if (b === 2) { if (this.sel >= 0) { const k = PING_WHEEL[this.sel]; setGfx('pingDef', GFX.pingDef === k ? 'auto' : k); if (UI.syncGfx) UI.syncGfx(); SFX.play('ui'); UI.msg(GFX.pingDef === 'auto' ? 'Короткое нажатие: метка по ситуации' : 'Короткое нажатие теперь: «' + PING_T[k].n + '»'); for (const s of $('pingw').querySelectorAll('.pw-s')) s.classList.toggle('def', PING_WHEEL[+s.dataset.i] === GFX.pingDef); this.hover(); } return true; }
+    return false;
   },
   auto() { const u = this.unit, P = G.player; if (u && u.team !== P.team && u.team !== 2) return 'attack'; if (u && u.boss) return 'boss'; if (u && u.struct && u.team === P.team) return 'defend'; return 'look'; },
-  cancel() { this.open = false; if ($('pingw')) $('pingw').hidden = true; },
+  cancel() { this.open = false; this.shown = false; clearTimeout(this.tm); if ($('pingw')) $('pingw').hidden = true; },
   end() {
-    if (!this.open) return; const k = this.sel < 0 ? this.auto() : PING_WHEEL[this.sel]; this.cancel();
+    if (!this.open) return; const k = this.sel < 0 ? this.def() : PING_WHEEL[this.sel]; this.cancel();
     const now = performance.now(); this.last = this.last.filter(t => now - t < 5000); if (this.last.length >= 4) { UI.msg('Не так часто: подождите пару секунд'); SFX.play('deny'); return; }
     this.last.push(now); this.send(G.player, k, this.at.x, this.at.z, k === 'attack' || k === 'defend' || k === 'boss' || k === 'look' ? this.unit : null);
   },

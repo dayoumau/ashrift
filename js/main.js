@@ -240,6 +240,7 @@ function bindInput(cv) {
     SFX.init(); if (G.state !== 'play' || UI.capture) return; mouse.x = e.clientX; mouse.y = e.clientY; const g = groundAt(mouse.x, mouse.y); G.mx = g.x; G.mz = g.z;
     // wheel and side buttons act like keys: whatever action is bound to them (by default the wheel button drags the camera)
     if (e.button === 1 || e.button > 2) { e.preventDefault(); const code = 'Mouse' + e.button; keys[code] = true; if (KEYMAP[code]) actDown(KEYMAP[code]); return; }
+    if (PING.open && PING.click(e.button)) return;   // the ping wheel is open: left click sends, right click makes the pointed call the default
     if (e.button === 2) { if (G.aim >= 0) { G.aim = -1; return; } mouse.rmb = true; mouse.rmbT = 0.18; command(true); }
     else if (e.button === 0 && G.aim >= 0) releaseAim(G.aim);
   });
