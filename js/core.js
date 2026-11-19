@@ -167,6 +167,11 @@ const SFX = {
       case 'rubble': N('lowpass', 700, 140, 0.5, 0.3, 0.05); N('bandpass', 1500, 500, 0.12, 0.14, 0.14, 2); N('bandpass', 1100, 400, 0.12, 0.12, 0.3, 2); break;
       case 'sizzle': N('highpass', 5200, 3000, 0.9, 0.07, 0.1); N('bandpass', 2600, 1500, 0.7, 0.05, 0.15, 3); break;
       case 'warp': T('sine', 190, 42, 0.42, 0.34); N('lowpass', 420, 60, 0.42, 0.26); break;
+      // an unseen blade: a razor-thin zip, a metallic ring that hangs a moment, a small thud in the body
+      case 'cut': N('highpass', 9000, 2400, 0.07, 0.34, 0, 0.8); T('sawtooth', 3400, 700, 0.05, 0.07); T('sine', 4300, 4150, 0.22, 0.045, 0.015); T('sine', 170, 60, 0.09, 0.26); break;
+      case 'bigcut': N('highpass', 7600, 1300, 0.17, 0.42); N('bandpass', 1900, 280, 0.22, 0.24, 0, 1.2); T('sawtooth', 2300, 280, 0.13, 0.1); T('sine', 120, 36, 0.28, 0.55); T('sine', 3300, 3240, 0.45, 0.05, 0.02); break;
+      // a temple bell struck once over a low drone
+      case 'shrine': T('sine', 98, 96, 2.2, 0.36); T('sine', 196, 192, 1.8, 0.16); T('sine', 294, 288, 1.4, 0.09, 0.01); T('sawtooth', 49, 44, 1.7, 0.12); N('lowpass', 800, 60, 1.2, 0.34); N('bandpass', 2400, 600, 0.3, 0.12, 0, 2); break;
       case 'slash': N('highpass', 2600, 700, 0.13, 0.22); T('triangle', 620, 180, 0.1, 0.1); N('bandpass', 700, 2800, 0.07, 0.1, 0, 1.2); break;
       case 'shoot': T('triangle', 880, 260, 0.09, 0.16); N('highpass', 3000, 1500, 0.05, 0.1); T('sine', 160, 70, 0.07, 0.12); break;
       case 'arrow': N('bandpass', 2600, 900, 0.12, 0.22, 0, 2); break;

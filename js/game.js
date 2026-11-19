@@ -109,7 +109,7 @@ const DMG_K = {
   mora: 1.4, nox: 1.65, morg: 1.4, aisa: 1.65, zar: 1.85, fenris: 1.2, reiji: 1.4, yuki: 1.85, cassius: 1.45, ragna: 1.5,
   toplak: 1.45, groh: 1.55, grimm: 1.45, brand: 1.6, oriel: 1.1, nisa: 1.2, lira: 1.25, hald: 1.25, kolomba: 1.35, kostyan: 1.38,
   shiro: 1.15, kaisei: 1.45, umbra: 1.6, rampage: 1.0, jin: 1.6, hikaru: 1.6, dash: 1.2, tokiko: 1.1, riku: 1.2, ashen: 1.3, chess: 1.7, mei: 1.25,
-  kagari: 1.0, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1, frieren: 1.15, lelouch: 1.3, ichigo: 1.36, carlotta: 1.22, raul: 1.2, tanya: 0.95, setsuna: 1.25, reiner: 1.0, jinwoo: 1.4, misaka: 1.15, megumin: 1.5, levi: 0.85, zenitsu: 0.9, silas: 1.2, wlad: 1.8, nereya: 1.75, gubert: 1.7, blank: 1.7, reisei: 0.95, lumen: 0.75, azzar: 1.15, akuro: 0.95, seiryu: 1.1, marfa: 1.2, anselm: 1.2
+  kagari: 1.0, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1, frieren: 1.15, lelouch: 1.3, ichigo: 1.36, carlotta: 1.22, raul: 1.2, tanya: 0.95, setsuna: 1.25, reiner: 1.0, jinwoo: 1.4, misaka: 1.15, megumin: 1.5, levi: 0.85, zenitsu: 0.9, silas: 1.2, wlad: 1.8, nereya: 1.75, gubert: 1.7, blank: 1.7, reisei: 0.95, lumen: 0.75, azzar: 1.15, akuro: 0.95, seiryu: 1.15, marfa: 1.2, anselm: 1.2
 };
 const HEAL_K = { blank: 1.5, marfa: 3.8, anselm: 2.6, oriel: 1.9, hald: 1.5, nisa: 2.3, lira: 2.8, kolomba: 2.0, ashen: 2.6, chess: 1.8, kagari: 1.5, lin: 3.0, kwame: 1.6, agafya: 2.2, frieren: 1.6, lelouch: 1.7 };
 function damage(src, tgt, amt, type, o) {
@@ -346,6 +346,7 @@ function performHit(u, t) {
     basicHit(u, t);
     if ((hero && !u.def.noSlash) || u.boss) { FX.slash(u.x + Math.sin(u.facing) * 1.3, u.z + Math.cos(u.facing) * 1.3, u.facing, { r: u.boss ? 4 : 2.4, color: u.pcol, flip: u.anim.alt, life: 0.2 }); SFX.at('slash', u.x, u.z, 0.6); if (u.boss) { FX.shock(t.x, t.z, 4, 0.8, 0.4); FX.debris(t.x, 0.3, t.z, { n: 5, color: 0x45423c, speed: [3, 8], up: 9, size: [0.2, 0.5] }); } }
     FX.hit(t.x, t.height * 0.55, t.z, u.pcol || 0xffd9a0, hero); if (!hero) SFX.at('hit', t.x, t.z, 0.25);
+    else if (u.def.noSlash && u.def.hitSfx !== false) SFX.at(u.def.hitSfx || 'impact', t.x, t.z, 0.6);   // a hero without a swing trail still needs a sound for the blow
   } else {
     const st = u.struct;
     homing(u, t, {

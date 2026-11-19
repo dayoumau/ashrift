@@ -1542,7 +1542,7 @@ function jinClock(x, z, R, dur) {
 HEROES.push(
   /* ================= 31. Jin ================= */
   {
-    id: 'jin', name: 'Дзин', title: 'Хозяин духа', role: 'front', roleName: 'Заклинатель', build: 'bruiser', bars: [4, 3, 4, 2], diffc: 2, pal: JIN_STAND, noSlash: true,
+    id: 'jin', name: 'Дзин', title: 'Хозяин духа', role: 'front', roleName: 'Заклинатель', build: 'bruiser', bars: [4, 3, 4, 2], diffc: 2, pal: JIN_STAND, noSlash: true, hitSfx: false,
     lore: 'Молчит, не вынимает рук из карманов и не сходит с места. За него дерётся Астра — дух-хранитель с кулаками быстрее взгляда: бьёт врага рядом, достаёт дальнего, подбрасывает хозяина через стены. А когда Дзин поправляет кепку, время останавливается для всех, кроме него.',
     look: { bulk: 1.02, h: 1.1, c1: 0x1c1e2e, c2: 0x15161f, c3: 0x26283a, skin: 0xcfa98a, hands: 0xcfa98a, metal: 0xd4af4a, glow: 0xffcf40, head: 'delinq', hair: 0x14141b, shirt: 0x5a3a9a, chest: 'gakuran', sh: 'none', legs: 'boots', weapon: 'none', wc: 'stand', coat: 0x1c1e2e },
     stats: ST(660, 92, 280, 32, 60, 3.5, 28, 3.0, 0.8, 8.8, 3.6),
