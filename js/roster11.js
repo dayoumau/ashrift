@@ -343,7 +343,7 @@ function rsPawn(h, m, dmg) {
   const x0 = m.x, z0 = m.z, extra = m.maxHp * 0.05; kill(m, m.team === h.team ? null : h);
   SFX.at('cast', x0, z0, 0.5); SFX.at('ice', x0, z0, 0.3);
   if (FX.near(x0, z0, 55)) { FX.pillar(x0, z0, { r: 0.8, h: 6, color: RSE.c, life: 0.35, op: 0.5 }); FX.sparks(x0, 0.8, z0, { n: 10, color: 0xffffff, color2: RSE.ice, speed: [2, 7], life: [0.2, 0.45], w: 0.07, up: 3 }); }
-  const P = { x: x0, z: z0, walked: 0, queen: false, t: 0, done: false }; let mesh = null, cur = 'pawn';
+  const P = { x: x0, z: z0, walked: 0, queen: false, t: 0, done: false }; h.pawnDbg = P; let mesh = null;   // pawnDbg: the last pawn, for tests
   if (FX.near(x0, z0, 60)) { mesh = rsPawnMesh('pawn'); FX.add(mesh, 6, (k, me, dt, en) => { if (P.done) { en.dead = true; return; } const up = Math.min(1, P.t / 0.2); me.position.set(P.x, -1.2 * (1 - up) + Math.abs(Math.sin(P.t * 12)) * 0.12, P.z); me.rotation.y = P.face || 0; }); }
   const rib = FX.ribbon(RSE.c, 0.9, 10);
   const boom = () => {
@@ -360,15 +360,15 @@ function rsPawn(h, m, dmg) {
     // it marches only on enemy heroes (creeps do not stop it — it walks through them); the chosen one is kept until he dies or vanishes
     if (!P.tg || !P.tg.alive || P.tg.invuln || dist(P.x, P.z, P.tg.x, P.tg.z) > 18) { P.tg = null; let bd = 16; for (const e of G.heroes) if (e.alive && hostile(h, e) && !e.invuln) { const d = dist(P.x, P.z, e.x, e.z); if (d < bd) { bd = d; P.tg = e; } } }
     const tg = P.tg;
-    if (P.walked > 18 || P.t > 5) { boom(); return false; }
+    if (P.walked > 24 || P.t > 5) { boom(); return false; }
     if (!tg) {   // no hero near: straight on, away from Reisei through the spot where the victim stood, nine steps — then it bursts
       if (P.free === undefined) P.free = dist(h.x, h.z, x0, z0) > 0.5 ? angTo(h.x, h.z, x0, z0) : h.facing;
       if (P.walked >= 9) { boom(); return false; }
-      const s2 = 13 * dt, nx = P.x + Math.sin(P.free) * s2, nz = P.z + Math.cos(P.free) * s2; if (!NAV.ok(nx, nz)) { boom(); return false; }
+      const s2 = 13 * dt, nx = clamp(P.x + Math.sin(P.free) * s2, -95, 95), nz = clamp(P.z + Math.cos(P.free) * s2, -95, 95);   // a piece on the board: walls and rocks do not stop it
       P.face = P.free; P.x = nx; P.z = nz; P.walked += s2; rib.add(P.x, 0.6, P.z);
     } else {
       const d = dist(P.x, P.z, tg.x, tg.z); if (d < 1.2 + (tg.radius || 0.6) * 0.5) { boom(); return false; }
-      const st = Math.min(d, 15 * dt); P.face = angTo(P.x, P.z, tg.x, tg.z); P.x += Math.sin(P.face) * st; P.z += Math.cos(P.face) * st; P.walked += st; rib.add(P.x, 0.6, P.z);
+      const st = Math.min(d, 18 * dt); P.face = angTo(P.x, P.z, tg.x, tg.z); P.x += Math.sin(P.face) * st; P.z += Math.cos(P.face) * st; P.walked += st; rib.add(P.x, 0.6, P.z);
     }
     if (!P.queen && P.walked >= 6) { P.queen = true; if (mesh) { const q = rsPawnMesh('queen'); mesh.remove(...mesh.children); mesh.add(...q.children); mesh.userData = q.userData; } FX.text(P.x, 2.6, P.z, 'превращение', '#cfeeff', 14); SFX.at('cue', P.x, P.z, 0.5); if (FX.near(P.x, P.z, 50)) { FX.pillar(P.x, P.z, { r: 0.9, h: 7, color: RSE.c, life: 0.35, op: 0.5 }); FX.glow(P.x, 1.5, P.z, 3, RSE.c, 0.25, 'star'); } }
     return true;
@@ -582,8 +582,8 @@ HEROES.push(
     },
     abilities: [
       {
-        key: 'Q', name: 'В пешки', icon: 'rspawn', cd: 8, cost: 50, range: 7, ind: { type: 'target' }, anim: 'pawn', animDur: 0.45, lock: 0.15, ai: { t: 'target', farm: true },
-        desc: 'Рэйсэй указывает на врага (до 7) — и тот становится пешкой. Вражеский герой получает физический урон и на 1.4 сек превращается в белую пешку: не может атаковать и применять умения и ползёт на 35% медленнее. Миньон или лесной зверь (за чужого — золото) становится пешкой Рэйсэя: она идёт на ближайшего вражеского героя и взрывается — физический урон (плюс 5% здоровья жертвы) и замедление на 40% в радиусе 2.5; пройдя 6 шагов, она становится ферзём — урон в полтора раза больше и оглушение на 0.8 сек.',
+        key: 'Q', name: 'В пешки', icon: 'rspawn', cd: 8, cost: 50, range: 7, ind: { type: 'target', minions: true }, anim: 'pawn', animDur: 0.45, lock: 0.15, ai: { t: 'target', farm: true },
+        desc: 'Рэйсэй указывает на врага (до 7) — и тот становится пешкой. Вражеский герой получает физический урон и на 1.4 сек превращается в белую пешку: не может атаковать и применять умения и ползёт на 35% медленнее. Миньон или лесной зверь — свой или чужой (за чужого — золото) — становится пешкой Рэйсэя: она идёт сквозь крипов на ближайшего вражеского героя (до 16) и взрывается — физический урон (плюс 5% здоровья жертвы) и замедление на 40% в радиусе 2.5; если героев рядом нет, проходит 9 шагов прямо и взрывается там. Пройдя 6 шагов, пешка становится ферзём — урон в полтора раза больше и оглушение на 0.8 сек.',
         cast(h, p) { const t = p.unit; if (!t || !t.alive || t.struct || t.boss) return false; h.eyeT = G.time + 0.4; if (t.kind === 'hero') rsPawnHero(h, t, D(h, 70, 18, 0.8, 0), 1.4); else rsPawn(h, t, D(h, 70, 18, 0.75, 0)); }
       },
       {

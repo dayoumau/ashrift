@@ -145,6 +145,8 @@ function beginAim(i) {
 function vecStart(P, ab) { const rng = abRange(P, ab), d = dist(P.x, P.z, G.mx, G.mz); return d <= rng ? { x: G.mx, z: G.mz } : { x: P.x + (G.mx - P.x) / d * rng, z: P.z + (G.mz - P.z) / d * rng }; }
 // its direction: from the start toward the cursor; if the mouse has hardly moved, straight on away from the hero
 function vecDir(P, s) { return dist(s.x, s.z, G.mx, G.mz) > 1.2 ? angTo(s.x, s.z, G.mx, G.mz) : angTo(P.x, P.z, s.x, s.z); }
+// what a 'target' ability may be pointed at: an enemy (only a hero with ind.hero); with ind.minions also a creep or forest beast of either side (not the guardian)
+function tgtOk(P, ab, u) { if (u.struct || u === P) return false; if (ab.ind.minions && (u.kind === 'minion' || u.kind === 'monster') && !u.boss) return true; return hostile(P, u) && (!ab.ind.hero || u.kind === 'hero'); }
 // where an ability is being aimed: the ground under the cursor, or, for a global ability with the cursor over the minimap, that spot on the map
 function aimPoint(ab) { return (ab.global && UI.mmAt(mouse.x, mouse.y)) || { x: G.mx, z: G.mz }; }
 function releaseAim(i) {
@@ -153,7 +155,7 @@ function releaseAim(i) {
   const ap = aimPoint(ab), pt = { x: ap.x, z: ap.z, unit: null };
   if (ab.ind.type === 'vector') { const s = G.vStart || vecStart(P, ab); pt.x = s.x; pt.z = s.z; pt.vdir = vecDir(P, s); G.vStart = null; }
   if (ab.ind.type === 'target') {
-    const f = u => hostile(P, u) && !u.struct && (!ab.ind.hero || u.kind === 'hero');
+    const f = u => tgtOk(P, ab, u);
     pt.unit = pickUnit(f, 30);
     if (!pt.unit) { let bd = 9; for (const u of G.units) if (u.alive && f(u) && udist(P, u) < abRange(P, ab) + u.radius + 0.5) { const d = dist(u.x, u.z, G.mx, G.mz) - (u.kind === 'hero' ? 3 : 0); if (d < bd) { bd = d; pt.unit = u; } } }
     if (!pt.unit) { UI.msg(ab.ind.hero ? 'Наведите на вражеского героя' : 'Нет цели под курсором'); SFX.play('deny'); return; }
@@ -295,7 +297,7 @@ function updateIndicators() {
   else if (ty === 'wall') { const L = ab.ind.len, cx = P.x + Math.sin(a) * d, cz = P.z + Math.cos(a) * d; set(IND.line, cx - Math.cos(a) * L / 2, cz + Math.sin(a) * L / 2, 2, L, a + Math.PI / 2); }   // a wall across the line of the cast
   else if (ty === 'cone') { const r = ab.ind.r; set(IND.cone, P.x, P.z, r * 2 * RK * (ab.ind.narrow ? 0.42 : 1), r * 2 * RK, a); }
   else if (ty === 'target' || ty === 'ally' || ty === 'any') {
-    const f = ty === 'ally' ? (u => u.team === P.team && u.kind === 'hero') : ty === 'any' ? (u => !u.struct && (u.team !== P.team || u.kind === 'hero')) : (u => hostile(P, u) && !u.struct && (!ab.ind.hero || u.kind === 'hero'));
+    const f = ty === 'ally' ? (u => u.team === P.team && u.kind === 'hero') : ty === 'any' ? (u => !u.struct && (u.team !== P.team || u.kind === 'hero')) : (u => tgtOk(P, ab, u));
     const t = pickUnit(f, 30) || (ty === 'ally' || ty === 'any' ? P : null); if (t) { set(IND.tgt, t.x, t.z, (t.radius + 0.9) * 2 * RK, (t.radius + 0.9) * 2 * RK, G.time * 3); }
   }
 }
