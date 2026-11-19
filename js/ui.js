@@ -299,7 +299,7 @@ const UI = {
   /* ----- HUD lifecycle ----- */
   showHUD() {
     const P = G.player, col = css(P.def.look.glow), keys = 'qwer';
-    $('menu').hidden = true; $('hud').hidden = false; $('end').hidden = true; $('dead').hidden = true; $('feed').innerHTML = ''; $('help').hidden = false;
+    $('menu').hidden = true; $('hud').hidden = false; $('end').hidden = true; $('dead').hidden = true; $('feed').innerHTML = ''; $('chat').innerHTML = ''; $('help').hidden = false;
     this.closeNote(); $('porimg').src = this.portraits[P.def.id] || ''; $('bar').style.setProperty('--hc', col);
     const abs = $('abs'); abs.innerHTML = '';
     if (P.def.innate) {   // innate passive: always on, no levels
@@ -428,7 +428,9 @@ const UI = {
   },
   msg(s) { const m = $('msg'); m.textContent = s; m.classList.add('show'); this.msgT = 1.6; },
   announce(text, color) { const a = $('ann'); a.textContent = text; a.style.color = color || '#fff'; a.classList.remove('show'); void a.offsetWidth; a.classList.add('show'); },
-  feed(html, cls) { const f = $('feed'), d = document.createElement('div'); d.innerHTML = html; if (cls) d.className = cls; f.appendChild(d); while (f.children.length > 5) f.removeChild(f.firstChild); setTimeout(() => { if (d.parentNode) d.parentNode.removeChild(d); }, 6500); },
+  feed(html, cls) { const chat = cls === 'chat', f = $(chat ? 'chat' : 'feed'), d = document.createElement('div'); d.innerHTML = html; if (cls) d.className = cls; f.appendChild(d); while (f.children.length > (chat ? 7 : 5)) f.removeChild(f.firstChild); setTimeout(() => { if (d.parentNode) d.parentNode.removeChild(d); }, chat ? 9000 : 6500); },   // calls, answers and hero talk go to the chat on the left, kills stay top right
+  // a line said by a hero (the talk between rivals): name in his colour, the words in quotes
+  say(h, text) { if (!G.player) return; this.feed(`<b style="color:${css(h.def.look.glow)}">${esc(h.name)}</b>: <span class="said">«${esc(text)}»</span>`, 'chat'); },
   flashWarn() { const w = $('warn'); w.classList.add('on'); setTimeout(() => w.classList.remove('on'), 60); },
   onKill(killer, v, src) {
     const P = G.player, nm = u => `<b style="color:${TEAM_CSS[u.team]}">${u.name}</b>`;

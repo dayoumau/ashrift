@@ -91,7 +91,9 @@ button:focus-visible,.card:focus-visible{outline:2px solid var(--ember);outline-
 .pw-s.def::after{content:"★";position:absolute;top:-6px;right:20px;color:#ecc56f;font-size:12px;text-shadow:0 0 4px #000}
 .pw-h{position:absolute;left:-150px;top:136px;width:300px;text-align:center;color:#c8cdd6;font-size:11px;text-shadow:0 1px 3px #000}
 .pw-c b{color:var(--pc,#ecc56f);font-size:12.5px;font-weight:600}.pw-c small{color:#8b94a4;font-size:10.5px;max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#feed div.chat{border-left:2px solid #ecc56f;background:rgba(15,18,25,.92)}
+#chat{position:absolute;left:max(14px,env(safe-area-inset-left,0px));top:42%;transform:translateY(-50%);width:min(340px,40vw);display:flex;flex-direction:column;gap:4px;align-items:flex-start;pointer-events:none;z-index:6}
+#chat div{background:rgba(12,15,21,.82);border-left:2px solid #ecc56f;padding:4px 10px;font-size:12.5px;line-height:1.35;animation:fin .25s;max-width:100%}
+#hud>#chat{pointer-events:none}#chat b{font-weight:600}#chat .said{color:#e6e9ef;font-style:italic}
 @keyframes fin{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
 #ann{position:absolute;top:17%;left:0;right:0;text-align:center;font-family:var(--display);font-size:clamp(20px,3vw,34px);letter-spacing:.12em;pointer-events:none;opacity:0;text-shadow:0 2px 0 #000,0 0 24px currentColor}
 #ann.show{animation:ann 2.6s forwards}
@@ -584,10 +586,10 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
   <button id="ver" type="button" title="Что нового в этой версии"></button>
   <section id="home">
     <div class="hm-main">
-      <div class="hm-brand"><h1>ПЕПЕЛЬНЫЙ <span>РАЗЛОМ</span></h1><p>MOBA 5 на 5 · три линии · лес · 64 героя</p></div>
+      <div class="hm-brand"><h1>ПЕПЕЛЬНЫЙ <span>РАЗЛОМ</span></h1><p>MOBA 5 на 5 · три линии · лес · 68 героев</p></div>
       <nav class="hm-nav">
         <button type="button" class="hm-play" data-go="modes">Играть<small>бой с ботами · рейтинг · полигон</small></button>
-        <button type="button" data-go="heroes">Герои<small>64 героя, их умения и сборки</small></button>
+        <button type="button" data-go="heroes">Герои<small>68 героев, их умения и сборки</small></button>
         <button type="button" data-go="items">Предметы<small>магазин и сборки</small></button>
         <button type="button" data-go="map">Карта и цели<small>башни, лес, Страж Разлома</small></button>
         <button type="button" data-go="profile">Профиль<small>ник, аватар, избранные герои, достижения</small></button>
@@ -689,6 +691,7 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
   <div id="warn"></div>
   <div id="top"><div class="tb"><small id="twb">0 башен</small><span id="kb" class="num">0</span></div><div class="tm num" id="tm">00:00</div><div class="tr"><span id="kr" class="num">0</span><small id="twr">0 башен</small></div></div>
   <div id="feed"></div>
+  <div id="chat"></div>
   <div id="ann"></div>
   <div id="dead" hidden><b>ВЫ ПАЛИ</b><span id="deadt"></span><button type="button" id="buyb" hidden></button></div>
   <div id="msg"></div>
@@ -771,6 +774,8 @@ table.sb .t0{color:var(--blue)}table.sb .t1{color:var(--red)}
 <script src="js/roster10.js"></script>
 <script src="js/roster11.js"></script>
 <script src="js/roster12.js"></script>
+<script src="js/roster13.js"></script>
+<script src="js/roster14.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/ranked.js"></script>
 <script src="js/report.js"></script>
