@@ -861,6 +861,21 @@ const HEADS = {
     for (const [x, y, h, rx, rz] of [[-0.16, 0.3, 0.2, -0.3, 0.7], [-0.06, 0.34, 0.24, -0.5, 0.25], [0.06, 0.34, 0.24, -0.5, -0.25], [0.16, 0.3, 0.2, -0.3, -0.7], [0, 0.3, 0.22, -1.1, 0], [-0.12, 0.26, 0.2, -1.4, 0.5], [0.12, 0.26, 0.2, -1.4, -0.5]])
       k.c(0.07, h, 4, hair, x, y, -0.02, rx, 0, rz);   // spikes sticking up and back
     for (const [x, h, rz, col] of [[-0.17, 0.2, 0.4, hair], [-0.08, 0.25, 0.2, hair], [0.01, 0.23, -0.05, st], [0.1, 0.22, -0.2, hair], [0.18, 0.17, -0.4, hair]]) k.c(0.06, h, 4, col === st ? { g: st } : col, x, 0.24 - h * 0.3, 0.212, Math.PI - 0.12, 0, rz);   // the messy fringe with one cyan streak
+  },
+  korvin(k, C) { // a concertmaster of fire: dark red hair slicked back, one long lock falling over the right eye, narrow ember-red eyes, a gold monocle
+    // on the left eye with a fine chain to the ear, thin dark brows, a calm closed mouth
+    const hair = C.hair || 0x7a1a18, hs = 0x3a0a0a, iris = 0xff6a2a, wh = 0xf2ece6, gold = C.met || 0xe8b860;
+    k.b(0.4, 0.47, 0.4, C.skin, 0, -0.01, 0);
+    for (const sd of [-1, 1]) k.b(0.11, 0.05, 0.03, wh, sd * 0.093, 0.02, 0.203).b(0.054, 0.05, 0.03, { g: iris }, sd * 0.09, 0.019, 0.211).b(0.018, 0.03, 0.02, 0x2a0806, sd * 0.09, 0.019, 0.219)
+      .b(0.13, 0.016, 0.035, 0x2a1414, sd * 0.093, 0.045, 0.214, 0, 0, sd * 0.06).b(0.12, 0.018, 0.03, hs, sd * 0.098, 0.082, 0.212, 0, 0, -sd * 0.22);
+    k.b(0.025, 0.06, 0.035, C.skin, 0, -0.05, 0.205).b(0.06, 0.012, 0.02, 0x8a4a44, 0, -0.135, 0.2)
+      .t(0.45, 0.43, 0.5, 0.48, 0.1, hair, 0, 0.21, -0.03).b(0.46, 0.36, 0.16, hair, 0, 0.06, -0.2).b(0.05, 0.22, 0.32, hair, -0.222, 0.1, -0.04).b(0.05, 0.22, 0.32, hair, 0.222, 0.1, -0.04)
+      .t(0.4, 0.12, 0.3, 0.06, 0.16, hair, 0, 0.0, -0.3, 0.5)   // the hair swept back into a short tail of points
+      .y(0.18, 0.2, 0.08, 7, C.skin, 0, -0.27, 0)
+      .y(0.058, 0.058, 0.014, 12, gold, -0.093, 0.02, 0.222, HPI).y(0.045, 0.045, 0.016, 12, { g: 0xffd8a0 }, -0.093, 0.02, 0.222, HPI)   // the monocle
+      .b(0.008, 0.2, 0.008, gold, -0.17, -0.06, 0.18, 0.4, 0, 0.6);
+    k.b(0.43, 0.09, 0.07, hair, 0, 0.19, 0.18).b(0.36, 0.03, 0.02, hs, 0, 0.215, 0.216);   // the hairline, slicked back over the brow
+    k.t(0.05, 0.03, 0.04, 0.02, 0.36, hair, 0.12, 0.06, 0.215, 0, 0, -0.18);   // the long lock over the right eye
   }
 };
 
@@ -1176,6 +1191,18 @@ function buildHero(L, teamColor) {
         .b(0.58 * b, 0.52, 0.06, lt, 0, 0.67, -0.245 * b).y(0.15, 0.15, 0.02, 12, fl, 0, 0.72, -0.28 * b, HPI).y(0.09, 0.09, 0.025, 10, lt, 0, 0.72, -0.285 * b, HPI).y(0.035, 0.035, 0.03, 8, fl, 0, 0.72, -0.29 * b, HPI)
         .b(0.8 * b, 0.09, 0.54 * b, 0x2a2420, 0, 0.26, 0).y(0.065, 0.065, 0.03, 10, st, 0, 0.26, 0.28 * b, HPI).y(0.032, 0.032, 0.035, 8, GL, 0, 0.26, 0.29 * b, HPI);
       for (let i = 0; i < 7; i++) kb.b(0.035, 0.05, 0.035, st, 0.41 * b, 0.2 - Math.sin(i / 6 * Math.PI) * 0.09, (0.22 - i * 0.07) * b, 0, 0, i % 2 ? HPI : 0);
+      break; }
+    // a concert tailcoat: black with wine-red lapels and waistcoat, a white cravat with a gold pin, gold buttons, a glowing ember rose on the lapel, two long tails behind
+    case 'tailcoat': { const blk = c1, wine = 0x7a1418, wh = L.shirt || 0xf0ece4, gold = met;
+      kb.b(0.3 * b, 0.56, 0.05, wine, 0, 0.66, 0.236 * b).b(0.16 * b, 0.22, 0.06, wh, 0, 0.88, 0.25 * b).o(0.04, gold, 0, 0.84, 0.29 * b)
+        .b(0.2 * b, 0.6, 0.06, blk, -0.22 * b, 0.64, 0.245 * b).b(0.2 * b, 0.6, 0.06, blk, 0.22 * b, 0.64, 0.245 * b)
+        .b(0.1, 0.3, 0.04, wine, -0.12 * b, 0.82, 0.278 * b, 0, 0, -0.4).b(0.1, 0.3, 0.04, wine, 0.12 * b, 0.82, 0.278 * b, 0, 0, 0.4)
+        .b(0.06, 0.6, 0.52 * b, blk, -0.3 * b, 0.66, 0).b(0.06, 0.6, 0.52 * b, blk, 0.3 * b, 0.66, 0).b(0.58 * b, 0.6, 0.06, blk, 0, 0.66, -0.245 * b)
+        .b(0.22 * b, 0.62, 0.05, blk, -0.13 * b, 0.12, -0.26 * b, -0.12).b(0.22 * b, 0.62, 0.05, blk, 0.13 * b, 0.12, -0.26 * b, -0.12)   // the tails
+        .b(0.02, 0.6, 0.02, wine, -0.24 * b, 0.12, -0.29 * b, -0.12).b(0.02, 0.6, 0.02, wine, 0.24 * b, 0.12, -0.29 * b, -0.12)
+        .o(0.05, { g: GL }, 0.2 * b, 0.82, 0.29 * b, 1, 1, 0.6).b(0.02, 0.08, 0.02, 0x2a5a2a, 0.2 * b, 0.74, 0.285 * b)   // the ember rose
+        .b(0.8 * b, 0.07, 0.54 * b, 0x15121a, 0, 0.3, 0);
+      for (let i = 0; i < 3; i++) kb.o(0.025, gold, 0, 0.66 - i * 0.12, 0.265 * b);
       break; }
     // a courier's storm jacket: a high collar zipped to the chin, a diagonal satchel strap with a glowing parcel tag, cyan piping down the front and the sleeves' seams
     case 'courier': { const jk = c1, pan = c2, tag = GL, strap = 0x2a2420, tee = L.shirt || 0xe8eef6;
@@ -1590,6 +1617,12 @@ function buildHero(L, teamColor) {
           .c(0.03, 0.28, 4, { g: GL }, 0, HY + 0.52, s * 1.2, s * 1.0);
       }
       break; }
+    // a pair of duelling pistols: dark wood grips with gold caps, long octagonal barrels engraved in gold, a glowing ember line along each barrel, a hammer and a trigger guard
+    case 'duelpistols': { wiR = 0.5; wiL = 1.5; const wd = 0x3a1a12, st = 0x2a2428, gold = met;
+      for (const kw of [kwR, kwL]) kw.b(0.07, 0.2, 0.1, wd, 0, HY - 0.05, -0.04, 0.45).o(0.035, gold, 0, HY - 0.15, -0.09).b(0.075, 0.1, 0.22, st, 0, HY + 0.06, 0.08)
+        .y(0.03, 0.032, 0.56, 8, st, 0, HY + 0.085, 0.46, HPI).y(0.04, 0.04, 0.05, 8, gold, 0, HY + 0.085, 0.3, HPI).y(0.04, 0.04, 0.05, 8, gold, 0, HY + 0.085, 0.72, HPI)
+        .b(0.012, 0.012, 0.42, { g: GL }, 0, HY + 0.12, 0.48).b(0.03, 0.07, 0.05, gold, 0, HY + 0.14, -0.02, -0.5).b(0.012, 0.06, 0.1, gold, 0, HY - 0.03, 0.08);
+      rig.tipR = new THREE.Vector3(0, HY + 0.085, 0.76); break; }
     case 'rapier': wiL = -0.3; kwR.b(0.05, 0.05, 0.26, dk, 0, HY, 0).c(0.17, 0.17, 6, met, 0, HY, 0.17, -HPI).b(0.04, 0.04, 1.8, met, 0, HY, 1.12).b(0.025, 0.05, 1.7, GL, 0, HY + 0.005, 1.14).i(0.05, GL, 0, HY, -0.16);
       kwL.b(0.05, 0.05, 0.2, dk, 0, HY, 0).b(0.18, 0.04, 0.04, met, 0, HY, 0.1).b(0.07, 0.03, 0.42, met, 0, HY, 0.32); break;
     // giant shears: two long blades hinged near the grip, ring handles, a rim of ice along each edge
