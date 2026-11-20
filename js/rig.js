@@ -828,6 +828,22 @@ const HEADS = {
       .o(0.06, gold, 0.18, 0.15, 0.17, 1, 1, 0.45).o(0.035, { g: 0xffe8a0 }, 0.18, 0.15, 0.19, 1, 1, 0.45)   // the star clip
       .y(0.05, 0.05, 0.05, 8, 0xe8e4f0, -0.235, 0.0, 0.02, 0, 0, HPI).b(0.012, 0.012, 0.16, 0xe8e4f0, -0.2, -0.08, 0.11, 0.6, 0.3).i(0.022, 0x2a2a34, -0.15, -0.13, 0.2).b(0.016, 0.016, 0.016, C.GL, -0.265, 0.0, 0.02);
     for (const [x, h, rz] of [[-0.17, 0.2, 0.3], [-0.08, 0.24, 0.15], [0.0, 0.22, 0], [0.08, 0.24, -0.15], [0.17, 0.2, -0.3]]) k.c(0.065, h, 4, hair, x, 0.24 - h * 0.3, 0.212, Math.PI - 0.1, 0, rz);   // a soft fringe
+  },
+  roxa(k, C) { // a biker queen: dark red hair shaved short on the left and swept long over to the right, a short tail at the back, riding goggles
+    // with amber lenses pushed up on the forehead, amber eyes under strong straight brows, a pale scar across the left cheek
+    const hair = C.hair || 0xb02a1a, hs = 0x5a120c, iris = 0xe8901a, wh = 0xf4eee8, gog = 0x2a2420, lens = 0xffa040;
+    k.b(0.41, 0.46, 0.4, C.skin, 0, -0.01, 0);
+    for (const sd of [-1, 1]) k.b(0.11, 0.05, 0.03, wh, sd * 0.093, 0.022, 0.203).b(0.056, 0.05, 0.03, iris, sd * 0.09, 0.02, 0.211).b(0.022, 0.036, 0.02, 0x2a1408, sd * 0.09, 0.02, 0.219).b(0.014, 0.014, 0.02, 0xffffff, sd * 0.09 + 0.014, 0.034, 0.223)
+      .b(0.14, 0.034, 0.035, hs, sd * 0.093, 0.062, 0.212, 0, 0, sd * 0.16);
+    k.b(0.025, 0.05, 0.035, C.skin, 0, -0.05, 0.205).b(0.08, 0.022, 0.02, 0xa0443a, 0, -0.135, 0.2).b(0.014, 0.1, 0.012, 0xf6dcd0, -0.125, -0.06, 0.207, 0, 0, 0.5)
+      .t(0.46, 0.44, 0.49, 0.47, 0.12, hair, 0.01, 0.22, -0.01).b(0.47, 0.32, 0.14, hair, 0, 0.05, -0.2)
+      .b(0.03, 0.28, 0.32, hs, -0.214, 0.03, -0.03)   // the shaved left side
+      .b(0.07, 0.42, 0.32, hair, 0.228, -0.04, -0.02).t(0.1, 0.12, 0.05, 0.07, 0.3, hair, 0.22, -0.34, 0.07, 0, 0, 0.1)   // the long right side, down to the jaw
+      .t(0.13, 0.1, 0.05, 0.04, 0.34, hair, 0, -0.06, -0.33, 0.65)   // the short tail
+      .y(0.19, 0.21, 0.08, 7, C.skin, 0, -0.27, 0).y(0.24, 0.27, 0.1, 8, C.c1, 0, -0.31, 0)
+      .b(0.5, 0.04, 0.5, gog, 0, 0.2, 0);   // the goggle strap
+    for (const sd of [-1, 1]) k.y(0.065, 0.065, 0.05, 10, gog, sd * 0.085, 0.2, 0.25, HPI).y(0.048, 0.048, 0.02, 10, { g: lens }, sd * 0.085, 0.2, 0.278, HPI);
+    for (const [x, h, rz] of [[-0.15, 0.16, -0.7], [-0.06, 0.22, -0.55], [0.04, 0.26, -0.4], [0.13, 0.3, -0.25]]) k.c(0.065, h, 4, hair, x, 0.24 - h * 0.3, 0.212, Math.PI - 0.1, 0, rz);   // the fringe swept to the right
   }
 };
 
@@ -1131,6 +1147,18 @@ function buildHero(L, teamColor) {
       for (let i = 0; i < 3; i++) kb.y(0.022, 0.022, 0.02, 8, gold, 0, 0.66 - i * 0.12, 0.27 * b, HPI);
       for (const sd of [-1, 1]) for (let i = 0; i < 5; i++) kb.b(0.025, 0.12, 0.025, gold, sd * (0.33 + i * 0.012) * b, 0.98, (-0.1 + i * 0.05) * b);
       kb.b(0.8 * b, 0.07, 0.54 * b, gold, 0, 0.3, 0).y(0.42 * b, 0.68 * b, 0.32, 14, pink, 0, 0.0, 0).y(0.5 * b, 0.78 * b, 0.22, 14, pink, 0, -0.16, 0).y(0.76 * b, 0.8 * b, 0.05, 14, wh, 0, -0.28, 0);
+      break; }
+    // an open black leather jacket over an orange top: lapels, two steel zips, orange stripes down the sides, a wheel on the back, a belt with a wheel buckle and a hip chain
+    case 'biker': { const lt = c1, top = L.shirt || 0xff7a1a, st = met, fl = L.cuff || 0xff7a1a;
+      kb.b(0.3 * b, 0.5, 0.05, top, 0, 0.68, 0.236 * b)
+        .b(0.2 * b, 0.56, 0.06, lt, -0.2 * b, 0.66, 0.245 * b).b(0.2 * b, 0.56, 0.06, lt, 0.2 * b, 0.66, 0.245 * b)
+        .b(0.1, 0.22, 0.04, c2, -0.12 * b, 0.86, 0.275 * b, 0, 0, -0.35).b(0.1, 0.22, 0.04, c2, 0.12 * b, 0.86, 0.275 * b, 0, 0, 0.35)
+        .b(0.012, 0.48, 0.02, st, -0.105 * b, 0.64, 0.28 * b).b(0.012, 0.48, 0.02, st, 0.105 * b, 0.64, 0.28 * b)
+        .b(0.06, 0.5, 0.52 * b, lt, -0.3 * b, 0.67, 0).b(0.06, 0.5, 0.52 * b, lt, 0.3 * b, 0.67, 0)
+        .b(0.065, 0.44, 0.06, fl, -0.31 * b, 0.66, 0.1 * b).b(0.065, 0.44, 0.06, fl, 0.31 * b, 0.66, 0.1 * b)
+        .b(0.58 * b, 0.52, 0.06, lt, 0, 0.67, -0.245 * b).y(0.15, 0.15, 0.02, 12, fl, 0, 0.72, -0.28 * b, HPI).y(0.09, 0.09, 0.025, 10, lt, 0, 0.72, -0.285 * b, HPI).y(0.035, 0.035, 0.03, 8, fl, 0, 0.72, -0.29 * b, HPI)
+        .b(0.8 * b, 0.09, 0.54 * b, 0x2a2420, 0, 0.26, 0).y(0.065, 0.065, 0.03, 10, st, 0, 0.26, 0.28 * b, HPI).y(0.032, 0.032, 0.035, 8, GL, 0, 0.26, 0.29 * b, HPI);
+      for (let i = 0; i < 7; i++) kb.b(0.035, 0.05, 0.035, st, 0.41 * b, 0.2 - Math.sin(i / 6 * Math.PI) * 0.09, (0.22 - i * 0.07) * b, 0, 0, i % 2 ? HPI : 0);
       break; }
     case 'police': { const vest = 0x3a3e48, gold = met, red = 0xc82a36;
       kb.b(0.6 * b, 0.48, 0.06, vest, 0, 0.67, 0.24 * b).b(0.58 * b, 0.48, 0.06, vest, 0, 0.67, -0.24 * b).b(0.06, 0.48, 0.5 * b, vest, -0.3 * b, 0.67, 0).b(0.06, 0.48, 0.5 * b, vest, 0.3 * b, 0.67, 0)
@@ -1488,6 +1516,14 @@ function buildHero(L, teamColor) {
     case 'mic': { const gold = met, cr = 0xd8dce4, w = wpn(); w.y(0.025, 0.03, 2.3, 6, cr, 0, 0.5, 0.14).y(0.045, 0.045, 0.12, 8, gold, 0, 0.2, 0.14).y(0.12, 0.04, 0.08, 6, gold, 0, -0.66, 0.14)
       .y(0.05, 0.035, 0.18, 8, cr, 0, 1.7, 0.2, 0.35).y(0.075, 0.06, 0.06, 10, gold, 0, 1.8, 0.24, 0.35).i(0.09, 0x3a3a46, 0, 1.88, 0.27, 1).y(0.095, 0.095, 0.025, 12, GL, 0, 1.82, 0.25, 0.35)
       .b(0.04, 0.3, 0.012, L.lin || 0xff7ac8, 0.05, 1.45, 0.16, 0, 0, 0.25).b(0.04, 0.26, 0.012, L.lin || 0xff7ac8, -0.05, 1.47, 0.16, 0, 0, -0.3); break; }
+    // a heavy cleaver in the right hand; on the left forearm a motorbike wheel made into a shield: a black tyre with glowing treads, a steel rim, spokes, a hot hub
+    case 'wheel': { wiR = -0.35; const st = 0xb8bcc4, tire = 0x1a1a1e, dk2 = 0x2a2420, cx = -0.2, cy = -0.28, cz = 0.08;
+      kwR.b(0.07, 0.07, 0.3, dk2, 0, HY, 0.02).b(0.3, 0.07, 0.07, met, 0, HY, 0.18).b(0.2, 0.05, 0.9, st, 0.03, HY, 0.66).b(0.04, 0.055, 0.86, GL, 0.125, HY, 0.66).b(0.14, 0.05, 0.2, st, 0.0, HY, 1.16, 0, 0.5);
+      kfL.y(0.5, 0.5, 0.1, 16, tire, cx, cy, cz, 0, 0, HPI).y(0.38, 0.38, 0.12, 16, met, cx - 0.005, cy, cz, 0, 0, HPI).y(0.32, 0.32, 0.13, 16, 0x3a3236, cx - 0.01, cy, cz, 0, 0, HPI)
+        .y(0.1, 0.1, 0.18, 8, met, cx - 0.03, cy, cz, 0, 0, HPI).y(0.06, 0.06, 0.2, 8, GL, cx - 0.04, cy, cz, 0, 0, HPI);
+      for (let i = 0; i < 5; i++) kfL.b(0.03, 0.62, 0.045, st, cx - 0.07, cy, cz, i / 5 * TAU, 0, 0);
+      for (let i = 0; i < 12; i++) { const a = i / 12 * TAU; kfL.b(0.11, 0.05, 0.09, i % 2 ? GL : tire, cx, cy + Math.cos(a) * 0.5, cz + Math.sin(a) * 0.5, a, 0, 0); }
+      rig.tipR = new THREE.Vector3(0, HY, 1.25); break; }
     case 'priestaff': { const gold = met, w = wpn(); w.y(0.04, 0.05, 2.5, 6, 0xd8c8a8, 0, 0.55, 0.14).y(0.06, 0.06, 0.1, 6, gold, 0, 1.62, 0.14).y(0.2, 0.2, 0.04, 16, gold, 0, 1.92, 0.14, HPI).y(0.15, 0.15, 0.05, 14, 0xf4ecd8, 0, 1.92, 0.14, HPI).i(0.08, GL, 0, 1.92, 0.17)
       .b(0.04, 0.2, 0.04, gold, 0, 2.18, 0.14).b(0.16, 0.04, 0.04, gold, 0, 2.14, 0.14).y(0.06, 0.05, 0.16, 8, 0x6a2a3a, 0.12, 1.4, 0.14).y(0.025, 0.03, 0.05, 6, 0x3a2414, 0.12, 1.5, 0.14); break; }
     // a lens emitter built over the right forearm: a chrome barrel, three glowing rails, a ring and a lens past the hand; a small panel on the left wrist
