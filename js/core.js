@@ -314,6 +314,7 @@ const SFX = {
       case 'screech': N('bandpass', 2600, 3300, 0.5, 0.16, 0, 9); T('triangle', 1850, 2050, 0.45, 0.05); T('triangle', 2350, 2200, 0.45, 0.035, 0.03); break;
       // a steel shield struck: a heavy body thump and a ringing clang that hangs a moment
       case 'clang': T('sine', 140, 60, 0.16, 0.4); N('bandpass', 3200, 1400, 0.08, 0.32, 0, 1.6); T('triangle', 1180, 1170, 0.5, 0.09); T('triangle', 1730, 1720, 0.4, 0.06); T('sine', 2610, 2600, 0.3, 0.04); break;
+      case 'stormbow': T('triangle', 240, 150, 0.14, 0.24); N('highpass', 7000, 2400, 0.18, 0.26); T('sawtooth', 1800, 220, 0.16, 0.12, 0.03); N('bandpass', 2600, 900, 0.22, 0.16, 0.06, 3); break;
       case 'siren':T('sawtooth', 660, 990, 0.42, 0.06); T('sine', 660, 990, 0.42, 0.1); T('sawtooth', 990, 660, 0.42, 0.06, 0.42); T('sine', 990, 660, 0.42, 0.1, 0.42); break;
       // something heavy falling from the sky: a long falling whistle
       case 'falling': T('sine', 2300, 520, 0.7, 0.13); T('sine', 2340, 530, 0.7, 0.05); break;
@@ -384,7 +385,7 @@ const SFX_FLAT = { ui: 1, buy: 1, deny: 1, warn: 1, coin: 1, level: 1, kill: 1, 
 // the sound of each hero's basic attack: hit — a melee blow (played on the target), atk — a shot (played at the shooter), imp — a shot landing.
 // A hero's own def.hitSfx wins over this table (false = the hero plays it himself in onDeal)
 const HERO_SFX = {
-  roxa: { hit: 'mace' }, velvet: { atk: 'note' }, brand: { hit: 'mace' }, keira: { hit: 'dagger' }, mora: { atk: 'hex', imp: 'ember' }, vale: { atk: 'crossbow' }, oriel: { atk: 'holy' }, groh: { hit: 'stone' },
+  roxa: { hit: 'mace' }, taiga: { atk: 'bow' }, velvet: { atk: 'note' }, brand: { hit: 'mace' }, keira: { hit: 'dagger' }, mora: { atk: 'hex', imp: 'ember' }, vale: { atk: 'crossbow' }, oriel: { atk: 'holy' }, groh: { hit: 'stone' },
   nox: { atk: 'zap' }, silva: { atk: 'bow' }, morg: { atk: 'poison' }, aisa: { atk: 'ice' }, cassius: { hit: 'blade' }, zar: { atk: 'void' }, grimm: { hit: 'chain' },
   ragna: { hit: 'axe' }, yuki: { atk: 'spirit' }, virr: { atk: 'rifle' }, lira: { atk: 'gust' }, hald: { hit: 'spear' }, nisa: { atk: 'needle' }, shaya: { hit: 'dagger' },
   fenris: { hit: 'claw' }, reiji: { hit: 'katana' }, vint: { atk: 'blaster' }, toplak: { hit: 'mace' }, kolomba: { atk: 'card' }, kostyan: { hit: 'bone' }, shiro: { hit: 'flesh' },

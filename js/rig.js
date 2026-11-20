@@ -844,6 +844,23 @@ const HEADS = {
       .b(0.5, 0.04, 0.5, gog, 0, 0.2, 0);   // the goggle strap
     for (const sd of [-1, 1]) k.y(0.065, 0.065, 0.05, 10, gog, sd * 0.085, 0.2, 0.25, HPI).y(0.048, 0.048, 0.02, 10, { g: lens }, sd * 0.085, 0.2, 0.278, HPI);
     for (const [x, h, rz] of [[-0.15, 0.16, -0.7], [-0.06, 0.22, -0.55], [0.04, 0.26, -0.4], [0.13, 0.3, -0.25]]) k.c(0.065, h, 4, hair, x, 0.24 - h * 0.3, 0.212, Math.PI - 0.1, 0, rz);   // the fringe swept to the right
+  },
+  taiga(k, C) { // a storm courier: messy ash-blue hair sticking up in spikes, a thin braid at the nape with a glowing bead, sleepy half-shut gold eyes,
+    // a cyan streak in the fringe, a small lightning earring on the left ear and a courier earpiece on the right
+    const hair = C.hair || 0x6a86b0, hs = 0x3a4a68, iris = 0xe8b830, wh = 0xf4f0ea, st = C.GL;
+    k.b(0.41, 0.46, 0.4, C.skin, 0, -0.01, 0);
+    for (const sd of [-1, 1]) k.b(0.115, 0.046, 0.03, wh, sd * 0.093, 0.018, 0.203).b(0.058, 0.046, 0.03, iris, sd * 0.09, 0.016, 0.211).b(0.022, 0.032, 0.02, 0x2a1a08, sd * 0.09, 0.014, 0.219).b(0.014, 0.012, 0.02, 0xffffff, sd * 0.09 + 0.014, 0.026, 0.223)
+      .b(0.125, 0.028, 0.03, C.skin, sd * 0.093, 0.04, 0.214).b(0.13, 0.014, 0.035, 0x2a2430, sd * 0.093, 0.028, 0.216)   // heavy lids: the eyes look half asleep
+      .b(0.12, 0.02, 0.035, hs, sd * 0.095, 0.075, 0.212, 0, 0, -sd * 0.08);
+    k.b(0.025, 0.05, 0.035, C.skin, 0, -0.05, 0.205).b(0.07, 0.016, 0.02, 0xa06a5a, 0.01, -0.135, 0.2, 0, 0, -0.08)
+      .t(0.46, 0.44, 0.49, 0.47, 0.12, hair, 0, 0.22, -0.01).b(0.47, 0.34, 0.14, hair, 0, 0.04, -0.2).b(0.06, 0.3, 0.3, hair, -0.226, 0.03, -0.03).b(0.06, 0.3, 0.3, hair, 0.226, 0.03, -0.03)
+      .y(0.19, 0.21, 0.08, 7, C.skin, 0, -0.27, 0)
+      .t(0.045, 0.04, 0.03, 0.03, 0.42, hair, 0, -0.22, -0.27, 0.15).o(0.035, { g: st }, 0, -0.46, -0.31, 1, 1.4, 1)   // the thin braid and its bead
+      .y(0.045, 0.045, 0.05, 8, 0x1a1c22, 0.235, 0.0, 0.02, 0, 0, HPI).b(0.02, 0.02, 0.02, st, 0.265, 0.0, 0.02)
+      .b(0.012, 0.05, 0.012, { g: st }, -0.228, -0.09, 0.03, 0, 0, 0.5).b(0.012, 0.05, 0.012, { g: st }, -0.232, -0.13, 0.03, 0, 0, -0.5);   // the lightning earring
+    for (const [x, y, h, rx, rz] of [[-0.16, 0.3, 0.2, -0.3, 0.7], [-0.06, 0.34, 0.24, -0.5, 0.25], [0.06, 0.34, 0.24, -0.5, -0.25], [0.16, 0.3, 0.2, -0.3, -0.7], [0, 0.3, 0.22, -1.1, 0], [-0.12, 0.26, 0.2, -1.4, 0.5], [0.12, 0.26, 0.2, -1.4, -0.5]])
+      k.c(0.07, h, 4, hair, x, y, -0.02, rx, 0, rz);   // spikes sticking up and back
+    for (const [x, h, rz, col] of [[-0.17, 0.2, 0.4, hair], [-0.08, 0.25, 0.2, hair], [0.01, 0.23, -0.05, st], [0.1, 0.22, -0.2, hair], [0.18, 0.17, -0.4, hair]]) k.c(0.06, h, 4, col === st ? { g: st } : col, x, 0.24 - h * 0.3, 0.212, Math.PI - 0.12, 0, rz);   // the messy fringe with one cyan streak
   }
 };
 
@@ -1159,6 +1176,16 @@ function buildHero(L, teamColor) {
         .b(0.58 * b, 0.52, 0.06, lt, 0, 0.67, -0.245 * b).y(0.15, 0.15, 0.02, 12, fl, 0, 0.72, -0.28 * b, HPI).y(0.09, 0.09, 0.025, 10, lt, 0, 0.72, -0.285 * b, HPI).y(0.035, 0.035, 0.03, 8, fl, 0, 0.72, -0.29 * b, HPI)
         .b(0.8 * b, 0.09, 0.54 * b, 0x2a2420, 0, 0.26, 0).y(0.065, 0.065, 0.03, 10, st, 0, 0.26, 0.28 * b, HPI).y(0.032, 0.032, 0.035, 8, GL, 0, 0.26, 0.29 * b, HPI);
       for (let i = 0; i < 7; i++) kb.b(0.035, 0.05, 0.035, st, 0.41 * b, 0.2 - Math.sin(i / 6 * Math.PI) * 0.09, (0.22 - i * 0.07) * b, 0, 0, i % 2 ? HPI : 0);
+      break; }
+    // a courier's storm jacket: a high collar zipped to the chin, a diagonal satchel strap with a glowing parcel tag, cyan piping down the front and the sleeves' seams
+    case 'courier': { const jk = c1, pan = c2, tag = GL, strap = 0x2a2420, tee = L.shirt || 0xe8eef6;
+      kb.b(0.58 * b, 0.56, 0.06, jk, 0, 0.66, 0.24 * b).b(0.24 * b, 0.36, 0.065, pan, -0.15 * b, 0.62, 0.25 * b).b(0.24 * b, 0.36, 0.065, pan, 0.15 * b, 0.62, 0.25 * b)
+        .b(0.02, 0.56, 0.02, GL, 0, 0.66, 0.28 * b).b(0.016, 0.5, 0.016, GL, -0.29 * b, 0.65, 0.2 * b).b(0.016, 0.5, 0.016, GL, 0.29 * b, 0.65, 0.2 * b)
+        .y(0.25 * b, 0.27 * b, 0.2, 10, jk, 0, 1.0, 0).y(0.2 * b, 0.21 * b, 0.21, 10, tee, 0, 1.0, 0.01).b(0.02, 0.18, 0.02, met, 0.04, 0.98, 0.25 * b)   // the high collar
+        .b(0.58 * b, 0.56, 0.06, jk, 0, 0.66, -0.24 * b).b(0.3 * b, 0.12, 0.02, GL, 0, 0.82, -0.275 * b)
+        .b(0.1, 1.05, 0.05, strap, 0, 0.62, 0.275 * b, 0, 0, -0.7).b(0.1, 1.0, 0.05, strap, 0, 0.62, -0.275 * b, 0, 0, 0.7)   // the satchel strap
+        .b(0.12, 0.08, 0.03, tag, -0.12 * b, 0.48, 0.3 * b, 0, 0, -0.7).b(0.32, 0.24, 0.16, 0x3a3428, 0.36 * b, 0.22, -0.12 * b).b(0.33, 0.04, 0.17, GL, 0.36 * b, 0.3, -0.12 * b)   // the parcel tag and the satchel
+        .b(0.8 * b, 0.08, 0.54 * b, 0x1a1c22, 0, 0.27, 0).b(0.07, 0.05, 0.03, met, 0, 0.27, 0.28 * b);
       break; }
     case 'police': { const vest = 0x3a3e48, gold = met, red = 0xc82a36;
       kb.b(0.6 * b, 0.48, 0.06, vest, 0, 0.67, 0.24 * b).b(0.58 * b, 0.48, 0.06, vest, 0, 0.67, -0.24 * b).b(0.06, 0.48, 0.5 * b, vest, -0.3 * b, 0.67, 0).b(0.06, 0.48, 0.5 * b, vest, 0.3 * b, 0.67, 0)
@@ -1553,6 +1580,16 @@ function buildHero(L, teamColor) {
     case 'coin': wiR = 0.5; kwR.y(0.065, 0.065, 0.014, 10, 0xd8a050, 0, HY + 0.06, 0.1, 0, 0, HPI).y(0.045, 0.045, 0.016, 10, 0xf0c070, 0, HY + 0.06, 0.1, 0, 0, HPI); break;
     case 'bow': kwL.b(0.07, 0.08, 0.36, dk, 0, HY, 0).b(0.014, 0.014, 2.0, GL, 0, HY + 0.42, 0);
       for (const s of [-1, 1]) kwL.b(0.055, 0.055, 0.52, 0x5a4630, 0, HY + 0.08, s * 0.42, -s * 0.3).b(0.045, 0.045, 0.48, 0x5a4630, 0, HY + 0.27, s * 0.82, -s * 0.75).o(0.06, GL, 0, HY + 0.42, s * 1.0); break;
+    // a folding compound bow: a dark metal riser with a glowing core, split limbs edged in cyan, cam wheels at the tips, lightning-rod spikes past them, a glowing string
+    case 'stormbow': { const dm = 0x2a3040, lm = 0x3a4458;
+      kwL.b(0.08, 0.09, 0.4, dm, 0, HY, 0).b(0.05, 0.05, 0.2, GL, 0.03, HY + 0.02, 0).b(0.012, 0.012, 2.1, GL, 0, HY + 0.44, 0).b(0.03, 0.12, 0.03, met, 0, HY + 0.08, 0.02);
+      for (const s of [-1, 1]) {
+        kwL.b(0.06, 0.05, 0.54, lm, 0, HY + 0.1, s * 0.42, -s * 0.32).b(0.02, 0.02, 0.5, GL, 0.035, HY + 0.12, s * 0.42, -s * 0.32)
+          .b(0.05, 0.045, 0.46, lm, 0, HY + 0.3, s * 0.82, -s * 0.72).b(0.018, 0.018, 0.42, GL, 0.03, HY + 0.31, s * 0.82, -s * 0.72)
+          .y(0.1, 0.1, 0.04, 10, met, 0, HY + 0.44, s * 1.02, 0, 0, HPI).y(0.04, 0.04, 0.05, 8, GL, 0, HY + 0.44, s * 1.02, 0, 0, HPI)
+          .c(0.03, 0.28, 4, { g: GL }, 0, HY + 0.52, s * 1.2, s * 1.0);
+      }
+      break; }
     case 'rapier': wiL = -0.3; kwR.b(0.05, 0.05, 0.26, dk, 0, HY, 0).c(0.17, 0.17, 6, met, 0, HY, 0.17, -HPI).b(0.04, 0.04, 1.8, met, 0, HY, 1.12).b(0.025, 0.05, 1.7, GL, 0, HY + 0.005, 1.14).i(0.05, GL, 0, HY, -0.16);
       kwL.b(0.05, 0.05, 0.2, dk, 0, HY, 0).b(0.18, 0.04, 0.04, met, 0, HY, 0.1).b(0.07, 0.03, 0.42, met, 0, HY, 0.32); break;
     // giant shears: two long blades hinged near the grip, ring handles, a rim of ice along each edge
