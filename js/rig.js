@@ -876,6 +876,21 @@ const HEADS = {
       .b(0.008, 0.2, 0.008, gold, -0.17, -0.06, 0.18, 0.4, 0, 0.6);
     k.b(0.43, 0.09, 0.07, hair, 0, 0.19, 0.18).b(0.36, 0.03, 0.02, hs, 0, 0.215, 0.216);   // the hairline, slicked back over the brow
     k.t(0.05, 0.03, 0.04, 0.02, 0.36, hair, 0.12, 0.06, 0.215, 0, 0, -0.18);   // the long lock over the right eye
+  },
+  margo(k, C) { // a moneylender: a blunt black bob to the jaw with a straight fringe and one gold streak, a green banker's eyeshade on a band,
+    // sharp amber eyes, a beauty mark under the right eye, small gold coin earrings
+    const hair = C.hair || 0x16141c, gold = C.met || 0xffc83a, iris = 0xe89a2a, wh = 0xf4f0ea, vis = 0x1f7a4a;
+    k.b(0.4, 0.46, 0.4, C.skin, 0, -0.01, 0);
+    for (const sd of [-1, 1]) k.b(0.11, 0.05, 0.03, wh, sd * 0.092, 0.02, 0.203).b(0.056, 0.05, 0.03, iris, sd * 0.09, 0.019, 0.211).b(0.02, 0.032, 0.02, 0x2a1406, sd * 0.09, 0.018, 0.219).b(0.012, 0.012, 0.02, 0xffffff, sd * 0.09 + 0.014, 0.03, 0.223)
+      .b(0.13, 0.016, 0.035, 0x1a1418, sd * 0.093, 0.048, 0.214, 0, 0, sd * 0.12)
+      .o(0.03, gold, sd * 0.215, -0.12, 0.02, 1, 1, 0.35, 0, HPI, 0);   // coin earrings
+    k.b(0.025, 0.05, 0.035, C.skin, 0, -0.05, 0.205).b(0.075, 0.018, 0.02, 0xb84a50, 0, -0.135, 0.2).b(0.014, 0.014, 0.01, 0x2a1418, 0.13, -0.04, 0.206)
+      .t(0.46, 0.44, 0.49, 0.47, 0.12, hair, 0, 0.22, -0.01).b(0.48, 0.48, 0.16, hair, 0, -0.04, -0.2)
+      .b(0.07, 0.44, 0.36, hair, -0.228, -0.06, -0.01).b(0.07, 0.44, 0.36, hair, 0.228, -0.06, -0.01)   // the bob, cut straight at the jaw
+      .b(0.44, 0.1, 0.07, hair, 0, 0.13, 0.195).b(0.05, 0.11, 0.075, gold, -0.12, 0.13, 0.198).b(0.06, 0.4, 0.05, gold, -0.235, -0.06, 0.1)   // the fringe and the gold streak
+      .y(0.18, 0.2, 0.08, 7, C.skin, 0, -0.27, 0)
+      .y(0.252, 0.252, 0.04, 14, 0x15301f, 0, 0.21, 0)   // the eyeshade band
+      .b(0.46, 0.014, 0.2, vis, 0, 0.2, 0.3, -0.28).b(0.46, 0.006, 0.2, { g: 0x3ad88a }, 0, 0.192, 0.3, -0.28);   // the green visor
   }
 };
 
@@ -987,7 +1002,7 @@ function buildHero(L, teamColor) {
       if (L.spurs) ks.y(0.075, 0.075, 0.016, 8, 0xc8a050, 0, -0.5 * H + 0.05, -0.22, 0, 0, HPI).b(0.025, 0.03, 0.12, met, 0, -0.5 * H + 0.05, -0.16).b(0.28 * b, 0.05, 0.32 * b, 0x4a2e1a, 0, -0.12 * H, 0);   // spurs on the heels, a turned-down boot top
       ks.into(shin, mat, gmat);
     }
-    kb.t(0.64 * b, 0.42 * b, 0.56 * b, 0.36 * b, 0.26, c2, 0, 0, 0); if (L.legs !== 'jeans' && L.legs !== 'robot' && L.legs !== 'paladin' && L.chest !== 'heian' && L.chest !== 'knight0') kb.b(0.26 * b, 0.42, 0.04, c1, 0, -0.22, 0.2 * b).b(0.26 * b, 0.36, 0.04, c1, 0, -0.2, -0.2 * b);   // trousers have no flaps
+    kb.t(0.64 * b, 0.42 * b, 0.56 * b, 0.36 * b, 0.26, c2, 0, 0, 0); if (L.legs !== 'jeans' && L.legs !== 'robot' && L.legs !== 'paladin' && L.chest !== 'heian' && L.chest !== 'knight0' && L.chest !== 'banker') kb.b(0.26 * b, 0.42, 0.04, c1, 0, -0.22, 0.2 * b).b(0.26 * b, 0.36, 0.04, c1, 0, -0.2, -0.2 * b);   // trousers have no flaps
     if (L.chest === 'plate') kb.b(0.06, 0.34, 0.3 * b, met, -0.34 * b, -0.14, 0).b(0.06, 0.34, 0.3 * b, met, 0.34 * b, -0.14, 0);
   }
   /* --- torso --- */
@@ -1191,6 +1206,18 @@ function buildHero(L, teamColor) {
         .b(0.58 * b, 0.52, 0.06, lt, 0, 0.67, -0.245 * b).y(0.15, 0.15, 0.02, 12, fl, 0, 0.72, -0.28 * b, HPI).y(0.09, 0.09, 0.025, 10, lt, 0, 0.72, -0.285 * b, HPI).y(0.035, 0.035, 0.03, 8, fl, 0, 0.72, -0.29 * b, HPI)
         .b(0.8 * b, 0.09, 0.54 * b, 0x2a2420, 0, 0.26, 0).y(0.065, 0.065, 0.03, 10, st, 0, 0.26, 0.28 * b, HPI).y(0.032, 0.032, 0.035, 8, GL, 0, 0.26, 0.29 * b, HPI);
       for (let i = 0; i < 7; i++) kb.b(0.035, 0.05, 0.035, st, 0.41 * b, 0.2 - Math.sin(i / 6 * Math.PI) * 0.09, (0.22 - i * 0.07) * b, 0, 0, i % 2 ? HPI : 0);
+      break; }
+    // a moneylender's outfit: a white shirt under a black waistcoat with gold buttons, a red bow tie, a gold watch on a chain, a strap for the strongbox across the back
+    case 'banker': { const vest = L.lin || 0x2a1c30, wh = L.shirt || 0xf2eee6, gold = met, red = L.cuff || 0xb8202c;
+      kb.b(0.56 * b, 0.62, 0.46 * b, wh, 0, 0.67, 0)
+        .b(0.2 * b, 0.5, 0.06, vest, -0.17 * b, 0.6, 0.235 * b).b(0.2 * b, 0.5, 0.06, vest, 0.17 * b, 0.6, 0.235 * b)
+        .b(0.1, 0.24, 0.04, vest, -0.1 * b, 0.86, 0.25 * b, 0, 0, -0.4).b(0.1, 0.24, 0.04, vest, 0.1 * b, 0.86, 0.25 * b, 0, 0, 0.4)
+        .b(0.06, 0.56, 0.5 * b, vest, -0.29 * b, 0.64, 0).b(0.06, 0.56, 0.5 * b, vest, 0.29 * b, 0.64, 0).b(0.56 * b, 0.56, 0.06, vest, 0, 0.64, -0.235 * b)
+        .o(0.05, red, -0.05, 0.96, 0.27 * b, 1.2, 0.8, 0.5).o(0.05, red, 0.05, 0.96, 0.27 * b, 1.2, 0.8, 0.5).o(0.025, red, 0, 0.96, 0.29 * b)
+        .b(0.2, 0.014, 0.014, gold, 0.1 * b, 0.55, 0.27 * b, 0, 0, 0.35).y(0.04, 0.04, 0.02, 10, gold, 0.2 * b, 0.5, 0.27 * b, HPI).y(0.03, 0.03, 0.022, 10, 0xf4f0e0, 0.2 * b, 0.5, 0.272 * b, HPI)
+        .b(0.06, 0.9, 0.03, 0x3a2418, 0, 0.62, -0.27 * b, 0, 0, 0.75)   // the strongbox strap
+        .b(0.8 * b, 0.07, 0.54 * b, 0x15121a, 0, 0.3, 0).b(0.1, 0.08, 0.05, gold, 0, 0.3, 0.27 * b);
+      for (let i = 0; i < 3; i++) kb.o(0.024, gold, 0.03, 0.68 - i * 0.11, 0.27 * b);
       break; }
     // a concert tailcoat: black with wine-red lapels and waistcoat, a white cravat with a gold pin, gold buttons, a glowing ember rose on the lapel, two long tails behind
     case 'tailcoat': { const blk = c1, wine = 0x7a1418, wh = L.shirt || 0xf0ece4, gold = met;
@@ -1570,6 +1597,13 @@ function buildHero(L, teamColor) {
     case 'mic': { const gold = met, cr = 0xd8dce4, w = wpn(); w.y(0.025, 0.03, 2.3, 6, cr, 0, 0.5, 0.14).y(0.045, 0.045, 0.12, 8, gold, 0, 0.2, 0.14).y(0.12, 0.04, 0.08, 6, gold, 0, -0.66, 0.14)
       .y(0.05, 0.035, 0.18, 8, cr, 0, 1.7, 0.2, 0.35).y(0.075, 0.06, 0.06, 10, gold, 0, 1.8, 0.24, 0.35).i(0.09, 0x3a3a46, 0, 1.88, 0.27, 1).y(0.095, 0.095, 0.025, 12, GL, 0, 1.82, 0.25, 0.35)
       .b(0.04, 0.3, 0.012, L.lin || 0xff7ac8, 0.05, 1.45, 0.16, 0, 0, 0.25).b(0.04, 0.26, 0.012, L.lin || 0xff7ac8, -0.05, 1.47, 0.16, 0, 0, -0.3); break; }
+    // an iron strongbox built over the right forearm and made into a cannon: gold corner bands, a combination dial on the side, a glowing seam, a muzzle past the hand
+    case 'strongbox': { wiL = -0.2; const iron = 0x2a2630, gold = met;
+      kfR.b(0.36 * ab, 0.62, 0.42 * ab, iron, 0, -0.32, -0.04).b(0.38 * ab, 0.025, 0.44 * ab, { g: GL }, 0, -0.46, -0.04)
+        .y(0.08, 0.08, 0.03, 12, gold, 0.19 * ab, -0.3, -0.04, 0, 0, HPI).y(0.035, 0.035, 0.035, 8, 0x15121a, 0.2 * ab, -0.3, -0.04, 0, 0, HPI)
+        .y(0.11, 0.13, 0.12, 10, iron, 0, HY - 0.2, -0.04).y(0.12, 0.12, 0.03, 10, gold, 0, HY - 0.26, -0.04).y(0.08, 0.08, 0.02, 10, { g: GL }, 0, HY - 0.28, -0.04);
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) kfR.b(0.05, 0.64, 0.05, gold, sx * 0.18 * ab, -0.32, -0.04 + sz * 0.21 * ab);
+      kfL.b(0.24 * ab, 0.06, 0.26 * ab, gold, 0, -0.2, 0); break; }
     // a heavy cleaver in the right hand; on the left forearm a motorbike wheel made into a shield: a black tyre with glowing treads, a steel rim, spokes, a hot hub
     case 'wheel': { wiR = -0.35; const st = 0xb8bcc4, tire = 0x1a1a1e, dk2 = 0x2a2420, cx = -0.2, cy = -0.28, cz = 0.08;
       kwR.b(0.07, 0.07, 0.3, dk2, 0, HY, 0.02).b(0.3, 0.07, 0.07, met, 0, HY, 0.18).b(0.2, 0.05, 0.9, st, 0.03, HY, 0.66).b(0.04, 0.055, 0.86, GL, 0.125, HY, 0.66).b(0.14, 0.05, 0.2, st, 0.0, HY, 1.16, 0, 0.5);

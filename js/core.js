@@ -316,6 +316,10 @@ const SFX = {
       case 'clang': T('sine', 140, 60, 0.16, 0.4); N('bandpass', 3200, 1400, 0.08, 0.32, 0, 1.6); T('triangle', 1180, 1170, 0.5, 0.09); T('triangle', 1730, 1720, 0.4, 0.06); T('sine', 2610, 2600, 0.3, 0.04); break;
       case 'stormbow': T('triangle', 240, 150, 0.14, 0.24); N('highpass', 7000, 2400, 0.18, 0.26); T('sawtooth', 1800, 220, 0.16, 0.12, 0.03); N('bandpass', 2600, 900, 0.22, 0.16, 0.06, 3); break;
       case 'flintlock': N('highpass', 5000, 1600, 0.05, 0.42); N('lowpass', 2400, 140, 0.24, 0.4); T('square', 150, 60, 0.08, 0.16); T('triangle', 2350, 2340, 0.35, 0.05, 0.03); T('sine', 3520, 3510, 0.28, 0.03, 0.03); break;
+      // a heavy iron safe: a deep thud, the bolts sliding home, a lock wheel clicking
+      case 'vault': T('sine', 90, 40, 0.4, 0.5); N('lowpass', 900, 120, 0.3, 0.45); T('square', 260, 180, 0.06, 0.12, 0.12); N('bandpass', 3200, 2400, 0.04, 0.2, 0.2, 5); N('bandpass', 3400, 2600, 0.04, 0.18, 0.28, 5); T('sine', 1900, 1900, 0.3, 0.06, 0.3); break;
+      // a gold shell from the strongbox: a hollow metal thump and a coin ringing after it
+      case 'coinshot': N('lowpass', 1800, 200, 0.12, 0.38); T('triangle', 220, 90, 0.1, 0.22); T('sine', 2400, 2380, 0.22, 0.06, 0.04); T('sine', 3600, 3590, 0.18, 0.04, 0.05); break;
       case 'siren':T('sawtooth', 660, 990, 0.42, 0.06); T('sine', 660, 990, 0.42, 0.1); T('sawtooth', 990, 660, 0.42, 0.06, 0.42); T('sine', 990, 660, 0.42, 0.1, 0.42); break;
       // something heavy falling from the sky: a long falling whistle
       case 'falling': T('sine', 2300, 520, 0.7, 0.13); T('sine', 2340, 530, 0.7, 0.05); break;
@@ -386,7 +390,7 @@ const SFX_FLAT = { ui: 1, buy: 1, deny: 1, warn: 1, coin: 1, level: 1, kill: 1, 
 // the sound of each hero's basic attack: hit — a melee blow (played on the target), atk — a shot (played at the shooter), imp — a shot landing.
 // A hero's own def.hitSfx wins over this table (false = the hero plays it himself in onDeal)
 const HERO_SFX = {
-  roxa: { hit: 'mace' }, taiga: { atk: 'bow' }, korvin: { atk: 'flintlock' }, velvet: { atk: 'note' }, brand: { hit: 'mace' }, keira: { hit: 'dagger' }, mora: { atk: 'hex', imp: 'ember' }, vale: { atk: 'crossbow' }, oriel: { atk: 'holy' }, groh: { hit: 'stone' },
+  roxa: { hit: 'mace' }, taiga: { atk: 'bow' }, korvin: { atk: 'flintlock' }, margo: { atk: 'coinshot' }, velvet: { atk: 'note' }, brand: { hit: 'mace' }, keira: { hit: 'dagger' }, mora: { atk: 'hex', imp: 'ember' }, vale: { atk: 'crossbow' }, oriel: { atk: 'holy' }, groh: { hit: 'stone' },
   nox: { atk: 'zap' }, silva: { atk: 'bow' }, morg: { atk: 'poison' }, aisa: { atk: 'ice' }, cassius: { hit: 'blade' }, zar: { atk: 'void' }, grimm: { hit: 'chain' },
   ragna: { hit: 'axe' }, yuki: { atk: 'spirit' }, virr: { atk: 'rifle' }, lira: { atk: 'gust' }, hald: { hit: 'spear' }, nisa: { atk: 'needle' }, shaya: { hit: 'dagger' },
   fenris: { hit: 'claw' }, reiji: { hit: 'katana' }, vint: { atk: 'blaster' }, toplak: { hit: 'mace' }, kolomba: { atk: 'card' }, kostyan: { hit: 'bone' }, shiro: { hit: 'flesh' },
