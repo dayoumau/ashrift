@@ -891,6 +891,22 @@ const HEADS = {
       .y(0.18, 0.2, 0.08, 7, C.skin, 0, -0.27, 0)
       .y(0.252, 0.252, 0.04, 14, 0x15301f, 0, 0.21, 0)   // the eyeshade band
       .b(0.46, 0.014, 0.2, vis, 0, 0.2, 0.3, -0.28).b(0.46, 0.006, 0.2, { g: 0x3ad88a }, 0, 0.192, 0.3, -0.28);   // the green visor
+  },
+  miro(k, C) { // a fog cardsharp: silver-mint hair swept to the left, long bangs over the left eye, a sly green half-smile, round teal-tinted glasses
+    // low on the nose, a playing card tucked behind the right ear, a thin gold earring on the left
+    const hair = C.hair || 0xc8dcdc, hs = 0x7a9a9c, iris = 0x3ad89a, wh = 0xf2f0ea, lens = C.GL || 0x5ae8d8, gold = C.met || 0xe8c878;
+    k.b(0.4, 0.47, 0.4, C.skin, 0, -0.01, 0);
+    for (const sd of [-1, 1]) k.b(0.11, 0.042, 0.03, wh, sd * 0.092, 0.02, 0.203).b(0.054, 0.042, 0.03, { g: iris }, sd * 0.088, 0.019, 0.211).b(0.018, 0.028, 0.02, 0x0a1a12, sd * 0.088, 0.019, 0.219)
+      .b(0.13, 0.016, 0.035, 0x2a3a3a, sd * 0.093, 0.044, 0.214, 0, 0, -sd * 0.1).b(0.12, 0.016, 0.03, hs, sd * 0.096, 0.08, 0.212, 0, 0, sd * 0.15)
+      .y(0.068, 0.068, 0.012, 12, gold, sd * 0.09, 0.0, 0.232, HPI).y(0.056, 0.056, 0.014, 12, { g: lens }, sd * 0.09, 0.0, 0.234, HPI);   // the round glasses, sitting low
+    k.b(0.07, 0.01, 0.01, gold, 0, 0.005, 0.236).b(0.025, 0.055, 0.035, C.skin, 0, -0.05, 0.205)
+      .b(0.07, 0.014, 0.02, 0x8a4a44, 0.012, -0.13, 0.2, 0, 0, -0.18).b(0.02, 0.014, 0.02, 0x8a4a44, 0.05, -0.12, 0.2, 0, 0, 0.5)   // the crooked half-smile
+      .t(0.45, 0.43, 0.5, 0.48, 0.12, hair, 0, 0.21, -0.02).b(0.47, 0.38, 0.16, hair, 0, 0.03, -0.2).b(0.06, 0.3, 0.32, hair, -0.226, 0.06, -0.03).b(0.05, 0.24, 0.3, hair, 0.224, 0.09, -0.04)
+      .y(0.18, 0.2, 0.08, 7, C.skin, 0, -0.27, 0)
+      .b(0.02, 0.16, 0.11, 0xf4f0e8, 0.232, 0.1, -0.04, 0, 0, -0.25).b(0.022, 0.05, 0.04, 0xc8202c, 0.236, 0.12, -0.04, 0, 0, -0.25)   // the card behind the ear
+      .y(0.025, 0.025, 0.012, 8, gold, -0.235, -0.1, 0.02, 0, 0, HPI);
+    for (const [x, y, h, rz] of [[-0.18, 0.12, 0.34, 0.55], [-0.1, 0.13, 0.32, 0.4], [-0.02, 0.17, 0.26, 0.3], [0.07, 0.2, 0.2, 0.2], [0.15, 0.22, 0.15, 0.1]]) k.c(0.07, h, 4, hair, x, y, 0.215, Math.PI - 0.08, 0, rz);   // bangs swept over the left eye
+    for (const [x, rx, rz] of [[-0.12, -0.5, 0.3], [0.02, -0.65, 0], [0.14, -0.5, -0.3]]) k.c(0.08, 0.24, 4, hair, x, 0.28, -0.08, rx, 0, rz);   // a loose tousle on top
   }
 };
 
@@ -1206,6 +1222,17 @@ function buildHero(L, teamColor) {
         .b(0.58 * b, 0.52, 0.06, lt, 0, 0.67, -0.245 * b).y(0.15, 0.15, 0.02, 12, fl, 0, 0.72, -0.28 * b, HPI).y(0.09, 0.09, 0.025, 10, lt, 0, 0.72, -0.285 * b, HPI).y(0.035, 0.035, 0.03, 8, fl, 0, 0.72, -0.29 * b, HPI)
         .b(0.8 * b, 0.09, 0.54 * b, 0x2a2420, 0, 0.26, 0).y(0.065, 0.065, 0.03, 10, st, 0, 0.26, 0.28 * b, HPI).y(0.032, 0.032, 0.035, 8, GL, 0, 0.26, 0.29 * b, HPI);
       for (let i = 0; i < 7; i++) kb.b(0.035, 0.05, 0.035, st, 0.41 * b, 0.2 - Math.sin(i / 6 * Math.PI) * 0.09, (0.22 - i * 0.07) * b, 0, 0, i % 2 ? HPI : 0);
+      break; }
+    // a fog cardsharp's trench coat: open slate-grey coat with a high flared collar and gold buttons, a dark shirt, a long mist-teal scarf wound round the neck
+    // with one glowing end down the chest, a belt with a card case on the hip (the long tails come from look.coat)
+    case 'fogcoat': { const cl = c1, sh = L.shirt || 0x1a1e24, sc = L.lin || 0x5ae8d8, gold = met;
+      kb.b(0.3 * b, 0.6, 0.05, sh, 0, 0.66, 0.236 * b)
+        .b(0.2 * b, 0.62, 0.06, cl, -0.22 * b, 0.64, 0.245 * b).b(0.2 * b, 0.62, 0.06, cl, 0.22 * b, 0.64, 0.245 * b)
+        .b(0.06, 0.62, 0.52 * b, cl, -0.3 * b, 0.66, 0).b(0.06, 0.62, 0.52 * b, cl, 0.3 * b, 0.66, 0).b(0.58 * b, 0.62, 0.06, cl, 0, 0.66, -0.245 * b)
+        .b(0.12, 0.32, 0.05, cl, -0.2 * b, 1.08, 0.18 * b, -0.35, 0, -0.25).b(0.12, 0.32, 0.05, cl, 0.2 * b, 1.08, 0.18 * b, -0.35, 0, 0.25).b(0.5 * b, 0.3, 0.05, cl, 0, 1.1, -0.22 * b, 0.3)   // the high collar
+        .y(0.3, 0.3, 0.14, 10, sc, 0, 1.0, 0).b(0.11, 0.5, 0.04, { g: sc }, -0.1 * b, 0.72, 0.28 * b, 0.08, 0, 0.06).b(0.12, 0.06, 0.045, sc, -0.1 * b, 0.46, 0.285 * b)   // the scarf
+        .b(0.8 * b, 0.07, 0.54 * b, 0x15181c, 0, 0.3, 0).b(0.09, 0.08, 0.05, gold, 0, 0.3, 0.27 * b).b(0.1, 0.16, 0.08, 0x2a2024, 0.36 * b, 0.22, 0.12 * b).b(0.06, 0.06, 0.02, gold, 0.36 * b, 0.26, 0.165 * b);
+      for (let i = 0; i < 3; i++) kb.o(0.022, gold, 0.17 * b, 0.82 - i * 0.14, 0.28 * b);
       break; }
     // a moneylender's outfit: a white shirt under a black waistcoat with gold buttons, a red bow tie, a gold watch on a chain, a strap for the strongbox across the back
     case 'banker': { const vest = L.lin || 0x2a1c30, wh = L.shirt || 0xf2eee6, gold = met, red = L.cuff || 0xb8202c;
@@ -1597,6 +1624,13 @@ function buildHero(L, teamColor) {
     case 'mic': { const gold = met, cr = 0xd8dce4, w = wpn(); w.y(0.025, 0.03, 2.3, 6, cr, 0, 0.5, 0.14).y(0.045, 0.045, 0.12, 8, gold, 0, 0.2, 0.14).y(0.12, 0.04, 0.08, 6, gold, 0, -0.66, 0.14)
       .y(0.05, 0.035, 0.18, 8, cr, 0, 1.7, 0.2, 0.35).y(0.075, 0.06, 0.06, 10, gold, 0, 1.8, 0.24, 0.35).i(0.09, 0x3a3a46, 0, 1.88, 0.27, 1).y(0.095, 0.095, 0.025, 12, GL, 0, 1.82, 0.25, 0.35)
       .b(0.04, 0.3, 0.012, L.lin || 0xff7ac8, 0.05, 1.45, 0.16, 0, 0, 0.25).b(0.04, 0.26, 0.012, L.lin || 0xff7ac8, -0.05, 1.47, 0.16, 0, 0, -0.3); break; }
+    // a fog pistol: a long-barrelled revolver of dark steel with gold trim, a glass canister of glowing mist fitted over the cylinder
+    case 'fogpistol': { wiR = 0.5; const st = 0x2a2e34, gold = met;
+      kwR.b(0.07, 0.2, 0.1, 0x3a2a24, 0, HY - 0.05, -0.04, 0.4).o(0.03, gold, 0, HY - 0.15, -0.09).b(0.08, 0.11, 0.24, st, 0, HY + 0.07, 0.08)
+        .y(0.035, 0.04, 0.44, 8, st, 0, HY + 0.1, 0.42, HPI).y(0.05, 0.05, 0.05, 8, gold, 0, HY + 0.1, 0.63, HPI)
+        .y(0.085, 0.085, 0.22, 10, 0xd8f0ee, 0, HY + 0.19, 0.12, HPI).y(0.07, 0.07, 0.23, 10, { g: GL }, 0, HY + 0.19, 0.12, HPI).y(0.092, 0.092, 0.03, 10, gold, 0, HY + 0.19, 0.0, HPI).y(0.092, 0.092, 0.03, 10, gold, 0, HY + 0.19, 0.24, HPI)
+        .b(0.012, 0.06, 0.1, gold, 0, HY - 0.03, 0.08);
+      rig.tipR = new THREE.Vector3(0, HY + 0.1, 0.66); break; }
     // an iron strongbox built over the right forearm and made into a cannon: gold corner bands, a combination dial on the side, a glowing seam, a muzzle past the hand
     case 'strongbox': { wiL = -0.2; const iron = 0x2a2630, gold = met;
       kfR.b(0.36 * ab, 0.62, 0.42 * ab, iron, 0, -0.32, -0.04).b(0.38 * ab, 0.025, 0.44 * ab, { g: GL }, 0, -0.46, -0.04)
