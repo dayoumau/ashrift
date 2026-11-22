@@ -70,7 +70,7 @@ function mgWell(h, x, z, land, tick) {
   for (const e of enemiesIn(h, x, z, R)) { if (e.struct) continue; damage(h, e, land, 1); if (e.alive) mgDebt(h, e, 4); }
   SFX.at('vault', x, z, 0.8); SFX.at('void', x, z, 0.5);
   if (FX.near(x, z, 60)) {
-    FX.zone(x, z, R, MG.vio, DUR, { tex: 'rune2', spin: -1.6, op: 0.45 }); FX.zone(x, z, R * 0.5, MG.c, DUR, { tex: 'ringThin', spin: 2.4, op: 0.5 });
+    FX.zone(x, z, R, MG.vio, DUR, { tex: 'swirl', spin: -3.2, op: 0.5 }); FX.zone(x, z, R, 0x5a2ab8, DUR, { tex: 'ringThin', spin: 1, op: 0.6 }); FX.zone(x, z, R * 0.5, MG.c, DUR, { tex: 'ringThin', spin: 2.4, op: 0.5 });
     FX.ring(x, z, { r0: 0.4, r1: R, color: MG.c, life: 0.4, tex: 'shock' }); FX.shock(x, z, R, 1, 0.4); FX.shake(0.12); mgCoins(x, 1, z, 8, 4);
   }
   const box = FX.near(x, z, 60) ? mgBoxMesh(0.9) : null; let boxE = null;
@@ -94,7 +94,7 @@ function mgBankrupt(h, x, z, hit, end, sh) {
   telegraph(h, x, z, R, 0.6, MG.c); SFX.at('ultcue', h.x, h.z, 0.7); SFX.at('vault', x, z, 0.7);
   if (FX.near(x, z, 60)) {
     FX.text(h.x, h.height + 1.3, h.z, 'Банкротство!', '#ffd86a', 18);
-    FX.zone(x, z, R, MG.c, 0.6, { tex: 'rune2', spin: 1.4, op: 0.5 });
+    FX.zone(x, z, R, 0xc8901a, 0.6, { tex: 'ringThin', spin: 1.4, op: 0.7 }); FX.zone(x, z, R * 0.7, 0xc8901a, 0.6, { tex: 'swirl', spin: 4, op: 0.35 });
     for (let i = 0; i < 6; i++) after(i * 0.08, () => FX.ring(x, z, { r0: R, r1: R * 0.3, color: i % 2 ? MG.vio : MG.c, life: 0.25, tex: 'ringThin' }));
   }
   for (const o of G.heroes) if (o.alive && o.team === h.team && dist(o.x, o.z, x, z) < R) { shield(h, o, sh, HOLD, MG.c); if (FX.near(o.x, o.z, 45)) FX.heal(o, MG.c); }
@@ -104,7 +104,7 @@ function mgBankrupt(h, x, z, hit, end, sh) {
     if (FX.near(x, z, 65)) {
       FX.ring(x, z, { r0: R, r1: 0.5, color: MG.c, life: 0.35, tex: 'shock' }); FX.shock(x, z, R, 1.4, 0.5); FX.shake(0.3); FX.glow(x, 2, z, 8, MG.hot, 0.35, 'flare'); FX.light(x, 3, z, MG.c, 3, 18, 0.5);
       FX.pillar(x, z, { r: 1.6, h: 14, color: MG.vio, life: 0.8, op: 0.5, spin: 1 }); FX.pillar(x, z, { r: 0.8, h: 14, color: MG.hot, life: 0.5, op: 0.7 });
-      FX.zone(x, z, R, MG.vio, HOLD, { tex: 'rune2', spin: -0.9, op: 0.4 }); FX.zone(x, z, R * 0.6, MG.c, HOLD, { tex: 'ringThin', spin: 1.8, op: 0.45 }); FX.zone(x, z, 2, MG.deep, HOLD, { tex: 'shock', spin: 3, op: 0.6 });
+      FX.zone(x, z, R, MG.vio, HOLD, { tex: 'swirl', spin: -2.6, op: 0.45 }); FX.zone(x, z, R, 0x5a2ab8, HOLD, { tex: 'ringThin', spin: 0.8, op: 0.6 }); FX.zone(x, z, R * 0.6, MG.c, HOLD, { tex: 'ringThin', spin: 1.8, op: 0.45 }); FX.zone(x, z, 2, MG.deep, HOLD, { tex: 'shock', spin: 3, op: 0.6 });
       mgCoins(x, 1.4, z, 16, 7);
       const vault = mgBoxMesh(2.2); FX.add(vault, HOLD + 0.4, (k, me) => { const t = k * (HOLD + 0.4); me.position.set(x, 2.8 + Math.sin(t * 2) * 0.2, z); me.rotation.y = t * 0.9; me.rotation.z = Math.sin(t * 1.3) * 0.15; me.scale.setScalar(2.2 * Math.min(1, t * 4) * (t > HOLD ? Math.max(0.01, 1 - (t - HOLD) / 0.4) : 1)); });
     }

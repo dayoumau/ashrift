@@ -461,7 +461,7 @@ HEROES.push(
       },
       {
         key: 'E', name: 'Бег по стенам', icon: 'sewall', cd: 12, cost: 45, range: 7, ind: { type: 'circle', r: 0.8 }, anim: 'feint', animDur: 0.35, lock: 0, ai: { t: 'escape' },
-        desc: 'Сэйрю одним махом перелетает к точке (до 7), не замечая стен и обрывов, и 2 сек бегает на 30% быстрее.',
+        desc: 'Сэйрю одним махом перелетает к точке (до 7), не замечая стен и обрывов, и 2 сек бегает на 30% быстрее. Первая атака в течение 2.5 сек после прыжка — удар ногой с разворота: +40% урона атаки и замедление цели на 30% на 1 сек.',
         cast(h, p) {
           let n = 0; const x0 = h.x, z0 = h.z;
           if (FX.near(x0, z0, 50)) { FX.ring(x0, z0, { r0: 0.3, r1: 2.2, color: 0x1ab878, life: 0.3, tex: 'shock', op: 0.6 }); FX.burst(x0, 0.3, z0, { smoke: true, n: 5, color: 0x9a9488, color2: 0x3a3630, speed: [1, 3], life: [0.3, 0.6], size: [0.6, 1.2], up: 0.6, a: 0.35 }); }
@@ -469,6 +469,8 @@ HEROES.push(
             trail: u => { if (++n % 2 === 0) dshGhost(u, SEI.c, 0.3, 0.3); },
             onEnd: u => { if (FX.near(u.x, u.z, 50)) { FX.ring(u.x, u.z, { r0: 0.3, r1: 2.4, color: SEI.c, life: 0.3, tex: 'ringThin', op: 0.7 }); FX.sparks(u.x, 0.4, u.z, { n: 8, color: SEI.pale, color2: SEI.c, speed: [2, 6], life: [0.2, 0.4], up: 3, w: 0.07 }); FX.burst(u.x, 0.3, u.z, { smoke: true, n: 5, color: 0x9a9488, color2: 0x3a3630, speed: [1, 3], life: [0.3, 0.6], size: [0.6, 1.2], up: 0.6, a: 0.35 }); } SFX.at('heavy', u.x, u.z, 0.3); } });
           const b = addBuff(h, { id: 'sewall', dur: 2, ms: 0.3 }); if (b && FX.near(h.x, h.z, 50)) b.fx = FX.aura(h, SEI.c, 2, 1.1, 'ringThin', 6);
+          // the momentum of the leap goes into the next blow: a spinning kick
+          addBuff(h, { id: 'sekick', dur: 2.5, onHit: (u, t, bf) => { if (bf.used || t.struct) return 0; bf.used = true; bf.dead = true; if (t.alive) slow(u, t, 0.3, 1, 'sekick'); SFX.at('heavy', t.x, t.z, 0.5); SFX.at('whoosh', t.x, t.z, 0.4); if (FX.near(t.x, t.z, 45)) { const f = angTo(u.x, u.z, t.x, t.z); FX.slash(t.x, t.z, f, { r: 2.4, sweep: 3.2, color: SEI.c, life: 0.24, y: 1.3 }); FX.ring(t.x, t.z, { r0: 0.3, r1: 2, color: 0x1ab878, life: 0.3, tex: 'shock', op: 0.6 }); FX.sparks(t.x, 1.3, t.z, { n: 10, color: SEI.pale, color2: SEI.c, speed: [4, 10], life: [0.15, 0.3], dir: f, spread: 0.9, w: 0.08 }); FX.text(t.x, t.height + 0.8, t.z, 'с разворота', '#9fffd8', 13); } return u.ad * 0.4; } });
           SFX.at('dash', h.x, h.z, 0.6); SFX.at('whoosh', h.x, h.z, 0.6);
         }
       },

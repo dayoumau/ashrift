@@ -111,6 +111,10 @@ function rxBash(h, dir, dmg) {
     FX.glow(fx, 1.3, fz, 5, RX.hot, 0.18, 'flare'); FX.light(fx, 2, fz, RX.c, 2.4, 12, 0.25); FX.shock(fx, fz, 3.5, 1, 0.3);
     FX.sparks(fx, 1.2, fz, { n: 22, color: 0xffffff, color2: RX.c, speed: [8, 16], life: [0.15, 0.35], w: 0.08, dir, spread: half }); FX.shake(0.18);
     FX.burst(fx, 0.5, fz, { smoke: true, n: 4, color: 0x8a7a70, color2: 0x2a2420, speed: [1, 3], life: [0.4, 0.8], size: [0.6, 1.4], dir, spread: 0.5, a: 0.35 });
+    // what the blow leaves behind: a burnt fan on the ground, fire licking along its edges, a second arc rolling out after the first
+    FX.scorch(fx + Math.sin(dir) * 1.2, fz + Math.cos(dir) * 1.2, 1.8, RX.c, 4); after(0.07, () => akWave(h.x, h.z, dir, R + 0.6, half * 0.85, 0.24, 0.6));
+    for (const s of [-1, 1]) for (let i = 1; i <= 3; i++) { const a = dir + s * half, d = i * 1.3; FX.flame(h.x + Math.sin(a) * d, 0.3, h.z + Math.cos(a) * d, { n: 2, color: RX.hot, color2: RX.deep, size: [0.5, 1.1], life: [0.3, 0.6], up: 2, a: 0.5 }); }
+    FX.ring(fx, fz, { r0: 0.4, r1: 2.6, color: RX.deep, life: 0.35, tex: 'shock', op: 0.7 });
   }
 }
 // «Dead end», the last stop: a slam of the wheel at the end of the ride
@@ -163,6 +167,14 @@ HEROES.push(
           if (b && FX.near(h.x, h.z, 55)) {
             b.fx = FX.aura(h, RX.c, 1.2, 1.8, 'ringThin', 6);
             FX.ring(h.x, h.z, { r0: 2.6, r1: 1.2, color: RX.hot, life: 0.3 }); FX.glow(h.x + Math.sin(h.facing) * 0.6, 1.4, h.z + Math.cos(h.facing) * 0.6, 3, RX.c, 0.4, 'star');
+            // the guard is something you can see: a burning phantom wheel held up in front of her, turning, with embers falling off it, for as long as the parry lasts
+            const gw = rxWheelMesh(true); let et = 0;
+            FX.add(gw, 1.2, (k, me, dt, en) => {
+              if (!h.alive || !h.rxParry || h.rxParry.done) { en.dead = true; return; } const f = h.facing, t = en.t, s = 1.7 * Math.min(1, t / 0.12) * (1 + Math.sin(t * 14) * 0.04);
+              me.position.set(h.x + Math.sin(f) * 1.15, 1.35, h.z + Math.cos(f) * 1.15); me.rotation.set(0, f, 0); me.userData.spin.rotation.z = t * 9; me.scale.setScalar(s);
+              et += dt; if (et > 0.1) { et = 0; FX.sparks(me.position.x, 1.35, me.position.z, { n: 2, color: RX.hot, color2: RX.c, speed: [1, 3], life: [0.25, 0.45], grav: -6, w: 0.06, rad: 0.8 }); }
+            });
+            FX.zone(h.x, h.z, 2, RX.deep, 1.2, { tex: 'ringThin', spin: -5, op: 0.6, follow: h }); FX.light(h.x, 2, h.z, RX.c, 1.4, 9, 1.2);
           }
         }
       },

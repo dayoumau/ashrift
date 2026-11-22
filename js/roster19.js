@@ -10,7 +10,7 @@ function kvFlash(h, dir, left, big) {
   const m = kvMuzzle(h, dir, left); if (!FX.near(m.x, m.z, 55)) return m;
   FX.glow(m.x, m.y, m.z, big ? 3.2 : 1.8, KV.hot, 0.08, 'flare'); FX.glow(m.x, m.y, m.z, big ? 2 : 1.1, KV.c, 0.12, 'star');
   FX.sparks(m.x, m.y, m.z, { n: big ? 8 : 3, color: 0xffffff, color2: KV.c, speed: [4, 10], life: [0.08, 0.2], w: 0.05, dir, spread: 0.4 });
-  if (big) FX.burst(m.x, m.y, m.z, { smoke: true, n: 2, color: 0x8a6a60, color2: 0x2a1a18, speed: [1, 2.5], life: [0.4, 0.7], size: [0.4, 0.9], dir, spread: 0.4, a: 0.3 });
+  if (big) { FX.burst(m.x, m.y, m.z, { smoke: true, n: 2, color: 0x8a6a60, color2: 0x2a1a18, speed: [1, 2.5], life: [0.4, 0.7], size: [0.4, 0.9], dir, spread: 0.4, a: 0.3 }); FX.flame(m.x + Math.sin(dir) * 0.4, m.y, m.z + Math.cos(dir) * 0.4, { n: 3, color: KV.hot, color2: KV.c, size: [0.4, 0.9], life: [0.15, 0.3], up: 0.5 }); FX.light(m.x, m.y, m.z, KV.c, 1.6, 8, 0.12); }
   return m;
 }
 // burning: a magic tick every half second, small flames on the target
@@ -27,12 +27,12 @@ function kvBullet(h, t, dmg, burn, o) {
   homing(h, t, { speed: 46, color: o.color || KV.c, size: o.size || 0.5, mesh: 'bolt', y: 1.55, x: m.x, z: m.z,
     onHit: tt => {
       if (!h.alive && !o.dead) return; damage(h, tt, dmg, 0, { dot: !!o.dot }); kvBurn(h, tt, burn);
-      if (FX.near(tt.x, tt.z, 45)) { FX.hit(tt.x, tt.height * 0.55, tt.z, KV.c, !!o.big); FX.sparks(tt.x, tt.height * 0.55, tt.z, { n: 4, color: KV.hot, color2: KV.c, speed: [3, 7], life: [0.1, 0.25], w: 0.05 }); }
+      if (FX.near(tt.x, tt.z, 45)) { FX.hit(tt.x, tt.height * 0.55, tt.z, KV.c, !!o.big); FX.sparks(tt.x, tt.height * 0.55, tt.z, { n: 4, color: KV.hot, color2: KV.c, speed: [3, 7], life: [0.1, 0.25], w: 0.05 }); FX.flame(tt.x, tt.height * 0.5, tt.z, { n: 3, color: KV.c, color2: KV.deep, size: [0.4, 0.8], life: [0.2, 0.4] }); if (o.note) vlNote(tt.x + rand(-0.3, 0.3), tt.height * 0.8, tt.z + rand(-0.3, 0.3), KV.hot, 0.8, 0.8); }
     } });
 }
 // «Crescendo»: every ability tunes the next two attacks
 function kvTune(h) {
-  h.kvDouble = 2; if (FX.near(h.x, h.z, 45)) { FX.aura(h, KV.c, 0.5, 1.1, 'ringThin', 3); FX.glow(h.x, h.height + 0.4, h.z, 1.6, KV.hot, 0.2, 'star'); }
+  h.kvDouble = 2; if (FX.near(h.x, h.z, 45)) { FX.aura(h, KV.c, 0.5, 1.1, 'ringThin', 3); FX.glow(h.x, h.height + 0.4, h.z, 1.6, KV.hot, 0.2, 'star'); for (let i = 0; i < 2; i++) vlNote(h.x + (i ? 0.5 : -0.5), h.height + 0.2, h.z, i ? KV.hot : KV.c, 0.8, 0.9); }
 }
 // the ricochet: a bullet to the target, then on to the nearest enemy not yet hit (within 6), three targets at most, each 15% weaker
 function kvRicochet(h, from, t, dmg, left, hit) {
@@ -40,10 +40,10 @@ function kvRicochet(h, from, t, dmg, left, hit) {
   homing(h, t, { speed: 52, color: KV.hot, size: 0.75, mesh: 'bolt', y: 1.5, x: from.x, z: from.z,
     onHit: tt => {
       damage(h, tt, dmg, 0); kvBurn(h, tt, 3); SFX.at('gunshot', tt.x, tt.z, 0.4); SFX.at('clink', tt.x, tt.z, 0.5);
-      if (FX.near(tt.x, tt.z, 50)) { FX.hit(tt.x, tt.height * 0.55, tt.z, KV.c, true); FX.ring(tt.x, tt.z, { r0: 0.2, r1: 1.6, color: KV.c, life: 0.25, tex: 'shock' }); FX.sparks(tt.x, 1.4, tt.z, { n: 8, color: 0xffffff, color2: KV.hot, speed: [5, 11], life: [0.1, 0.25], w: 0.06 }); }
+      if (FX.near(tt.x, tt.z, 50)) { FX.hit(tt.x, tt.height * 0.55, tt.z, KV.c, true); FX.ring(tt.x, tt.z, { r0: 0.2, r1: 1.6, color: KV.c, life: 0.25, tex: 'shock' }); FX.flame(tt.x, 1, tt.z, { n: 6, color: KV.hot, color2: KV.deep, size: [0.6, 1.2], life: [0.25, 0.5], up: 2 }); FX.light(tt.x, 2, tt.z, KV.c, 1.8, 9, 0.2); FX.text(tt.x, tt.height + 0.8, tt.z, ['дзынь!', 'дзынь-дзынь!', 'финал!'][Math.max(0, 3 - left)] || 'дзынь!', '#ffc890', 13); FX.sparks(tt.x, 1.4, tt.z, { n: 8, color: 0xffffff, color2: KV.hot, speed: [5, 11], life: [0.1, 0.25], w: 0.06 }); }
       if (left <= 1 || !h.alive) { if (FX.near(tt.x, tt.z, 50)) { FX.glow(tt.x, 1.2, tt.z, 4, KV.c, 0.2, 'flare'); FX.shock(tt.x, tt.z, 2.5, 0.6, 0.3); } return; }
       let best = null, bd = 6.5; for (const e of enemiesIn(h, tt.x, tt.z, 6.5)) { if (e.struct || hit.has(e) || !e.alive) continue; const d = udist(tt, e); if (d < bd) { bd = d; best = e; } }
-      if (best) { if (FX.near(tt.x, tt.z, 50)) FX.beam(tt.x, tt.z, best.x, best.z, { color: KV.hot, w: 0.08, life: 0.2, y: 1.5 }); kvRicochet(h, { x: tt.x, z: tt.z }, best, dmg * 0.85, left - 1, hit); }
+      if (best) { if (FX.near(tt.x, tt.z, 50)) { FX.beam(tt.x, tt.z, best.x, best.z, { color: KV.c, w: 0.28, life: 0.3, y: 1.5 }); FX.beam(tt.x, tt.z, best.x, best.z, { color: 0xffffff, w: 0.08, life: 0.2, y: 1.5 }); } kvRicochet(h, { x: tt.x, z: tt.z }, best, dmg * 0.85, left - 1, hit); }
     } });
 }
 // «Burning rhapsody»: allies near him carry a buff whose attacks call his bullets; a slow ring of fire and a few notes over each of them
@@ -52,6 +52,9 @@ function kvRhapsody(h, R, dmg) {
   if (FX.near(h.x, h.z, 60)) {
     FX.text(h.x, h.height + 1.3, h.z, 'Пылающая рапсодия!', '#ffb080', 17); FX.ring(h.x, h.z, { r0: 1, r1: R, color: KV.c, life: 0.6, tex: 'ringThin' });
     FX.pillar(h.x, h.z, { color: KV.c, r: 1.4, h: 9, life: 0.7, grow: true }); FX.light(h.x, 3, h.z, KV.c, 3, 16, 0.5); FX.shock(h.x, h.z, 5, 0.8, 0.4);
+    // the stage of the rhapsody: a ring of fire that turns under him for all ten seconds, flames walking round it, notes rising
+    FX.zone(h.x, h.z, 3, 0xe04a14, dur, { tex: 'ringThin', spin: 2.4, op: 0.8, follow: h }); FX.zone(h.x, h.z, 2.4, 0xc83a10, dur, { tex: 'swirl', spin: -1.5, op: 0.4, follow: h }); FX.zone(h.x, h.z, 1.5, 0xe04a14, dur, { tex: 'rune2', spin: 1, op: 0.35, follow: h });
+    let ft = 0, fa = 0; FX.add(new THREE.Group(), dur, (k, me, dt) => { if (!h.alive) return; ft += dt; if (ft < 0.12) return; ft = 0; fa += 0.7; if (!FX.near(h.x, h.z, 50)) return; FX.flame(h.x + Math.sin(fa) * 3, 0.3, h.z + Math.cos(fa) * 3, { n: 2, color: KV.c, color2: KV.hot, size: [0.4, 0.9], life: [0.3, 0.5], up: 2 }); if (Math.random() < 0.25) vlNote(h.x + Math.sin(fa + 2) * 2.4, 0.8, h.z + Math.cos(fa + 2) * 2.4, Math.random() < 0.5 ? KV.hot : KV.c, 0.9, 1.1); });
     for (let i = 0; i < 10; i++) { const a = i / 10 * TAU; FX.flame(h.x + Math.sin(a) * 2.2, 0.4, h.z + Math.cos(a) * 2.2, { n: 4, color: KV.c, color2: KV.hot, size: [0.5, 1] }); }
   }
   for (const o of alliesIn(h, h.x, h.z, R, true)) {
@@ -59,7 +62,7 @@ function kvRhapsody(h, R, dmg) {
     const b = addBuff(o, { id: 'kvrhap', dur, src: h, nextT: 0, every: 0.6, onTick(u) { if (FX.near(u.x, u.z, 45)) FX.flame(u.x + rand(-0.4, 0.4), 0.3, u.z + rand(-0.4, 0.4), { n: 2, color: KV.c, color2: KV.hot, size: [0.3, 0.6] }); },
       onHit(u, t, bb) {
         if (t.struct || !h.alive || G.time < bb.nextT || udist(h, t) > 16) return 0; bb.nextT = G.time + (u === h ? 0.4 : 0.8);
-        after(0.05, () => { if (t.alive && h.alive) { kvBullet(h, t, dmg, 1.5, { left: Math.random() < 0.5, color: KV.hot }); SFX.at('gunshot', h.x, h.z, 0.35); } }); return 0;
+        after(0.05, () => { if (t.alive && h.alive) { kvBullet(h, t, dmg, 1.5, { left: Math.random() < 0.5, color: KV.hot, note: true }); SFX.at('gunshot', h.x, h.z, 0.35); if (u !== h && FX.near(u.x, u.z, 45)) vlNote(u.x, u.height + 0.3, u.z, KV.hot, 0.7, 0.7); } }); return 0;
       } });
     if (b && FX.near(o.x, o.z, 50)) { FX.aura(o, KV.c, dur, 1.2, 'ringThin', 1.5); FX.glow(o.x, o.height + 0.4, o.z, 2, KV.hot, 0.25, 'star'); }
   }
@@ -89,6 +92,8 @@ HEROES.push(
           for (let i = 0; i < 3; i++) after(i * 0.11, () => {
             if (!h.alive) return; const left = i % 2 === 1, a = dir + (i - 1) * 0.04, m = kvFlash(h, a, left, true);
             SFX.at('flintlock', h.x, h.z, 0.6); h.anim.castT = h.anim.castDur = 0.15; h.anim.castType = 'shoot';
+            // three notes of a staccato: a note of fire off each muzzle, a burnt line on the ground under each bullet
+            if (FX.near(h.x, h.z, 50)) { vlNote(m.x, m.y + 0.2, m.z, i === 2 ? KV.hot : KV.c, 0.9, 0.8); FX.beam(m.x, m.z, m.x + Math.sin(a) * 11, m.z + Math.cos(a) * 11, { color: KV.deep, w: 0.22, life: 0.45, y: 0.14, op: 0.6 }); }
             shot(h, { dir: a, speed: 48, range: 11, w: 1.0, mesh: 'bolt', size: 0.7, color: i === 2 ? KV.hot : KV.c, ribbon: 0.45, x: m.x, z: m.z, y: 1.5,
               onHit: e => { damage(h, e, dmg, 0); kvBurn(h, e, 2); if (FX.near(e.x, e.z, 50)) { FX.hit(e.x, 1.3, e.z, KV.c, i === 2); FX.flame(e.x, 1, e.z, { n: 4, color: KV.c, color2: KV.hot, size: [0.4, 0.8] }); } } });
           });

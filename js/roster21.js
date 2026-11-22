@@ -35,7 +35,7 @@ function mrActor(h) {
   G.actors.push({ update(dt) {
     const L = h.mrD || [];
     if (h.mrVolleyUntil > G.time && h.alive) { vol += dt; if (vol >= 1) { vol -= 1; mrVolley(h); } } else vol = 0;
-    for (let i = L.length - 1; i >= 0; i--) { const d = L[i]; if (mrStep(h, d, dt)) { L.splice(i, 1); G.scene.remove(d.rig.root); } }
+    for (let i = L.length - 1; i >= 0; i--) { const d = L[i]; if (mrStep(h, d, dt)) { L.splice(i, 1); d.fxe.dead = true; } }
     if (!L.length) { h.mrAct = false; return false; }
     return true;
   } });
@@ -50,8 +50,9 @@ function mrSpawn(h, kind, dur, x, z) {
     anim: { walk: 0, atkT: 0, atkDur: 1, castT: 0, castDur: 1, castType: 'cast', deathT: 0, spinA: 0, alt: false } };
   let px = x, pz = z;
   if (px === undefined) { const S = MR_SLOTS[slot], a = h.facing + S[0]; px = h.x + Math.sin(a) * S[1]; pz = h.z + Math.cos(a) * S[1]; }
-  rig.root.position.set(px, 0, pz); rig.root.rotation.y = h.facing; rig.root.scale.setScalar(0.2); G.scene.add(rig.root);
-  const d = { rig, f, x: px, z: pz, kind, slot, born: G.time, until: G.time + dur, strike: null };
+  rig.root.position.set(px, 0, pz); rig.root.rotation.y = h.facing; rig.root.scale.setScalar(0.2);
+  // the rig lives in the scene through FX, so a new match (which clears FX) takes any leftover double away with it
+  const d = { rig, f, x: px, z: pz, kind, slot, born: G.time, until: G.time + dur, strike: null, fxe: FX.add(rig.root, 1e6, null) };
   L.push(d); mrActor(h); mrPuff(px, pz, false); SFX.at('mist', px, pz, 0.3);
   return d;
 }
@@ -226,7 +227,7 @@ HEROES.push(
             FX.text(h.x, h.height + 1.3, h.z, 'Тысяча лиц!', '#8af0e4', 18);
             for (let i = 0; i < 6; i++) mrPuff(h.x + Math.sin(i / 6 * TAU) * 2.5, h.z + Math.cos(i / 6 * TAU) * 2.5, true);
             FX.ring(h.x, h.z, { r0: 0.4, r1: 5, color: MR.c, life: 0.5, tex: 'shock' }); FX.ring(h.x, h.z, { r0: 4.5, r1: 3, color: MR.gold, life: 0.6, tex: 'ringThin' });
-            FX.zone(h.x, h.z, 4, MR.c, 1.2, { tex: 'rune2', spin: 1.5, op: 0.4 }); FX.glow(h.x, 1.5, h.z, 6, MR.pale, 0.35, 'flare'); FX.light(h.x, 3, h.z, MR.c, 2.5, 14, 0.5);
+            FX.zone(h.x, h.z, 4, 0x2a9a90, 1.2, { tex: 'swirl', spin: 3, op: 0.45 }); FX.zone(h.x, h.z, 4, MR.c, 1.2, { tex: 'ringThin', spin: -1.5, op: 0.5 }); FX.glow(h.x, 1.5, h.z, 6, MR.pale, 0.35, 'flare'); FX.light(h.x, 3, h.z, MR.c, 2.5, 14, 0.5);
           }
         }
       }

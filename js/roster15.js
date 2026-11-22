@@ -10,7 +10,10 @@ function xyBlast(h, dir, R, half, o) {
   o = o || {}; const m = xyMuzzle(h, dir); if (!FX.near(m.x, m.z, 60)) return m;
   const big = o.big, n = o.n || 7;
   FX.glow(m.x, m.y, m.z, big ? 5.5 : 3.2, 0xffc890, 0.09, 'flare'); FX.glow(m.x, m.y, m.z, big ? 3 : 1.8, XY.c, 0.14, 'star');
-  for (let i = 0; i < n; i++) { const a = dir + rand(-half, half), r = R * rand(0.55, 1); FX.beam(m.x, m.z, h.x + Math.sin(a) * r, h.z + Math.cos(a) * r, { color: i % 3 ? 0xffc890 : XY.c, w: big ? 0.2 : 0.12, life: 0.1, y: m.y - 0.25 }); }
+  for (let i = 0; i < n; i++) { const a = dir + rand(-half, half), r = R * rand(0.55, 1); const ex = h.x + Math.sin(a) * r, ez = h.z + Math.cos(a) * r; FX.beam(m.x, m.z, ex, ez, { color: i % 3 ? 0xffc890 : XY.c, w: big ? 0.2 : 0.12, life: 0.16, y: m.y - 0.25 });
+    // where the pellets end: a spit of dust and a spark off the ground
+    if (big || i % 2 === 0) { FX.burst(ex, 0.2, ez, { smoke: true, n: 1, color: 0x9a9488, color2: 0x3a3630, speed: [0.5, 1.5], life: [0.3, 0.55], size: [0.4, 0.9], up: 1.2, a: 0.35 }); FX.sparks(ex, 0.25, ez, { n: 2, color: 0xffe0b0, color2: 0xff8a2a, speed: [2, 5], life: [0.12, 0.25], up: 4, w: 0.05 }); } }
+  if (big) { for (const s of [-1, 1]) { const a = dir + s * half; FX.beam(m.x, m.z, h.x + Math.sin(a) * R, h.z + Math.cos(a) * R, { color: 0x6a2a2a, w: 0.5, life: 0.3, y: 0.15, op: 0.5 }); } FX.scorch(h.x + Math.sin(dir) * 2.6, h.z + Math.cos(dir) * 2.6, 1.3, 0xff8a40, 4); }
   FX.sparks(m.x, m.y, m.z, { n: big ? 18 : 9, color: 0xffffff, color2: 0xffa040, speed: [8, 18], life: [0.08, 0.2], w: 0.06, dir, spread: half });
   FX.burst(m.x, m.y, m.z, { smoke: true, n: big ? 5 : 2, color: 0x8a8a90, color2: 0x2a2a30, speed: [1, 3], life: [0.4, 0.8], size: [0.5, 1.2], dir, spread: 0.4, a: 0.35 });
   const sa = dir + HPI; FX.burst(h.x + Math.sin(sa) * 0.4, 1.5, h.z + Math.cos(sa) * 0.4, { n: 1, color: XY.shell, color2: 0xd8a040, speed: [2, 3], life: [0.5, 0.7], size: [0.12, 0.1], dir: sa, spread: 0.3, up: 3, grav: -14 });
@@ -35,7 +38,12 @@ function xyFullAuto(h, dir, per, slug) {
   G.actors.push({ update(dt) {
     t += dt; sw += dt; if (!h.alive || h.stunned) return false;
     h.facing = dir;
-    if (sw > 0.12 && FX.near(h.x, h.z, 55)) { sw = 0; const red = Math.floor(t / 0.12) % 2 === 0, col = red ? 0xff2a3a : 0x2a6aff; FX.light(h.x, 3, h.z, col, 2.2, 12, 0.14); FX.glow(h.x + (red ? -0.35 : 0.35), h.height + 0.45, h.z, 1.6, col, 0.12, 'star'); }
+    if (sw > 0.12 && FX.near(h.x, h.z, 55)) {
+      sw = 0; const red = Math.floor(t / 0.12) % 2 === 0, col = red ? 0xff2a3a : 0x2a6aff; FX.light(h.x, 3, h.z, col, 2.2, 12, 0.14); FX.glow(h.x + (red ? -0.35 : 0.35), h.height + 0.45, h.z, 1.6, col, 0.12, 'star');
+      // the beacon: a red and a blue beam sweeping round her over the ground, a ring pulsing out in the colour of the moment
+      const ba = t * 9; for (const [q, c] of [[ba, 0xff2a3a], [ba + Math.PI, 0x2a6aff]]) FX.beam(h.x, h.z, h.x + Math.sin(q) * 6.5, h.z + Math.cos(q) * 6.5, { color: c, w: 0.7, life: 0.16, y: 0.2, op: 0.45 });
+      FX.ring(h.x, h.z, { r0: 0.6, r1: 4.5, color: col, life: 0.3, tex: 'ringThin', op: 0.6 });
+    }
     while (n < N && t >= n * gap + 0.1) {
       const last = n === N - 1; n++; h.anim.castT = h.anim.castDur = 0.18; h.anim.castType = 'shoot';
       if (last) {
@@ -113,7 +121,10 @@ HEROES.push(
           shot(h, { dir, speed: 40, range: 11, w: 0.7, mesh: 'bolt', size: 0.9, color: XY.tase, ribbon: 0.35, x: m.x, z: m.z, y: 1.5,
             trail: q => { if (FX.near(q.x, q.z, 50) && Math.random() < 0.6) FX.sparks(q.x, q.y, q.z, { n: 1, color: 0xffffff, color2: XY.tase, speed: [1, 3], life: [0.08, 0.16], w: 0.04 }); },
             onHit: e => {
-              damage(h, e, dmg, 1); if (e.alive) { stun(h, e, 1.0); e.suspectT = G.time + 4; e.suspectBy = h.id; if (FX.near(e.x, e.z, 55)) FX.aura(e, XY.c, 4, 1.2, 'ringThin', 2); }
+              damage(h, e, dmg, 1); if (e.alive) { stun(h, e, 1.0); e.suspectT = G.time + 4; e.suspectBy = h.id; if (FX.near(e.x, e.z, 55)) { FX.aura(e, XY.c, 4, 1.2, 'ringThin', 2);
+                // the charge keeps crackling over him for as long as he is stunned; the wire to the gun hangs for a moment
+                let zt = 0; FX.add(new THREE.Group(), 1.0, (k, me, dt, en) => { if (!e.alive) { en.dead = true; return; } zt += dt; if (zt < 0.12) return; zt = 0; FX.arcs(e.x, 1.2, e.z, 1.1, 2, XY.tase); FX.sparks(e.x, 1.4, e.z, { n: 2, color: 0xffffff, color2: XY.tase, speed: [2, 5], life: [0.1, 0.2], w: 0.05 }); });
+                FX.zone(e.x, e.z, 1.5, 0x1a6ab0, 1.0, { tex: 'ringThin', spin: 8, op: 0.6 }); FX.light(e.x, 2, e.z, XY.tase, 1.6, 8, 0.4); } }
               SFX.at('zap', e.x, e.z, 0.8); SFX.at('impact', e.x, e.z, 0.4);
               if (FX.near(e.x, e.z, 50)) { FX.arcs(e.x, 1.3, e.z, 1.2, 4, XY.tase); FX.hit(e.x, 1.3, e.z, XY.tase, true); FX.beam(h.x, h.z, e.x, e.z, { color: XY.tase, w: 0.06, life: 0.4, y: 1.4 }); if (e.kind === 'hero') FX.text(e.x, e.height + 1, e.z, 'НЕ ДВИГАТЬСЯ!', '#9fe8ff', 15); }
             } });

@@ -84,19 +84,25 @@ function tgRainArrow(x, z) {
   if (!FX.near(x, z, 60)) return;
   const m = new THREE.Mesh(FX.geo.arrow, FX.mat(null, Math.random() < 0.3 ? TG.vio : TG.c, 1)); m.rotation.x = HPI; m.scale.set(1.2, 1.2, 1.1);
   FX.add(m, 0.22, (k, me) => { me.position.set(x, 0.4 + 13 * (1 - k), z); });
-  after(0.22, () => { FX.sparks(x, 0.3, z, { n: 3, color: 0xffffff, color2: TG.c, speed: [2, 6], life: [0.08, 0.2], w: 0.05 }); if (Math.random() < 0.3) FX.glow(x, 0.4, z, 1.4, TG.c, 0.12, 'star'); });
+  after(0.22, () => { FX.sparks(x, 0.3, z, { n: 3, color: 0xffffff, color2: TG.c, speed: [2, 6], life: [0.08, 0.2], w: 0.05 }); if (Math.random() < 0.3) FX.glow(x, 0.4, z, 1.4, TG.c, 0.12, 'star'); if (Math.random() < 0.35) FX.ring(x, z, { r0: 0.1, r1: 0.9, color: 0x1a5ab0, life: 0.25, tex: 'ringThin', op: 0.7 }); });
 }
 // «Sky quiver»: a shot straight up, then 2.6 sec of arrows over the area; every third volley marks everyone inside; at the end a thunderclap over them all
 function tgQuiver(h, x, z, R, per, det) {
   SFX.at('ultcue', h.x, h.z, 0.7); SFX.at('bow', h.x, h.z, 0.8); SFX.at('charge', h.x, h.z, 0.6);
   if (FX.near(h.x, h.z, 60)) { FX.bolt(h.x, 1.8, h.z, h.x, 18, h.z, { color: TG.c, w: 1.2, life: 0.35 }); FX.glow(h.x, 2, h.z, 4, TG.c, 0.2, 'flare'); FX.text(h.x, h.height + 1.3, h.z, 'Небесный колчан!', '#9fe8ff', 17); }
-  const zf = FX.near(x, z, 60) ? FX.zone(x, z, R, TG.c, 3.4, { tex: 'rune', spin: 0.8, op: 0.7 }) : null;
-  if (FX.near(x, z, 60)) FX.ring(x, z, { r0: R, r1: R, color: TG.vio, life: 3.3, tex: 'ringThin' });
+  const zf = FX.near(x, z, 60) ? FX.zone(x, z, R, 0x1a5ab0, 3.4, { tex: 'rune', spin: 0.8, op: 0.5 }) : null;
+  if (FX.near(x, z, 60)) {
+    FX.ring(x, z, { r0: R, r1: R, color: TG.vio, life: 3.3, tex: 'ringThin' }); FX.zone(x, z, R * 0.6, 0x3a2a8a, 3.4, { tex: 'swirl', spin: -1.6, op: 0.3 });
+    // a storm cloud turns over the place and crackles for as long as the arrows fall
+    const cl = new THREE.Mesh(FX.geo.flat, FX.mat('swirl', 0x2a4a7a, 0.55)); cl.position.set(x, 12.5, z); let ct = 0;
+    FX.add(cl, 3.6, (k, me, dt, en) => { const s = R * 2.4 * 2 * RK * Math.min(1, en.t * 3); me.scale.set(s, 1, s); me.rotation.y += dt * 1.6; me.material.opacity = 0.55 * Math.min(1, (3.6 - en.t) * 3); ct += dt; if (ct > 0.16) { ct = 0; const a = rand(TAU), b = rand(TAU); FX.bolt(x + Math.sin(a) * rand(R), 12.3, z + Math.cos(a) * rand(R), x + Math.sin(b) * rand(R), 12.3 + rand(-0.4, 0.4), z + Math.cos(b) * rand(R), { color: Math.random() < 0.3 ? TG.vio : TG.c, w: 0.3, life: 0.1, jag: 0.8 }); } });
+  }
   let t = 0, n = 0; const N = 12, gap = 0.22, t0 = 0.5;
   G.actors.push({ update(dt) {
     t += dt;
     while (n < N && t >= t0 + n * gap) {
       n++; const mark = n % 3 === 0;
+      if (mark && FX.near(x, z, 60)) { FX.ring(x, z, { r0: 0.5, r1: R, color: 0x1a5ab0, life: 0.4, tex: 'shock', op: 0.5 }); const a = rand(TAU), r = rand(R * 0.7); FX.bolt(x + Math.sin(a) * r, 12, z + Math.cos(a) * r, x + Math.sin(a) * r + rand(-1, 1), 0.2, z + Math.cos(a) * r + rand(-1, 1), { color: TG.vio, w: 0.7, life: 0.16 }); }
       for (let i = 0; i < 7; i++) { const a = rand(TAU), r = Math.sqrt(Math.random()) * R; tgRainArrow(x + Math.sin(a) * r, z + Math.cos(a) * r); }
       after(0.22, () => {
         for (const e of enemiesIn(h, x, z, R)) { if (e.struct) continue; damage(h, e, per, 0); if (!e.alive) continue; slow(h, e, 0.25, 0.4, 'tgrain'); if (mark) tgMark(h, e, 1); }
@@ -139,7 +145,12 @@ HEROES.push(
         cast(h, p) {
           const dir = p.dir, dmg = D(h, 60, 17, 0.8, 0), x0 = h.x + Math.sin(dir) * 1.2, z0 = h.z + Math.cos(dir) * 1.2;
           tgLoose(h, dir, true); SFX.at('stormbow', h.x, h.z, 0.85); SFX.at('whoosh', h.x, h.z, 0.4);
-          if (FX.near(h.x, h.z, 55)) FX.bolt(x0, 1.5, z0, x0 + Math.sin(dir) * 6, 1.5, z0 + Math.cos(dir) * 6, { color: TG.c, w: 0.6, life: 0.16, fork: false });
+          if (FX.near(h.x, h.z, 55)) {
+            FX.bolt(x0, 1.5, z0, x0 + Math.sin(dir) * 6, 1.5, z0 + Math.cos(dir) * 6, { color: TG.c, w: 0.6, life: 0.16, fork: false });
+            // the arrow leaves the air charged: a second bolt runs the whole length a moment later, the ground under the path stays scorched
+            after(0.14, () => { FX.bolt(x0, 1.4, z0, x0 + Math.sin(dir) * 12, 1.3, z0 + Math.cos(dir) * 12, { color: TG.vio, w: 0.45, life: 0.18, fork: false }); FX.beam(x0, z0, x0 + Math.sin(dir) * 12, z0 + Math.cos(dir) * 12, { color: 0x1a3a7a, w: 0.35, life: 0.6, y: 0.14, op: 0.6 }); });
+            FX.ring(h.x, h.z, { r0: 0.3, r1: 1.8, color: 0x1a5ab0, life: 0.25, tex: 'shock', op: 0.6 }); FX.light(x0, 2, z0, TG.c, 1.6, 10, 0.2);
+          }
           shot(h, { dir, speed: 46, range: 12, w: 1.4, pierce: true, mesh: 'arrow', size: 1.5, color: TG.c, ribbon: 0.7, x: x0, z: z0, y: 1.5,
             trail: q => { if (!FX.near(q.x, q.z, 55)) return; FX.trail(q.x, q.y, q.z, TG.c, 0.7, 2); if (Math.random() < 0.45) FX.bolt(q.x, q.y, q.z, q.x - Math.sin(dir) * 2.5 + rand(-0.6, 0.6), q.y + rand(-0.4, 0.4), q.z - Math.cos(dir) * 2.5 + rand(-0.6, 0.6), { color: Math.random() < 0.3 ? TG.vio : TG.c, w: 0.35, life: 0.1, fork: false }); },
             onHit: e => {

@@ -58,13 +58,16 @@ function vlConcert(h, DUR, hl, note, fin) {
   SFX.at('ultcue', h.x, h.z, 0.7); SFX.at('diva', h.x, h.z, 1); SFX.at('chord', h.x, h.z, 0.6);
   if (FX.near(h.x, h.z, 60)) {
     FX.text(h.x, h.height + 1.3, h.z, 'Гала-концерт!', '#ff9ae4', 18);
-    FX.zone(h.x, h.z, R, VL.c, DUR, { tex: 'rune2', spin: 0.6, op: 0.4, follow: h }); FX.zone(h.x, h.z, R * 0.55, VL.gold, DUR, { tex: 'ringThin', spin: -1.2, op: 0.55, follow: h });
+    // the stage: plain rings of light, no runes — an outer edge, a gold middle ring, a soft pink floor
+    FX.zone(h.x, h.z, R, 0xc83aa0, DUR, { tex: 'ringThin', spin: 0.6, op: 0.7, follow: h }); FX.zone(h.x, h.z, R * 0.55, 0xc8901a, DUR, { tex: 'ringThin', spin: -1.2, op: 0.55, follow: h }); FX.zone(h.x, h.z, R * 0.8, 0x7a2a9a, DUR, { tex: 'swirl', spin: 0.9, op: 0.22, follow: h }); FX.zone(h.x, h.z, R * 0.3, 0xc83aa0, DUR, { tex: 'glow', spin: 0, op: 0.3, follow: h });
     FX.ring(h.x, h.z, { r0: 0.5, r1: R, color: VL.c, life: 0.6, tex: 'shock' }); FX.shock(h.x, h.z, R * 0.7, 1, 0.5); FX.glow(h.x, h.height, h.z, 7, VL.pale, 0.4, 'flare');
     for (let i = 0; i < 10; i++) vlArc(h.x, h.z, i / 10 * TAU, 1.2, cols[i % 3], 0.6, { travel: 5 });
   }
-  let t = 0, sec = 0, beat = 0, lt = 0, li = 0;
+  let t = 0, sec = 0, beat = 0, lt = 0, li = 0, sw = 0;
   G.actors.push({ update(dt) {
-    t += dt; sec += dt; beat += dt; lt += dt; if (!h.alive) return false;
+    t += dt; sec += dt; beat += dt; lt += dt; sw += dt; if (!h.alive) return false;
+    // three spotlights sweep the floor of the stage like a disco, and the outer ring pulses on every beat
+    if (sw > 0.09 && FX.near(h.x, h.z, 55)) { sw = 0; for (let i = 0; i < 3; i++) { const a = t * 2.2 + i * 2.094; FX.beam(h.x, h.z, h.x + Math.sin(a) * R, h.z + Math.cos(a) * R, { color: cols[i], w: 0.75, life: 0.16, y: 0.14, op: 0.3 }); } }
     if (lt > 0.22 && FX.near(h.x, h.z, 55)) {
       lt = 0; li++; const col = cols[li % 3], a = rand(TAU), r = rand(1.5, R - 0.5);
       FX.pillar(h.x + Math.sin(a) * r, h.z + Math.cos(a) * r, { r: 0.7, h: 13, color: col, life: 0.55, op: 0.35, spin: 0 });
@@ -75,6 +78,7 @@ function vlConcert(h, DUR, hl, note, fin) {
       sec -= 1;
       for (const o of G.heroes) if (o.alive && o.team === h.team && udist(h, o) < R) { heal(h, o, hl); addBuff(o, { id: 'vlgala', dur: 1.2, dmgOut: 1.12, amp: h, src: h }); vlChord(h, o, 2); if (FX.near(o.x, o.z, 45)) FX.heal(o, VL.c); }
       SFX.at('chord', h.x, h.z, 0.35);
+      if (FX.near(h.x, h.z, 55)) { FX.ring(h.x, h.z, { r0: R * 0.5, r1: R, color: 0xc83aa0, life: 0.45, tex: 'shock', op: 0.4 }); for (let i = 0; i < 6; i++) { const a = i / 6 * TAU + t; vlNote(h.x + Math.sin(a) * R * 0.92, 0.6, h.z + Math.cos(a) * R * 0.92, cols[i % 3], 0.9, 1.0); } }
     }
     if (beat >= 0.5) {
       beat -= 0.5; let best = null, bd = 99;
@@ -85,7 +89,7 @@ function vlConcert(h, DUR, hl, note, fin) {
     if (t >= DUR) {
       for (const e of enemiesIn(h, h.x, h.z, R)) { if (e.struct) continue; damage(h, e, fin, 1); if (e.alive) slow(h, e, 0.4, 1.5, 'vlfin'); }
       SFX.at('diva', h.x, h.z, 0.6); SFX.at('boom', h.x, h.z, 0.5); SFX.at('chord', h.x, h.z, 0.8);
-      if (FX.near(h.x, h.z, 60)) { FX.ring(h.x, h.z, { r0: 1, r1: R, color: VL.gold, life: 0.5, tex: 'shock' }); FX.ring(h.x, h.z, { r0: 0.5, r1: R * 0.8, color: VL.c, life: 0.6, tex: 'ringThin' }); FX.shock(h.x, h.z, R, 1.2, 0.5); FX.shake(0.25); FX.glow(h.x, 2, h.z, 9, VL.pale, 0.35, 'flare'); for (let i = 0; i < 12; i++) vlArc(h.x, h.z, i / 12 * TAU, 1.5, cols[i % 3], 0.5, { travel: 6 }); }
+      if (FX.near(h.x, h.z, 60)) { FX.ring(h.x, h.z, { r0: 1, r1: R, color: 0xc8901a, life: 0.5, tex: 'shock', op: 0.5 }); FX.ring(h.x, h.z, { r0: 0.5, r1: R * 0.8, color: 0xc83aa0, life: 0.6, tex: 'ringThin', op: 0.8 }); FX.shock(h.x, h.z, R, 1.2, 0.5); FX.shake(0.25); FX.glow(h.x, 2, h.z, 5, VL.c, 0.3, 'star'); for (let i = 0; i < 8; i++) { const a = i / 8 * TAU; FX.pillar(h.x + Math.sin(a) * R * 0.7, h.z + Math.cos(a) * R * 0.7, { r: 0.6, h: 12, color: cols[i % 3], life: 0.6, op: 0.35, spin: 0 }); } for (let i = 0; i < 12; i++) vlArc(h.x, h.z, i / 12 * TAU, 1.5, cols[i % 3], 0.5, { travel: 6 }); }
       return false;
     }
     return true;
@@ -107,9 +111,9 @@ HEROES.push(
         cast(h, p) {
           const dir = p.dir, dmg = D(h, 70, 20, 0, 0.6), hl = D(h, 30, 9, 0, 0.25), m = vlMouth(h, dir); let last = -1, k = 0;
           SFX.at('sonic', h.x, h.z, 0.8); SFX.at('note', h.x, h.z, 0.6);
-          if (FX.near(h.x, h.z, 55)) { FX.glow(m.x, m.y, m.z, 3, VL.c, 0.2, 'star'); vlArc(m.x, m.z, dir, 0.9, VL.pale, 0.25, { travel: 1, y: m.y }); }
+          if (FX.near(h.x, h.z, 55)) { FX.glow(m.x, m.y, m.z, 3, VL.c, 0.2, 'star'); vlArc(m.x, m.z, dir, 0.9, VL.pale, 0.25, { travel: 1, y: m.y }); FX.warp('line', m.x, 1.3, m.z, { ang: dir, w: 2.4, len: 10, str: 0.5, life: 0.45 }); FX.ring(h.x, h.z, { r0: 0.4, r1: 2, color: 0xc83aa0, life: 0.3, tex: 'ringThin', op: 0.7 }); for (const s of [-1, 1]) { const px = Math.cos(dir) * 0.9 * s, pz = -Math.sin(dir) * 0.9 * s; FX.beam(m.x + px, m.z + pz, m.x + px + Math.sin(dir) * 10, m.z + pz + Math.cos(dir) * 10, { color: 0x7a2a9a, w: 0.12, life: 0.5, y: 0.14, op: 0.6 }); } }
           shot(h, { dir, speed: 22, range: 10, w: 0.9, mesh: false, ribbon: false, pierce: true, color: VL.c, x: m.x, z: m.z, y: 1.3,
-            trail: q => { if (G.time - last < 0.04) return; last = G.time; k++; vlArc(q.x, q.z, dir, 1.7, k % 3 === 2 ? VL.vio : VL.c, 0.35, { travel: 0.9 }); if (k % 3 === 0) vlNote(q.x + rand(-0.7, 0.7), 1.1, q.z + rand(-0.7, 0.7), VL.pale, 0.6, 0.7); },
+            trail: q => { if (G.time - last < 0.04) return; last = G.time; k++; vlArc(q.x, q.z, dir, 1.9, k % 3 === 2 ? VL.vio : VL.c, 0.42, { travel: 0.9 }); vlArc(q.x, q.z, dir, 1.3, VL.pale, 0.3, { travel: 0.7, y: 0.3, op: 0.5 }); if (k % 3 === 0) vlNote(q.x + rand(-0.7, 0.7), 1.1, q.z + rand(-0.7, 0.7), VL.pale, 0.6, 0.7); },
             onHit: e => { damage(h, e, dmg, 1); if (e.alive) slow(h, e, 0.25, 1.5, 'vlnote'); SFX.at('chime', e.x, e.z, 0.3); if (FX.near(e.x, e.z, 45)) { FX.hit(e.x, e.height * 0.6, e.z, VL.c, false); FX.glow(e.x, e.height * 0.6, e.z, 2, VL.c, 0.2, 'star'); } },
             onAlly: a => { heal(h, a, hl); if (FX.near(a.x, a.z, 45)) { FX.heal(a, VL.c); vlNote(a.x, a.height + 0.3, a.z, VL.c, 0.9, 0.9); } } });
           vlEncore(h);
