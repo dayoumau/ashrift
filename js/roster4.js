@@ -58,6 +58,13 @@ function rauSunderFx(h, t) {
       for (let i = 0; i <= 14; i++) { const f = i / 14; after(f * 0.32, () => { const s = Math.sin(Math.PI * f), w = Math.cos(ph + f * 7) * s * 1.1 * side; rib.add(lerp(P.x, Q.x, f) + px * w, 1.3 + s * 1.6 + Math.sin(ph + f * 7) * 0.4, lerp(P.z, Q.z, f) + pz * w); if (i === 14) rib.end(); }); }
     }
     for (const [u, col] of [[h, RAU.c], [t, RAU.soul]]) { FX.pillar(u.x, u.z, { r: 1.1, h: 12, color: col, life: 0.7, op: 0.45 }); FX.ring(u.x, u.z, { r0: 0.4, r1: 3.2, color: col, life: 0.45, tex: 'shock' }); FX.implode(u.x, 1.4, u.z, 2.6, { n: 12, color: 0xffffff, color2: col, life: 0.3, streak: true }); }
+    // the moment of the exchange: a hard line between the two, a sigil burnt under each, the air kicked outward
+    for (const [u, col] of [[h, RAU.c], [t, RAU.soul]]) FX.zone(u.x, u.z, 2.4, col === RAU.soul ? 0x5a7ab8 : RAU.deep, 1.3, { tex: 'rune2', spin: col === RAU.c ? 3 : -3, op: 0.55 });
+    after(0.32, () => {
+      if (!h.alive || !t.alive) return; FX.beam(h.x, h.z, t.x, t.z, { color: RAU.c, w: 0.55, life: 0.35, y: 1.4 }); FX.beam(h.x, h.z, t.x, t.z, { color: 0xffffff, w: 0.16, life: 0.25, y: 1.4 });
+      for (const u of [h, t]) { FX.shock(u.x, u.z, 4, 0.9, 0.35); FX.ring(u.x, u.z, { r0: 2.8, r1: 0.4, color: RAU.c, life: 0.3, tex: 'ringThin' }); FX.sparks(u.x, 1.4, u.z, { n: 14, color: RAU.pale, color2: RAU.c, speed: [3, 9], life: [0.25, 0.5], up: 4, w: 0.09 }); FX.scorch(u.x, u.z, 1.6, RAU.c, 5); }
+      FX.light((h.x + t.x) / 2, 3, (h.z + t.z) / 2, RAU.c, 2, 18, 0.5); FX.shake(0.45);
+    });
     after(0.32, () => { for (const [u, col] of [[h, RAU.soul], [t, RAU.c]]) { if (!u.alive) continue; FX.burst(u.x, 1.4, u.z, { n: 14, color: 0xffffff, color2: col, speed: [1, 4], life: [0.4, 0.8], size: [0.5, 0.05], up: 2, rad: 0.8 }); FX.glow(u.x, 1.5, u.z, 3.4, col, 0.25, 'star'); } });
     FX.text(h.x, h.height + 1.6, h.z, 'САНДЕР', '#ff5a6a', 22);
   }
@@ -221,7 +228,7 @@ HEROES.push(
   {
     id: 'raul', name: 'Рауль', title: 'Безликий', role: 'front', roleName: 'Боец', build: 'bruiser', bars: [4, 3, 3, 4], diffc: 2, atkSfx: 'slash',
     lore: 'Никто не видел его лица — под капюшоном только пустота, и в ней нечему отражаться. Он приходит на чёрных крыльях с чёрным мечом и не боится умирать: каждая смерть оставляет в нём осколок тьмы, и обратно он возвращается злее. А если бой идёт плохо, он просто забирает чужую жизнь себе — и отдаёт взамен свою.',
-    look: { bulk: 1.05, h: 1.08, scale: 1.12, c1: 0x15131a, c2: 0x0d0c11, c3: 0x08070a, cuff: 0x1c1a22, skin: 0x0b0a0e, hands: 0x0d0b10, metal: 0x2a2830, glow: 0xff2a3a, head: 'raul', chest: 'abyss', sh: 'tatter', back: 'wings', wingS: 1.45, weapon: 'abyssblade', wc: 'melee' },
+    look: { bulk: 1.05, h: 1.08, scale: 1.12, c1: 0x24212e, c2: 0x17151e, c3: 0x0e0d12, cuff: 0x34313f, skin: 0x0b0a0e, hands: 0x17151e, metal: 0x4a4656, glow: 0xff2a3a, head: 'raul', chest: 'abyss', sh: 'tatter', back: 'wings', wingS: 1.45, wingBone: 0x5a5666, wingA: 0x2a2734, wingB: 0x15131a, weapon: 'abyssblade', wc: 'melee' },
     stats: ST(640, 95, 300, 32, 64, 3.7, 26, 2.9, 0.82, 9.2, 2.5),
     innate: { name: 'Цена смерти', icon: 'rauinn', desc: 'Каждая смерть делает Рауля сильнее: +10 к силе атаки за каждую его смерть в этом матче — до конца матча.', count: h => '+' + 10 * (h.deaths || 0) },
     tick(h, dt) {

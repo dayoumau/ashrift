@@ -1,6 +1,6 @@
 'use strict';
 /* ===== roster, parts 17–20: Frieren the elf mage, Lelouch the prince with the geass, Ichigo the substitute soul reaper, Carlotta the crystal gunslinger ===== */
-const FRI = { c: 0x9fe6ff, deep: 0x1a5a8a, pale: 0xe8faff, gold: 0xffd87a, red: 0xff3048, leaf: 0x7ad88a };
+const FRI = { c: 0x9fe6ff, mid: 0x3a9ae0, deep: 0x1a5a8a, pale: 0xe8faff, gold: 0xffd87a, red: 0xff3048, leaf: 0x7ad88a };
 const LEL = { c: 0xff2a48, deep: 0x5a0818, pale: 0xffb0c0, vio: 0x8a3aff, gold: 0xffd06a };
 const ICH = { c: 0x8fd8ff, pale: 0xe8f8ff, deep: 0x1a4a7a, red: 0xff1a2a, ink: 0x0a0408 };
 const CAR = { c: 0x8fe0ff, pale: 0xeaffff, deep: 0x1a4a7a, pink: 0xff7a9a, gold: 0xffd87a };
@@ -75,11 +75,11 @@ function frHexGeo() {
 }
 // the honeycomb dome over a unit: it closes in from above, shimmers, and follows its owner
 function frDome(u, dur) {
-  r3Tex(); const m = new THREE.Mesh(frHexGeo(), FX.mat('hex', FRI.c, 0.75)), R = 2.1, rim = new THREE.Mesh(FX.geo.sphere, FX.rimMat(FRI.c, 0.5)); rim.userData.own = true; m.add(rim); rim.scale.set(1, 1, 1);
+  r3Tex(); const m = new THREE.Mesh(frHexGeo(), FX.mat('hex', 0x5ab8f0, 0.5)), R = 2.1, rim = new THREE.Mesh(FX.geo.sphere, FX.rimMat(FRI.mid, 0.35)); rim.userData.own = true; m.add(rim); rim.scale.set(1, 1, 1);
   return FX.add(m, dur, (k, me, dt, en) => {
     if (!u.alive) { en.dead = true; return; } const t = en.t, g = easeOut(Math.min(1, t / 0.2)), q = R * (0.6 + 0.4 * g) * (1 + Math.sin(t * 7) * 0.015);
     me.position.set(u.x, 0.05 + (u.yOff || 0), u.z); me.scale.set(q, q * (0.25 + 0.75 * g), q); me.rotation.y = t * 0.25;
-    me.material.opacity = (0.6 + 0.15 * Math.sin(t * 11)) * Math.min(1, (dur - t) / 0.25); rim.material.uniforms.o.value = 0.5 * Math.min(1, (dur - t) / 0.25);
+    me.material.opacity = (0.42 + 0.12 * Math.sin(t * 11)) * Math.min(1, (dur - t) / 0.25); rim.material.uniforms.o.value = 0.35 * Math.min(1, (dur - t) / 0.25);
   });
 }
 // the dome broken: the cells scatter as shards of light
@@ -105,8 +105,9 @@ function frZolt(x0, y0, z0, x1, y1, z1, s) {
 function frSup(h) {
   const full = G.time - (h.frLast === undefined ? -99 : h.frLast) >= 6; h.frLast = G.time; if (!full) return 1;
   if (FX.near(h.x, h.z, 50)) {
-    FX.ring(h.x, h.z, { r0: 0.5, r1: 4.6, color: FRI.c, life: 0.5, tex: 'shock' }); FX.ring(h.x, h.z, { r0: 0.3, r1: 3.2, color: 0xffffff, life: 0.35, tex: 'ringThin' });
-    FX.pillar(h.x, h.z, { r: 1.2, h: 10, color: FRI.c, life: 0.5, op: 0.4 }); FX.sparks(h.x, 1, h.z, { n: 16, color: 0xffffff, color2: FRI.c, speed: [3, 8], life: [0.3, 0.6], up: 6, ring: true, w: 0.08 });
+    // big additive shapes use the deep tone: the pale one burns out to white
+    FX.ring(h.x, h.z, { r0: 0.5, r1: 4.2, color: FRI.mid, life: 0.5, tex: 'shock', op: 0.55 }); FX.ring(h.x, h.z, { r0: 0.3, r1: 3.0, color: FRI.c, life: 0.35, tex: 'ringThin', op: 0.6 });
+    FX.pillar(h.x, h.z, { r: 1.0, h: 9, color: FRI.mid, life: 0.5, op: 0.22 }); FX.zone(h.x, h.z, 2.2, FRI.mid, 0.6, { tex: 'rune2', spin: 4, op: 0.4 }); FX.sparks(h.x, 1, h.z, { n: 16, color: 0xffffff, color2: FRI.c, speed: [3, 8], life: [0.3, 0.6], up: 6, ring: true, w: 0.08 });
     FX.text(h.x, h.height + 1, h.z, 'МАНА', '#c8f4ff', 15);
   }
   SFX.at('arcane', h.x, h.z, 0.55); SFX.at('spirit', h.x, h.z, 0.35); return 1.25;
@@ -132,7 +133,9 @@ function frField(x, z, R, dur) {
     const t = en.t, out = Math.max(0, Math.min(1, (dur - t) / 0.45));
     for (const f of list) { const g = easeOut(clamp((t - f.at) / 0.3, 0, 1)); f.m.scale.setScalar(Math.max(0.001, f.s * g * out)); f.m.rotation.z = Math.sin(t * 2.2 + f.ph) * 0.12; f.m.rotation.x = Math.cos(t * 1.7 + f.ph) * 0.08; }
   });
-  FX.zone(x, z, R, FRI.leaf, dur, { tex: 'rune', spin: 0.25, op: 0.35 }); FX.ring(x, z, { r0: 0.5, r1: R, color: 0xd8ffd0, life: 0.6, tex: 'shock', op: 0.6 });
+  FX.zone(x, z, R, 0x2a9a4a, dur, { tex: 'rune', spin: 0.25, op: 0.32 }); FX.zone(x, z, R * 0.55, 0xc85a9a, dur, { tex: 'ringThin', spin: -0.5, op: 0.3 }); FX.ring(x, z, { r0: 0.5, r1: R, color: 0x4ac86a, life: 0.6, tex: 'shock', op: 0.45 });
+  // petals drift up over the field for as long as it blooms
+  let pt = 0; FX.add(new THREE.Group(), dur, (k, me, dt) => { pt += dt; if (pt < 0.12) return; pt = 0; const a = rand(TAU), d = Math.sqrt(Math.random()) * R; FX.sparks(x + Math.sin(a) * d, 0.4, z + Math.cos(a) * d, { n: 1, color: [0xffb8d8, 0xc8a8ff, 0xfff0a0][Math.floor(rand(3))], speed: [0.3, 0.9], life: [0.9, 1.5], up: 2.2, grav: 0, drag: 1, w: 0.09, stretch: 0.02 }); });
   FX.burst(x, 0.4, z, { n: 26, color: 0xffffff, color2: 0xffb8d8, speed: [0.5, 2.5], life: [0.8, 1.6], size: [0.28, 0.06], up: 2.5, rad: R * 0.8, drag: 1.2, grav: -1 });
 }
 
@@ -255,7 +258,7 @@ function ichFlare(h, big) {
   if (!FX.near(h.x, h.z, 50)) return; const hol = h.hollowT > G.time, col = hol ? ICH.red : ICH.c;
   FX.flame(h.x, 0.6, h.z, { n: big ? 14 : 7, color: hol ? 0xff3040 : 0xdff6ff, color2: hol ? 0x3a0008 : ICH.deep, speed: [0.5, 2], life: [0.4, 0.8], size: [0.8, 1.8], up: 4, rad: 0.9, a: 0.4 });
   if (hol) FX.burst(h.x, 1.2, h.z, { smoke: true, n: big ? 10 : 4, color: 0x14060a, color2: 0x050203, speed: [0.5, 2], life: [0.6, 1.1], size: [0.8, 1.6], up: 2.5, rad: 0.8, a: 0.6 });
-  FX.ring(h.x, h.z, { r0: 0.5, r1: big ? 4 : 2.6, color: col, life: 0.4, tex: 'shock' });
+  FX.ring(h.x, h.z, { r0: 0.5, r1: big ? 4 : 2.6, color: hol ? ICH.red : 0x3a8ad8, life: 0.4, tex: 'shock', op: 0.65 }); FX.ring(h.x, h.z, { r0: 0.3, r1: big ? 2.6 : 1.7, color: col, life: 0.3, tex: 'ringThin', op: 0.7 });
 }
 
 /* ================= Carlotta ================= */
@@ -382,7 +385,8 @@ HEROES.push(
           const k = frSup(h), sh = D(h, 92, 26, 0, 0.6) * k, b = shield(h, h, sh, 3, FRI.c);
           if (b) { if (b.fx) b.fx.dead = true; b.fx = frDome(h, 3); b.onEnd = u => { if (b.shield <= 0) frDomeBreak(u); }; }
           for (const a of alliesIn(h, h.x, h.z, 5, true)) if (a !== h) { shield(h, a, sh * 0.5, 3, FRI.c); if (FX.near(a.x, a.z, 45)) FX.beam(h.x, h.z, a.x, a.z, { color: FRI.c, w: 0.18, life: 0.35, y: 1.4 }); }
-          SFX.at('shield', h.x, h.z, 0.8); SFX.at('arcane', h.x, h.z, 0.45); FX.ring(h.x, h.z, { r0: 0.4, r1: 5, color: FRI.c, life: 0.4, tex: 'ringThin' });
+          SFX.at('shield', h.x, h.z, 0.8); SFX.at('arcane', h.x, h.z, 0.45); FX.ring(h.x, h.z, { r0: 0.4, r1: 5, color: FRI.mid, life: 0.4, tex: 'ringThin', op: 0.7 });
+          if (FX.near(h.x, h.z, 50)) { frCircle(h.x, 0.15, h.z, 0, 2.4, FRI.mid, 0.7, { pitch: -HPI, spin: 3, op: 0.6 }); for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; FX.sparks(h.x + Math.sin(a) * 2.1, 0.3, h.z + Math.cos(a) * 2.1, { n: 3, color: FRI.c, color2: FRI.mid, speed: [1, 3], life: [0.3, 0.5], up: 5, w: 0.06 }); } }
         }
       },
       {
@@ -390,7 +394,7 @@ HEROES.push(
         desc: 'Фрирен поднимает посох — и над полем раскрываются семь магических кругов. 1.6 сек они бьют лучами Зольтраака по кругу радиусом 6: 21 луч, и каждый наносит магический урон всем рядом с местом попадания. Пока длится залп, Фрирен стоит на месте.',
         cast(h, p) {
           const x = p.x, z = p.z, R = 6, k = frSup(h), dmg = D(h, 56, 11, 0, 0.32) * k, f = angTo(h.x, h.z, x, z), sx = Math.sin(f), cz = Math.cos(f), CIR = [];
-          telegraph(h, x, z, R, 2.4, FRI.c); SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('charge', h.x, h.z, 0.6); SFX.at('arcane', h.x, h.z, 0.5);
+          telegraph(h, x, z, R, 2.4, FRI.mid); SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('charge', h.x, h.z, 0.6); SFX.at('arcane', h.x, h.z, 0.5);
           // the circles open one by one in an arc behind and above her, tilted down toward the target
           for (let i = 0; i < 7; i++) {
             const lat = (i - 3) * 2.6, back = 1.8 + Math.abs(i - 3) * 0.45, cx = h.x - sx * back + cz * lat, cy = 5.6 - Math.abs(i - 3) * 0.5 + (i % 2) * 0.5, czz = h.z - cz * back - sx * lat, face = angTo(cx, czz, x, z);
@@ -403,9 +407,12 @@ HEROES.push(
             if (foes.length && Math.random() < 0.5) { const e = foes[Math.floor(Math.random() * foes.length)]; tx = e.x + rand(-0.6, 0.6); tz = e.z + rand(-0.6, 0.6); } else { const a = rand(TAU), d = R * Math.sqrt(Math.random()); tx = x + Math.sin(a) * d; tz = z + Math.cos(a) * d; }
             r3Ray(c.x, c.y, c.z, tx, 0.2, tz, { color: FRI.c, w: 0.8, life: 0.28, grow: true, core: 0.4 }); FX.glow(c.x, c.y, c.z, 2, FRI.deep, 0.14, 'star');
             for (const e of enemiesIn(h, tx, tz, 1.7)) { damage(h, e, dmg, 1); FX.hit(e.x, 1.3, e.z, FRI.c, false); }
-            if (FX.near(tx, tz, 55)) { FX.ring(tx, tz, { r0: 0.3, r1: 1.9, color: FRI.c, life: 0.3, tex: 'shock' }); FX.glow(tx, 0.6, tz, 1.8, FRI.c, 0.16, 'star'); FX.sparks(tx, 0.4, tz, { n: 6, color: 0xffffff, color2: FRI.c, speed: [3, 8], life: [0.15, 0.35], up: 4, w: 0.07 }); if (j % 4 === 0) FX.scorch(tx, tz, 0.9, FRI.c, 4); }
+            if (FX.near(tx, tz, 55)) { FX.ring(tx, tz, { r0: 0.3, r1: 1.9, color: FRI.mid, life: 0.3, tex: 'shock', op: 0.6 }); FX.glow(tx, 0.6, tz, 1.4, FRI.mid, 0.14, 'star'); FX.sparks(tx, 0.4, tz, { n: 6, color: 0xffffff, color2: FRI.c, speed: [3, 8], life: [0.15, 0.35], up: 4, w: 0.07 }); if (j % 4 === 0) FX.scorch(tx, tz, 0.9, FRI.c, 4); }
             SFX.at(j % 3 ? 'laser' : 'impact', tx, tz, 0.45); if (j % 5 === 0) FX.shake(0.18);
           });
+          // a mark on the ground under the barrage for as long as it lasts, and a closing flash when the last beam has struck (looks only: no damage of its own)
+          if (FX.near(x, z, 60)) FX.zone(x, z, R, FRI.deep, 2.4, { tex: 'rune2', spin: 0.8, op: 0.3 });
+          after(0.75 + 21 * 0.077 + 0.05, () => { if (!h.alive || !FX.near(x, z, 60)) return; FX.ring(x, z, { r0: R, r1: 0.6, color: FRI.mid, life: 0.35, tex: 'ringThin', op: 0.7 }); FX.pillar(x, z, { r: 1.4, h: 12, color: FRI.mid, life: 0.5, op: 0.3 }); FX.glow(x, 1.2, z, 5, FRI.c, 0.25, 'flare'); for (const c of CIR) FX.sparks(c.x, c.y, c.z, { n: 6, color: 0xffffff, color2: FRI.c, speed: [2, 6], life: [0.25, 0.5], w: 0.07 }); });
         }
       }
     ]
@@ -540,7 +547,7 @@ HEROES.push(
           SFX.at('dash', x0, z0, 0.7); SFX.at('blink', h.x, h.z, 0.6);
           if (FX.near(x0, z0, 55)) {
             FX.beam(x0, z0, h.x, h.z, { color: ICH.c, w: 0.5, life: 0.18, y: 1.1 }); FX.beam(x0, z0, h.x, h.z, { color: 0xffffff, w: 0.15, life: 0.12, y: 1.4 });
-            for (const [x, z] of [[x0, z0], [h.x, h.z]]) { FX.ring(x, z, { r0: 0.3, r1: 2, color: ICH.c, life: 0.25, tex: 'shock' }); FX.burst(x, 0.3, z, { smoke: true, n: 4, color: 0x8a96a8, color2: 0x2a2e36, speed: [1, 3], life: [0.3, 0.6], size: [0.6, 1.2], up: 0.5, a: 0.35 }); }
+            for (const [x, z] of [[x0, z0], [h.x, h.z]]) { FX.ring(x, z, { r0: 0.3, r1: 2, color: 0x3a8ad8, life: 0.25, tex: 'shock', op: 0.6 }); FX.burst(x, 0.3, z, { smoke: true, n: 4, color: 0x8a96a8, color2: 0x2a2e36, speed: [1, 3], life: [0.3, 0.6], size: [0.6, 1.2], up: 0.5, a: 0.35 }); }
           }
         }
       },
@@ -646,7 +653,7 @@ HEROES.push(
         desc: 'Карлотта поднимает пистолет к лицу, собирает в пулю весь холод — и стреляет. В месте попадания вырастает лес ледяных шпилей, а через мгновение мир вокруг трескается и разлетается, как стекло: огромный физический урон всем врагам в радиусе 6 (+12% за каждый кристалл в цели, кристаллы взрываются) и замедление на 40% на 2 сек.',
         cast(h, p) {
           const x = p.x, z = p.z, R = 6, dmg = D(h, 240, 46, 1.5);
-          telegraph(h, x, z, R, 1.3, CAR.c); SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('charge', h.x, h.z, 0.6); SFX.at('ice', h.x, h.z, 0.5);
+          telegraph(h, x, z, R, 1.3, 0x2a8ad0); SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('charge', h.x, h.z, 0.6); SFX.at('ice', h.x, h.z, 0.5);
           if (FX.near(h.x, h.z, 50)) { FX.implode(h.x, 1.8, h.z, 3.5, { n: 22, color: 0xffffff, color2: CAR.c, life: 0.55, streak: true }); FX.glow(h.x, 2.1, h.z, 2.6, CAR.c, 0.6, 'star'); FX.light(h.x, 2.5, h.z, CAR.c, 1.2, 12, 0.7); }
           after(0.62, () => {
             if (!h.alive) return; const x0 = h.x + Math.sin(h.facing) * 1.2, z0 = h.z + Math.cos(h.facing) * 1.2, T = 0.18;
@@ -660,7 +667,7 @@ HEROES.push(
             after(T, () => {
               // the bloom: a ring of ice spires breaks out of the ground, frost crawls over it
               carSpikes(x, z, 14, R * 0.85, 0.75, true); SFX.at('ice', x, z, 1); SFX.at('stone', x, z, 0.5); SFX.at('chime', x, z, 0.4);
-              if (FX.near(x, z, 60)) { FX.ring(x, z, { r0: 0.5, r1: R, color: CAR.c, life: 0.6, tex: 'crack' }); FX.zone(x, z, R, CAR.c, 0.7, { tex: 'rune2', spin: 0.8, op: 0.6 }); FX.light(x, 3, z, CAR.c, 1.4, 20, 0.6); FX.glow(x, 1.5, z, 6, CAR.c, 0.3, 'star'); }
+              if (FX.near(x, z, 60)) { FX.ring(x, z, { r0: 0.5, r1: R, color: 0x2a8ad0, life: 0.6, tex: 'crack' }); FX.zone(x, z, R, 0x1a6ab0, 0.7, { tex: 'rune2', spin: 0.8, op: 0.4 }); FX.light(x, 3, z, CAR.c, 1.4, 20, 0.6); FX.glow(x, 1.5, z, 4, 0x2a8ad0, 0.25, 'star'); }
               after(0.38, () => {
                 // and it all breaks like glass
                 for (const e of enemiesIn(h, x, z, R)) { const b = e.buffs.find(q => q.id === 'cry' + h.id), n = b ? (b.stacks || 1) : 0; if (b) b.dead = true; damage(h, e, dmg * (1 + 0.12 * n), 0); if (e.alive) slow(h, e, 0.4, 2, 'carslow'); FX.hit(e.x, 1.3, e.z, CAR.c, true); if (n) carBurst(e.x, e.z, n); }
@@ -668,7 +675,7 @@ HEROES.push(
                 if (FX.near(x, z, 60)) {
                   FX.debris(x, 1.5, z, { glow: true, n: 40, color: 0xdff8ff, speed: [4, 13], up: 10, size: [0.15, 0.45], rad: R * 0.6, life: 1.1 });
                   FX.sparks(x, 1.2, z, { n: 36, color: 0xffffff, color2: CAR.c, speed: [6, 18], life: [0.2, 0.5], w: 0.1, rad: R * 0.4 });
-                  for (let i = 0; i < 3; i++) after(i * 0.07, () => FX.ring(x, z, { r0: 0.5 + i, r1: R + 1.5 + i * 1.2, color: i % 2 ? 0xffffff : CAR.c, life: 0.45, tex: i ? 'ringThin' : 'shock' }));
+                  for (let i = 0; i < 3; i++) after(i * 0.07, () => FX.ring(x, z, { r0: 0.5 + i, r1: R + 1.5 + i * 1.2, color: i % 2 ? CAR.c : 0x2a8ad0, life: 0.45, tex: i ? 'ringThin' : 'shock', op: 0.6 }));
                   FX.explosion(x, z, 2.4, CAR.c, { el: 'ice', color2: CAR.deep }); FX.warp('ring', x, 0.3, z, { r0: 1, r1: R * 1.6, str: 1.4, life: 0.5 }); FX.punch(1);
                   const sp = UI.proj(x, 1.2, z); if (sp && FX.near(x, z, 34)) GLASS.shatter(sp.x, sp.y);
                 }

@@ -493,7 +493,7 @@ const HEADS = {
     for (const [x, h, rz] of [[-0.17, 0.18, 0.25], [-0.09, 0.15, 0.12], [-0.01, 0.13, 0], [0.07, 0.15, -0.12], [0.16, 0.18, -0.25]]) k.t(0.09, 0.05, 0.07, 0.03, h, hair, x, 0.25 - h / 2, 0.214, 0.08, 0, rz);
   },
   raul(k, C) { // no face at all: under a ragged black hood a smooth void where the face should be, edged by a thin burning seam; two horns swept back through the hood, torn strips hanging at the sides
-    const bk = 0x0b0a0e, hd = 0x16141b, vo = 0x020104, hn = 0x231f28;
+    const bk = 0x0b0a0e, hd = 0x282530, vo = 0x020104, hn = 0x56525f;
     k.b(0.42, 0.46, 0.4, bk, 0, -0.01, 0)
       .t(0.5, 0.52, 0.58, 0.58, 0.54, hd, 0, 0.04, -0.03).c(0.25, 0.5, 4, hd, 0, 0.3, -0.22, -1.15)
       .t(0.34, 0.06, 0.26, 0.06, 0.44, vo, 0, -0.04, 0.248)
@@ -1158,7 +1158,7 @@ function buildHero(L, teamColor) {
       for (let i = 0; i < 12; i++) { const a = (i + 0.5) / 12 * TAU; kb.b(0.03, 0.3, 0.03, 0xe0dce6, Math.sin(a) * 0.6 * b, -0.05, Math.cos(a) * 0.6 * b, -Math.cos(a) * 0.62, 0, Math.sin(a) * 0.62); }
       break; }
     // a faceless horror's torso: overlapping black plates like a carapace, ribs of dark metal with burning seams between them, a ragged black sash hanging in strips
-    case 'abyss': { const pl = 0x1c1a22, dk2 = 0x08070a;
+    case 'abyss': { const pl = 0x2e2c3c, dk2 = 0x121018;
       kb.t(0.86 * b, 0.5 * b, 0.6 * b, 0.42 * b, 0.42, pl, 0, 0.84, 0.03).b(0.5 * b, 0.12, 0.08, pl, 0, 0.56, 0.22 * b).b(0.44 * b, 0.1, 0.08, pl, 0, 0.42, 0.21 * b)
         .b(0.03, 0.62, 0.03, GL, 0, 0.66, 0.275 * b).o(0.07, GL, 0, 0.86, 0.29 * b, 1, 1.5, 0.5).b(0.78 * b, 0.1, 0.52 * b, dk2, 0, 0.2, 0);
       for (let i = 0; i < 3; i++) for (const s of [-1, 1]) kb.b(0.24 * b, 0.05, 0.06, pl, s * 0.17 * b, 0.72 - i * 0.13, 0.245 * b, 0, 0, s * 0.35).b(0.2 * b, 0.015, 0.03, GL, s * 0.17 * b, 0.69 - i * 0.13, 0.26 * b, 0, 0, s * 0.35);
@@ -1983,11 +1983,11 @@ function buildHero(L, teamColor) {
   }
   if (L.back === 'sandy') { const s = glowSprite(L.glow, 1.1); s.position.set(0, 0.66, -0.27 * b - 0.13); body.add(s); rig.spineG = s; }
   if (L.back === 'wings') {   // ragged wings of bone and black feathers, each on its own hinge so they can sweep
-    rig.wings = []; const bone = 0x2a2830;
+    rig.wings = []; const bone = L.wingBone || 0x2a2830, fa = L.wingA || 0x17161d, fb = L.wingB || 0x0c0c12;
     for (const s of [-1, 1]) {
       const w = grp(body, s * 0.14 * b, 0.98, -0.25 * b), k = kit(), seg = (x0, y0, x1, y1, r) => k.y(r * 0.7, r, Math.hypot(x1 - x0, y1 - y0), 5, bone, s * (x0 + x1) / 2, (y0 + y1) / 2, -0.06, 0, 0, Math.atan2(-s * (x1 - x0), y1 - y0));
       seg(0, 0, 0.7, 0.85, 0.055); seg(0.7, 0.85, 1.75, 0.5, 0.045); k.c(0.05, 0.22, 4, bone, s * 0.7, 0.98, -0.06);
-      for (let i = 0; i < 8; i++) { const f = i / 7, x = 0.2 + f * 1.5, top = f < 0.33 ? lerp(0.25, 0.82, f / 0.33) : lerp(0.82, 0.5, (f - 0.33) / 0.67), len = lerp(1.25, 0.6, f) * (i % 2 ? 0.86 : 1); k.t(0.26, 0.03, 0.05, 0.02, len, i % 2 ? 0x17161d : 0x0c0c12, s * x, top - len / 2 + 0.04, -0.09 - (i % 2) * 0.03, 0, 0, s * (0.08 + f * 0.5)); }
+      for (let i = 0; i < 8; i++) { const f = i / 7, x = 0.2 + f * 1.5, top = f < 0.33 ? lerp(0.25, 0.82, f / 0.33) : lerp(0.82, 0.5, (f - 0.33) / 0.67), len = lerp(1.25, 0.6, f) * (i % 2 ? 0.86 : 1); k.t(0.26, 0.03, 0.05, 0.02, len, i % 2 ? fa : fb, s * x, top - len / 2 + 0.04, -0.09 - (i % 2) * 0.03, 0, 0, s * (0.08 + f * 0.5)); }
       k.into(w, mat, gmat); if (L.wingS) w.scale.setScalar(L.wingS); rig.wings.push(w);
     }
   }

@@ -2958,7 +2958,14 @@ HEROES.push(
           if (!FX.near(x0, z0, 70)) return;
           // the ball itself, rolling and shrinking as it unwinds, and the thread it lays down behind it
           const T = L / SP, g = agfBall(), inner = g.children[0], th = new THREE.Mesh(FX.geo.line, FX.mat('beam', AGF.c, 0.55)); th.position.set(x0, 0.13, z0); th.rotation.y = dir; th.renderOrder = 4;
-          g.rotation.y = dir; FX.add(g, T, (k, me, dt, en) => { const d = Math.min(L, en.t * SP), s = 1 - 0.35 * k; me.position.set(x0 + sx * d, 0.62 * s, z0 + cz * d); me.scale.setScalar(s); inner.rotation.x = d / (0.62 * s); });
+          let cross = 0;
+          g.rotation.y = dir; FX.add(g, T, (k, me, dt, en) => {
+            const d = Math.min(L, en.t * SP), s = 1 - 0.35 * k, bx = x0 + sx * d, bz = z0 + cz * d; me.position.set(bx, 0.62 * s, bz); me.scale.setScalar(s); inner.rotation.x = d / (0.62 * s);
+            // the thread is stitched to the ground as it unwinds: a little cross every 1.6, pins glinting on the ball
+            if (d - cross > 1.6) { cross = d; const cx = Math.cos(dir) * 0.45, cz2 = -Math.sin(dir) * 0.45; FX.beam(bx - cx - sx * 0.3, bz - cz2 - cz * 0.3, bx + cx + sx * 0.3, bz + cz2 + cz * 0.3, { color: AGF.pale, w: 0.09, life: 1.2, y: 0.14 }); FX.beam(bx - cx + sx * 0.3, bz - cz2 + cz * 0.3, bx + cx - sx * 0.3, bz + cz2 - cz * 0.3, { color: AGF.pale, w: 0.09, life: 1.2, y: 0.14 }); FX.glow(bx, 0.9, bz, 1.5, AGF.c, 0.14, 'star'); }
+            if (Math.random() < dt * 20) FX.sparks(bx, 0.8, bz, { n: 1, color: AGF.steel, color2: AGF.c, speed: [1, 3], life: [0.15, 0.3], up: 2, w: 0.05 });
+          });
+          FX.ring(x0, z0, { r0: 0.3, r1: 1.6, color: AGF.c, life: 0.3, tex: 'ringThin' });
           FX.add(th, T + 1.4, (k, me, dt, en) => { me.scale.set(0.16, 1, Math.max(0.01, Math.min(L, en.t * SP))); me.material.opacity = 0.55 * (en.t < T ? 1 : 1 - (en.t - T) / 1.4); });
         }
       },
@@ -2993,7 +3000,7 @@ HEROES.push(
         }
       },
       {
-        key: 'E', name: 'Заплатка', icon: 'agfpatch', cd: 12, cost: 60, range: 9, ind: { type: 'ally' }, lock: 0.15, ai: { t: 'shieldAlly' }, noCue: true,
+        key: 'E', name: 'Заплатка', icon: 'agfpatch', cd: 12, cost: 60, range: 9, ind: { type: 'ally' }, anim: 'point', animDur: 0.4, lock: 0.15, ai: { t: 'shieldAlly' }, noCue: true,
         desc: 'Ставит заплатку союзному герою (или себе): снимает замедления и обездвиживание, даёт щит на 4 сек и за 3 сек восстанавливает здоровье. Пока заплатка держится, герой получает на 10% меньше урона.',
         cast(h, p) {
           const a = p.unit && p.unit.alive ? p.unit : h, sh = D(h, 55, 12, 0, 0.45) + a.maxHp * 0.05, hl = D(h, 48, 9, 0, 0.35);
@@ -3004,6 +3011,13 @@ HEROES.push(
           if (FX.near(a.x, a.z, 50)) {   // the patch is sewn on: a square of light at the chest, a ring of running stitches round the feet
             for (let i = 0; i < 8; i++) { const q = i / 8 * TAU; after(i * 0.04, () => { if (a.alive) FX.beam(a.x + Math.sin(q) * 1.5, a.z + Math.cos(q) * 1.5, a.x + Math.sin(q + 0.5) * 1.5, a.z + Math.cos(q + 0.5) * 1.5, { color: AGF.c, w: 0.12, life: 0.6, y: 0.25 }); }); }
             FX.glow(a.x, 1.5 + (a.yOff || 0), a.z, 2.2, AGF.pale, 0.35, 'star');
+            // a square patch laid on the ground under the hero: four seams drawn one after another, a cross of basting in the middle, a soft column of light
+            const ax = a.x, az = a.z, S = 1.9, C = [[-S, -S], [S, -S], [S, S], [-S, S]];
+            for (let i = 0; i < 4; i++) after(i * 0.06, () => FX.beam(ax + C[i][0], az + C[i][1], ax + C[(i + 1) % 4][0], az + C[(i + 1) % 4][1], { color: AGF.pale, w: 0.16, life: 0.9, y: 0.12 }));
+            after(0.24, () => { FX.beam(ax - S * 0.6, az - S * 0.6, ax + S * 0.6, az + S * 0.6, { color: AGF.c, w: 0.1, life: 0.7, y: 0.12 }); FX.beam(ax - S * 0.6, az + S * 0.6, ax + S * 0.6, az - S * 0.6, { color: AGF.c, w: 0.1, life: 0.7, y: 0.12 }); });
+            FX.pillar(ax, az, { r: 1.3, h: 7, color: AGF.c, life: 0.7, op: 0.3 }); FX.ring(ax, az, { r0: 2.6, r1: 1.2, color: AGF.c, life: 0.4, tex: 'ringThin' }); FX.light(ax, 2, az, AGF.c, 1.6, 9, 0.5);
+            FX.aura(a, AGF.c, 3, a.radius + 0.7, 'ringThin', 1.5);
+            FX.sparks(ax, 1.2, az, { n: 10, color: AGF.pale, color2: AGF.c, speed: [1, 4], life: [0.3, 0.6], up: 3, w: 0.07 });
           }
         }
       },
@@ -3142,6 +3156,7 @@ HEROES.push(
         cast(h) {
           const total = D(h, 55, 15, 0.25) + h.maxHp * 0.06, per = total / 8; h.smokeT = G.time + 4;
           addBuff(h, { id: 'smoke', dur: 4.02, ms: 0.1, every: 0.5, onTick: u => { heal(u, u, per, true); if (FX.near(u.x, u.z, 45)) { const f = u.facing; akiSmoke(u.x + Math.sin(f) * 0.35, u.height - 0.35, u.z + Math.cos(f) * 0.35, 2, 0.8); FX.burst(u.x, 1.2, u.z, { n: 1, color: 0x9fe08a, color2: 0x9fe08a, speed: [0.1, 0.4], life: [0.5, 0.8], size: [0.26, 0.04], up: 1.8, rad: 0.6 }); } }, onEnd: u => { u.smokeT = 0; if (FX.near(u.x, u.z, 45)) { akiSmoke(u.x, u.height - 0.3, u.z, 4, 1.1); FX.sparks(u.x + Math.sin(u.facing) * 0.4, u.height - 0.4, u.z + Math.cos(u.facing) * 0.4, { n: 4, color: 0xffd0a0, color2: 0xff7a2a, speed: [0.5, 2], life: [0.4, 0.8], up: 1, grav: -6, w: 0.06 }); } } });
+          if (FX.near(h.x, h.z, 50)) { FX.aura(h, 0x9a8a78, 4, h.radius + 0.6, 'ringThin', 0.8); FX.ring(h.x, h.z, { r0: 0.4, r1: 1.8, color: 0xb8b4ac, life: 0.5, tex: 'ringThin', op: 0.5 }); }
           SFX.at('ember', h.x, h.z, 0.5); after(0.35, () => { if (!h.alive) return; const f = h.facing; FX.glow(h.x + Math.sin(f) * 0.4, h.height - 0.35, h.z + Math.cos(f) * 0.4, 0.9, 0xff8a3a, 0.4, 'star'); FX.sparks(h.x + Math.sin(f) * 0.4, h.height - 0.35, h.z + Math.cos(f) * 0.4, { n: 4, color: 0xffd0a0, color2: 0xff7a2a, speed: [0.3, 1.2], life: [0.2, 0.4], up: 1, w: 0.05 }); });
           after(0.75, () => { if (h.alive) akiSmoke(h.x, h.height - 0.3, h.z, 5, 1.2); });
         }
