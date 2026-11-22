@@ -171,7 +171,7 @@ HEROES.push(
             const gw = rxWheelMesh(true); let et = 0;
             FX.add(gw, 1.2, (k, me, dt, en) => {
               if (!h.alive || !h.rxParry || h.rxParry.done) { en.dead = true; return; } const f = h.facing, t = en.t, s = 1.7 * Math.min(1, t / 0.12) * (1 + Math.sin(t * 14) * 0.04);
-              me.position.set(h.x + Math.sin(f) * 1.15, 1.35, h.z + Math.cos(f) * 1.15); me.rotation.set(0, f, 0); me.userData.spin.rotation.z = t * 9; me.scale.setScalar(s);
+              me.position.set(h.x + Math.sin(f) * 1.15, 1.45, h.z + Math.cos(f) * 1.15); me.rotation.order = 'YXZ'; me.rotation.set(-0.5, f, 0); me.userData.spin.rotation.z = t * 9; me.scale.setScalar(s);
               et += dt; if (et > 0.1) { et = 0; FX.sparks(me.position.x, 1.35, me.position.z, { n: 2, color: RX.hot, color2: RX.c, speed: [1, 3], life: [0.25, 0.45], grav: -6, w: 0.06, rad: 0.8 }); }
             });
             FX.zone(h.x, h.z, 2, RX.deep, 1.2, { tex: 'ringThin', spin: -5, op: 0.6, follow: h }); FX.light(h.x, 2, h.z, RX.c, 1.4, 9, 1.2);

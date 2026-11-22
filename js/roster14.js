@@ -104,7 +104,7 @@ function ansLight(h, x, z, healAmt, dmg) {
     SFX.at('holy', x, z, 1); SFX.at('bell', x, z, 0.7); SFX.at('heal', x, z, 0.6); if (!FX.near(x, z, 70)) return;
     // the wide column in deep gold and thin, the bright core narrow: a pale colour over the whole circle burnt everything white
     FX.pillar(x, z, { r: R * 0.45, h: 30, color: 0xb87a10, life: 0.9, op: 0.12, grow: true }); FX.pillar(x, z, { r: 1.4, h: 34, color: ANS.c, life: 0.6, op: 0.45 }); FX.zone(x, z, R, 0xb87a10, 1.2, { tex: 'rune2', spin: -1.2, op: 0.4 });
-    FX.ring(x, z, { r0: 0.5, r1: R + 1, color: 0xc8901a, life: 0.6, tex: 'shock', op: 0.6 }); FX.ring(x, z, { r0: 0.4, r1: R * 0.7, color: ANS.c, life: 0.45, tex: 'ringThin', op: 0.7 }); FX.light(x, 6, z, ANS.c, 1.3, 22, 0.8); FX.shock(x, z, R, 0.8, 0.5);
+    FX.ring(x, z, { r0: 0.5, r1: R + 1, color: 0xc8901a, life: 0.6, tex: 'shock', op: 0.2 }); FX.ring(x, z, { r0: 0.5, r1: R, color: ANS.c, life: 0.55, tex: 'ringThin', op: 0.8 }); FX.ring(x, z, { r0: 0.4, r1: R * 0.6, color: ANS.c, life: 0.45, tex: 'ringThin', op: 0.6 }); FX.light(x, 6, z, ANS.c, 1.3, 22, 0.8); FX.shock(x, z, R, 0.8, 0.5);
     for (let i = 0; i < 18; i++) { const a = rand(TAU), r = rand(0.5, R); FX.burst(x + Math.sin(a) * r, rand(4, 12), z + Math.cos(a) * r, { n: 1, color: 0xffffff, color2: ANS.c, speed: [0.2, 0.6], life: [0.8, 1.4], size: [0.3, 0.05], grav: 2 }); }
   });
 }
