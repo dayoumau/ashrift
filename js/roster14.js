@@ -40,10 +40,12 @@ function mrfCauldron(h, x, z, tick) {
     FX.add(g, DUR + 0.3, (kk, me, dt, en) => { const t = en.t, drop = Math.min(1, t / 0.3); me.position.set(x, 4 * (1 - drop * drop), z); me.scale.setScalar(t > DUR ? Math.max(0.01, 1 - (t - DUR) / 0.3) : 1);
       if (Math.random() < dt * 8) FX.burst(x + rand(-0.4, 0.4), 1.0, z + rand(-0.4, 0.4), { n: 1, color: 0xe8ffc0, color2: MRF.soup, speed: [0.3, 1], life: [0.3, 0.6], size: [0.18, 0.04], up: 2 });
       if (Math.random() < dt * 5) FX.burst(x, 1.4, z, { smoke: true, n: 1, color: MRF.steam, color2: 0x9a9a9a, speed: [0.3, 1], life: [1, 1.8], size: [0.8, 1.8], up: 1.5, a: 0.3 }); if (Math.random() < dt * 6) FX.flame(x, 0.15, z, { n: 1, color: 0xff8a2a, color2: 0x8a2a05, size: [0.3, 0.6], life: [0.3, 0.5], up: 1 }); });
-    FX.zone(x, z, R, MRF.c, DUR, { tex: 'rune', spin: 0.3, op: 0.35 });
+    // a warm circle of firelight with a ring of soup-green round its edge instead of a rune: this is a kitchen, not an altar
+    FX.zone(x, z, R, 0xc87a1a, DUR, { tex: 'ringThin', spin: 0.3, op: 0.5 }); FX.zone(x, z, R * 0.8, 0x4a9a2a, DUR, { tex: 'swirl', spin: -0.5, op: 0.22 }); FX.zone(x, z, 1.4, 0xff7a1a, DUR, { tex: 'glow', spin: 0, op: 0.35 });
+    after(0.3, () => { FX.ring(x, z, { r0: 0.4, r1: 2.6, color: 0xc87a1a, life: 0.35, tex: 'shock', op: 0.6 }); FX.burst(x, 0.3, z, { smoke: true, n: 8, color: 0x9a9488, color2: 0x3a3630, speed: [1, 3], life: [0.4, 0.8], size: [0.7, 1.4], up: 0.6, ring: true, a: 0.4 }); FX.burst(x, 1.1, z, { n: 10, color: 0xe8ffc0, color2: MRF.soup, speed: [1, 4], life: [0.3, 0.6], size: [0.25, 0.05], up: 4, grav: -12 }); FX.shake(0.12); FX.light(x, 1.5, z, 0xff8a2a, 1.4, 10, DUR); });
   }
   zone(h, { x, z, r: R, every: 0.5, dur: DUR, tick: () => {
-    for (const o of G.heroes) if (o.alive && o.team === h.team && dist(o.x, o.z, x, z) < R) { heal(h, o, tick, true); if (!o.buffs.some(b => b.id === 'fed')) mrfFeed(h, o); }
+    for (const o of G.heroes) if (o.alive && o.team === h.team && dist(o.x, o.z, x, z) < R) { heal(h, o, tick, true); if (!o.buffs.some(b => b.id === 'fed')) mrfFeed(h, o); if (FX.near(o.x, o.z, 45)) FX.burst(o.x, 1, o.z, { n: 2, color: 0xe8ffc0, color2: MRF.soup, speed: [0.1, 0.5], life: [0.5, 0.9], size: [0.26, 0.04], up: 2, rad: 0.6 }); }
     for (const e of enemiesIn(h, x, z, R)) if (!e.struct) slow(h, e, 0.2, 0.6, 'mrfsteam');
   } });
 }
@@ -51,25 +53,35 @@ function mrfCauldron(h, x, z, tick) {
 function mrfBonk(h, t, dmg) {
   after(0.22, () => {
     if (!t.alive) return; damage(h, t, dmg, 0); if (t.alive) stun(h, t, 1.0); SFX.at('pan', t.x, t.z, 1); SFX.at('heavy', t.x, t.z, 0.5);
-    if (FX.near(t.x, t.z, 50)) { FX.text(t.x, (t.height || 2) + 1, t.z, 'БОНЬК!', '#ffd86a', 20); FX.ring(t.x, t.z, { r0: 0.3, r1: 2, color: 0xfff3a0, life: 0.3, tex: 'ringThin', y: t.height || 2 }); FX.sparks(t.x, t.height || 2, t.z, { n: 10, color: 0xffffff, color2: 0xfff3a0, speed: [3, 7], life: [0.2, 0.4], w: 0.07 }); FX.hitstop(0.06); FX.shake(0.2); }
+    if (FX.near(t.x, t.z, 50)) {
+      // the swing of the pan, and stars going round the victim's head for as long as he is out
+      FX.slash(t.x, t.z, angTo(h.x, h.z, t.x, t.z), { r: 2.2, sweep: 2.2, color: 0xd8dce4, life: 0.2, y: (t.height || 2) * 0.9 }); FX.glow(t.x, t.height || 2, t.z, 3, 0xfff3a0, 0.18, 'star');
+      FX.add(new THREE.Group(), 1.0, (k, me, dt, en) => { if (!t.alive) { en.dead = true; return; } me.userData.a = (me.userData.a || 0) + dt; if (me.userData.a < 0.07) return; me.userData.a = 0; const a = en.t * 9; for (let i = 0; i < 3; i++) FX.glow(t.x + Math.sin(a + i * 2.09) * 0.7, (t.height || 2) + 0.45, t.z + Math.cos(a + i * 2.09) * 0.7, 0.55, 0xfff3a0, 0.1, 'star'); });
+      FX.text(t.x, (t.height || 2) + 1, t.z, 'БОНЬК!', '#ffd86a', 20); FX.ring(t.x, t.z, { r0: 0.3, r1: 2, color: 0xfff3a0, life: 0.3, tex: 'ringThin', y: t.height || 2 }); FX.sparks(t.x, t.height || 2, t.z, { n: 10, color: 0xffffff, color2: 0xfff3a0, speed: [3, 7], life: [0.2, 0.4], w: 0.07 }); FX.hitstop(0.06); FX.shake(0.2); }
   });
 }
 // the banquet: dishes fly from her to every friend nearby — a pie, a roast leg, a bowl of soup — and everyone eats
 function mrfBanquet(h, amt) {
-  const R = 14; SFX.at('ultcue', h.x, h.z, 0.55); SFX.at('bell', h.x, h.z, 0.75); SFX.at('heal', h.x, h.z, 0.5); if (FX.near(h.x, h.z, 55)) { FX.text(h.x, h.height + 1.3, h.z, 'К столу!', '#ffd86a', 20); FX.ring(h.x, h.z, { r0: 0.5, r1: R, color: MRF.c, life: 0.6, tex: 'rune', op: 0.5 }); }
+  const R = 14; r3Tex(); SFX.at('ultcue', h.x, h.z, 0.55); SFX.at('bell', h.x, h.z, 0.75); SFX.at('heal', h.x, h.z, 0.5); if (FX.near(h.x, h.z, 55)) {
+    FX.text(h.x, h.height + 1.3, h.z, 'К столу!', '#ffd86a', 20); FX.ring(h.x, h.z, { r0: 0.5, r1: R, color: 0xc87a1a, life: 0.7, tex: 'shock', op: 0.45 });
+    // a checked tablecloth spreads under her for a moment, the dinner bell flashes over her head
+    FX.zone(h.x, h.z, 4.2, 0xd8302a, 1.6, { tex: 'checker', spin: 0.15, op: 0.5 }); FX.ring(h.x, h.z, { r0: 0.5, r1: 4.2, color: 0xfff0d0, life: 0.4, tex: 'ringThin', op: 0.7 });
+    FX.glow(h.x, h.height + 0.9, h.z, 3.2, 0xffd86a, 0.4, 'star'); FX.light(h.x, 3, h.z, 0xffb04a, 2, 16, 0.8); FX.pillar(h.x, h.z, { r: 1.2, h: 9, color: 0xc87a1a, life: 0.6, op: 0.25 });
+  }
   const kinds = ['pie', 'leg', 'soup']; let n = 0;
   for (const o of G.heroes) {
     if (!o.alive || o.team !== h.team || udist(h, o) > R) continue; const kind = kinds[n++ % 3], T = 0.35 + udist(h, o) / 30, sx = h.x, sz = h.z;
-    if (FX.near(h.x, h.z, 60)) { const m = mrfFood(kind, 1.6); FX.add(m, T, (k, me) => { me.position.set(lerp(sx, o.x, k), 1.6 + Math.sin(Math.PI * k) * 3, lerp(sz, o.z, k)); me.rotation.y += 0.2; }); }
+    if (FX.near(h.x, h.z, 60)) { const m = mrfFood(kind, 1.6); FX.add(m, T, (k, me) => { me.position.set(lerp(sx, o.x, k), 1.6 + Math.sin(Math.PI * k) * 3, lerp(sz, o.z, k)); me.rotation.y += 0.2; FX.trail(me.position.x, me.position.y, me.position.z, 0xffd86a, 0.5, 2); }); }
     after(T, () => { if (!o.alive) return; addBuff(o, { id: 'banquet', dur: 4, ms: 0.15, dmgOut: 1.15, amp: h, src: h, every: 0.5, onTick: u => heal(h, u, amt / 8, true) }); mrfFeed(h, o); SFX.at('munch', o.x, o.z, 0.5);
-      if (FX.near(o.x, o.z, 50)) { FX.heal(o, MRF.c); FX.burst(o.x, o.height * 0.8, o.z, { n: 10, color: 0xfff0b0, color2: MRF.c, speed: [1, 3], life: [0.4, 0.8], size: [0.25, 0.04], up: 2 }); FX.text(o.x, o.height + 0.9, o.z, ['ням!', 'вкуснотища!', 'добавки!'][Math.floor(Math.random() * 3)], '#ffd86a', 13); } });
+      if (FX.near(o.x, o.z, 50)) { FX.aura(o, 0xc87a1a, 4, o.radius + 0.7, 'ringThin', 2); FX.ring(o.x, o.z, { r0: 0.3, r1: 2.2, color: 0xc87a1a, life: 0.4, tex: 'shock', op: 0.6 }); FX.pillar(o.x, o.z, { r: 0.9, h: 6, color: 0xc87a1a, life: 0.5, op: 0.25 });
+        FX.heal(o, MRF.c); FX.burst(o.x, o.height * 0.8, o.z, { n: 10, color: 0xfff0b0, color2: MRF.c, speed: [1, 3], life: [0.4, 0.8], size: [0.25, 0.04], up: 2 }); FX.text(o.x, o.height + 0.9, o.z, ['ням!', 'вкуснотища!', 'добавки!'][Math.floor(Math.random() * 3)], '#ffd86a', 13); } });
   }
 }
 
 /* ==================================================================== 68. ANSELM ==================================================================== */
 // the goddess's mercy (innate): his healing is 40% stronger on an ally below 40% health
 function ansHeal(h, o, amt) { heal(h, o, amt * (o.hp / o.maxHp < 0.4 ? 1.4 : 1)); }
-function ansSigil(x, z, r, life) { if (FX.near(x, z, 60)) { FX.zone(x, z, r, ANS.c, life, { tex: 'rune', spin: 0.8, op: 0.7 }); } }
+function ansSigil(x, z, r, life) { if (FX.near(x, z, 60)) { FX.zone(x, z, r, 0xc8901a, life, { tex: 'rune', spin: 0.8, op: 0.55 }); } }
 // holy chains: a bolt of golden light; the first enemy hero it reaches is bound by chains of light that rise out of the ground
 function ansChains(h, dir, dmg, dur) {
   SFX.at('holy', h.x, h.z, 0.55); SFX.at('chain', h.x, h.z, 0.35);
@@ -82,7 +94,7 @@ function ansChains(h, dir, dmg, dur) {
 }
 // the light of the goddess: a column of gold falls from the sky — friends inside are freed from every hold, healed and shielded, enemies burn
 function ansLight(h, x, z, healAmt, dmg) {
-  const R = 7, T = 0.6; SFX.at('ultcue', x, z, 0.6); SFX.at('spirit', x, z, 0.55); ansSigil(x, z, R, T + 0.5); if (FX.near(x, z, 60)) FX.decal(x, z, R, ANS.c, T);
+  const R = 7, T = 0.6; SFX.at('ultcue', x, z, 0.6); SFX.at('spirit', x, z, 0.55); ansSigil(x, z, R, T + 0.5); if (FX.near(x, z, 60)) { FX.decal(x, z, R, 0xc8901a, T); FX.pillar(x, z, { r: 0.6, h: 30, color: ANS.c, life: T, op: 0.35, grow: true }); for (let i = 0; i < 8; i++) { const a = i / 8 * TAU; FX.sparks(x + Math.sin(a) * R * 0.9, 0.3, z + Math.cos(a) * R * 0.9, { n: 2, color: ANS.pale, color2: ANS.c, speed: [1, 3], life: [0.4, 0.6], up: 6, w: 0.06 }); } }
   after(T, () => {
     for (const o of G.heroes) if (o.alive && o.team === h.team && dist(o.x, o.z, x, z) < R) {
       for (const b of o.buffs) if (b.stun || b.root || b.slow || b.silence || b.blind) b.dead = true;
@@ -90,8 +102,9 @@ function ansLight(h, x, z, healAmt, dmg) {
     }
     for (const e of enemiesIn(h, x, z, R)) { if (e.struct) continue; damage(h, e, dmg, 1); if (e.alive) slow(h, e, 0.4, 2, 'goddess'); }
     SFX.at('holy', x, z, 1); SFX.at('bell', x, z, 0.7); SFX.at('heal', x, z, 0.6); if (!FX.near(x, z, 70)) return;
-    FX.pillar(x, z, { r: R * 0.55, h: 30, color: ANS.c, life: 0.9, op: 0.4, grow: true }); FX.pillar(x, z, { r: 1.6, h: 34, color: ANS.pale, life: 0.6, op: 0.5 });
-    FX.ring(x, z, { r0: 0.5, r1: R + 1, color: ANS.c, life: 0.6, tex: 'shock', op: 0.7 }); FX.light(x, 6, z, ANS.c, 3, 26, 0.8); FX.shock(x, z, R, 0.8, 0.5);
+    // the wide column in deep gold and thin, the bright core narrow: a pale colour over the whole circle burnt everything white
+    FX.pillar(x, z, { r: R * 0.45, h: 30, color: 0xb87a10, life: 0.9, op: 0.12, grow: true }); FX.pillar(x, z, { r: 1.4, h: 34, color: ANS.c, life: 0.6, op: 0.45 }); FX.zone(x, z, R, 0xb87a10, 1.2, { tex: 'rune2', spin: -1.2, op: 0.4 });
+    FX.ring(x, z, { r0: 0.5, r1: R + 1, color: 0xc8901a, life: 0.6, tex: 'shock', op: 0.6 }); FX.ring(x, z, { r0: 0.4, r1: R * 0.7, color: ANS.c, life: 0.45, tex: 'ringThin', op: 0.7 }); FX.light(x, 6, z, ANS.c, 1.3, 22, 0.8); FX.shock(x, z, R, 0.8, 0.5);
     for (let i = 0; i < 18; i++) { const a = rand(TAU), r = rand(0.5, R); FX.burst(x + Math.sin(a) * r, rand(4, 12), z + Math.cos(a) * r, { n: 1, color: 0xffffff, color2: ANS.c, speed: [0.2, 0.6], life: [0.8, 1.4], size: [0.3, 0.05], grav: 2 }); }
   });
 }
@@ -137,8 +150,9 @@ HEROES.push(
     abilities: [
       {
         key: 'Q', name: 'Исцеление', icon: 'ansheal', cd: 6, cost: 60, range: 8, ind: { type: 'ally' }, anim: 'cast', animDur: 0.4, lock: 0.2, ai: { t: 'healAlly' },
-        desc: 'Ансельм лечит союзного героя (до 8) или себя: сразу и ещё 30% от этого за 3 сек.',
-        cast(h, p) { const o = p.unit && p.unit.alive ? p.unit : h, amt = D(h, 95, 28, 0, 0.6); ansHeal(h, o, amt); addBuff(o, { id: 'anshot', dur: 3, every: 1, src: h, onTick: u => ansHeal(h, u, amt * 0.1) }); SFX.at('heal', o.x, o.z, 0.6); SFX.at('holy', o.x, o.z, 0.45); if (FX.near(o.x, o.z, 50)) { FX.heal(o, ANS.c); FX.pillar(o.x, o.z, { r: 0.8, h: 6, color: ANS.c, life: 0.4, op: 0.4 }); FX.ring(o.x, o.z, { r0: 0.4, r1: 1.8, color: ANS.c, life: 0.4, tex: 'rune' }); } }
+        desc: 'Ансельм лечит союзного героя (до 8) или себя: сразу и ещё 30% от этого за 3 сек. Если союзник почти здоров (больше 85% здоровья), молитва не пропадает зря: он получает ещё и щит на 3 сек.',
+        cast(h, p) { const o = p.unit && p.unit.alive ? p.unit : h, amt = D(h, 95, 28, 0, 0.6), full = o.hp / o.maxHp > 0.85; ansHeal(h, o, amt); if (full) shield(h, o, amt * 0.4, 3, ANS.c);
+          if (FX.near(o.x, o.z, 50)) { if (o !== h) FX.beam(h.x, h.z, o.x, o.z, { color: ANS.c, w: 0.2, life: 0.35, y: 1.8 }); FX.glow(o.x, o.height + 1.2, o.z, 2.6, ANS.pale, 0.35, 'star'); FX.sparks(o.x, o.height + 1.2, o.z, { n: 10, color: ANS.pale, color2: ANS.c, speed: [1, 3], life: [0.4, 0.8], grav: -4, w: 0.07 }); FX.zone(o.x, o.z, 1.6, 0xc8901a, 0.8, { tex: 'rune2', spin: 2, op: 0.5 }); FX.light(o.x, 2.5, o.z, ANS.c, 1.4, 8, 0.5); if (full) FX.text(o.x, o.height + 0.9, o.z, 'щит', '#ffe9a0', 13); } addBuff(o, { id: 'anshot', dur: 3, every: 1, src: h, onTick: u => ansHeal(h, u, amt * 0.1) }); SFX.at('heal', o.x, o.z, 0.6); SFX.at('holy', o.x, o.z, 0.45); if (FX.near(o.x, o.z, 50)) { FX.heal(o, ANS.c); FX.pillar(o.x, o.z, { r: 0.8, h: 6, color: ANS.c, life: 0.4, op: 0.4 }); FX.ring(o.x, o.z, { r0: 0.4, r1: 1.8, color: ANS.c, life: 0.4, tex: 'rune' }); } }
       },
       {
         key: 'W', name: 'Святые оковы', icon: 'anschain', cd: 12, cost: 70, range: 10, ind: { type: 'line', w: 1.6, fixed: true }, anim: 'cast', animDur: 0.4, lock: 0.25, ai: { t: 'shot', sp: 30 },
@@ -148,8 +162,8 @@ HEROES.push(
       {
         key: 'E', name: 'За здоровье!', icon: 'anstoast', cd: 14, cost: 60, range: 0, ind: { type: 'self', r: 7 }, anim: 'cast', animDur: 0.5, lock: 0.2, ai: { t: 'buff' },
         desc: 'Ансельм прикладывается к фляжке и поднимает тост: союзные герои в радиусе 7 (и он сам) лечатся и 4 сек атакуют на 20% быстрее.',
-        cast(h) { const amt = D(h, 50, 14, 0, 0.35); SFX.at('clink', h.x, h.z, 0.6); SFX.at('water', h.x, h.z, 0.35); SFX.at('heal', h.x, h.z, 0.4); if (FX.near(h.x, h.z, 50)) { FX.text(h.x, h.height + 1, h.z, 'За здоровье!', '#ffd86a', 16); FX.ring(h.x, h.z, { r0: 0.5, r1: 7, color: ANS.c, life: 0.5, tex: 'ringThin' }); FX.burst(h.x, 1.8, h.z, { n: 10, color: 0xff6a8a, color2: ANS.wine, speed: [1, 3], life: [0.3, 0.6], size: [0.2, 0.04], up: 2, grav: -6 }); }
-          for (const o of G.heroes) if (o.alive && o.team === h.team && udist(h, o) < 7) { ansHeal(h, o, amt); addBuff(o, { id: 'anstoast', dur: 4, as: 0.2, amp: h, src: h }); if (FX.near(o.x, o.z, 50) && o !== h) FX.heal(o, ANS.c); } }
+        cast(h) { const amt = D(h, 50, 14, 0, 0.35); SFX.at('clink', h.x, h.z, 0.6); SFX.at('water', h.x, h.z, 0.35); SFX.at('heal', h.x, h.z, 0.4); if (FX.near(h.x, h.z, 50)) { FX.text(h.x, h.height + 1, h.z, 'За здоровье!', '#ffd86a', 16); FX.ring(h.x, h.z, { r0: 0.5, r1: 7, color: 0xc8901a, life: 0.5, tex: 'ringThin', op: 0.8 }); FX.ring(h.x, h.z, { r0: 0.4, r1: 5, color: ANS.wine, life: 0.6, tex: 'shock', op: 0.5 }); FX.burst(h.x, 1.8, h.z, { n: 16, color: 0xff6a8a, color2: ANS.wine, speed: [1, 4], life: [0.3, 0.7], size: [0.24, 0.04], up: 3, grav: -8 }); FX.glow(h.x, h.height + 0.3, h.z, 2.6, ANS.c, 0.3, 'star'); FX.zone(h.x, h.z, 2, ANS.wine, 0.9, { tex: 'swirl', spin: 3, op: 0.4 }); FX.light(h.x, 2.5, h.z, 0xffb04a, 1.6, 12, 0.6); }
+          for (const o of G.heroes) if (o.alive && o.team === h.team && udist(h, o) < 7) { ansHeal(h, o, amt); addBuff(o, { id: 'anstoast', dur: 4, as: 0.2, amp: h, src: h }); if (FX.near(o.x, o.z, 50)) { if (o !== h) { FX.heal(o, ANS.c); FX.beam(h.x, h.z, o.x, o.z, { color: ANS.wine, w: 0.16, life: 0.35, y: 1.7 }); } FX.aura(o, 0xc8901a, 4, o.radius + 0.6, 'ringThin', 2.5); FX.glow(o.x, o.height + 0.6, o.z, 1.6, ANS.c, 0.3, 'star'); FX.sparks(o.x, o.height + 0.4, o.z, { n: 6, color: 0xff9ab0, color2: ANS.wine, speed: [1, 3], life: [0.3, 0.6], grav: -6, w: 0.06 }); } } }
       },
       {
         key: 'R', name: 'Свет Богини', icon: 'anslight', cd: 90, cost: 130, range: 9, ind: { type: 'circle', r: 7 }, anim: 'heroic', animDur: 0.7, lock: 0.4, ai: { t: 'save', r: 9, hp: 0.4, ult: true },

@@ -226,9 +226,15 @@ HEROES.push(
         desc: 'Сун Джину проносится на 7 вперёд, полосуя кинжалами всех на пути (физический урон). Его тени в радиусе 20 тут же возникают у ближайшего врага в конце рывка и набрасываются на него.',
         cast(h, p) {
           const dmg = D(h, 64, 14, 0.75), dir = p.dir; dshGhost(h, JNW.c, 0.4, 0.45); SFX.at('dash', h.x, h.z, 0.8); SFX.at('shadowblade', h.x, h.z, 0.6);
+          const x0 = h.x, z0 = h.z; let tn = 0;
+          if (FX.near(h.x, h.z, 50)) { FX.ring(h.x, h.z, { r0: 1.8, r1: 0.3, color: JNW.c, life: 0.22, tex: 'ringThin' }); FX.burst(h.x, 0.6, h.z, { smoke: true, n: 5, color: 0x1c0a30, color2: 0x05020a, speed: [0.5, 2], life: [0.4, 0.7], size: [0.7, 1.4], up: 1, a: 0.55 }); }
           dashTo(h, p.x, p.z, 36, { ribbon: JNW.c, w: 1.3,
-            onHit: (e, u) => { damage(u, e, dmg, 0); if (FX.near(e.x, e.z, 45)) { FX.slash(e.x, e.z, dir + HPI, { r: 1.8, sweep: 1.4, color: JNW.c, life: 0.18, y: 1.2 }); FX.hit(e.x, 1.2, e.z, JNW.c, e.kind === 'hero'); } SFX.at('dagger', e.x, e.z, 0.5); },
+            // afterimages and shadow smoke along the dash
+            trail: u => { if (++tn % 2 === 0) dshGhost(u, JNW.c, 0.28, 0.3); if (FX.near(u.x, u.z, 45)) FX.burst(u.x, 0.5, u.z, { smoke: true, n: 1, color: 0x1c0a30, color2: 0x05020a, speed: [0.2, 0.8], life: [0.35, 0.6], size: [0.6, 1.2], up: 1.2, a: 0.5 }); },
+            // each victim is crossed by both daggers
+            onHit: (e, u) => { damage(u, e, dmg, 0); if (FX.near(e.x, e.z, 45)) { FX.slash(e.x, e.z, dir + HPI, { r: 1.9, sweep: 1.4, color: JNW.c, life: 0.2, y: 1.2 }); FX.slash(e.x, e.z, dir - HPI, { r: 1.9, sweep: 1.4, color: JNW.pale, life: 0.22, y: 1.5, flip: true }); FX.hit(e.x, 1.2, e.z, JNW.c, e.kind === 'hero'); FX.sparks(e.x, 1.3, e.z, { n: 6, color: JNW.pale, color2: JNW.c, speed: [3, 9], life: [0.12, 0.3], dir, spread: 0.8, w: 0.08 }); } SFX.at('dagger', e.x, e.z, 0.5); },
             onEnd: u => {
+              if (FX.near(u.x, u.z, 50)) { FX.beam(x0, z0, u.x, u.z, { color: 0x2a0a4a, w: 0.5, life: 0.35, y: 0.2 }); FX.ring(u.x, u.z, { r0: 0.3, r1: 2.2, color: JNW.c, life: 0.28, tex: 'shock', op: 0.7 }); FX.sparks(u.x, 1.1, u.z, { n: 8, color: JNW.pale, color2: JNW.c, speed: [2, 6], life: [0.2, 0.4], dir, spread: 1, w: 0.07 }); }
               let t = null, bd = 6; for (const e of G.units) if (e.alive && !e.struct && hostile(u, e)) { const d = udist(u, e) - (e.kind === 'hero' ? 2 : 0); if (d < bd) { bd = d; t = e; } }
               if (!t) return;
               for (const s of u.shadows || []) { if (!s.alive || udist(s, u) > 20 || s.riseT !== undefined) continue; s.focus = t; s.focusT = G.time + 4; if (udist(s, t) > 3) { jinFade(s); const a = rand(TAU), q = NAV.nearest(t.x + Math.sin(a) * 1.8, t.z + Math.cos(a) * 1.8); s.x = q.x; s.z = q.z; s.path = null; s.atkCd = 0; jinFade(s); } }
@@ -355,9 +361,9 @@ HEROES.push(
         key: 'R', name: 'Миллиард вольт', icon: 'misstorm', cd: 85, cost: 140, range: 14, ind: { type: 'circle', r: 5 }, anim: 'storm', animDur: 1.25, lock: 1.05, ai: { t: 'point', rad: 5, delay: 1.0, ult: true, hp: 0.6 },
         desc: 'Мисака вскидывает руки, и над точкой (до 14) сгущается грозовой заряд. Через 1 сек в землю бьёт колонна молний: огромный магический урон и оглушение на 1 сек в радиусе 5, а разряды перескакивают ещё на врагов в радиусе 10 (30% урона). Ещё 3 сек на месте удара трещит электрическое поле: урон и замедление на 30%.',
         cast(h, p) {
-          const x = p.x, z = p.z, R = 5, dmg = D(h, 190, 40, 0.5, 0.85), tk = D(h, 24, 5, 0, 0.15); telegraph(h, x, z, R, 1.0, MIS.c); SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('overload', x, z, 0.6); SFX.at('zap', h.x, h.z, 0.5);
+          const x = p.x, z = p.z, R = 5, dmg = D(h, 190, 40, 0.5, 0.85), tk = D(h, 24, 5, 0, 0.15); telegraph(h, x, z, R, 1.0, 0x2a7ad0); SFX.at('ultcue', h.x, h.z, 0.6); SFX.at('overload', x, z, 0.6); SFX.at('zap', h.x, h.z, 0.5);
           if (FX.near(x, z, 60)) {
-            FX.zone(x, z, R, MIS.c, 4.2, { tex: 'rune2', spin: 1.2, op: 0.5 });
+            FX.zone(x, z, R, 0x1a5ab0, 4.2, { tex: 'rune2', spin: 1.2, op: 0.42 }); FX.zone(x, z, R * 0.5, 0x2a7ad0, 1.0, { tex: 'swirl', spin: -4, op: 0.35 });
             const cl = new THREE.Mesh(FX.geo.flat, FX.mat('swirl', 0x4a8ac0, 0.5)); cl.position.set(x, 11, z); FX.add(cl, 1.3, (k, me, dt) => { const s = R * 2.6 * 2 * RK * Math.min(1, k * 3); me.scale.set(s, 1, s); me.rotation.y += dt * 2; me.material.opacity = 0.5 * Math.min(1, (1 - k) * 6); });
             for (let i = 0; i < 10; i++) after(i * 0.09, () => { const a = rand(TAU), b = rand(TAU); FX.bolt(x + Math.sin(a) * rand(R * 1.2), 11, z + Math.cos(a) * rand(R * 1.2), x + Math.sin(b) * rand(R * 1.2), 11 + rand(-0.5, 0.5), z + Math.cos(b) * rand(R * 1.2), { color: MIS.c, w: 0.4, life: 0.12, jag: 0.8 }); if (i % 3 === 0) SFX.at('zap', x, z, 0.3); });
             if (FX.near(h.x, h.z, 50)) FX.arcs(h.x, 1.6, h.z, 1.6, 4, MIS.c);

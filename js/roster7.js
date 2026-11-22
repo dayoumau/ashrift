@@ -133,6 +133,9 @@ HEROES.push(
         desc: 'Сайлас держит револьвер у бедра и ладонью другой руки шесть раз подряд бьёт по курку: шесть пуль за полсекунды по врагам в конусе перед собой (до 8.5), герои — в первую очередь. Каждая пуля — физический урон. После этого барабан сразу полон.',
         cast(h, p) {
           const dir = p.dir, per = D(h, 24, 5, 0.38), half = 0.65, R = 8.5;
+          // dust kicked up along the edges of the fan, and a curl of gunsmoke off the barrel when the cylinder is empty
+          if (FX.near(h.x, h.z, 50)) for (const s of [-1, 1]) { const a = dir + s * half; FX.beam(h.x + Math.sin(a) * 1.2, h.z + Math.cos(a) * 1.2, h.x + Math.sin(a) * R, h.z + Math.cos(a) * R, { color: 0xffd9a0, w: 0.07, life: 0.55, y: 0.15, op: 0.5 }); }
+          after(0.06 + 6 * 0.085, () => { if (!h.alive || !FX.near(h.x, h.z, 50)) return; const m = silMuzzle(h); FX.burst(m.x, m.y, m.z, { smoke: true, n: 7, color: 0xc8c0b0, color2: 0x4a4640, speed: [0.3, 1.2], life: [0.7, 1.3], size: [0.5, 1.3], up: 1.6, a: 0.45, drag: 1 }); FX.sparks(m.x, m.y, m.z, { n: 6, color: 0xffe0a0, color2: 0xff8a2a, speed: [1, 4], life: [0.3, 0.6], grav: -9, w: 0.06 }); });
           for (let i = 0; i < 6; i++) after(0.06 + i * 0.085, () => {
             if (!h.alive || h.stunned) return;
             const L = enemiesIn(h, h.x, h.z, R + 1).filter(e => inCone(h, e, dir, half, R)).sort((a, b) => (b.kind === 'hero') - (a.kind === 'hero') || udist(h, a) - udist(h, b));

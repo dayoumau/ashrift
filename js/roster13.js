@@ -454,13 +454,23 @@ HEROES.push(
         desc: 'На 2 сек Сэйрю уклоняется от всех атак (от умений — нет) и бегает на 20% быстрее. Первый вражеский герой или чудовище, от чьей атаки он уклонился, получает контрудар: Сэйрю в рывке (до 9.5) оказывается рядом и бьёт коленом — физический урон и оглушение на 0.9 сек.',
         cast(h) {
           h.reflexT = G.time + 2; h.counter = D(h, 70, 18, 0.9, 0); addBuff(h, { id: 'sereflex', dur: 2, ms: 0.2 }); SFX.at('cue', h.x, h.z, 0.55); SFX.at('blink', h.x, h.z, 0.45);
-          if (FX.near(h.x, h.z, 50)) { FX.ring(h.x, h.z, { r0: 2.4, r1: 0.6, color: SEI.c, life: 0.3, tex: 'ringThin', y: 1.2 }); FX.aura(h, SEI.c, 2, 1.3, 'ringThin', 4); FX.glow(h.x, h.height * 0.85, h.z, 2.2, SEI.c, 0.25, 'star'); }
+          if (FX.near(h.x, h.z, 50)) { FX.ring(h.x, h.z, { r0: 2.4, r1: 0.6, color: SEI.c, life: 0.3, tex: 'ringThin', y: 1.2 }); FX.aura(h, SEI.c, 2, 1.3, 'ringThin', 4); FX.glow(h.x, h.height * 0.85, h.z, 2.2, SEI.c, 0.25, 'star'); FX.ring(h.x, h.z, { r0: 0.4, r1: 2.6, color: 0x1ab878, life: 0.35, tex: 'shock', op: 0.6 }); FX.sparks(h.x, 1.3, h.z, { n: 10, color: SEI.pale, color2: SEI.c, speed: [2, 6], life: [0.2, 0.45], w: 0.07, ring: true }); }
+          // while the reflexes hold he leaves green afterimages of himself
+          let gt = 0; FX.add(new THREE.Group(), 2, (k, me, dt) => { if (!h.alive || !(h.reflexT > G.time)) return; gt += dt; if (gt < 0.14) return; gt = 0; if (FX.near(h.x, h.z, 45)) { dshGhost(h, SEI.c, 0.3, 0.28); if (h.moving) FX.sparks(h.x, 0.9, h.z, { n: 1, color: SEI.pale, color2: SEI.c, speed: [0.5, 1.5], life: [0.2, 0.4], w: 0.05 }); } });
         }
       },
       {
         key: 'E', name: 'Бег по стенам', icon: 'sewall', cd: 12, cost: 45, range: 7, ind: { type: 'circle', r: 0.8 }, anim: 'feint', animDur: 0.35, lock: 0, ai: { t: 'escape' },
         desc: 'Сэйрю одним махом перелетает к точке (до 7), не замечая стен и обрывов, и 2 сек бегает на 30% быстрее.',
-        cast(h, p) { dashTo(h, p.x, p.z, 26, { arc: 3, fly: true, ribbon: SEI.c }); addBuff(h, { id: 'sewall', dur: 2, ms: 0.3 }); SFX.at('dash', h.x, h.z, 0.6); SFX.at('whoosh', h.x, h.z, 0.6); }
+        cast(h, p) {
+          let n = 0; const x0 = h.x, z0 = h.z;
+          if (FX.near(x0, z0, 50)) { FX.ring(x0, z0, { r0: 0.3, r1: 2.2, color: 0x1ab878, life: 0.3, tex: 'shock', op: 0.6 }); FX.burst(x0, 0.3, z0, { smoke: true, n: 5, color: 0x9a9488, color2: 0x3a3630, speed: [1, 3], life: [0.3, 0.6], size: [0.6, 1.2], up: 0.6, a: 0.35 }); }
+          dashTo(h, p.x, p.z, 26, { arc: 3, fly: true, ribbon: SEI.c,
+            trail: u => { if (++n % 2 === 0) dshGhost(u, SEI.c, 0.3, 0.3); },
+            onEnd: u => { if (FX.near(u.x, u.z, 50)) { FX.ring(u.x, u.z, { r0: 0.3, r1: 2.4, color: SEI.c, life: 0.3, tex: 'ringThin', op: 0.7 }); FX.sparks(u.x, 0.4, u.z, { n: 8, color: SEI.pale, color2: SEI.c, speed: [2, 6], life: [0.2, 0.4], up: 3, w: 0.07 }); FX.burst(u.x, 0.3, u.z, { smoke: true, n: 5, color: 0x9a9488, color2: 0x3a3630, speed: [1, 3], life: [0.3, 0.6], size: [0.6, 1.2], up: 0.6, a: 0.35 }); } SFX.at('heavy', u.x, u.z, 0.3); } });
+          const b = addBuff(h, { id: 'sewall', dur: 2, ms: 0.3 }); if (b && FX.near(h.x, h.z, 50)) b.fx = FX.aura(h, SEI.c, 2, 1.1, 'ringThin', 6);
+          SFX.at('dash', h.x, h.z, 0.6); SFX.at('whoosh', h.x, h.z, 0.6);
+        }
       },
       {
         key: 'R', name: 'Паладин', icon: 'semech', cd: 90, cost: 100, range: 0, ind: { type: 'self', r: 3.5 }, anim: 'cast', animDur: 0.6, lock: 0.75, ai: { t: 'buff', ult: true, hp: 0.9 },

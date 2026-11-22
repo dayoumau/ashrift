@@ -192,7 +192,10 @@ function azGrasp(h, t, dmg) {
   const T = 0.55, near = FX.near(t.x, t.z, 60); SFX.at('heartbeat', t.x, t.z, 0.75); SFX.at('dark', t.x, t.z, 0.4);
   if (near) {
     const ht = azHeartMesh(), hh = azHeartMesh(); const H = () => { if (h.rig && h.rig.handR) { h.rig.handR.getWorldPosition(_lmv); return _lmv; } return { x: h.x, y: 1.6, z: h.z }; };
-    FX.add(ht, T + 0.1, (k, me, dt, en) => { const q = en.t / T, beat = 1 + 0.15 * Math.abs(Math.sin(en.t * (8 + q * 16))), s = (q < 1 ? 1 : Math.max(0.01, 1 - (en.t - T) * 10)) * beat * (q > 0.85 ? 1 - (q - 0.85) * 3 : 1); me.position.set(t.x, (t.height || 2) * 0.62 + (t.yOff || 0), t.z); me.scale.setScalar(s * 0.9); me.material.opacity = 0.85 * Math.min(1, en.t / 0.1); });
+    FX.add(ht, T + 0.1, (k, me, dt, en) => { const q = en.t / T, beat = 1 + 0.15 * Math.abs(Math.sin(en.t * (8 + q * 16))), s = (q < 1 ? 1 : Math.max(0.01, 1 - (en.t - T) * 10)) * beat * (q > 0.85 ? 1 - (q - 0.85) * 3 : 1); me.position.set(t.x, (t.height || 2) + 0.75 + (t.yOff || 0), t.z); me.scale.setScalar(s * 1.7); me.material.opacity = 0.9 * Math.min(1, en.t / 0.1); });
+    // the heart is torn out over the victim's head where everyone can see it; a red thread runs from it to the lich's hand, a ring tightens round the feet
+    let th = 0; FX.add(new THREE.Group(), T, (k, me, dt) => { th += dt; if (th < 0.05) return; th = 0; const p = H(); FX.bolt(p.x, p.y, p.z, t.x, (t.height || 2) + 0.75, t.z, { color: AZZ.red, w: 0.09, life: 0.09, jag: 0.25 }); });
+    FX.ring(t.x, t.z, { r0: 3.0, r1: 0.5, color: AZZ.red, life: T, tex: 'ringThin', op: 0.8 }); FX.zone(t.x, t.z, 1.8, 0x7a0a18, T + 0.15, { tex: 'rune2', spin: 5, op: 0.5 }); FX.light(t.x, 2.5, t.z, AZZ.red, 1.2, 9, T);
     FX.add(hh, T + 0.1, (k, me, dt, en) => { const p = H(), q = en.t / T, beat = 1 + 0.15 * Math.abs(Math.sin(en.t * (8 + q * 16))); me.position.set(p.x, p.y + 0.05, p.z); me.scale.setScalar(0.55 * beat * (q > 0.8 ? Math.max(0.05, 1 - (q - 0.8) * 4) : 1)); });
     FX.add(new THREE.Group(), T, (k, me, dt) => { if (Math.random() < dt * 14) { const p = H(); FX.implode(p.x, p.y, p.z, 0.8, { color: AZZ.red, color2: 0x3a0005, n: 2, life: 0.3 }); } });
   }
@@ -202,7 +205,8 @@ function azGrasp(h, t, dmg) {
     else if (t.alive) stun(h, t, 1.0);
     SFX.at('flesh', t.x, t.z, 0.75); SFX.at('blood', t.x, t.z, 0.6); SFX.at('heavy', t.x, t.z, 0.5); if (!FX.near(t.x, t.z, 55)) return; const y = (t.height || 2) * 0.62;
     FX.burst(t.x, y, t.z, { n: 18, color: AZZ.red, color2: 0x3a0005, speed: [2, 6], life: [0.3, 0.6], size: [0.35, 0.05] }); FX.sparks(t.x, y, t.z, { n: 14, color: 0xff8a8a, color2: AZZ.red, speed: [3, 9], life: [0.2, 0.45], w: 0.08 });
-    FX.burst(t.x, y, t.z, { smoke: true, n: 5, color: 0x5a0a14, color2: 0x140205, speed: [0.5, 2], life: [0.5, 0.9], size: [0.6, 1.2], a: 0.5 }); FX.ring(t.x, t.z, { r0: 0.3, r1: 2.2, color: AZZ.red, life: 0.3, tex: 'ringThin', y }); FX.hitstop(0.05); FX.shake(0.2);
+    FX.burst(t.x, y, t.z, { smoke: true, n: 5, color: 0x5a0a14, color2: 0x140205, speed: [0.5, 2], life: [0.5, 0.9], size: [0.6, 1.2], a: 0.5 }); FX.ring(t.x, t.z, { r0: 0.3, r1: 2.2, color: AZZ.red, life: 0.3, tex: 'ringThin', y }); FX.hitstop(0.05); FX.shake(0.3);
+    FX.burst(t.x, (t.height || 2) + 0.75, t.z, { n: 16, color: AZZ.red, color2: 0x3a0005, speed: [3, 8], life: [0.3, 0.6], size: [0.4, 0.05], grav: -12 }); FX.glow(t.x, (t.height || 2) + 0.75, t.z, 3, AZZ.red, 0.2, 'star'); FX.ring(t.x, t.z, { r0: 0.4, r1: 3, color: 0x7a0a18, life: 0.4, tex: 'crack' }); FX.scorch(t.x, t.z, 1.4, AZZ.red, 5);
   });
 }
 // the black hole: a black sphere with a burning violet ring round it, light bending into it; everything near is dragged in and torn, then it collapses

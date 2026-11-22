@@ -127,7 +127,8 @@ HEROES.push(
             for (const o of G.heroes) if (o.alive && o !== h && o.team === h.team && udist(h, o) < 5) { heal(h, o, (base + st) * 0.5); for (const b of o.buffs) if (b.slow || b.root) b.dead = true; if (FX.near(o.x, o.z, 45)) FX.heal(o, GUB.water); }
             if (!FX.near(h.x, h.z, 55)) return; const k = 0.7 + Math.min(1, st / gubCap(h)) * 0.8;
             for (let i = 0; i < 10; i++) { const a = i / 10 * TAU; FX.sparks(h.x + Math.sin(a) * 0.5, rand(0.8, 1.9), h.z + Math.cos(a) * 0.5, { n: Math.round(4 * k), color: 0xffffff, color2: GUB.water, speed: [4, 9 * k], life: [0.3, 0.6], w: 0.09, dir: a, spread: 0.25, up: 1.5 }); }
-            FX.ring(h.x, h.z, { r0: 0.6, r1: 5, color: GUB.water, life: 0.5, tex: 'shock' }); FX.burst(h.x, 0.4, h.z, { smoke: true, n: 8, color: 0xe0f6ff, color2: 0x6aa8c8, speed: [1, 3], life: [0.6, 1.1], size: [0.8, 1.8], ring: true, a: 0.3 });
+            FX.ring(h.x, h.z, { r0: 0.6, r1: 5, color: 0x2a8ac8, life: 0.5, tex: 'shock', op: 0.6 }); FX.ring(h.x, h.z, { r0: 0.4, r1: 3.4, color: GUB.water, life: 0.4, tex: 'ringThin', op: 0.6 }); FX.zone(h.x, h.z, 5, 0x1a6aa8, 0.9, { tex: 'swirl', spin: 3, op: 0.3 }); FX.scorch(h.x, h.z, 2.2, 0x2a8ac8, 3);
+            FX.burst(h.x, 0.4, h.z, { smoke: true, n: 8, color: 0xe0f6ff, color2: 0x6aa8c8, speed: [1, 3], life: [0.6, 1.1], size: [0.8, 1.8], ring: true, a: 0.3 });
             FX.burst(h.x, 1.2, h.z, { n: Math.round(14 * k), color: GUB.foam, color2: GUB.water, speed: [2, 5], life: [0.3, 0.7], size: [0.3, 0.05], up: 3, grav: -14, ring: true });
           });
         }
