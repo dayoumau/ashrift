@@ -535,6 +535,13 @@ const FX = {
   },
   // screen-space refraction ripple (applied by the final post pass)
   shock(x, z, r, str, life) { if (!this.near(x, z, 55)) return; str = str || 1; this.warp('ring', x, 0.3, z, str < 0 ? { r0: r, r1: 0.2, str: -str, life: life || 0.5 } : { r0: r * 0.15, r1: r, str, life: life || 0.5 }); },
+  // a screen-wide shockwave: a thin ring of refraction that starts at a point of the world and runs out over the whole picture, bending it as it passes
+  // (the final post pass draws it; strength 0.5 is a light kick, 1.8 a heavy one)
+  rips: [{ s: 0 }, { s: 0 }, { s: 0 }, { s: 0 }], ripI: 0,
+  ripple(x, y, z, str) {
+    if (!GFX.warp || !G.camera || !this.near(x, z, 80)) return; _fv1.set(x, y, z).project(G.camera); if (_fv1.z > 1) return;
+    const s = this.rips[this.ripI]; this.ripI = (this.ripI + 1) % 4; s.x = _fv1.x * 0.5 + 0.5; s.y = _fv1.y * 0.5 + 0.5; s.r = 0; s.s = str;
+  },
   punch(v) { if (GFX.flash) G.ca = Math.min(1.5, Math.max(G.ca || 0, v)); },
   hitstop(t) { if (GFX.stop) G.hitstop = Math.max(G.hitstop || 0, t); },
   ribbon(color, width, n) { const r = new Ribbon(this.scene, color, width, n); this.ribbons.push(r); return r; },

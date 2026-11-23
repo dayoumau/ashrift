@@ -324,13 +324,14 @@ const SFX = {
       case 'mist': N('bandpass', 700, 2200, 0.45, 0.22, 0, 1.5); N('highpass', 5000, 7000, 0.35, 0.08, 0.05); T('sine', 1320, 1760, 0.4, 0.04, 0.05); T('sine', 1980, 2640, 0.35, 0.03, 0.12); break;
       // a deck of cards riffled into a fan
       case 'cardfan': N('bandpass', 3800, 3800, 0.03, 0.2, 0, 4); N('bandpass', 3600, 3600, 0.03, 0.18, 0.04, 4); N('bandpass', 3900, 3900, 0.03, 0.17, 0.08, 4); N('bandpass', 3500, 3500, 0.03, 0.15, 0.12, 4); N('highpass', 6000, 4000, 0.12, 0.1, 0.15); break;
-      // Kai's Flow: the first rush when the beam opens, the hum of it running (played again and again while it lasts), a flick of it for a basic attack
-      case 'kstart': T('sawtooth', 110, 430, 0.26, 0.15); N('bandpass', 500, 2600, 0.28, 0.24, 0, 2); T('sine', 880, 1320, 0.2, 0.05, 0.05); break;
-      case 'kflow': N('bandpass', 900, 1250, 0.28, 0.15, 0, 3); T('sawtooth', 94, 100, 0.28, 0.07); T('sine', 610, 650, 0.28, 0.035); N('highpass', 6000, 5000, 0.2, 0.04); break;
-      case 'kzap': N('highpass', 2800, 6000, 0.07, 0.2); T('sawtooth', 720, 240, 0.1, 0.12); T('sine', 1500, 900, 0.08, 0.05); break;
-      // the Pulse: a deep thump and a ring of air; the Breach: everything let go at once
-      case 'kpulse': T('sine', 170, 38, 0.42, 0.5); N('lowpass', 1900, 180, 0.36, 0.42); T('triangle', 900, 200, 0.3, 0.1, 0.02); N('bandpass', 2400, 600, 0.25, 0.12, 0.04, 2); break;
-      case 'kbreach': T('sawtooth', 62, 250, 0.9, 0.24); N('bandpass', 280, 3200, 0.95, 0.32, 0, 1.5); T('sine', 58, 34, 1.1, 0.42); T('square', 430, 900, 0.5, 0.05, 0.3); N('highpass', 5000, 8000, 0.5, 0.08, 0.35); break;
+      // Kai (the bureau game's own sounds, number for number): the rush of a dash or of the Flow opening, the thump of the Pulse, the Breach let go,
+      // a beam hit, the blast at the end of the Breach, a flick of the beam for a basic attack. The running hum of the beam is a live voice in roster22.js
+      case 'kdash': N('bandpass', 600, 4200, 0.22, 0.2, 0, 0.8); break;
+      case 'kpulse': T('sine', 120, 32, 0.5, 0.4); N('bandpass', 3000, 200, 0.45, 0.28, 0, 0.5); break;
+      case 'kult': T('sawtooth', 80, 640, 1.2, 0.25); N('bandpass', 300, 6000, 1.2, 0.25, 0, 0.6); break;
+      case 'khit': N('bandpass', 1700, 1700, 0.09, 0.13, 0, 0.7); T('triangle', 140, 70, 0.08, 0.12); break;
+      case 'kboom': T('sine', 90, 26, 0.7, 0.5); N('bandpass', 1400, 90, 0.7, 0.4, 0, 0.4); break;
+      case 'kzap': T('square', 900, 220, 0.14, 0.05); N('bandpass', 1700, 1700, 0.07, 0.09, 0, 0.7); break;
       case 'siren':T('sawtooth', 660, 990, 0.42, 0.06); T('sine', 660, 990, 0.42, 0.1); T('sawtooth', 990, 660, 0.42, 0.06, 0.42); T('sine', 990, 660, 0.42, 0.1, 0.42); break;
       // something heavy falling from the sky: a long falling whistle
       case 'falling': T('sine', 2300, 520, 0.7, 0.13); T('sine', 2340, 530, 0.7, 0.05); break;
