@@ -324,6 +324,13 @@ const SFX = {
       case 'mist': N('bandpass', 700, 2200, 0.45, 0.22, 0, 1.5); N('highpass', 5000, 7000, 0.35, 0.08, 0.05); T('sine', 1320, 1760, 0.4, 0.04, 0.05); T('sine', 1980, 2640, 0.35, 0.03, 0.12); break;
       // a deck of cards riffled into a fan
       case 'cardfan': N('bandpass', 3800, 3800, 0.03, 0.2, 0, 4); N('bandpass', 3600, 3600, 0.03, 0.18, 0.04, 4); N('bandpass', 3900, 3900, 0.03, 0.17, 0.08, 4); N('bandpass', 3500, 3500, 0.03, 0.15, 0.12, 4); N('highpass', 6000, 4000, 0.12, 0.1, 0.15); break;
+      // Kai's Flow: the first rush when the beam opens, the hum of it running (played again and again while it lasts), a flick of it for a basic attack
+      case 'kstart': T('sawtooth', 110, 430, 0.26, 0.15); N('bandpass', 500, 2600, 0.28, 0.24, 0, 2); T('sine', 880, 1320, 0.2, 0.05, 0.05); break;
+      case 'kflow': N('bandpass', 900, 1250, 0.28, 0.15, 0, 3); T('sawtooth', 94, 100, 0.28, 0.07); T('sine', 610, 650, 0.28, 0.035); N('highpass', 6000, 5000, 0.2, 0.04); break;
+      case 'kzap': N('highpass', 2800, 6000, 0.07, 0.2); T('sawtooth', 720, 240, 0.1, 0.12); T('sine', 1500, 900, 0.08, 0.05); break;
+      // the Pulse: a deep thump and a ring of air; the Breach: everything let go at once
+      case 'kpulse': T('sine', 170, 38, 0.42, 0.5); N('lowpass', 1900, 180, 0.36, 0.42); T('triangle', 900, 200, 0.3, 0.1, 0.02); N('bandpass', 2400, 600, 0.25, 0.12, 0.04, 2); break;
+      case 'kbreach': T('sawtooth', 62, 250, 0.9, 0.24); N('bandpass', 280, 3200, 0.95, 0.32, 0, 1.5); T('sine', 58, 34, 1.1, 0.42); T('square', 430, 900, 0.5, 0.05, 0.3); N('highpass', 5000, 8000, 0.5, 0.08, 0.35); break;
       case 'siren':T('sawtooth', 660, 990, 0.42, 0.06); T('sine', 660, 990, 0.42, 0.1); T('sawtooth', 990, 660, 0.42, 0.06, 0.42); T('sine', 990, 660, 0.42, 0.1, 0.42); break;
       // something heavy falling from the sky: a long falling whistle
       case 'falling': T('sine', 2300, 520, 0.7, 0.13); T('sine', 2340, 530, 0.7, 0.05); break;
@@ -394,7 +401,7 @@ const SFX_FLAT = { ui: 1, buy: 1, deny: 1, warn: 1, coin: 1, level: 1, kill: 1, 
 // the sound of each hero's basic attack: hit — a melee blow (played on the target), atk — a shot (played at the shooter), imp — a shot landing.
 // A hero's own def.hitSfx wins over this table (false = the hero plays it himself in onDeal)
 const HERO_SFX = {
-  roxa: { hit: 'mace' }, taiga: { atk: 'bow' }, korvin: { atk: 'flintlock' }, margo: { atk: 'coinshot' }, miro: { atk: 'gunshot' }, velvet: { atk: 'note' }, brand: { hit: 'mace' }, keira: { hit: 'dagger' }, mora: { atk: 'hex', imp: 'ember' }, vale: { atk: 'crossbow' }, oriel: { atk: 'holy' }, groh: { hit: 'stone' },
+  roxa: { hit: 'mace' }, taiga: { atk: 'bow' }, korvin: { atk: 'flintlock' }, margo: { atk: 'coinshot' }, miro: { atk: 'gunshot' }, kai: { atk: 'kzap' }, velvet: { atk: 'note' }, brand: { hit: 'mace' }, keira: { hit: 'dagger' }, mora: { atk: 'hex', imp: 'ember' }, vale: { atk: 'crossbow' }, oriel: { atk: 'holy' }, groh: { hit: 'stone' },
   nox: { atk: 'zap' }, silva: { atk: 'bow' }, morg: { atk: 'poison' }, aisa: { atk: 'ice' }, cassius: { hit: 'blade' }, zar: { atk: 'void' }, grimm: { hit: 'chain' },
   ragna: { hit: 'axe' }, yuki: { atk: 'spirit' }, virr: { atk: 'rifle' }, lira: { atk: 'gust' }, hald: { hit: 'spear' }, nisa: { atk: 'needle' }, shaya: { hit: 'dagger' },
   fenris: { hit: 'claw' }, reiji: { hit: 'katana' }, vint: { atk: 'blaster' }, toplak: { hit: 'mace' }, kolomba: { atk: 'card' }, kostyan: { hit: 'bone' }, shiro: { hit: 'flesh' },

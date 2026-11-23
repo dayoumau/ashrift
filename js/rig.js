@@ -877,6 +877,20 @@ const HEADS = {
     k.b(0.43, 0.09, 0.07, hair, 0, 0.19, 0.18).b(0.36, 0.03, 0.02, hs, 0, 0.215, 0.216);   // the hairline, slicked back over the brow
     k.t(0.05, 0.03, 0.04, 0.02, 0.36, hair, 0.12, 0.06, 0.215, 0, 0, -0.18);   // the long lock over the right eye
   },
+  kai(k, C) { // a tired bureau operative: messy black hair falling over the brow and sticking out at the crown, half-shut grey-violet eyes with dark rings under them,
+    // a flat mouth, an earpiece with a violet light in the right ear
+    const hair = C.hair || 0x15151d, iris = 0x8a78c8, wh = 0xf2eee8, ring = 0xb48c88;
+    k.b(0.41, 0.46, 0.4, C.skin, 0, -0.01, 0);
+    for (const sd of [-1, 1]) k.b(0.112, 0.044, 0.03, wh, sd * 0.093, 0.022, 0.203).b(0.054, 0.044, 0.03, iris, sd * 0.09, 0.02, 0.211).b(0.022, 0.03, 0.02, 0x14101c, sd * 0.09, 0.02, 0.219)
+      .b(0.126, 0.03, 0.035, C.skin, sd * 0.093, 0.05, 0.213).b(0.128, 0.012, 0.036, 0x1c1820, sd * 0.093, 0.036, 0.215)   // heavy lids
+      .b(0.12, 0.02, 0.03, hair, sd * 0.095, 0.088, 0.212, 0, 0, sd * 0.07).b(0.1, 0.014, 0.02, ring, sd * 0.093, -0.008, 0.205);   // brows, rings under the eyes
+    k.b(0.025, 0.05, 0.035, C.skin, 0, -0.05, 0.205).b(0.07, 0.012, 0.02, 0x8a5a54, 0, -0.14, 0.2)
+      .t(0.46, 0.44, 0.5, 0.48, 0.13, hair, 0, 0.22, -0.01).b(0.48, 0.4, 0.15, hair, 0, 0.03, -0.2).b(0.06, 0.3, 0.32, hair, -0.228, 0.05, -0.03).b(0.06, 0.3, 0.32, hair, 0.228, 0.05, -0.03)
+      .y(0.19, 0.21, 0.08, 7, C.skin, 0, -0.27, 0).y(0.235, 0.27, 0.09, 8, C.shirt || 0xe8e4da, 0, -0.31, 0)
+      .y(0.04, 0.04, 0.05, 8, 0x1a1c22, 0.238, 0.0, 0.02, 0, 0, HPI).b(0.02, 0.02, 0.02, { g: 0x8f7bff }, 0.266, 0.0, 0.02);
+    for (const [x, h, rz] of [[-0.19, 0.2, 0.35], [-0.12, 0.28, 0.2], [-0.04, 0.24, 0.05], [0.04, 0.3, -0.1], [0.12, 0.22, -0.2], [0.19, 0.17, -0.38]]) k.c(0.066, h, 4, hair, x, 0.25 - h * 0.3, 0.212, Math.PI - 0.12, 0, rz);   // the fringe, uneven
+    for (const [x, y, z, rx, rz] of [[-0.14, 0.3, -0.05, -0.4, 0.6], [0.02, 0.33, -0.1, -0.7, 0.1], [0.15, 0.3, -0.04, -0.4, -0.6], [-0.05, 0.28, -0.22, -1.3, 0.3], [0.1, 0.27, -0.22, -1.3, -0.3]]) k.c(0.07, 0.2, 4, hair, x, y, z, rx, 0, rz);   // tufts that never lie flat
+  },
   margo(k, C) { // a moneylender: a blunt black bob to the jaw with a straight fringe and one gold streak, a green banker's eyeshade on a band,
     // sharp amber eyes, a beauty mark under the right eye, small gold coin earrings
     const hair = C.hair || 0x16141c, gold = C.met || 0xffc83a, iris = 0xe89a2a, wh = 0xf4f0ea, vis = 0x1f7a4a;
@@ -934,7 +948,7 @@ function buildHero(L, teamColor) {
   const mat = new THREE.MeshPhongMaterial({ vertexColors: true, flatShading: true, shininess: 20, specular: 0x222222 }), gmat = new THREE.MeshBasicMaterial({ vertexColors: true });
   const b = L.bulk || 1, H = L.h || 1, GL = { g: L.glow }, c1 = L.c1, c2 = L.c2, c3 = L.c3 || 0x2a2622, met = L.metal || 0x6c717a, skin = L.skin || 0x8a7462, dk = 0x17171c, wood = 0x3b2f28;
   const C = { c1, c2, c3, met, skin, GL, hair: L.hair, shirt: L.shirt, tie: L.tie, lin: L.lin };
-  const rig = { root, tilt, mats: [mat], wc: L.wc || 'melee', type: 'hero' };
+  const rig = { root, tilt, mats: [mat], wc: L.wc || 'melee', type: 'hero', flick: !!L.flick };
   const hip = 1.05 * H; rig.hip = hip;
   const grp = (parent, x, y, z) => { const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g); return g; };
   const body = grp(tilt, 0, hip, 0); rig.body = body;
@@ -984,7 +998,7 @@ function buildHero(L, teamColor) {
         const seam = new THREE.Color(c2).multiplyScalar(0.8).getHex();
         kt.t(0.31 * b, 0.33 * b, 0.27 * b, 0.29 * b, 0.54 * H, c2, 0, -0.25 * H, 0).b(0.02, 0.5 * H, 0.02, seam, 0, -0.25 * H, 0.15 * b); kt.into(leg, mat, gmat);
         const ks = kit(); ks.t(0.26 * b, 0.28 * b, 0.25 * b, 0.27 * b, 0.48 * H, c2, 0, -0.24 * H, 0).b(0.27 * b, 0.05, 0.29 * b, seam, 0, -0.44 * H, 0)
-          .b(0.25 * b, 0.13, 0.43 * b, c3, 0, -0.5 * H + 0.035, 0.08).b(0.26 * b, 0.045, 0.45 * b, L.sole || 0xeeeeea, 0, -0.5 * H - 0.035, 0.08); ks.into(shin, mat, gmat);
+          .b(0.25 * b, 0.13, 0.43 * b, L.shoe || c3, 0, -0.5 * H + 0.035, 0.08).b(0.26 * b, 0.045, 0.45 * b, L.sole || 0xeeeeea, 0, -0.5 * H - 0.035, 0.08); ks.into(shin, mat, gmat);
         continue;
       }
       if (L.legs === 'paladin') {   // the mech's legs: white armour plates over a dark frame, a gold knee guard, a heavy shin, a foot with a landspinner wheel at the heel (its hub glows)
@@ -1018,7 +1032,7 @@ function buildHero(L, teamColor) {
       if (L.spurs) ks.y(0.075, 0.075, 0.016, 8, 0xc8a050, 0, -0.5 * H + 0.05, -0.22, 0, 0, HPI).b(0.025, 0.03, 0.12, met, 0, -0.5 * H + 0.05, -0.16).b(0.28 * b, 0.05, 0.32 * b, 0x4a2e1a, 0, -0.12 * H, 0);   // spurs on the heels, a turned-down boot top
       ks.into(shin, mat, gmat);
     }
-    kb.t(0.64 * b, 0.42 * b, 0.56 * b, 0.36 * b, 0.26, c2, 0, 0, 0); if (L.legs !== 'jeans' && L.legs !== 'robot' && L.legs !== 'paladin' && L.chest !== 'heian' && L.chest !== 'knight0' && L.chest !== 'banker') kb.b(0.26 * b, 0.42, 0.04, c1, 0, -0.22, 0.2 * b).b(0.26 * b, 0.36, 0.04, c1, 0, -0.2, -0.2 * b);   // trousers have no flaps
+    kb.t(0.64 * b, 0.42 * b, 0.56 * b, 0.36 * b, 0.26, c2, 0, 0, 0); if (L.legs !== 'jeans' && L.legs !== 'robot' && L.legs !== 'paladin' && L.chest !== 'heian' && L.chest !== 'knight0' && L.chest !== 'banker' && L.chest !== 'bureau') kb.b(0.26 * b, 0.42, 0.04, c1, 0, -0.22, 0.2 * b).b(0.26 * b, 0.36, 0.04, c1, 0, -0.2, -0.2 * b);   // trousers have no flaps
     if (L.chest === 'plate') kb.b(0.06, 0.34, 0.3 * b, met, -0.34 * b, -0.14, 0).b(0.06, 0.34, 0.3 * b, met, 0.34 * b, -0.14, 0);
   }
   /* --- torso --- */
@@ -1233,6 +1247,17 @@ function buildHero(L, teamColor) {
         .y(0.3, 0.3, 0.14, 10, sc, 0, 1.0, 0).b(0.11, 0.5, 0.04, { g: sc }, -0.1 * b, 0.72, 0.28 * b, 0.08, 0, 0.06).b(0.12, 0.06, 0.045, sc, -0.1 * b, 0.46, 0.285 * b)   // the scarf
         .b(0.8 * b, 0.07, 0.54 * b, 0x15181c, 0, 0.3, 0).b(0.09, 0.08, 0.05, gold, 0, 0.3, 0.27 * b).b(0.1, 0.16, 0.08, 0x2a2024, 0.36 * b, 0.22, 0.12 * b).b(0.06, 0.06, 0.02, gold, 0.36 * b, 0.26, 0.165 * b);
       for (let i = 0; i < 3; i++) kb.o(0.022, gold, 0.17 * b, 0.82 - i * 0.14, 0.28 * b);
+      break; }
+    // a bureau operative's coat: dark, worn open over a pale shirt, the collar up at the back, a violet tie pulled loose and hanging crooked, a bureau pass clipped to the breast
+    case 'bureau': { const tie = L.tie || 0x8f7bff, sh = L.shirt || 0xe8e4da, ln = 0x3c3f54;
+      kb.b(0.3 * b, 0.9, 0.05, sh, 0, 0.62, 0.236 * b)
+        .b(0.2 * b, 0.64, 0.06, c1, -0.215 * b, 0.64, 0.245 * b).b(0.2 * b, 0.64, 0.06, c1, 0.215 * b, 0.64, 0.245 * b)
+        .b(0.09, 0.4, 0.04, ln, -0.125 * b, 0.84, 0.276 * b, 0, 0, -0.2).b(0.09, 0.4, 0.04, ln, 0.125 * b, 0.84, 0.276 * b, 0, 0, 0.2)   // lapels
+        .b(0.06, 0.64, 0.52 * b, c1, -0.3 * b, 0.66, 0).b(0.06, 0.64, 0.52 * b, c1, 0.3 * b, 0.66, 0).b(0.58 * b, 0.64, 0.06, c1, 0, 0.66, -0.245 * b)
+        .b(0.5 * b, 0.17, 0.05, c1, 0, 1.08, -0.21 * b, 0.28).b(0.07, 0.15, 0.2 * b, c1, -0.26 * b, 1.07, -0.08 * b, 0, 0, 0.2).b(0.07, 0.15, 0.2 * b, c1, 0.26 * b, 1.07, -0.08 * b, 0, 0, -0.2)   // the collar, turned up
+        .b(0.085, 0.07, 0.035, tie, 0.02, 0.93, 0.268 * b, 0, 0, 0.25).b(0.062, 0.46, 0.028, tie, 0.055, 0.68, 0.266 * b, 0, 0, 0.13).c(0.045, 0.09, 4, tie, 0.085, 0.42, 0.266 * b, Math.PI, Math.PI / 4, 0.13)   // the loose tie
+        .b(0.1, 0.13, 0.02, 0xf4f2ee, -0.2 * b, 0.74, 0.283 * b, 0, 0, 0.06).b(0.1, 0.035, 0.022, tie, -0.2 * b, 0.785, 0.284 * b, 0, 0, 0.06).b(0.03, 0.05, 0.022, 0x8a8c96, -0.2 * b, 0.82, 0.283 * b)   // the pass
+        .b(0.8 * b, 0.07, 0.54 * b, 0x101014, 0, 0.3, 0).b(0.09, 0.08, 0.05, 0x8a8c96, 0, 0.3, 0.27 * b);
       break; }
     // a moneylender's outfit: a white shirt under a black waistcoat with gold buttons, a red bow tie, a gold watch on a chain, a strap for the strongbox across the back
     case 'banker': { const vest = L.lin || 0x2a1c30, wh = L.shirt || 0xf2eee6, gold = met, red = L.cuff || 0xb8202c;
@@ -2106,6 +2131,8 @@ function animHero(u, dt) {
       case 'stand': { const s = Math.sin(Math.PI * p); bry = 0.16 * s; hx = 0.1 * s; brx = 0.05 * s; break; }   // a nod toward the target, no more
       // hands stay in the pockets: the knee comes up, the leg snaps out in a front kick and is pulled back; the legs take turns
       case 'pocket': {
+        // look.flick: he does not kick — one hand leaves its pocket, snaps out at the target and goes back
+        if (r.flick) { const s = Math.sin(Math.PI * Math.min(1, p * 1.5)); aR = lerp(0.24, -1.48, s); eR = lerp(-0.66, -0.06, s); wR = -0.35 * s; bry = 0.32 * s; brx = 0.05 * s; break; }
         const e1 = easeOut(q1), hp = p < 0.42 ? -1.25 * e1 : (p < 0.62 ? lerp(-1.25, -1.75, q2) : lerp(-1.75, 0, q3)), kk = p < 0.42 ? 1.7 * e1 : (p < 0.62 ? lerp(1.7, 0.05, q2) : 0.06), on = p < 0.62 ? e1 : 1 - q3;
         if (a.alt) { lL = hp; kL = kk; lR = 0.12 * on; kR = 0.22 * on; } else { lR = hp; kR = kk; lL = 0.12 * on; kL = 0.22 * on; }
         brx = -0.24 * on; bry = (a.alt ? 0.35 : -0.35) * on; hx = 0.14 * on; by -= 0.04 * on; break; }
@@ -2160,6 +2187,10 @@ function animHero(u, dt) {
       case 'moon': if (p < 0.69) { const q = easeOut(Math.min(1, p / 0.25)); aR = -2.85 * q; eR = -0.2; aL = -2.5 * q; eL = -0.4; brx = -0.22 * q; hx = -0.4 * q; kL = 0.5 * q; kR = 0.2 * q; lL = -0.3 * q; }
         else { mowK = Math.min(1, (p - 0.69) / 0.06) * (p > 0.92 ? 1 - (p - 0.92) / 0.08 : 1); mowS = 1; aR = -1.25; eR = -0.2; aL = -1.05; eL = -0.85; brx = 0.28; kL = kR = 0.45; } break;
       // spirit master: one arm levelled at the enemy, the other hand never leaves its pocket
+      // Kai's Flow: the right arm thrown straight out with the palm open, the left hand still in its pocket, feet apart, the whole body shaking with the recoil
+      case 'kflow': { const q = Math.min(1, p / 0.002), j = Math.sin(t * 55) * 0.025; aR = lerp(0.24, -1.52, q) + j; eR = lerp(-0.66, -0.05, q); wR = -0.4 * q; aL = 0.24; eL = -0.66; bry = 0.42 * q; brx = -0.07 * q + j; lL = -0.3 * q; kL = 0.2 * q; lR = 0.34 * q; kR = 0.1 * q; by -= 0.06 * q; break; }
+      // the Breach: both palms forward, knees bent, leaning into it
+      case 'kburst': { const q = Math.min(1, p / 0.002), j = Math.sin(t * 62) * 0.035; aR = aL = lerp(0.24, -1.46, q) + j; eR = eL = lerp(-0.66, -0.1, q); wR = wL = -0.4 * q; brx = 0.12 * q + j; lL = -0.45 * q; kL = 0.34 * q; lR = 0.52 * q; kR = 0.18 * q; by -= 0.12 * q; break; }
       case 'point': { const q = Math.min(1, p / 0.12); aR = lerp(0.24, -1.5, q); eR = lerp(-0.66, -0.06, q); aL = 0.24; eL = -0.66; bry = 0.3 * q; brx = 0.06; break; }
       // two fingers to the peak of the cap
       case 'cap': { const q = Math.sin(Math.PI * Math.min(1, p * 1.3)); aR = lerp(0.24, -1.2, q); eR = lerp(-0.66, -2.25, q); aL = 0.24; eL = -0.66; hx = 0.22 * q; break; }
