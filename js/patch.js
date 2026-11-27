@@ -1,8 +1,11 @@
 /* Game version and patch notes (menu tab «Что нового», the label in the menu corner).
    Only changes that affect play go here: heroes, balance, items, rules, modes. Interface changes are not listed.
    A new release: raise GAME_VER and put its entry first. */
-const GAME_VER = '0.69';
+const GAME_VER = '0.70';
 const PATCH_NOTES = [
+  { v: '0.70', date: '27.11.2026', items: [
+    'Сорен: скорость накопления форм возвращена к прежней, как в 0.68; вторая форма снова открывается через 1.5 мин после первой.'
+  ] },
   { v: '0.69', date: '27.11.2026', items: [
     'Сорен: формы копятся вдвое быстрее — и от ран героям, и сами по себе. Вторая форма открывается через минуту после первой, а не через полторы.'
   ] },
