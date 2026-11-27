@@ -516,7 +516,7 @@ const UI = {
   drawOverlay() {
     const g = this.ctx, W = this.W, H = this.H, P = G.player; g.clearRect(0, 0, W, H);
     for (const u of G.units) {
-      if (!u.alive) continue; if (Math.abs(u.x - G.camX) > 50 || Math.abs(u.z - G.camZ) > 46) continue;
+      if (!u.alive || u.gone) continue; if (Math.abs(u.x - G.camX) > 50 || Math.abs(u.z - G.camZ) > 46) continue;
       if (u.kind === 'monster' && !u.boss && u.hp >= u.maxHp) continue;
       const p = this.proj(u.x, u.height + 0.5 + (u.yOff || 0), u.z); if (!p || p.x < -60 || p.x > W + 60 || p.y < -20 || p.y > H + 20) continue;
       const hero = u.kind === 'hero', w = hero ? 78 : (u.struct ? 96 : (u.boss ? 120 : (u.kind === 'monster' ? 44 : 32))), hh = hero ? 9 : (u.struct || u.boss ? 7 : 4), x = Math.round(p.x - w / 2), y = Math.round(p.y - hh - (hero ? 8 : 0));

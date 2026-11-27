@@ -42,7 +42,7 @@ function hostile(a, b) { return a !== b && (a.team !== b.team || (!a.struct && !
 function enemiesIn(src, x, z, r, heroOnly) {
   const out = [], tm = src.team, sm = src.madT > G.time;
   for (const u of G.units) {
-    if (!u.alive || u.struct || u === src || (u.team === tm && !(sm || u.madT > G.time))) continue; if (heroOnly && u.kind !== 'hero') continue;
+    if (!u.alive || u.struct || u.gone || u === src || (u.team === tm && !(sm || u.madT > G.time))) continue; if (heroOnly && u.kind !== 'hero') continue;
     const rr = r + u.radius, dx = u.x - x, dz = u.z - z; if (dx * dx + dz * dz <= rr * rr) out.push(u);
   }
   return out;
@@ -56,7 +56,7 @@ function alliesIn(src, x, z, r, heroOnly) {
   return out;
 }
 function inCone(src, u, dir, half, r) { const d = udist(src, u); if (d > r + u.radius) return false; return d < 1.2 || Math.abs(angDiff(dir, angTo(src.x, src.z, u.x, u.z))) <= half; }
-function targetable(src, t) { return t.alive && !(t.struct && t.protected); }
+function targetable(src, t) { return t.alive && !t.gone && !(t.struct && t.protected); }   // t.gone: out of the world for a moment (inside another body) — nothing can be aimed at him
 /* DMG_CTX: which hero ability (or item) is running right now, so the match report can split a hero's damage by ability.
    It is set around ability.cast and item use, and carried into everything started from there: timers, actors, projectiles, dashes, ticking buffs */
 let DMG_CTX = null;
@@ -66,7 +66,7 @@ function telegraph(src, x, z, r, delay, color) { FX.decal(x, z, r, color, delay)
 /* ---------- buffs ---------- */
 function addBuff(u, b) {
   if (!u.alive) return null;
-  if (u.struct && (b.stun || b.root || b.slow || b.silence || b.blind)) return null;
+  if ((u.struct || u.gone) && (b.stun || b.root || b.slow || b.silence || b.blind)) return null;
   if (u.boss) { if (b.stun || b.root || b.blind) b.dur *= 0.35; if (b.slow) b.slow *= 0.5; }
   if (u.ten && (b.stun || b.root || b.silence)) b.dur *= 1 - u.ten;
   b.max = b.dur; b.acc = 0; if (b.shield) b.shieldMax = b.shield; if (b.ctx === undefined) b.ctx = DMG_CTX;
@@ -109,7 +109,7 @@ const DMG_K = {
   mora: 1.4, nox: 1.65, morg: 1.4, aisa: 1.65, zar: 1.85, fenris: 1.2, reiji: 1.4, yuki: 1.85, cassius: 1.45, ragna: 1.5,
   toplak: 1.45, groh: 1.55, grimm: 1.45, brand: 1.6, oriel: 1.1, nisa: 1.2, lira: 1.25, hald: 1.25, kolomba: 1.35, kostyan: 1.38,
   shiro: 1.15, kaisei: 1.45, umbra: 1.6, rampage: 1.0, jin: 1.6, hikaru: 1.6, dash: 1.2, tokiko: 1.1, riku: 1.2, ashen: 1.3, chess: 1.7, mei: 1.25,
-  kagari: 1.0, taiga: 0.83, korvin: 0.87, margo: 1.0, miro: 1.0, kai: 0.9, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1, frieren: 1.15, lelouch: 1.3, ichigo: 1.36, carlotta: 1.22, raul: 1.2, tanya: 0.95, setsuna: 1.25, reiner: 1.0, jinwoo: 1.4, misaka: 1.15, megumin: 1.5, levi: 0.85, zenitsu: 0.9, silas: 1.2, wlad: 1.8, nereya: 1.75, gubert: 1.7, blank: 1.7, reisei: 0.95, lumen: 0.75, azzar: 1.15, akuro: 0.95, seiryu: 1.15, xueying: 1.0, velvet: 1.0, roxa: 0.68, marfa: 1.2, anselm: 1.2
+  kagari: 1.0, taiga: 0.83, korvin: 0.87, margo: 1.0, miro: 1.0, kai: 0.9, lin: 1.3, kwame: 1.3, agafya: 1.2, akito: 1.1, frieren: 1.15, lelouch: 1.3, ichigo: 1.36, carlotta: 1.22, raul: 1.2, tanya: 0.95, setsuna: 1.25, reiner: 1.0, jinwoo: 1.4, misaka: 1.15, megumin: 1.5, levi: 0.85, zenitsu: 0.9, silas: 1.2, wlad: 1.8, nereya: 1.75, gubert: 1.7, blank: 1.7, reisei: 0.95, lumen: 0.75, azzar: 1.15, akuro: 0.95, seiryu: 1.15, xueying: 1.0, velvet: 1.0, roxa: 0.68, marfa: 1.2, anselm: 1.2, soren: 1.18, sigure: 1.55
 };
 const HEAL_K = { blank: 1.5, marfa: 3.8, anselm: 2.6, oriel: 1.9, hald: 1.5, nisa: 2.3, lira: 2.8, kolomba: 2.0, ashen: 2.6, chess: 1.8, kagari: 1.5, lin: 3.0, kwame: 1.6, agafya: 2.2, frieren: 1.6, lelouch: 1.7, velvet: 2.0, margo: 1.4 };
 function damage(src, tgt, amt, type, o) {
@@ -291,6 +291,7 @@ function recalcHero(h) {
   h.bAs = S.as * (1 + (S.asL || 0.02) * L + I('as')); h.bMs = S.ms + I('ms'); h.haste = I('haste'); h.bLs = I('ls'); h.thorns = I('thorns');
   h.crit = Math.min(1, I('crit')); h.apen = Math.min(0.6, I('apen')); h.mpen = Math.min(0.6, I('mpen')); h.onhit = I('onhit'); h.slowHit = I('slowHit'); h.structDmg = I('structDmg');
   h.burn = I('burn'); h.omni = I('omni'); h.hpRegen = I('hpRegen'); h.manaRegen = I('manaRegen'); h.ten = Math.min(0.5, I('ten')); h.goldRate = I('gold'); h.lowShield = I('lowShield') > 0; h.castRange = I('castRange'); h.scrit = Math.min(1, I('scrit')); h.healPow = I('healPow'); h.tithe = Math.min(0.4, I('tithe')); h.chill = Math.min(0.6, I('chill')); h.grace = I('grace') > 0; h.auras = h.items.map(id => ITEM[id]).filter(it => it.aura);
+  if (h.def.onRecalc) h.def.onRecalc(h);   // a hero who reads his item stats his own way
   h.hp += Math.max(0, h.maxHp - om); h.mana += Math.max(0, h.maxMana - omm);
 }
 function respawn(h) {
@@ -310,7 +311,7 @@ function revive(h, hpK) {
   return true;
 }
 function setMove(h, x, z) {
-  if (h.flyT > G.time) { h.path = [{ x: clamp(x, -94, 94), z: clamp(z, -94, 94) }]; h.pathI = 0; return; }   // on the wing (Raul): straight over walls and cliffs
+  if (h.flyT > G.time || h.ghostT > G.time) { h.path = [{ x: clamp(x, -94, 94), z: clamp(z, -94, 94) }]; h.pathI = 0; return; }   // on the wing (Raul): straight over walls and cliffs
   const p = NAV.path(h.x, h.z, x, z); h.path = p; h.pathI = 0;
 }
 function moveAlong(u, dt) {
@@ -369,7 +370,8 @@ function basicHit(u, t) {
   else if (u.kind === 'minion') { if (t.struct) d *= u.mtype === 'siege' ? 1.5 : 0.6; else if (t.kind === 'hero') d *= 0.7; }
   for (const b of u.buffs) if (b.onHit) d += b.onHit(u, t, b) || 0;
   if (t.struct) { if (u.structDmg) d *= 1 + u.structDmg; }
-  else if (u.crit && Math.random() < u.crit) { d *= 1.75; crit = true; }
+  else if (u.crit && Math.random() < u.crit) { d *= u.critK || 1.75; crit = true; }
+  if (u.kind === 'hero' && u.def.onBasic) d = u.def.onBasic(u, t, d, crit);   // a hero whose attack is not one plain physical blow (a second blade that cuts with magic)
   damage(u, t, d, 0, { basic: true, crit });
   if (!t.struct && t.alive) { if (u.onhit) damage(u, t, u.onhit, 1, { dot: true }); if (u.slowHit) slow(u, t, u.slowHit, 1, 'frostblade'); }
 }
@@ -509,7 +511,7 @@ function updateProjectiles(dt) {
       for (let s = 0; s < n && !end; s++) {
         p.x += p.vx * dt / n; p.z += p.vz * dt / n; p.left -= st / n;
         for (const u of G.units) {
-          if (!u.alive || u.struct || p.hit.has(u.id)) continue;
+          if (!u.alive || u.struct || u.gone || p.hit.has(u.id)) continue;
           const en = u.team !== p.team || (u !== p.src && (u.madT > G.time || p.src.madT > G.time)); if (!en && !(o.onAlly && u.kind === 'hero' && u !== p.src)) continue; if (en && o.heroOnly && u.kind !== 'hero') continue;
           const rr = p.w + u.radius, dx = u.x - p.x, dz = u.z - p.z; if (dx * dx + dz * dz > rr * rr) continue;
           p.hit.add(u.id);

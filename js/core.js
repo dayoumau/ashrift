@@ -327,6 +327,32 @@ const SFX = {
       // Kai (the bureau game's own sounds, number for number): the rush of a dash or of the Flow opening, the thump of the Pulse, the Breach let go,
       // a beam hit, the blast at the end of the Breach, a flick of the beam for a basic attack. The running hum of the beam is a live voice in roster22.js
       case 'kdash': N('bandpass', 600, 4200, 0.22, 0.2, 0, 0.8); break;
+      // Soren: the scythe coming round after a rush (a rising rush of air, the ring of the blade, a low body under it)
+      case 'sorreap': N('bandpass', 500, 3600, 0.14, 0.26, 0, 1.2); N('highpass', 7000, 2600, 0.1, 0.26, 0.1, 0.8); T('triangle', 1500, 1420, 0.3, 0.05, 0.1); T('sine', 130, 50, 0.16, 0.28, 0.08); break;
+      // the long reach: the ground torn open along a line
+      case 'sorreach': T('sine', 85, 30, 0.5, 0.5); N('lowpass', 900, 120, 0.45, 0.4, 0, 0.7); N('bandpass', 2600, 500, 0.2, 0.3, 0.02, 1.5); T('sawtooth', 160, 50, 0.25, 0.14, 0.02); break;
+      // stepping into the shadow: a soft hollow rush
+      case 'sorstep': N('bandpass', 300, 1400, 0.4, 0.2, 0, 2.5); T('sine', 520, 180, 0.4, 0.07); T('sine', 180, 340, 0.3, 0.06, 0.1); break;
+      // the change: a growl climbing for a second, then the blow
+      case 'sorform': T('sawtooth', 55, 110, 0.9, 0.16); T('sawtooth', 82, 165, 0.9, 0.1); N('bandpass', 300, 2400, 0.9, 0.2, 0, 1.2); T('sine', 70, 28, 0.7, 0.55, 0.78); N('bandpass', 1800, 120, 0.6, 0.4, 0.78, 0.5); break;
+      // going into a body: everything sucked inward
+      case 'sorin': N('bandpass', 2400, 300, 0.3, 0.26, 0, 2); T('sine', 300, 70, 0.3, 0.2); T('sawtooth', 90, 60, 0.4, 0.1, 0.1); break;
+      // bursting out of it
+      case 'sorout': N('highpass', 9000, 2000, 0.1, 0.35, 0, 0.7); N('bandpass', 3000, 300, 0.3, 0.35, 0.03, 0.8); T('sine', 110, 30, 0.5, 0.5, 0.03); T('sawtooth', 240, 60, 0.2, 0.14, 0.03); break;
+      // Sigure: a thrust of steel, short and dry
+      case 'sgthrust': N('highpass', 8500, 3500, 0.07, 0.3, 0, 0.7); N('bandpass', 3600, 1800, 0.08, 0.16, 0.01, 2); T('sine', 4200, 4100, 0.25, 0.035, 0.02); T('sine', 180, 70, 0.08, 0.16); break;
+      // the whirlwind of the third thrust
+      case 'sggale': N('bandpass', 400, 2200, 0.45, 0.3, 0, 0.9); N('bandpass', 1800, 500, 0.4, 0.22, 0.1, 0.8); T('sine', 420, 880, 0.35, 0.06); N('highpass', 8000, 3000, 0.08, 0.25, 0, 0.7); break;
+      // two blades at once: the hiss of steel and the hum of the other one under it
+      case 'sgcleave': N('highpass', 7500, 2200, 0.12, 0.3, 0, 0.7); N('bandpass', 900, 3000, 0.16, 0.22, 0, 1.2); T('sawtooth', 300, 90, 0.22, 0.1, 0.05); T('sine', 620, 600, 0.3, 0.05, 0.05); T('sine', 140, 50, 0.18, 0.25, 0.04); break;
+      // the soul leaving the body: two rising voices
+      case 'sgsoul': T('sine', 330, 660, 0.5, 0.09); T('sine', 495, 990, 0.5, 0.06, 0.03); N('bandpass', 1200, 3000, 0.45, 0.1, 0, 4); T('sine', 110, 55, 0.3, 0.2); break;
+      // and snapping back into it
+      case 'sgback': N('bandpass', 3200, 500, 0.22, 0.26, 0, 1.2); T('sine', 880, 220, 0.22, 0.1); T('sine', 90, 40, 0.3, 0.35, 0.16); N('highpass', 7000, 2500, 0.08, 0.22, 0.16, 0.8); break;
+      // fate sealed: the held breath before it
+      case 'sgcharge': T('sawtooth', 110, 330, 0.75, 0.08); T('sine', 220, 880, 0.75, 0.07); N('bandpass', 600, 4000, 0.75, 0.12, 0, 2); break;
+      // and the cut itself
+      case 'sgseal': N('highpass', 9500, 1800, 0.16, 0.4, 0, 0.6); N('bandpass', 2500, 200, 0.4, 0.4, 0.02, 0.6); T('sine', 95, 26, 0.7, 0.6, 0.02); T('sine', 3900, 3700, 0.5, 0.04, 0.04); T('sawtooth', 300, 50, 0.3, 0.14, 0.02); break;
       case 'kpulse': T('sine', 120, 32, 0.5, 0.4); N('bandpass', 3000, 200, 0.45, 0.28, 0, 0.5); break;
       case 'kult': T('sawtooth', 80, 640, 1.2, 0.25); N('bandpass', 300, 6000, 1.2, 0.25, 0, 0.6); break;
       case 'khit': N('bandpass', 1700, 1700, 0.09, 0.13, 0, 0.7); T('triangle', 140, 70, 0.08, 0.12); break;
@@ -402,7 +428,7 @@ const SFX_FLAT = { ui: 1, buy: 1, deny: 1, warn: 1, coin: 1, level: 1, kill: 1, 
 // the sound of each hero's basic attack: hit — a melee blow (played on the target), atk — a shot (played at the shooter), imp — a shot landing.
 // A hero's own def.hitSfx wins over this table (false = the hero plays it himself in onDeal)
 const HERO_SFX = {
-  roxa: { hit: 'mace' }, taiga: { atk: 'bow' }, korvin: { atk: 'flintlock' }, margo: { atk: 'coinshot' }, miro: { atk: 'gunshot' }, kai: { atk: 'kzap' }, velvet: { atk: 'note' }, brand: { hit: 'mace' }, keira: { hit: 'dagger' }, mora: { atk: 'hex', imp: 'ember' }, vale: { atk: 'crossbow' }, oriel: { atk: 'holy' }, groh: { hit: 'stone' },
+  soren: { hit: 'scythe' }, roxa: { hit: 'mace' }, taiga: { atk: 'bow' }, korvin: { atk: 'flintlock' }, margo: { atk: 'coinshot' }, miro: { atk: 'gunshot' }, kai: { atk: 'kzap' }, velvet: { atk: 'note' }, brand: { hit: 'mace' }, keira: { hit: 'dagger' }, mora: { atk: 'hex', imp: 'ember' }, vale: { atk: 'crossbow' }, oriel: { atk: 'holy' }, groh: { hit: 'stone' },
   nox: { atk: 'zap' }, silva: { atk: 'bow' }, morg: { atk: 'poison' }, aisa: { atk: 'ice' }, cassius: { hit: 'blade' }, zar: { atk: 'void' }, grimm: { hit: 'chain' },
   ragna: { hit: 'axe' }, yuki: { atk: 'spirit' }, virr: { atk: 'rifle' }, lira: { atk: 'gust' }, hald: { hit: 'spear' }, nisa: { atk: 'needle' }, shaya: { hit: 'dagger' },
   fenris: { hit: 'claw' }, reiji: { hit: 'katana' }, vint: { atk: 'blaster' }, toplak: { hit: 'mace' }, kolomba: { atk: 'card' }, kostyan: { hit: 'bone' }, shiro: { hit: 'flesh' },

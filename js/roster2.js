@@ -958,7 +958,7 @@ HEROES.push(
 // enemies inside a straight strip that starts at (x0, z0) and runs along dir
 function stripHits(h, x0, z0, dir, len, hw) {
   const out = [], sx = Math.sin(dir), cz = Math.cos(dir);
-  for (const u of G.units) { if (!u.alive || u.team === h.team || u.struct) continue; const dx = u.x - x0, dz = u.z - z0, al = dx * sx + dz * cz; if (al < -u.radius || al > len + u.radius) continue; if (Math.abs(dx * cz - dz * sx) <= hw + u.radius) out.push(u); }
+  for (const u of G.units) { if (!u.alive || u.team === h.team || u.struct || u.gone) continue; const dx = u.x - x0, dz = u.z - z0, al = dx * sx + dz * cz; if (al < -u.radius || al > len + u.radius) continue; if (Math.abs(dx * cz - dz * sx) <= hw + u.radius) out.push(u); }
   return out;
 }
 // a mark on the minimap while a global ability is on its way: { x, z, r, color, until } or { line: true, x, z, x2, z2, ox, oz, color, until }
