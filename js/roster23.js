@@ -37,7 +37,7 @@ const SOR_LOOK = [
   { bulk: 1.16, h: 1.06, scale: 1.24, c1: 0x3a1418, c2: 0x2a1016, c3: 0x180a0c, skin: 0x4a1a20, hands: 0x2a1016, cuff: 0x2a1016, metal: 0x5c2026, glow: SOR.d, head: 'soren', chest: 'acolyte', legs: 'greaves', sh: 'soren', weapon: 'soulscythe', wc: 'reap', form: 1 },
   { bulk: 0.92, h: 1.05, scale: 1.08, c1: 0x151824, c2: 0x10121c, c3: 0x0a0c14, skin: 0xb9c2d4, hands: 0x10121c, cuff: 0x1a1e2e, metal: 0x4a5a78, glow: SOR.s, head: 'soren', chest: 'acolyte', legs: 'boots', sh: 'soren', weapon: 'soulscythe', wc: 'reap', cape: 0x121522, form: 2 }
 ];
-const SOR_GAIN = 26, SOR_DRIP = 0.11, SOR_WAIT = 90;   // essence for dealing a hero's whole health; essence per second to each side; how long the other form stays closed
+const SOR_GAIN = 52, SOR_DRIP = 0.22, SOR_WAIT = 60;   // essence for dealing a hero's whole health; essence per second to each side; how long the other form stays closed
 const sorF = h => h.sorForm || 0;
 function sorTint(h, on) { h.rig.mats[0].color.setHex(on ? 0x3c3856 : 0xffffff); }   // walking as a shadow: the body goes dark, only the glowing parts stay lit
 
@@ -339,7 +339,7 @@ function sorKit(f) {
 }
 const SOR_KITS = [sorKit(0), sorKit(1), sorKit(2)];
 const SOR_INN = [
-  { name: 'Два голода', icon: 'sorinn', desc: 'В Сорене двое: Харрак — тварь из косы — и его собственная тень. Раны, которые он наносит героям ближнего боя, кормят Харрака; раны стрелкам и магам кормят Тень (понемногу растут обе меры и сами). Когда меры вместе заполнят шкалу, та сторона, что набрала больше, готова забрать тело: над панелью умений появятся кнопки. Вторая форма откроется через 1.5 мин. Выбор — на весь матч.<br><b>Харрак:</b> умения лечат его на 27% урона, нанесённого героям.<br><b>Тень:</b> первые 3 сек боя с героями весь его урон по ним усилен магическим (от 14% до 45% с уровнем); 8 сек вне боя — и удар готов снова.', count: h => h.sorReady ? '!' : Math.floor(Math.min(99, h.sorE[0] + h.sorE[1])) + '%' },
+  { name: 'Два голода', icon: 'sorinn', desc: 'В Сорене двое: Харрак — тварь из косы — и его собственная тень. Раны, которые он наносит героям ближнего боя, кормят Харрака; раны стрелкам и магам кормят Тень (понемногу растут обе меры и сами). Когда меры вместе заполнят шкалу, та сторона, что набрала больше, готова забрать тело: над панелью умений появятся кнопки. Вторая форма откроется через минуту. Выбор — на весь матч.<br><b>Харрак:</b> умения лечат его на 27% урона, нанесённого героям.<br><b>Тень:</b> первые 3 сек боя с героями весь его урон по ним усилен магическим (от 14% до 45% с уровнем); 8 сек вне боя — и удар готов снова.', count: h => h.sorReady ? '!' : Math.floor(Math.min(99, h.sorE[0] + h.sorE[1])) + '%' },
   { name: 'Харрак', icon: 'sorf1', desc: 'Коса победила. Умения Харрака лечат его на 27% урона, который они наносят вражеским героям. «Жатва» бьёт от здоровья цели, «Длинная рука» подбрасывает, «Вселение» пожирает жертву и лечит.', count: () => '' },
   { name: 'Удар из тени', icon: 'sorf2', desc: 'Сорен победил. Первые 3 сек боя с вражескими героями весь его урон по ним усилен магическим: от 14% на первом уровне до 45% на пятнадцатом. Удар готов снова после 8 сек без боя с героями — или сразу после «Вселения».', count: h => G.time < h.sorEdgeT ? (h.sorEdgeT - G.time).toFixed(1) : (h.sorEdgeCd ? '' : '★') }
 ];
